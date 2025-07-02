@@ -1,3 +1,8 @@
+"""
+Author: Salvador Navas
+Date: 2025-06-27
+"""
+
 import getpass
 import os
 import stat

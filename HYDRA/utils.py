@@ -1,4 +1,7 @@
-# File: interactive_map.py
+"""
+Author: Salvador Navas
+Date: 2025-06-27
+"""
 
 from ipyleaflet import Map, DrawControl
 from ipywidgets import Output, VBox
