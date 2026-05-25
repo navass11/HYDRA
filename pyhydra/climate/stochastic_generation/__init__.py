@@ -1,4 +1,4 @@
-from pyhydra.climate.stochastic_generation import point, spatial
+from pyhydra.climate.stochastic_generation import point, spatial, fields
 from pyhydra.climate.stochastic_generation.point import (
     NSRPModel,
     analyze_ts,
@@ -14,10 +14,18 @@ from pyhydra.climate.stochastic_generation.point import (
     _default_weights,
 )
 from pyhydra.climate.stochastic_generation.spatial import STNSRPModel
+from pyhydra.climate.stochastic_generation.fields import (
+    SpatialFieldModel,
+    fit_spatial_model,
+    generate_random_field,
+    generate_random_field_fast,
+    check_random_field,
+)
 
 __all__ = [
     "point",
     "spatial",
+    "fields",
     # precipitation (NEOPRENE NSRP)
     "NSRPModel",
     "_build_calibration_yaml",
@@ -34,4 +42,10 @@ __all__ = [
     "report_ts",
     # multi-site (NEOPRENE STNSRP)
     "STNSRPModel",
+    # spatial random fields (CoSMoS_py VAR)
+    "SpatialFieldModel",
+    "fit_spatial_model",
+    "generate_random_field",
+    "generate_random_field_fast",
+    "check_random_field",
 ]

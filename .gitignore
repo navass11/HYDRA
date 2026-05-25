@@ -21,3 +21,10 @@ pyhydra/climate/stochastic_generation/__pycache__/point.cpython-312.pyc
 pyhydra/climate/stochastic_generation/__pycache__/spatial.cpython-312.pyc
 .gitignore
 pyhydra/climate/__pycache__/__init__.cpython-312.pyc
+pyhydra/climate/spatial_analysis/__pycache__/__init__.cpython-312.pyc
+pyhydra/climate/spatial_analysis/__pycache__/bayes_hierarchical.cpython-312.pyc
+pyhydra/climate/spatial_analysis/__pycache__/copulas.cpython-312.pyc
+pyhydra/climate/spatial_analysis/__pycache__/interpolation.cpython-312.pyc
+pyhydra/climate/spatial_analysis/__pycache__/rfa.cpython-312.pyc
+pyhydra/climate/stochastic_generation/__pycache__/fields.cpython-312.pyc
+pyhydra/climate/time_series/__pycache__/extremes.cpython-312.pyc

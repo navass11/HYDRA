@@ -5,7 +5,7 @@ Two backends depending on variable type:
 
 General hydro-meteorological variables (discharge, temperature, wind…)
     → CoSMoS_py: analyze_ts / simulate_ts / generate_ts
-      https://github.com/IHCantabria/CoSMoS_py
+      https://github.com/navass11/CoSMoS_py
 
 Precipitation (Neyman-Scott Rectangular Pulses Model)
     → NEOPRENE: NSRPModel
@@ -33,7 +33,7 @@ def _require_cosmos():
         raise ImportError(
             "cosmos_py is required for general time-series stochastic generation.\n"
             "Install it with: pip install -e /path/to/CoSMoS_py\n"
-            "Source: https://github.com/IHCantabria/CoSMoS_py"
+            "Source: https://github.com/navass11/CoSMoS_py"
         ) from exc
 
 
