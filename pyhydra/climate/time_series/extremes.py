@@ -60,6 +60,11 @@ def _require_lmoments():
 def _require_pystan():
     try:
         import stan
+        try:
+            import nest_asyncio
+            nest_asyncio.apply()
+        except ImportError:
+            pass
         return stan
     except ImportError as exc:
         raise ImportError(
@@ -204,7 +209,7 @@ def _lmom_gev(data: np.ndarray) -> dict:
 
 
 def _fit_gev_mle_robust(data: np.ndarray,
-                        xi_bounds: tuple = (-0.5, 0.5)) -> dict:
+                        xi_bounds: tuple = (-0.5, 0.8)) -> dict:
     """
     MLE GEV fitting with multiple starts and bounded shape parameter.
 
@@ -260,7 +265,7 @@ def _fit_gev_mle_robust(data: np.ndarray,
 
 def fit_gev(data: np.ndarray | pd.Series,
             method: str = "mle",
-            xi_bounds: tuple = (-0.5, 0.5)) -> dict:
+            xi_bounds: tuple = (-0.5, 0.8)) -> dict:
     """
     Fit a GEV distribution to block maxima.
 

@@ -17,6 +17,12 @@ def delta_method(serie_raw, serie_hist, serie_mod, var, stat):
     Returns:
         pandas Series with bias-corrected values and time index shifted to the future period
     """
+    # Ensure inputs are 1-D Series regardless of whether caller passed DataFrames
+    if isinstance(serie_hist, pd.DataFrame):
+        serie_hist = serie_hist.squeeze()
+    if isinstance(serie_mod, pd.DataFrame):
+        serie_mod = serie_mod.squeeze()
+
     serie_modify = serie_raw.copy()
     dif_year = serie_mod.index.year[0] - serie_raw.index.year[0]
 

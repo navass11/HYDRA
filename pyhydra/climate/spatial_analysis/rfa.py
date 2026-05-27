@@ -46,6 +46,11 @@ def _require_lmoments():
 def _require_stan():
     try:
         import stan
+        try:
+            import nest_asyncio
+            nest_asyncio.apply()
+        except ImportError:
+            pass
         return stan
     except ImportError as exc:
         raise ImportError(
@@ -58,18 +63,56 @@ def _require_stan():
 # Point frequency analysis
 # ---------------------------------------------------------------------------
 
-def fit_gev_mle(data):
+def fit_gev_mle(data, xi_bounds=(-0.5, 0.8)):
     """
     Fit a GEV distribution by Maximum Likelihood Estimation.
 
+    Uses multi-start optimisation with bounded shape parameter to avoid
+    degenerate solutions (xi → ±∞) that unconstrained MLE can find on
+    small samples (n < 50).
+
     Args:
         data: 1-D array of annual maxima.
+        xi_bounds: (lower, upper) bounds on xi — keeps estimates physical.
 
     Returns:
-        dict with keys ``shape``, ``loc``, ``scale``.
+        dict with keys ``mu`` (location), ``sigma`` (scale), ``xi`` (shape).
+        Note: xi > 0 → Fréchet (heavy tail); xi = 0 → Gumbel; xi < 0 → Weibull.
     """
-    shape, loc, scale = genextreme.fit(np.asarray(data))
-    return {"shape": shape, "loc": loc, "scale": scale}
+    import warnings
+    arr = np.asarray(data, dtype=float)
+    arr = arr[np.isfinite(arr)]
+    mu0, sig0 = float(np.mean(arr)), float(np.std(arr))
+
+    # Build starting points: L-moments first, then a grid
+    starts = []
+    try:
+        p0 = fit_gev_lmom(arr)
+        starts.append((-p0["xi"], p0["mu"], p0["sigma"]))
+    except Exception:
+        pass
+    for xi0 in [0.0, 0.1, -0.1, 0.2, -0.2]:
+        starts.append((xi0, mu0, sig0 * 0.5))
+
+    best_nll, best = np.inf, None
+    for c0, loc0, scale0 in starts:
+        try:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                c_fit, loc_fit, scale_fit = genextreme.fit(arr, c0, loc=loc0, scale=scale0)
+            xi_fit = -c_fit
+            if not (xi_bounds[0] <= xi_fit <= xi_bounds[1]) or scale_fit <= 0:
+                continue
+            nll = -np.sum(genextreme.logpdf(arr, c_fit, loc=loc_fit, scale=scale_fit))
+            if np.isfinite(nll) and nll < best_nll:
+                best_nll, best = nll, {"mu": float(loc_fit), "sigma": float(scale_fit), "xi": xi_fit}
+        except Exception:
+            continue
+
+    if best is None:
+        # fall back to L-moments
+        return fit_gev_lmom(arr)
+    return best
 
 
 def fit_gev_lmom(data):
@@ -80,15 +123,16 @@ def fit_gev_lmom(data):
         data: 1-D array of annual maxima.
 
     Returns:
-        dict with keys ``shape``, ``loc``, ``scale``.
+        dict with keys ``mu`` (location), ``sigma`` (scale), ``xi`` (shape).
     """
     lm, lmd = _require_lmoments()
     ratios = lm.lmom_ratios(list(data), nmom=4)
     params = lmd.gev.lmom_fit(list(data), lmom_ratios=ratios)
+    # lmoments3 returns xi in standard GEV sign convention (same as pyhydra)
     return {
-        "shape": params.get("c", params.get("shape", 0.0)),
-        "loc":   params.get("loc", 0.0),
-        "scale": params.get("scale", 1.0),
+        "mu":    float(params.get("loc", 0.0)),
+        "sigma": float(params.get("scale", 1.0)),
+        "xi":    float(params.get("c", params.get("shape", 0.0))),
     }
 
 
@@ -97,35 +141,52 @@ def return_level(params, T):
     Compute the T-year return level from GEV parameters.
 
     Args:
-        params: dict with ``shape``, ``loc``, ``scale`` (from fit_gev_mle
+        params: dict with ``mu``, ``sigma``, ``xi`` (from fit_gev_mle
                 or fit_gev_lmom).
         T:      Return period in years (scalar or array).
 
     Returns:
         Return level(s) — same shape as T.
     """
+    # scipy genextreme uses c = -xi sign convention
     return genextreme.ppf(1 - 1 / np.asarray(T),
-                          params["shape"],
-                          loc=params["loc"],
-                          scale=params["scale"])
+                          -params["xi"],
+                          loc=params["mu"],
+                          scale=params["sigma"])
 
 
 _BAYES_GEV_CODE = """
 data {
     int<lower=1> N;
     vector[N] y;
+    real y_mean;
+    real<lower=0> y_sd;
 }
 parameters {
-    real mu;
+    real mu_raw;                    // non-centred: mu = y_mean + y_sd * mu_raw
     real<lower=0> sigma;
-    real xi;
+    real<lower=-1, upper=1> xi;
+}
+transformed parameters {
+    real mu = y_mean + y_sd * mu_raw;
 }
 model {
-    mu    ~ normal(0, 100);
-    sigma ~ cauchy(0, 5);
-    xi    ~ normal(0, 5);
-    for (n in 1:N)
-        target += gev_lpdf(y[n] | mu, sigma, xi);
+    mu_raw ~ normal(0, 1);
+    sigma  ~ lognormal(log(y_sd), 1);
+    xi     ~ normal(0, 0.5);
+    for (n in 1:N) {
+        real z = (y[n] - mu) / sigma;
+        if (abs(xi) > 1e-6) {
+            real t = 1.0 + xi * z;
+            if (t > 0)
+                target += -log(sigma) - (1.0 + 1.0/xi) * log(t)
+                          - pow(t, -1.0/xi);
+            else
+                target += negative_infinity();
+        } else {
+            target += -log(sigma) - z - exp(-z);
+        }
+    }
 }
 """
 
@@ -143,15 +204,21 @@ def fit_gev_bayes(data, n_chains=4, n_samples=1000):
         pd.DataFrame of posterior samples with columns ``mu``, ``sigma``, ``xi``.
     """
     stan = _require_stan()
-    model = stan.build(
-        _BAYES_GEV_CODE,
-        data={"N": len(data), "y": list(map(float, data))},
-    )
+    arr = np.asarray(data, dtype=float)
+    arr = arr[np.isfinite(arr)]
+    stan_data = {
+        "N":      len(arr),
+        "y":      arr.tolist(),
+        "y_mean": float(arr.mean()),
+        "y_sd":   float(arr.std()),
+    }
+    model = stan.build(_BAYES_GEV_CODE, data=stan_data)
     fit = model.sample(num_chains=n_chains, num_samples=n_samples)
+    # `mu` is a transformed parameter — pystan 3.x exposes it directly
     return pd.DataFrame({
-        "mu":    fit["mu"].flatten(),
-        "sigma": fit["sigma"].flatten(),
-        "xi":    fit["xi"].flatten(),
+        "mu":    np.asarray(fit["mu"]).flatten(),
+        "sigma": np.asarray(fit["sigma"]).flatten(),
+        "xi":    np.asarray(fit["xi"]).flatten(),
     })
 
 
@@ -242,9 +309,11 @@ def regional_return_levels(data_dict, T_values=(2, 5, 10, 20, 50, 100),
     regional_params, index_floods = fit_regional_gev(data_dict, method=method)
     T_arr = np.asarray(T_values)
 
+    col_names = [f"T{int(t)}" for t in T_arr]
+
     rows = {}
     for station, mu in index_floods.items():
         regional_q = return_level(regional_params, T_arr)
         rows[station] = regional_q * mu
 
-    return pd.DataFrame(rows, index=T_arr).T
+    return pd.DataFrame(rows, index=col_names).T

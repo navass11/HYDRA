@@ -175,8 +175,10 @@ class FloodEventCopula:
         result = {}
         for k, var in enumerate(self._all_vars):
             dist, _ = self._marginals[var]
-            ot_u = ot.Sample([[float(v)] for v in u_synth[:, k]])
-            result[var] = np.array(dist.computeQuantile(ot_u)).flatten()
+            result[var] = np.array([
+                float(dist.computeQuantile(float(v))[0])
+                for v in u_synth[:, k]
+            ])
 
         return pd.DataFrame(result)
 

@@ -169,7 +169,7 @@ def fit_distribution(values, dist="gengamma", norm_type="N1", n_points=30, opts=
     from cosmos_py.utils.fitDist import fit_dist
     arr = pd.Series(values).dropna()
     arr = arr[arr > 0]
-    return fit_dist(arr, dist, norm_type=norm_type, n_points=n_points, opts=opts or {})
+    return fit_dist(arr, dist, norm_type=norm_type, n_points=n_points, opts=opts)
 
 
 def fit_acs(series, acs_id="weibull", season="month", lag_max=30):

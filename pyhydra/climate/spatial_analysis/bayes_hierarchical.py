@@ -40,6 +40,12 @@ import pandas as pd
 def _require_stan():
     try:
         import stan
+        # nest_asyncio allows stan.build() inside a running event loop (Jupyter)
+        try:
+            import nest_asyncio
+            nest_asyncio.apply()
+        except ImportError:
+            pass
         return stan
     except ImportError as exc:
         raise ImportError(
@@ -100,7 +106,7 @@ model {
     for (s in 1:N_stations) {
         for (n in 1:N_years) {
             if (is_nan(y[n, s])) continue;
-            if (fabs(xi_station[s]) > 1e-6) {
+            if (abs(xi_station[s]) > 1e-6) {
                 real z = (y[n, s] - mu_station[s]) / sigma_station[s];
                 if (1 + xi_station[s] * z > 0) {
                     target += -log(sigma_station[s])
@@ -121,7 +127,7 @@ generated quantities {
     for (s in 1:N_stations) {
         for (t in 1:T_count) {
             real p = 1.0 - 1.0 / T_values[t];
-            if (fabs(xi_station[s]) > 1e-6) {
+            if (abs(xi_station[s]) > 1e-6) {
                 return_levels[s, t] = mu_station[s]
                     + (sigma_station[s] / xi_station[s])
                     * (pow(-log(p), -xi_station[s]) - 1.0);

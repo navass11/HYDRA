@@ -176,8 +176,7 @@ def generate_random_field(n_steps, model):
     """
     _require_cosmos()
     from cosmos_py.fields.generateMTS import generate_mts
-    result = generate_mts(n_steps, model)
-    return np.asarray(result)
+    return generate_mts(n_steps, model)
 
 
 def generate_random_field_fast(n_steps, model):
@@ -199,8 +198,7 @@ def generate_random_field_fast(n_steps, model):
     """
     _require_cosmos()
     from cosmos_py.fields.generateMTSFast import generate_mts_fast
-    result = generate_mts_fast(n_steps, model)
-    return np.asarray(result)
+    return generate_mts_fast(n_steps, model)
 
 
 def check_random_field(field, model):

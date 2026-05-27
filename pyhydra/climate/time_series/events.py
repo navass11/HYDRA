@@ -109,8 +109,8 @@ def extract_discharge_events(series, threshold, threshold2=None, plot=False):
         durations.append(evt_end - evt_start)
         volumes.append(float(segment.sum()))
         date_peaks.append(index[evt_start + int(np.argmax(segment))])
-        starts_out.append(evt_start)
-        ends_out.append(evt_end)
+        starts_out.append(index[evt_start])
+        ends_out.append(index[evt_end])
 
     stats = pd.DataFrame({
         "peak": peaks,
@@ -204,8 +204,8 @@ def extract_precipitation_events(series, threshold=0.0, min_duration=1, min_gap=
         durations.append(dur)
         intensities.append(float(segment[segment > threshold].mean()) if (segment > threshold).any() else 0.0)
         date_starts.append(index[s0])
-        starts_out.append(s0)
-        ends_out.append(s1)
+        starts_out.append(index[s0])
+        ends_out.append(index[s1])
 
     stats = pd.DataFrame({
         "peak": peaks,
