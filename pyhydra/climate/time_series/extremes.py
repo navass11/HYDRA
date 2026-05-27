@@ -200,12 +200,14 @@ def threshold_stability_plot(series: pd.Series,
 
 def _lmom_gev(data: np.ndarray) -> dict:
     """L-moment GEV estimates (fast, outlier-resistant)."""
-    lm = _require_lmoments()
-    from lmoments3 import lmom_ratios, distr
-    ratios = lmom_ratios(data.tolist(), nmom=3)
+    _require_lmoments()
+    from lmoments3 import distr
     para = distr.gev.lmom_fit(data.tolist())
+    # lmoments3 uses the same c convention as scipy.stats.genextreme:
+    # c > 0 = Weibull (bounded upper tail), c < 0 = Fréchet (heavy tail).
+    # pyhydra uses xi = -c (xi > 0 = Fréchet), so negate here.
     return {"mu": float(para["loc"]), "sigma": float(para["scale"]),
-            "xi": float(para["c"])}
+            "xi": -float(para["c"])}
 
 
 def _fit_gev_mle_robust(data: np.ndarray,
@@ -813,10 +815,27 @@ def fit_gev_mcmc(data: np.ndarray | pd.Series,
     }
 
     model = stan.build(_GEV_STAN_CODE, data=stan_data)
+
+    # Initialise chains at the MLE estimate to avoid the degenerate sigma→0 mode.
+    # Stan's default Uniform(-2,2) on the unconstrained scale gives sigma in
+    # (0.13, 7.4) m³/s — orders of magnitude below the data scale.
+    y_mean = float(arr.mean())
+    y_sd   = float(arr.std())
+    try:
+        mle        = _fit_gev_mle_robust(arr)
+        mu_raw0    = (mle["mu"] - y_mean) / y_sd
+        sigma0     = float(np.clip(mle["sigma"], y_sd * 0.05, y_sd * 10))
+        xi0        = float(np.clip(mle["xi"], -0.8, 0.8))
+    except Exception:
+        mu_raw0, sigma0, xi0 = 0.0, y_sd, 0.1
+    init_list = [{"mu_raw": mu_raw0, "sigma": sigma0, "xi": xi0}
+                 for _ in range(n_chains)]
+
     fit = model.sample(
         num_chains=n_chains,
         num_samples=n_samples,
         delta=adapt_delta,
+        init=init_list,
     )
 
     return pd.DataFrame({
@@ -870,23 +889,46 @@ def plot_return_levels(data: np.ndarray | pd.Series,
     rl_fn = return_level_gev if dist == "gev" else return_level_gpd
     rl_fit = np.array([rl_fn(params, T) for T in T_grid])
 
-    # Bootstrap CI
-    rng = np.random.default_rng(0)
-    fit_fn = fit_gev if dist == "gev" else None
+    rng_boot = np.random.default_rng(0)
     boot_curves = []
-    for _ in range(n_bootstrap):
-        try:
-            boot = rng.choice(arr, size=len(arr), replace=True)
-            if dist == "gev":
+
+    if dist == "gev":
+        # Block maxima bootstrap: resample annual maxima directly.
+        for _ in range(n_bootstrap):
+            try:
+                boot = rng_boot.choice(arr, size=len(arr), replace=True)
                 p = fit_gev(boot)
                 boot_curves.append([return_level_gev(p, T) for T in T_grid])
-            else:
-                u = params["threshold"]
-                s = pd.Series(boot)
-                p = fit_gpd(s, threshold=u)
-                boot_curves.append([return_level_gpd(p, T) for T in T_grid])
-        except Exception:
-            continue
+            except Exception:
+                continue
+        # Empirical Gringorten positions on block maxima
+        emp_sorted = np.sort(arr)
+        n_emp = len(emp_sorted)
+        prob_emp = (np.arange(1, n_emp + 1) - 0.44) / (n_emp + 0.12)
+        T_emp = 1.0 / (1.0 - prob_emp)
+        emp_label = "Empirical (block maxima)"
+    else:
+        # POT bootstrap: extract peaks once, then resample exceedances.
+        u   = params["threshold"]
+        lam = params["lambda_rate"]
+        peaks = extract_pot(pd.Series(arr), threshold=u)
+        exc   = peaks.values - u
+        for _ in range(n_bootstrap):
+            try:
+                boot_exc = rng_boot.choice(exc, size=len(exc), replace=True)
+                p_boot   = _fit_gpd_mle(boot_exc)
+                p_full   = {"scale": p_boot["scale"], "shape": p_boot["shape"],
+                            "threshold": u, "lambda_rate": lam}
+                boot_curves.append([return_level_gpd(p_full, T) for T in T_grid])
+            except Exception:
+                continue
+        # Empirical return periods for POT peaks:
+        # T = 1 / (lambda × (1 − F_emp)) where F_emp uses Gringorten on peaks.
+        emp_sorted = np.sort(peaks.values)
+        n_emp      = len(emp_sorted)
+        prob_emp   = (np.arange(1, n_emp + 1) - 0.44) / (n_emp + 0.12)
+        T_emp      = 1.0 / (lam * (1.0 - prob_emp))
+        emp_label  = "Empirical (POT peaks)"
 
     if ax is None:
         _, ax = plt.subplots(figsize=(9, 5))
@@ -900,13 +942,7 @@ def plot_return_levels(data: np.ndarray | pd.Series,
                         color="steelblue", label=f"{int(ci*100)}% CI")
 
     ax.semilogx(T_grid, rl_fit, "b-", lw=2, label="Fitted")
-
-    # Empirical Gringorten positions
-    arr_sorted = np.sort(arr)
-    n = len(arr_sorted)
-    prob = (np.arange(1, n + 1) - 0.44) / (n + 0.12)
-    T_emp = 1.0 / (1.0 - prob)
-    ax.semilogx(T_emp, arr_sorted, "ko", ms=4, zorder=5, label="Empirical")
+    ax.semilogx(T_emp, emp_sorted, "ko", ms=4, zorder=5, label=emp_label)
 
     ax.set_xlabel("Return period (years)")
     ax.set_ylabel("Return level")

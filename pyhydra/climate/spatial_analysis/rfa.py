@@ -128,11 +128,12 @@ def fit_gev_lmom(data):
     lm, lmd = _require_lmoments()
     ratios = lm.lmom_ratios(list(data), nmom=4)
     params = lmd.gev.lmom_fit(list(data), lmom_ratios=ratios)
-    # lmoments3 returns xi in standard GEV sign convention (same as pyhydra)
+    # lmoments3 uses the same sign convention as scipy genextreme: c = -xi.
+    # Negate to convert to pyhydra convention (xi > 0 = Fréchet = heavy tail).
     return {
         "mu":    float(params.get("loc", 0.0)),
         "sigma": float(params.get("scale", 1.0)),
-        "xi":    float(params.get("c", params.get("shape", 0.0))),
+        "xi":   -float(params.get("c", params.get("shape", 0.0))),
     }
 
 
@@ -237,10 +238,13 @@ def return_level_bayes(posterior, T, credible=0.95):
     alpha = (1 - credible) / 2
     levels = genextreme.ppf(
         1 - 1 / T,
-        posterior["xi"].values,
+        -posterior["xi"].values,       # scipy c = -xi (pyhydra convention: xi>0 = Fréchet)
         loc=posterior["mu"].values,
         scale=posterior["sigma"].values,
     )
+    levels = levels[np.isfinite(levels)]
+    if len(levels) == 0:
+        return {"median": np.nan, "lower": np.nan, "upper": np.nan}
     return {
         "median": float(np.median(levels)),
         "lower":  float(np.quantile(levels, alpha)),

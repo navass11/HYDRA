@@ -99,9 +99,12 @@ model {
     sigma_raw ~ normal(0, 1);
     xi_raw    ~ normal(0, 1);
 
-    tau_mu    ~ exponential(1);
-    tau_sigma ~ exponential(2);
-    tau_xi    ~ exponential(4);
+    // Scale tau priors by y_sd so station-level deviations are in the same
+    // units as the data. Without this, Exponential(1) only allows ±1 m³/s
+    // station variation when data is on a scale of hundreds of m³/s.
+    tau_mu    ~ exponential(1.0 / y_sd);    // prior mean = y_sd
+    tau_sigma ~ exponential(2.0 / y_sd);    // prior mean = y_sd / 2
+    tau_xi    ~ exponential(4);             // xi is dimensionless, unchanged
 
     for (s in 1:N_stations) {
         for (n in 1:N_years) {

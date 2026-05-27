@@ -211,20 +211,34 @@ def _write_yaml(config: dict, path: str) -> None:
 
 
 def _default_statistics():
-    return ["mean", "var_h", "autocorr_l_h", "fih_h", "fiWW_h", "fiDD_h"]
+    # Format: mean | {var,fih,fiWW,fiDD,M3}_{h} | autocorr_{l}_{h}
+    # h = aggregation level (days for daily, hours for hourly), l = lag — must be integers.
+    # fiDD and fiWW are omitted from defaults: NEOPRENE divides by pdry/pwet which can be
+    # zero for some PSO candidates, causing ZeroDivisionError during optimisation.
+    return ["mean", "var_1", "autocorr_1_1", "fih_1"]
 
 
 def _default_weights(statistics_name):
-    return {s: 1.0 for s in statistics_name}
+    # NEOPRENE indexes weights by position (self.w[ii]), so must be a list not a dict.
+    return [1.0] * len(statistics_name)
 
 
 def _default_model_bounds():
     return {
-        "time_between_storms":     [0.5,  50.0],
-        "number_storm_cells":      [1.0,  20.0],
-        "cell_duration":           [0.1,  20.0],
-        "cell_intensity":          [0.1,   5.0],
-        "storm_cell_displacement": [0.0,   0.0],
+        # All bounds in hours (NEOPRENE converts internally with t=24 for daily resolution).
+        #
+        # VALIDITY CONSTRAINT on NSRP_pdry:
+        #   The formula contains log(η/(η−β)) which is NaN whenever β ≥ η, where
+        #   η = (1/cell_duration)×24  and  β = (1/storm_cell_displacement)×24.
+        #   Condition η > β ↔ storm_cell_displacement > cell_duration.
+        #   To guarantee validity for ALL PSO candidates we require:
+        #       storm_cell_displacement_min  >  cell_duration_max
+        #   i.e. 10.0 h > 8.0 h  ✓
+        "time_between_storms":     [12.0, 500.0],
+        "number_storm_cells":      [1.0,   20.0],
+        "cell_duration":           [0.5,    8.0],   # max 8 h so displacement can exceed it
+        "cell_intensity":          [0.1,  500.0],   # wide range: actual intensity = ci/24; ci=300 → ~3 mm/day
+        "storm_cell_displacement": [10.0, 200.0],   # min 10 h > cell_duration max → η > β always
     }
 
 
@@ -234,6 +248,7 @@ def _build_calibration_yaml(temporal_resolution, seasonality, process,
     cfg = {
         "temporal_resolution": temporal_resolution,
         "Seasonality_type": seasonality,
+        "Seasonality_user": seasonality_user,  # always required by NEOPRENE HiperParams; null when not user_defined
         "process": process,
         "statistics_name": statistics_name,
         "weights": weights,
@@ -242,32 +257,27 @@ def _build_calibration_yaml(temporal_resolution, seasonality, process,
         "number_initializations": n_initializations,
     }
     cfg.update(model_bounds)
-    if seasonality_user is not None:
-        cfg["Seasonality_user"] = seasonality_user
     return cfg
 
 
 def _build_simulation_yaml(temporal_resolution, seasonality, process,
                             statistics_name, year_ini, year_fin,
                             seasonality_user=None):
-    cfg = {
+    return {
         "temporal_resolution": temporal_resolution,
         "Seasonality_type": seasonality,
+        "Seasonality_user": seasonality_user,  # always required by NEOPRENE HiperParams
         "process": process,
         "statistics_name": statistics_name,
         "year_ini": int(year_ini),
         "year_fin": int(year_fin),
     }
-    if seasonality_user is not None:
-        cfg["Seasonality_user"] = seasonality_user
-    return cfg
 
 
 def _series_to_neoprene_df(series):
-    df = series.reset_index()
-    df.columns = ["date", "value"]
-    df["date"] = pd.to_datetime(df["date"])
-    return df
+    # NEOPRENE Statistics.statistics_from_serie expects index.month to work,
+    # so we must keep a DatetimeIndex — not reset_index().
+    return pd.DataFrame({"Rain": series.values}, index=pd.to_datetime(series.index))
 
 
 # ---------------------------------------------------------------------------
@@ -427,4 +437,6 @@ class NSRPModel:
         fit = getattr(self._calibration_result, "statististics_Fit", None)
         if obs is None or fit is None:
             return None
-        return pd.concat([obs.rename("observed"), fit.rename("fitted")], axis=1)
+        # Both are DataFrames with one column per season; take the first (only) column.
+        return pd.concat([obs.iloc[:, 0].rename("observed"),
+                          fit.iloc[:, 0].rename("fitted")], axis=1)

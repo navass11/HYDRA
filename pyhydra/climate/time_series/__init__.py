@@ -7,6 +7,9 @@ from pyhydra.climate.time_series.events import (
     extract_events,
     extract_discharge_events,
     extract_precipitation_events,
+    extract_precipitation_events_pot,
+    extract_precipitation_events_nday,
+    extract_concurrent_events,
 )
 from pyhydra.climate.time_series.extremes import (
     # extraction
@@ -37,6 +40,9 @@ __all__ = [
     "extract_events",
     "extract_discharge_events",
     "extract_precipitation_events",
+    "extract_precipitation_events_pot",
+    "extract_precipitation_events_nday",
+    "extract_concurrent_events",
     # block maxima / POT extraction
     "extract_block_maxima",
     "extract_pot",

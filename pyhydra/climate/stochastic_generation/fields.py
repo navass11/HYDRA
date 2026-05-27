@@ -71,7 +71,7 @@ def fit_spatial_model(spacepoints, p, dist, dist_params, p0=0.0,
         VAR order (temporal lag depth). p=1 is usually sufficient.
     dist : str
         Marginal distribution name: 'gengamma', 'burrXII', 'paretoII',
-        'burrIII', 'gev', 'lnorm'.
+        'burrIII', 'gev'.
     dist_params : dict
         Distribution parameters matching CoSMoS_py conventions.
     p0 : float
@@ -83,8 +83,8 @@ def fit_spatial_model(spacepoints, p, dist, dist_params, p0=0.0,
         Parameters for the chosen STCS function.
         Clayton default:  ``{'scfid': 'weibull', 'tcfid': 'weibull',
                              'copulaarg': 1.0,
-                             'scfarg': {'b': 0.5, 'c': 0.5},
-                             'tcfarg': {'b': 0.5, 'c': 0.5}}``
+                             'scfarg': {'scale': 0.5, 'shape': 0.5},
+                             'tcfarg': {'scale': 0.5, 'shape': 0.8}}``
         Gneiting default: ``{'a': 1, 'c': 1, 'alpha': 0.5, 'beta': 0.5,
                               'gamma': 0.5, 'tau': 1}``
     scale_factor : float
@@ -120,8 +120,8 @@ def fit_spatial_model(spacepoints, p, dist, dist_params, p0=0.0,
     ...     stcs_id='clayton',
     ...     stcs_params={'scfid': 'weibull', 'tcfid': 'weibull',
     ...                  'copulaarg': 2.0,
-    ...                  'scfarg': {'b': 0.3, 'c': 0.5},
-    ...                  'tcfarg': {'b': 0.5, 'c': 0.8}},
+    ...                  'scfarg': {'scale': 0.3, 'shape': 0.5},
+    ...                  'tcfarg': {'scale': 0.5, 'shape': 0.8}},
     ... )
     """
     _require_cosmos()
@@ -198,7 +198,17 @@ def generate_random_field_fast(n_steps, model):
     """
     _require_cosmos()
     from cosmos_py.fields.generateMTSFast import generate_mts_fast
-    return generate_mts_fast(n_steps, model)
+    return generate_mts_fast(
+        n=n_steps,
+        spacepoints=model["spacepoints"],
+        margdist=model["margdist"],
+        margarg=model["margarg"],
+        p0=model["p0"],
+        distbounds=model.get("distbounds", (-np.inf, np.inf)),
+        stcsarg=model.get("stcs"),
+        dsid=model.get("dsid", "gauss"),
+        dsarg=model.get("dsarg"),
+    )
 
 
 def check_random_field(field, model):
@@ -234,8 +244,8 @@ def _default_stcs_params(stcs_id: str) -> dict:
             "scfid":     "weibull",
             "tcfid":     "weibull",
             "copulaarg": 1.0,
-            "scfarg":    {"b": 0.5, "c": 0.5},
-            "tcfarg":    {"b": 0.5, "c": 0.8},
+            "scfarg":    {"scale": 0.5, "shape": 0.5},
+            "tcfarg":    {"scale": 0.5, "shape": 0.8},
         }
     if stcs_id == "gneiting14":
         return {"a": 1.0, "c": 1.0, "alpha": 0.5, "beta": 0.5, "gamma": 0.5, "tau": 1.0}
@@ -259,7 +269,7 @@ class SpatialFieldModel:
     Parameters
     ----------
     dist : str
-        Marginal distribution: 'gengamma', 'burrXII', 'paretoII', 'gev', 'lnorm'.
+        Marginal distribution: 'gengamma', 'burrXII', 'paretoII', 'burrIII', 'gev'.
     dist_params : dict
         Distribution parameters.
     p0 : float

@@ -353,6 +353,7 @@ class GaussianProcessInterpolator:
 
         self._target_col = target_col
         X = self._scaler.fit_transform(data[self.covariates].values)
+        self._X_train = X  # stored for predict_timeseries
         y = data[target_col].values
 
         X_tr, X_te, y_tr, y_te = train_test_split(
@@ -418,12 +419,8 @@ class GaussianProcessInterpolator:
                 normalize_y=True,
                 n_restarts_optimizer=0,
             )
-            # Station features — assumes timeseries_df columns align with
-            # a slice of grid_data corresponding to station locations.
-            X_stations = self._scaler.transform(
-                grid_data.iloc[: len(y_day)][self.covariates].values
-            )
-            gp_day.fit(X_stations, y_day)
+            # Use the training station features stored during fit()
+            gp_day.fit(self._X_train, y_day)
             out[i] = gp_day.predict(X_grid)
 
         return pd.DataFrame(
@@ -470,11 +467,15 @@ class NeopreneGPReconstructor:
     """
 
     def __init__(self, gp_covariates=None, temporal_resolution: str = "d",
-                 seasonality: str = "monthly", n_restarts_optimizer: int = 3):
+                 seasonality: str = "monthly", n_restarts_optimizer: int = 3,
+                 statistics=None, n_iterations: int = 100, n_bees: int = 20):
         self.gp_covariates = gp_covariates or ["lon", "lat"]
         self.temporal_resolution = temporal_resolution
         self.seasonality = seasonality
         self.n_restarts_optimizer = n_restarts_optimizer
+        self.statistics = statistics
+        self.n_iterations = n_iterations
+        self.n_bees = n_bees
 
         self._nsrp_models: dict = {}
         self._simulated: dict = {}
@@ -491,15 +492,15 @@ class NeopreneGPReconstructor:
         Returns:
             self
         """
-        try:
-            from pyhydra.climate.stochastic_generation.point import NSRPModel
-        except ImportError:
-            from pyhydra.climate.stochastic_generation.point import NSRPModel
+        from pyhydra.climate.stochastic_generation.point import NSRPModel
 
         for name, series in station_obs.items():
             model = NSRPModel(
                 temporal_resolution=self.temporal_resolution,
                 seasonality=self.seasonality,
+                statistics=self.statistics,
+                n_iterations=self.n_iterations,
+                n_bees=self.n_bees,
             )
             model.fit(series, verbose=verbose)
             self._nsrp_models[name] = model
@@ -527,10 +528,9 @@ class NeopreneGPReconstructor:
                 raise AttributeError(
                     "NEOPRENE simulation result has no 'Daily_Simulation' attribute."
                 )
+            # NEOPRENE returns a DataFrame with a DatetimeIndex and a "Rain" column.
             if isinstance(daily, pd.DataFrame):
-                col = daily.columns[0]
-                series = daily.set_index(daily.columns[0])[col] if "date" in str(daily.columns[0]).lower() else daily.iloc[:, 0]
-                self._simulated[name] = series
+                self._simulated[name] = daily.iloc[:, 0]
             else:
                 self._simulated[name] = pd.Series(np.asarray(daily))
 
