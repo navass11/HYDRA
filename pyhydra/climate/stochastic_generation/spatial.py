@@ -61,7 +61,8 @@ class STNSRPModel:
         seasonality_user: Season labels when seasonality='user_defined'.
         coordinates: Coordinate system of gauge locations —
                      'geographical' (lat/lon, default) or 'UTM'.
-        cell_radius: Search radius for spatial cell assignment (km, default 25).
+        cell_radius: PSO search bounds [min_km, max_km] for the storm cell radius
+                     (default [1.0, 50.0]). Must be a list of exactly two floats.
         calibration_yaml: Path to existing NEOPRENE STNSRP calibration YAML.
     """
 
@@ -69,12 +70,13 @@ class STNSRPModel:
                  process="normal", statistics=None, weights=None,
                  n_iterations=100, n_bees=20, n_initializations=1,
                  model_bounds=None, seasonality_user=None,
-                 coordinates="geographical", cell_radius=25.0,
+                 coordinates="geographical", cell_radius=None,
                  calibration_yaml=None):
         self.temporal_resolution = temporal_resolution
         self.seasonality = seasonality
         self.process = process
-        self.statistics_name = statistics or _default_statistics()
+        # STNSRP forbids 'mean' and requires 'crosscorr_h' (validated by NEOPRENE HiperParams).
+        self.statistics_name = statistics or ["var_1", "autocorr_1_1", "fih_1", "crosscorr_1"]
         self.weights = weights or _default_weights(self.statistics_name)
         self.n_iterations = n_iterations
         self.n_bees = n_bees
@@ -82,7 +84,7 @@ class STNSRPModel:
         self.model_bounds = model_bounds or _default_model_bounds()
         self.seasonality_user = seasonality_user
         self.coordinates = coordinates
-        self.cell_radius = cell_radius
+        self.cell_radius = cell_radius if cell_radius is not None else [1.0, 50.0]
         self._calibration_yaml = calibration_yaml
 
         self._cal_hiperparams = None
@@ -111,6 +113,14 @@ class STNSRPModel:
         finally:
             os.unlink(tmp)
 
+    @staticmethod
+    def _neoprene_attrs(attributes):
+        # NEOPRENE STNSRP uses X/Y column names throughout (Lon/Lat in docstrings is wrong).
+        attrs = attributes.copy()
+        if "Lon" in attrs.columns and "X" not in attrs.columns:
+            attrs = attrs.rename(columns={"Lon": "X", "Lat": "Y"})
+        return attrs
+
     def compute_statistics(self, series, attributes):
         """
         Compute point statistics and spatial cross-correlations.
@@ -128,7 +138,8 @@ class STNSRPModel:
         from NEOPRENE.STNSRP.Statistics import Statistics
         hp = self._get_cal_hiperparams()
         self._cal_hiperparams = hp
-        self._statistics = Statistics(hp, time_series=series, attributes=attributes)
+        self._statistics = Statistics(hp, time_series=series,
+                                      attributes=self._neoprene_attrs(attributes))
         return self._statistics
 
     def calibrate(self, series_or_stats=None, attributes=None, verbose=False):
@@ -210,7 +221,10 @@ class STNSRPModel:
             finally:
                 os.unlink(tmp)
 
-        return Simulation(hp_sim)(self._calibration_result, attributes)
+        # Simulation.__call__(params_cal, Input_Series, Input_Attr) — Input_Series is
+        # accepted by NEOPRENE but never used internally; pass None as a safe placeholder.
+        return Simulation(hp_sim)(self._calibration_result, None,
+                                  self._neoprene_attrs(attributes))
 
     def summary(self):
         """Return DataFrame comparing observed vs fitted statistics, or None."""

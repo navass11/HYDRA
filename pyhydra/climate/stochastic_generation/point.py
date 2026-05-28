@@ -234,11 +234,19 @@ def _default_model_bounds():
         #   To guarantee validity for ALL PSO candidates we require:
         #       storm_cell_displacement_min  >  cell_duration_max
         #   i.e. 10.0 h > 8.0 h  ✓
+        #
+        # UPPER BOUND on storm_cell_displacement (48 h):
+        #   For daily aggregation, NSRP_pdry approximation breaks down when cells
+        #   arrive > ~48 h after storm origin (max displacement 200 h causes PSO to
+        #   converge to 8-day cell spreads → cells from adjacent storms interleave
+        #   over many days → near-100% wet fraction regardless of fih_1 target).
+        #   Keeping displacement ≤ 48 h = 2 days keeps cells physically tied to
+        #   their storm and the simulation consistent with the analytical P(dry).
         "time_between_storms":     [12.0, 500.0],
         "number_storm_cells":      [1.0,   20.0],
         "cell_duration":           [0.5,    8.0],   # max 8 h so displacement can exceed it
         "cell_intensity":          [0.1,  500.0],   # wide range: actual intensity = ci/24; ci=300 → ~3 mm/day
-        "storm_cell_displacement": [10.0, 200.0],   # min 10 h > cell_duration max → η > β always
+        "storm_cell_displacement": [10.0,  48.0],   # min 10 h > cell_duration max; max 48 h = 2 days
     }
 
 
