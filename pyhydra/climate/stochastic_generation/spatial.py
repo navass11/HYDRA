@@ -55,7 +55,8 @@ class STNSRPModel:
                     (must include 'crosscorr_h' for spatial fitting).
         weights: Dict mapping statistic → optimisation weight (default 1.0).
         n_iterations: PSO iterations (default 100).
-        n_bees: PSO swarm size (default 20).
+        n_bees: PSO swarm size (default 100). Official NEOPRENE examples use 1000
+                for production-quality calibration; 100 is a faster starting point.
         n_initializations: Independent PSO runs (default 1).
         model_bounds: NSRP parameter search bounds dict.
         seasonality_user: Season labels when seasonality='user_defined'.
@@ -68,7 +69,7 @@ class STNSRPModel:
 
     def __init__(self, temporal_resolution="d", seasonality="monthly",
                  process="normal", statistics=None, weights=None,
-                 n_iterations=100, n_bees=20, n_initializations=1,
+                 n_iterations=100, n_bees=100, n_initializations=1,
                  model_bounds=None, seasonality_user=None,
                  coordinates="geographical", cell_radius=None,
                  calibration_yaml=None):

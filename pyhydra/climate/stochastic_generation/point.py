@@ -224,29 +224,33 @@ def _default_weights(statistics_name):
 
 
 def _default_model_bounds():
+    # Bounds tuned for daily resolution with low wet-day fraction (~0.25–0.45).
+    # All values in hours; NEOPRENE converts internally with t=24.
+    #
+    # The official NEOPRENE example YAMLs use wider bounds (number_storm_cells up to 100,
+    # cell_duration down to 0.15 h). For daily data those wider bounds let PSO converge to a
+    # degenerate solution: 100 very short, very intense cells per storm with high storm
+    # frequency → near-100% wet fraction regardless of fih_1 target. These tighter bounds
+    # prevent that degeneracy.
+    #
+    # Key constraint: storm_cell_displacement_min (10 h) > cell_duration_max (8 h).
+    # This guarantees storm_cell_displacement > cell_duration for every PSO candidate,
+    # so log(η/(η−β)) never produces NaN in the Cowpertwait (1991) NSRP_pdry formula.
+    #
+    # storm_cell_displacement upper bound (48 h): cells stay within two calendar days of
+    # their storm origin. Larger values cause adjacent-storm cell interleaving that breaks
+    # the analytical P_dry approximation (PSO sees fih_1 ≈ 0.80 but simulation gives 0.20).
+    #
+    # number_storm_cells minimum = 2: the Cowpertwait (1991) P_dry approximation contains
+    # the term 1/(mu_c − 1). When mu_c → 1 this diverges (0/0 indeterminate form), making
+    # the approximation inaccurate and causing large formula/simulation divergence in wet
+    # fraction. Forcing mu_c ≥ 2 keeps the approximation in a valid regime.
     return {
-        # All bounds in hours (NEOPRENE converts internally with t=24 for daily resolution).
-        #
-        # VALIDITY CONSTRAINT on NSRP_pdry:
-        #   The formula contains log(η/(η−β)) which is NaN whenever β ≥ η, where
-        #   η = (1/cell_duration)×24  and  β = (1/storm_cell_displacement)×24.
-        #   Condition η > β ↔ storm_cell_displacement > cell_duration.
-        #   To guarantee validity for ALL PSO candidates we require:
-        #       storm_cell_displacement_min  >  cell_duration_max
-        #   i.e. 10.0 h > 8.0 h  ✓
-        #
-        # UPPER BOUND on storm_cell_displacement (48 h):
-        #   For daily aggregation, NSRP_pdry approximation breaks down when cells
-        #   arrive > ~48 h after storm origin (max displacement 200 h causes PSO to
-        #   converge to 8-day cell spreads → cells from adjacent storms interleave
-        #   over many days → near-100% wet fraction regardless of fih_1 target).
-        #   Keeping displacement ≤ 48 h = 2 days keeps cells physically tied to
-        #   their storm and the simulation consistent with the analytical P(dry).
-        "time_between_storms":     [12.0, 500.0],
-        "number_storm_cells":      [1.0,   20.0],
-        "cell_duration":           [0.5,    8.0],   # max 8 h so displacement can exceed it
-        "cell_intensity":          [0.1,  500.0],   # wide range: actual intensity = ci/24; ci=300 → ~3 mm/day
-        "storm_cell_displacement": [10.0,  48.0],   # min 10 h > cell_duration max; max 48 h = 2 days
+        "time_between_storms":     [12.0, 500.0],  # h
+        "number_storm_cells":      [2.0,   20.0],  #   min=2 avoids Cowpertwait 1/(mu_c-1) breakdown
+        "cell_duration":           [0.5,    8.0],  # h  — max < storm_cell_displacement_min
+        "cell_intensity":          [0.1,  500.0],  #    — needs ≥150 for ~3 mm/day mean
+        "storm_cell_displacement": [10.0,  48.0],  # h  — min > cell_duration_max; max ≤ 48 h
     }
 
 
@@ -310,7 +314,8 @@ class NSRPModel:
         statistics: List of statistics to match during calibration.
         weights: Dict mapping statistic → optimisation weight (default 1.0).
         n_iterations: PSO iterations (default 100).
-        n_bees: PSO swarm size (default 20).
+        n_bees: PSO swarm size (default 100). Official NEOPRENE examples use 1000
+                for production-quality calibration; 100 is a faster starting point.
         n_initializations: Independent PSO runs (default 1).
         model_bounds: NSRP parameter search bounds dict.
         seasonality_user: Season labels when seasonality='user_defined'.
@@ -320,7 +325,7 @@ class NSRPModel:
 
     def __init__(self, temporal_resolution="d", seasonality="monthly",
                  process="normal", statistics=None, weights=None,
-                 n_iterations=100, n_bees=20, n_initializations=1,
+                 n_iterations=100, n_bees=100, n_initializations=1,
                  model_bounds=None, seasonality_user=None, calibration_yaml=None):
         self.temporal_resolution = temporal_resolution
         self.seasonality = seasonality
