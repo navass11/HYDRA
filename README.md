@@ -46,6 +46,32 @@ HYDRA/
         └── HEC-RAS/           # Automatización HEC-RAS
 ```
 
+## Ejecución con Docker
+
+La carpeta `docker/` contiene todo lo necesario para levantar un entorno reproducible con JupyterLab y todas las dependencias instaladas.
+
+**Requisitos:** [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado y en ejecución.
+
+```bash
+# 1. Clonar el repositorio
+git clone https://github.com/navass11/HYDRA.git
+cd HYDRA
+
+# 2. Construir la imagen y lanzar JupyterLab
+docker compose -f docker/docker-compose.yml up --build
+
+# 3. Abrir en el navegador
+#    http://localhost:8888
+```
+
+Los notebooks se sirven desde la carpeta `notebooks/`. Los cambios realizados en el navegador se guardan directamente en el repositorio local gracias al volumen montado.
+
+Para parar el contenedor:
+
+```bash
+docker compose -f docker/docker-compose.yml down
+```
+
 ## Contribución
 
 Cada módulo tiene su propio `README.md` describiendo el código real existente. Los módulos sin código aún están marcados como `[pendiente]`. Consulta el PDF `Organización_HYDRA_MdJ.pdf` para la visión global de la arquitectura.
