@@ -1,0 +1,1179 @@
+"""
+HEC-HMS automation utilities.
+
+Cross-platform support:
+    - **Windows**: runs HEC-HMS via the embedded Jython API
+      (``from hms.model import Project``).
+    - **Linux / Docker**: calls ``xvfb-run <hms_dir>/hec-hms.sh -script <script>``
+      for headless execution. Set the environment variable ``HEC_HMS_DIR``
+      to the HEC-HMS installation directory (e.g. /workspace/data/hms/HEC-HMS-4.13),
+      or pass ``hms_dir`` explicitly to :func:`run_hms_script` / :class:`HMSModel`.
+
+Requires:
+    - HEC-HMS 4.x installed (Windows or Linux binary).
+    - pydsstools: ``pip install pydsstools``
+    - xvfb (Linux only, for headless display): ``apt-get install xvfb``
+    - spotpy (calibration only): ``pip install spotpy``
+    - rasterio, rasterstats, geopandas (parameter extraction only).
+
+Workflow overview:
+    1. Read existing model components (read_* functions).
+    2. Extract basin parameters (CN, Clark, SMA, routing) from GIS rasters.
+    3. Generate / update input files (generate_*, fill_gage).
+    4. Execute the model (generate_py → run_hms_script, or HMSModel).
+    5. Extract results (generate_flow, HMSModel).
+    6. Climate-change scenario loop (fill_gage → generate_run per scenario).
+"""
+
+from __future__ import annotations
+
+import os
+import re
+import subprocess
+import warnings
+from datetime import datetime
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+
+warnings.filterwarnings("ignore")
+
+# ── Read helpers ──────────────────────────────────────────────────────────────
+
+def read_gages(path_model: str, file_gage: str) -> list[str]:
+    """Return gage names defined in a .gage file."""
+    txt = Path(path_model, file_gage).read_text()
+    return [re.split(r"[ ]", t)[1] for t in re.findall(r"Gage: [\w\d]+(?=\s)", txt)]
+
+
+def read_met(path_model: str, file_hms: str) -> list[str]:
+    """Return meteorological model names defined in a .hms file."""
+    txt = Path(path_model, file_hms).read_text()
+    return [re.split(r"[.]", t)[0] for t in re.findall(r"[\w]+\.met", txt)]
+
+
+def read_basin(path_model: str, file_basin: str) -> list[str]:
+    """Return basin names defined in a .basin file."""
+    txt = Path(path_model, file_basin).read_text()
+    return [re.split(r"[ ]", t)[1] for t in re.findall(r"Basin: [-\w]+", txt)]
+
+
+def read_subbasin(path_model: str, file_basin: str) -> list[str]:
+    """Return sub-basin names defined in a .basin file."""
+    txt = Path(path_model, file_basin).read_text()
+    return [re.split(r"[ ]", t)[1] for t in re.findall(r"Subbasin: [-\w]+", txt)]
+
+
+def read_control(path_model: str, file_hms: str) -> list[str]:
+    """Return control names defined in a .hms file."""
+    txt = Path(path_model, file_hms).read_text()
+    return [re.split(r"[.]", t)[0] for t in re.findall(r"[\w]+\.control", txt)]
+
+
+def read_run(path_model: str, file_run: str) -> list[str]:
+    """Return run names defined in a .run file."""
+    txt = Path(path_model, file_run).read_text()
+    return [re.split(r"[:]\s", t)[1] for t in re.findall(r"Run:[ \w]+", txt)]
+
+
+# ── File generators ───────────────────────────────────────────────────────────
+
+def generate_gage(
+    name_model: str,
+    names_stations: list[str],
+    time_interval: str,
+    path_model: str,
+    start_time: str,
+    end_time: str,
+    file_dss: str,
+    exists_gage: bool = False,
+) -> None:
+    """Write or append precipitation gage entries to a .gage file.
+
+    Args:
+        name_model: Project name (without extension).
+        names_stations: List of gage/station names.
+        time_interval: HEC-HMS time step string (e.g. '1HOUR', '1DAY', '5MIN').
+        path_model: Directory containing the model files.
+        start_time: Simulation start (e.g. '1 January 2010, 00:00').
+        end_time: Simulation end.
+        file_dss: Name of the DSS file storing precipitation data.
+        exists_gage: If True, append to the existing .gage file.
+    """
+    def _gage_block(station: str) -> list[str]:
+        return [
+            f"Gage: {station}\n",
+            f"     Description: Precipitation series — {station}\n",
+            "     Last Modified Date: 13 November 2020\n",
+            "     Last Modified Time: 09:21:23\n",
+            "     Reference Height Units: Meters\n",
+            "     Reference Height: 10.0\n",
+            "     Gage Type: Precipitation\n",
+            "     Precipitation Type: Incremental\n",
+            "     Units: MM\n",
+            "     Data Type: PER-CUM\n",
+            "     Data Source Type: External DSS\n",
+            "     Variant: Variant-1\n",
+            "       Last Variant Modified Date: 13 November 2020\n",
+            "       Last Variant Modified Time: 09:07:39\n",
+            "       Default Variant: Yes\n",
+            f"       DSS File Name: {file_dss}\n",
+            f"       DSS Pathname: //{station}/PRECIP-INC//{time_interval}/GAGE/\n",
+            f"       Start Time: {start_time}\n",
+            f"       End Time: {end_time}\n",
+            "     End Variant: Variant-1\n",
+            "End:\n",
+            "\n",
+        ]
+
+    gage_path = Path(path_model, name_model + ".gage")
+    header = (
+        []
+        if exists_gage
+        else [
+            f"Gage Manager:{name_model}\n",
+            "     Version: 4.9\n",
+            "     Filepath Separator: /\n",
+            "End:\n",
+            "\n",
+        ]
+    )
+    blocks = [line for s in names_stations for line in _gage_block(s)]
+    existing = gage_path.read_text().splitlines(keepends=True) if exists_gage and gage_path.exists() else []
+    gage_path.write_text("".join(existing + header + blocks))
+    print(f"✓ {gage_path.name} written ({len(names_stations)} gages).")
+
+
+def fill_gage(
+    names_stations: list[str],
+    path_rain: str,
+    time_interval: str,
+    path_model: str,
+    file_dss: str,
+    start_time: str,
+    end_time: str,
+) -> None:
+    """Write precipitation time series into the DSS file.
+
+    Requires pydsstools.
+
+    Args:
+        names_stations: Station names matching columns in the rainfall CSV.
+        path_rain: Path to the CSV with a datetime index and one column per station.
+        time_interval: HEC-HMS time step string.
+        path_model: Directory containing the model and DSS file.
+        file_dss: Name of the DSS file.
+        start_time: Start datetime string (e.g. '1 January 2010, 00:00').
+        end_time: End datetime string.
+    """
+    from pydsstools.core import TimeSeriesContainer
+    from pydsstools.heclib.dss import HecDss
+
+    rain = pd.read_csv(path_rain, index_col=0, parse_dates=True)
+    t0 = datetime.strptime(start_time, "%d %B %Y, %H:%M")
+    t1 = datetime.strptime(end_time, "%d %B %Y, %H:%M")
+    dss_path = str(Path(path_model, file_dss))
+
+    for station in names_stations:
+        pathname = f"//{station}/PRECIP-INC/{start_time}/{time_interval}/GAGE/"
+        tsc = TimeSeriesContainer()
+        tsc.pathname = pathname
+        tsc.startDateTime = start_time
+        series = rain.loc[t0:t1, station].values
+        tsc.numberValues = len(series)
+        tsc.values = series
+        tsc.units = "MM"
+        tsc.type = "PER-CUM"
+        tsc.interval = 1
+        with HecDss.Open(dss_path, version=6) as fid:
+            fid.deletePathname(pathname)
+            fid.put_ts(tsc)
+        print(f"  ✓ {station} written to DSS.")
+
+    print("✓ DSS file updated with precipitation data.")
+
+
+def generate_met(
+    name_met: str,
+    names_sbasin: list[str],
+    names_gage: list[str],
+    path_model: str,
+    name_basin: str,
+    evapotranspiration: bool = False,
+    et_table: pd.DataFrame | None = None,
+) -> None:
+    """Generate a HEC-HMS meteorological model (.met) file.
+
+    Args:
+        name_met: Name for the met model.
+        names_sbasin: Sub-basin names.
+        names_gage: Gage names assigned to each sub-basin (same order).
+        path_model: Model directory.
+        name_basin: Basin model name.
+        evapotranspiration: Include monthly ET if True (requires et_table).
+        et_table: DataFrame with sub-basins as index, columns '1'…'12' (pan evap)
+                  and 'Factor_1'…'Factor_12' (crop coefficient). Required when
+                  evapotranspiration=True.
+    """
+    lines: list[str] = [
+        f"Meteorology: {name_met.replace('_', ' ')}\n",
+        "     Last Modified Date: 13 November 2020\n",
+        "     Last Modified Time: 11:16:56\n",
+        "     Version: 4.9\n",
+        "     Unit System: Metric\n",
+        "     Set Missing Data to Default: Yes\n",
+        "     Precipitation Method: Specified Average\n",
+        "     Short-Wave Radiation Method: None\n",
+        "     Long-Wave Radiation Method: None\n",
+        "     Snowmelt Method: None\n",
+    ]
+
+    if evapotranspiration:
+        lines += [
+            "     Evapotranspiration Method: Monthly Evaporation\n",
+            f"     Use Basin Model: {name_basin}\n",
+            "End:\n\n",
+            "Precip Method Parameters: Specified Average\n",
+            "     Last Modified Date: 6 August 2020\n",
+            "     Last Modified Time: 08:05:04\n",
+            "     Allow Depth Override: No\n",
+            "End:\n\n",
+            "Evapotranspiration Method Parameters: Monthly Evaporation\n",
+            "     Last Modified Date: 18 December 2020\n",
+            "     Last Modified Time: 13:11:43\n",
+            "End:\n\n",
+        ]
+        for basin, gage in zip(names_sbasin, names_gage):
+            lines += [f"Subbasin: {basin}\n", f"     Gage: {gage}\n", "     Begin Et:\n"]
+            for m in range(1, 13):
+                lines.append(f"     Pan Evaporation: {et_table.loc[basin, str(m)]}\n")
+            for m in range(1, 13):
+                lines.append(f"     Evapotranspiration Coefficient: {et_table.loc[basin, f'Factor_{m}']}\n")
+            lines += ["     End Et:\n", "End:\n\n"]
+    else:
+        lines += [
+            "     Evapotranspiration Method: No Evapotranspiration\n",
+            f"     Use Basin Model: {name_basin}\n",
+            "End:\n\n",
+            "Precip Method Parameters: Specified Average\n",
+            "     Last Modified Date: 6 August 2020\n",
+            "     Last Modified Time: 08:05:04\n",
+            "     Allow Depth Override: No\n",
+            "End:\n\n",
+        ]
+        for basin, gage in zip(names_sbasin, names_gage):
+            lines += [f"Subbasin: {basin}\n", f"     Gage: {gage}\n", "End:\n\n"]
+
+    Path(path_model, name_met + ".met").write_text("".join(lines))
+    print(f"✓ {name_met}.met written.")
+
+
+def generate_met_freq_storm(
+    name_met: str,
+    names_sbasin: list[str],
+    path_model: str,
+    idf: pd.DataFrame,
+    name_basin: str,
+    storm_type: str = "Hydro-35/TP-40/TP-49",
+    basin_area_km2: float = 0.0,
+) -> None:
+    """Generate a frequency-based hypothetical storm meteorological file (HEC-HMS 4.13).
+
+    Writes the Hydro-35/TP-40/TP-49 frequency storm format required by HEC-HMS 4.13,
+    with depths at all 10 standard TP-40 durations (5–1440 min).  Sub-30 min depths
+    are extrapolated by power-law from the 30-min and 60-min IDF anchor points.
+
+    Args:
+        name_met: Met model name (e.g. ``'IDF_T100'``).
+        names_sbasin: Sub-basin names.
+        path_model: Model directory (must contain the ``.hms`` project file).
+        idf: DataFrame indexed by duration (hours), columns = sub-basin names,
+             values = precipitation depths (mm).  Must include 0.5 h and 1 h rows.
+        name_basin: Basin model name.
+        storm_type: HEC-HMS precipitation type string (default
+            ``'Hydro-35/TP-40/TP-49'`` — SE United States standard).
+        basin_area_km2: Drainage area in km² (used for depth-area reduction;
+            0 disables reduction but HEC-HMS still requires the field).
+    """
+    import math
+
+    # Convert basin area km² → sq miles (HEC-HMS Storm Size field unit)
+    basin_area_sqmi = basin_area_km2 / 2.58999
+
+    # Standard TP-40 durations needed by HEC-HMS 4.13 (minutes)
+    tp40_durs_min = [5, 10, 15, 30, 60, 120, 180, 360, 720, 1440]
+    # TP-40 anchor durations from IDF (hours → minutes)
+    anchor_durs_h  = [0.5, 1.0, 2.0, 3.0, 6.0, 12.0, 24.0]  # standard TP-40/NOAA Atlas 14
+    anchor_durs_min = [int(d * 60) for d in anchor_durs_h]    # [30,60,120,180,360,720,1440]
+
+    # Mean depth per anchor duration across all sub-basins
+    anchor_depths: dict[int, float] = {}
+    for h, m in zip(anchor_durs_h, anchor_durs_min):
+        if h in idf.index:
+            anchor_depths[m] = float(idf.loc[h].mean())
+        else:
+            # Find nearest available duration
+            diffs = {abs(idx - h): idx for idx in idf.index}
+            nearest = diffs[min(diffs)]
+            anchor_depths[m] = float(idf.loc[nearest].mean())
+
+    # Power-law extrapolation for sub-30 min durations
+    d30 = anchor_depths.get(30, anchor_depths[min(anchor_depths)])
+    d60 = anchor_depths.get(60, d30 * 1.4)
+    if d60 > d30 > 0:
+        n_exp = math.log(d60 / d30) / math.log(60.0 / 30.0)
+    else:
+        n_exp = 0.45  # typical SE US IDF exponent
+    for m in [5, 10, 15]:
+        anchor_depths[m] = d30 * (m / 30.0) ** n_exp
+
+    # Build depth lines for all 10 TP-40 durations
+    depth_lines = "".join(
+        f"     Depth {m}: {anchor_depths[m]:.1f}\n" for m in tp40_durs_min
+    )
+
+    header = [
+        f"Meteorology: {name_met.replace('_', ' ')}\n",
+        "     Last Modified Date: 13 November 2020\n",
+        "     Last Modified Time: 11:16:56\n",
+        "     Version: 4.13\n",
+        "     Unit System: Metric\n",
+        "     Set Missing Data to Default: No\n",
+        "     Precipitation Method: Frequency Based Hypothetical\n",
+        "     Air Temperature Method: None\n",
+        "     Atmospheric Pressure Method: None\n",
+        "     Dew Point Method: None\n",
+        "     Wind Speed Method: None\n",
+        "     Shortwave Radiation Method: None\n",
+        "     Longwave Radiation Method: None\n",
+        "     Snowmelt Method: None\n",
+        "     Evapotranspiration Method: No Evapotranspiration\n",
+        f"     Use Basin Model: {name_basin}\n",
+        "End:\n\n",
+        "Precip Method Parameters: Frequency Based Hypothetical\n",
+        "     Last Modified Date: 13 November 2020\n",
+        "     Last Modified Time: 11:16:56\n",
+        f"     Storm Type: {storm_type}\n",
+        "     Single Hypothetical Storm Size: Yes\n",
+        "     Uniform Depth Duration Curve: No\n",
+        "     User Specified Storm Area: Yes\n",
+        f"     Storm Size: {basin_area_sqmi:.3f}\n",
+        "     Re-sort Storm Symmetrically: No\n",
+        "     Total Duration: 1440\n",
+        "     Time Interval: 5\n",
+        "     Percent of Duration Before Peak Rainfall: 50\n",
+        "     Depth-Area Reduction Method: No Reduction\n",
+        depth_lines,
+        "End:\n\n",
+    ]
+
+    basin_blocks: list[str] = []
+    for basin in names_sbasin:
+        basin_blocks += [
+            f"Subbasin: {basin}\n",
+            "     Last Modified Date: 13 November 2020\n",
+            "     Last Modified Time: 11:16:56\n",
+            depth_lines,
+            "End:\n\n",
+        ]
+
+    met_path = Path(path_model, name_met + ".met")
+    met_path.write_text("".join(header + basin_blocks))
+
+    # Register the met model in the .hms project file so HEC-HMS can find it
+    hms_files = list(Path(path_model).glob("*.hms"))
+    if hms_files:
+        hms_path = hms_files[0]
+        hms_text = hms_path.read_text()
+        entry = (
+            f"Precipitation: {name_met.replace('_', ' ')}\n"
+            f"     Filename: {name_met}.met\n"
+            "     Description: Frequency storm\n"
+            "End:\n\n"
+        )
+        if f"Precipitation: {name_met.replace('_', ' ')}" not in hms_text:
+            with hms_path.open("a") as fh:
+                fh.write(entry)
+    print(f"✓ {name_met}.met (frequency storm) written.")
+
+
+def generate_hms(
+    name_model: str,
+    path_model: str,
+    names_met: list[str],
+    file_dss: str,
+    names_basin: list[str],
+    names_control: list[str],
+) -> None:
+    """Rewrite the .hms project file with updated met/basin/control references.
+
+    Args:
+        name_model: Project name.
+        path_model: Model directory.
+        names_met: Met model names.
+        file_dss: DSS file name.
+        names_basin: Basin names.
+        names_control: Control names.
+    """
+    lines: list[str] = [
+        f"Project: {name_model}\n",
+        f"     Description: {name_model}\n",
+        "     Version: 4.9\n",
+        "     Filepath Separator: \\\n",
+        f"     DSS File Name: {file_dss}\n",
+        "     Time Zone ID: Europe/Paris\n",
+        "End:\n\n",
+    ]
+    for met in names_met:
+        lines += [
+            f"Precipitation: {met.replace('_', ' ')}\n",
+            f"     Filename: {met}.met\n",
+            f"     Description: HMS generated met file for {name_model}\n",
+            "     Last Modified Date: 13 November 2020\n",
+            "     Last Modified Time: 11:18:28\n",
+            "End:\n\n",
+        ]
+    for basin in names_basin:
+        lines += [
+            f"Basin: {basin}\n",
+            f"     Filename: {basin}.basin\n",
+            f"     Description: HMS generated basin file for {name_model}\n",
+            "     Last Modified Date: 13 November 2020\n",
+            "     Last Modified Time: 11:18:28\n",
+            "End:\n\n",
+        ]
+    for control in names_control:
+        lines += [
+            f"Control: {control.replace('_', ' ')}\n",
+            f"     FileName: {control}.control\n",
+            f"     Description: HMS generated control file for {name_model}\n",
+            "End:\n\n",
+        ]
+    Path(path_model, name_model + ".hms").write_text("".join(lines))
+    print(f"✓ {name_model}.hms written.")
+
+
+def generate_control(
+    name_model: str,
+    path_model: str,
+    name_control: str,
+    start_time: str,
+    end_time: str,
+    time_interval: str,
+) -> None:
+    """Create a .control file and append it to the .hms project file.
+
+    Args:
+        name_model: Project name.
+        path_model: Model directory.
+        name_control: Control name.
+        start_time: Start date string (e.g. '01 January 2010').
+        end_time: End date string.
+        time_interval: Simulation time step in minutes (e.g. '60' for hourly).
+    """
+    # Strip any trailing time portion (e.g. ', 00:00') — HEC-HMS date field is date-only
+    def _date_only(s: str) -> str:
+        return s.split(",")[0].strip()
+
+    ctrl_lines = [
+        f"Control: {name_control.replace('_', ' ')}\n",
+        "     Last Modified Date: 13 November 2020\n",
+        "     Last Modified Time: 11:18:20\n",
+        "     Version: 4.13\n",
+        f"     Start Date: {_date_only(start_time)}\n",
+        "     Start Time: 00:00\n",
+        f"     End Date: {_date_only(end_time)}\n",
+        "     End Time: 00:00\n",
+        f"     Time Interval: {time_interval}\n",
+        "End:\n\n",
+    ]
+    Path(path_model, name_control + ".control").write_text("".join(ctrl_lines))
+
+    hms_path = Path(path_model, name_model + ".hms")
+    with hms_path.open("a") as f:
+        f.writelines([
+            f"Control: {name_control.replace('_', ' ')}\n",
+            f"     Filename: {name_control}.control\n",
+            "     Description: Control\n",
+            "End:\n\n",
+        ])
+    print(f"✓ {name_control}.control created and registered in {name_model}.hms.")
+
+
+def generate_run(
+    path_model: str,
+    name_model: str,
+    name_run: str,
+    name_met: str,
+    name_basin: str,
+    name_control: str,
+    exists_run: bool = True,
+) -> None:
+    """Add a run to the .run file and create required .log and .dss stubs.
+
+    Args:
+        path_model: Model directory.
+        name_model: Project name.
+        name_run: Name for the new simulation run.
+        name_met: Met model name.
+        name_basin: Basin model name.
+        name_control: Control name.
+        exists_run: If True, append to the existing .run file.
+    """
+    run_block = [
+        f"Run: {name_run.replace('_', ' ')}\n",
+        "     Default Description: Yes\n",
+        f"     Log File: {name_run}.log\n",
+        f"     DSS File: {name_run}.dss\n",
+        "     Is Save Spatial Results: No\n",
+        "     Last Modified Date: 17 November 2020\n",
+        "     Last Modified Time: 09:31:48\n",
+        f"     Basin: {name_basin}\n",
+        f"     Precip: {name_met.replace('_', ' ')}\n",
+        f"     Control: {name_control.replace('_', ' ')}\n",
+        "     Time-Series Output: Save All\n",
+        "End:\n\n",
+    ]
+
+    # Create empty .log
+    Path(path_model, name_run + ".log").write_text("")
+    # Create empty DSS stub (pydsstools optional — plain touch fallback)
+    dss_path = Path(path_model, name_run + ".dss")
+    try:
+        from pydsstools.heclib.dss import HecDss
+        with HecDss.Open(str(dss_path), version=6):
+            pass
+    except (ImportError, ValueError, OSError):
+        dss_path.touch()
+
+    run_path = Path(path_model, name_model + ".run")
+    existing = run_path.read_text().splitlines(keepends=True) if exists_run and run_path.exists() else []
+    run_path.write_text("".join(existing + run_block))
+    print(f"✓ Run '{name_run}' added to {name_model}.run.")
+
+
+def generate_py(path_model: str, name_model: str, names_run: list[str]) -> None:
+    """Generate the compute_current.py script used to run HEC-HMS from Python.
+
+    Args:
+        path_model: Model directory.
+        name_model: Project name.
+        names_run: List of run names to execute.
+    """
+    scripts_dir = Path(path_model, "scripts")
+    scripts_dir.mkdir(exist_ok=True)
+    hms_path = str(Path(path_model, name_model + ".hms"))
+    run_lines = "\n".join(f"myProject.computeRun('{r}')" for r in names_run)
+    dss_path = str(Path(path_model, name_model + ".dss"))
+    script = (
+        "# -*- coding: utf-8 -*-\n"
+        "from hec.heclib.dss import HecDss\n"
+        "from hms.model import Project\n"
+        "from hms import Hms\n"
+        "import os\n\n"
+        # Only create a fresh DSS 7 if the file is missing or is ZDSS8 (old format).
+        # A ZDSS file (header bytes b'ZDSS\\x00' or b'ZDSS\\xc7') already contains gage
+        # data and must not be deleted — HEC-HMS needs it for the historical simulation.
+        f"_dss = r'{dss_path}'\n"
+        "if os.path.exists(_dss):\n"
+        "    with open(_dss, 'rb') as _f:\n"
+        "        _hdr = _f.read(8)\n"
+        "    if _hdr[:5] == b'ZDSS8':  # DSS 8 format — must convert\n"
+        "        os.remove(_dss)\n"
+        "        _d = HecDss.open(_dss)\n"
+        "        _d.done()\n"
+        "    # else: existing ZDSS (DSS 6) file has gage data — leave it intact\n"
+        "else:\n"
+        "    _d = HecDss.open(_dss)\n"
+        "    _d.done()\n\n"
+        f"myProject = Project.open(r'{hms_path}')\n"
+        f"{run_lines}\n"
+        "myProject.close()\n\n"
+        "Hms.shutdownEngine()\n"
+    )
+    (scripts_dir / "compute_current.py").write_text(script)
+    print(f"✓ compute_current.py written to {scripts_dir}.")
+
+
+def run_hms_script(
+    path_model: str,
+    name_model: str,
+    names_run: list[str],
+    hms_dir: str | None = None,
+    timeout: int = 3600,
+) -> int:
+    """Execute HEC-HMS via a generated Jython script — cross-platform.
+
+    On **Windows** the HEC-HMS Python API is called directly in-process.
+    On **Linux / Docker** the HMS shell wrapper is invoked under Xvfb for
+    headless display.
+
+    Args:
+        path_model: Model directory.
+        name_model: Project name (without extension).
+        names_run: Run names to compute.
+        hms_dir: HEC-HMS installation directory. Falls back to the
+                 ``HEC_HMS_DIR`` environment variable, then the Docker default
+                 ``/workspace/data/hms/HEC-HMS-4.13``.
+        timeout: Maximum execution time in seconds.
+
+    Returns:
+        Process return code (0 = success). On Windows always returns 0 or
+        raises on failure.
+    """
+    import platform
+    generate_py(path_model, name_model, names_run)
+    script_path = str(Path(path_model, "scripts", "compute_current.py"))
+
+    if platform.system() == "Windows":
+        from hms.model import Project
+        from hms import Hms
+        hms_path = str(Path(path_model, name_model + ".hms"))
+        project = Project.open(hms_path)
+        for run in names_run:
+            project.computeRun(run)
+        project.close()
+        Hms.shutdownEngine()
+        print(f"✓ HEC-HMS runs completed (Windows API): {names_run}")
+        return 0
+
+    # Linux: use xvfb-run + hec-hms.sh
+    _hms_dir = (
+        hms_dir
+        or os.environ.get("HEC_HMS_DIR")
+        or "/workspace/data/hms/HEC-HMS-4.13"
+    )
+    hms_sh = str(Path(_hms_dir, "hec-hms.sh"))
+    cmd = ["xvfb-run", "--auto-servernum", hms_sh, "-script", script_path]
+    print(f"  Running: {' '.join(cmd)}")
+    result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+    if result.returncode == 0:
+        print(f"✓ HEC-HMS runs completed (Linux xvfb): {names_run}")
+    else:
+        print(f"✗ HEC-HMS failed (returncode={result.returncode}).")
+        print(result.stdout[-1000:])
+        print(result.stderr[-1000:])
+    return result.returncode
+
+
+def read_dss6_timeseries(
+    dss_path: str,
+    pathname_prefix: str,
+    n_months: int = 6,
+    units: str = "CFS",
+) -> pd.DataFrame:
+    """Read a regular-interval time series from a HEC-DSS 6 binary file.
+
+    Pure-Python, cross-platform — no pydsstools or Java required.
+    Handles the DSS 6 alternating-page binary format (even pages = standard
+    little-endian float32; odd pages = high-16/low-16-bit swapped float32).
+
+    Each monthly block stores ``n_hours × 2`` float32 values: alternating
+    (quality_code, value) pairs.  Only the value fields are returned.
+
+    Parameters
+    ----------
+    dss_path:
+        Path to the ``.dss`` file.
+    pathname_prefix:
+        Prefix shared by all monthly blocks, e.g.
+        ``"//STATION I/FLOW-OBSERVED"`` or ``"//74006/FLOW"``.
+        Monthly suffixes (``/01JAN1970/1HOUR/…``) are found automatically.
+    n_months:
+        Number of consecutive months to read (default 6).
+    units:
+        Expected unit string in the block header (default ``"CFS"``).
+        Returned series values keep these units.
+
+    Returns
+    -------
+    pd.DataFrame
+        Columns ``datetime`` (str, hourly) and ``value`` (float, in *units*).
+        Missing / sentinel values are stored as ``NaN``.
+
+    Examples
+    --------
+    >>> df = read_dss6_timeseries(
+    ...     '/workspace/data/hms/Tifton/1970_simulation.dss',
+    ...     '//74006/FLOW',
+    ... )
+    >>> df['value'].max()  # peak simulated flow in CFS
+    927.84...
+    """
+    import struct as _struct
+
+    PAGE = 512
+
+    with open(dss_path, "rb") as _f:
+        raw = _f.read()
+
+    # Locate data blocks: look for pathname_prefix inside the file and identify
+    # data blocks (not directory entries) by checking that bytes at
+    # block_start+76 are zero (directory entries have a non-zero block pointer).
+    search_key = pathname_prefix.encode("ascii")
+    positions: list[int] = []
+    pos = 0
+    while True:
+        pos = raw.find(search_key, pos)
+        if pos == -1:
+            break
+        # block_start = pos - len("//") if search_key starts with "//" else adjust
+        path_start = pos
+        block_start = path_start - 12  # link(4) + type(4) + pathlen(4)
+        if block_start < 0:
+            pos += 1
+            continue
+        # Discriminate data block vs. directory entry:
+        # Data blocks have 8 zero bytes at block_start+76 (after path+padding).
+        try:
+            plen = _struct.unpack_from("<i", raw, block_start + 8)[0]
+            sentinel = _struct.unpack_from("<q", raw, block_start + 12 + plen + 2)[0]
+            is_data_block = (sentinel == 0)
+        except Exception:
+            pos += 1
+            continue
+        if is_data_block and block_start not in positions:
+            positions.append(block_start)
+        pos += 1
+
+    positions.sort()
+    positions = positions[:n_months]
+
+    def _read_block(bs: int) -> tuple[np.ndarray, list]:
+        """Return (flow_values, datetime_list) for one monthly block."""
+        n_floats = _struct.unpack_from("<i", raw, bs + 88)[0]
+        n_interv = _struct.unpack_from("<i", raw, bs + 92)[0]
+
+        # Decode start date from pathname part D (e.g. "01JAN1970")
+        plen = _struct.unpack_from("<i", raw, bs + 8)[0]
+        path_str = raw[bs + 12 : bs + 12 + plen].decode("ascii", errors="replace")
+        parts = path_str.strip("/").split("/")
+        part_d = parts[2] if len(parts) > 2 else ""
+        try:
+            t0 = pd.Timestamp(part_d, dayfirst=True) + pd.Timedelta(hours=1)
+        except Exception:
+            t0 = pd.Timestamp("1970-01-01 01:00")
+
+        data_start = bs + 272
+        start_page = data_start // PAGE
+        vals: list[float] = []
+        p = data_start
+        for _ in range(n_floats):
+            if p + 4 > len(raw):
+                break
+            rel_page = p // PAGE - start_page
+            b = raw[p : p + 4]
+            if rel_page % 2 == 1:  # odd record page → swap high/low 16-bit words
+                b = bytes([b[2], b[3], b[0], b[1]])
+            vals.append(_struct.unpack("<f", b)[0])
+            p += 4
+
+        arr = np.array(vals, dtype="f4")
+        # Values are at odd indices (quality at even, flow at odd)
+        flow = arr[1::2]
+        # Replace sentinels (±huge, NaN, inf, negative)
+        bad = ~(np.isfinite(flow) & (flow >= 0.0) & (flow < 100_000.0))
+        flow = flow.astype(float)
+        flow[bad] = np.nan
+        times = [
+            (t0 + pd.Timedelta(hours=i)).strftime("%Y-%m-%d %H:%M")
+            for i in range(len(flow))
+        ]
+        return flow, times
+
+    rows: list[dict] = []
+    for bs in positions:
+        flow_vals, dt_strs = _read_block(bs)
+        for dt, v in zip(dt_strs, flow_vals):
+            rows.append({"datetime": dt, "value": v})
+
+    df = pd.DataFrame(rows)
+    return df
+
+
+def generate_flow(
+    pathname: str,
+    path_dss: str,
+    dss_name: str,
+    start_date: str,
+    end_date: str,
+    path_output: str,
+    name_file_output: str,
+) -> pd.DataFrame:
+    """Extract a discharge time series from a DSS file and save it as CSV.
+
+    Requires pydsstools.
+
+    Args:
+        pathname: DSS pathname (e.g. '//JUNCTION/FLOW/…/RUN:Sim_hist/').
+        path_dss: Directory containing the DSS file.
+        dss_name: DSS filename.
+        start_date: Start date string.
+        end_date: End date string.
+        path_output: Output directory.
+        name_file_output: Output CSV base name (without extension).
+
+    Returns:
+        DataFrame with a 'flow' column indexed by date.
+    """
+    from pydsstools.heclib.dss import HecDss
+
+    dss_path = str(Path(path_dss, dss_name))
+    with HecDss.Open(dss_path) as fid:
+        ts = fid.read_ts(pathname, window=(start_date, end_date))
+    values = pd.DataFrame(ts.values)
+    rng = pd.date_range(start=start_date, end=end_date)
+    q = pd.DataFrame({"flow": values.iloc[:, 0].values}, index=rng)
+    os.makedirs(path_output, exist_ok=True)
+    q.to_csv(str(Path(path_output, name_file_output + ".csv")))
+    print(f"✓ Flow saved → {path_output}{name_file_output}.csv")
+    return q
+
+
+# ── Calibration helper ────────────────────────────────────────────────────────
+
+class HMSModel:
+    """Thin wrapper around a HEC-HMS project for automated calibration.
+
+    Runs the model via the HEC-HMS Python API and returns simulated discharge
+    at a target junction/reach as a numpy array.
+
+    Args:
+        path_model: Model directory.
+        name_model: Project name.
+        name_run: Simulation run name.
+        name_basin: Basin name.
+        name_control: Control name.
+        time_interval: Time step in minutes.
+        pathname: DSS pathname template for output discharge.
+        name_precip: Met model name.
+        start_date: Start date string.
+        end_date: End date string.
+        path_output: Directory for result CSVs.
+        observed: Observed discharge Series for objective-function evaluation.
+        parameter_names: Names of parameters passed to run_hms (for spotpy).
+    """
+
+    def __init__(
+        self,
+        path_model: str,
+        name_model: str,
+        name_run: str,
+        name_basin: str,
+        name_control: str,
+        time_interval: str,
+        pathname: str,
+        name_precip: str,
+        start_date: str,
+        end_date: str,
+        path_output: str,
+        observed: pd.Series | None = None,
+        parameter_names: list[str] | None = None,
+        hms_dir: str | None = None,
+    ):
+        self.path_model = path_model
+        self.name_model = name_model
+        self.name_run = name_run
+        self.name_basin = name_basin
+        self.name_control = name_control
+        self.time_interval = time_interval
+        self.pathname = pathname
+        self.name_precip = name_precip
+        self.start_date = start_date
+        self.end_date = end_date
+        self.path_output = path_output
+        self.observed = observed
+        self.parameter_names = parameter_names or []
+        self.hms_dir = hms_dir
+
+    def run_hms(self, *params) -> np.ndarray:
+        """Execute HEC-HMS and return simulated discharge array.
+
+        Cross-platform: uses the Jython API on Windows and xvfb-run on Linux.
+        Override :meth:`_write_params` to apply calibration parameters.
+
+        Args:
+            *params: Parameter values in the order given by parameter_names.
+
+        Returns:
+            1-D numpy array of simulated discharge values.
+        """
+        from pydsstools.heclib.dss import HecDss
+
+        self._write_params(params)
+
+        run_hms_script(
+            self.path_model,
+            self.name_model,
+            [self.name_run],
+            hms_dir=self.hms_dir,
+        )
+
+        dss_path = str(Path(self.path_model, self.name_run + ".dss"))
+        with HecDss.Open(dss_path) as fid:
+            ts = fid.read_ts(self.pathname)
+        return np.array(ts.values)
+
+    def _write_params(self, params):
+        """Override in subclasses to write calibration parameters to .basin."""
+        pass
+
+
+# ── Basin parameter extraction ────────────────────────────────────────────────
+
+def extract_curve_number(
+    subbasins_shp: str,
+    cn_raster: str,
+    land_use_raster: str | None = None,
+    id_col: str = "Subbasin",
+) -> pd.DataFrame:
+    """Extract mean Curve Number (CN) per sub-basin from a raster.
+
+    Requires rasterio, rasterstats, geopandas.
+
+    Args:
+        subbasins_shp: Path to sub-basins shapefile.
+        cn_raster: Path to CN raster (GeoTIFF).
+        land_use_raster: Optional land-use raster for impervious area (%).
+        id_col: Column in the shapefile with sub-basin names.
+
+    Returns:
+        DataFrame with sub-basin names as index and columns:
+        'CN', 'CN_Ia' (initial abstraction = 0.2·S), and optionally
+        'Impervious_pct'.
+    """
+    try:
+        import geopandas as gpd
+        from rasterstats import zonal_stats
+    except ImportError as exc:
+        raise ImportError("geopandas and rasterstats are required: pip install geopandas rasterstats") from exc
+
+    gdf = gpd.read_file(subbasins_shp)
+    stats = zonal_stats(subbasins_shp, cn_raster, stats=["mean"], nodata=-9999)
+    df = pd.DataFrame(index=gdf[id_col].values)
+    df["CN"] = [s["mean"] for s in stats]
+    # S (potential maximum retention, mm) and Ia (initial abstraction, mm)
+    df["S_mm"]  = (25400 / df["CN"]) - 254
+    df["Ia_mm"] = 0.2 * df["S_mm"]
+
+    if land_use_raster:
+        imp_stats = zonal_stats(subbasins_shp, land_use_raster, stats=["mean"], nodata=-9999)
+        df["Impervious_pct"] = [s["mean"] for s in imp_stats]
+
+    return df
+
+
+def calculate_clark_parameters(
+    subbasins_shp: str,
+    flow_len_raster: str,
+    slope_raster: str,
+    id_col: str = "Subbasin",
+    area_col: str = "Area_km2",
+) -> pd.DataFrame:
+    """Estimate Clark unit-hydrograph parameters (Tc, R) per sub-basin.
+
+    Uses the Kirpich formula for Tc and the NRCS formula for the storage
+    coefficient R = 0.6 · Tc.
+
+    Args:
+        subbasins_shp: Path to sub-basins shapefile (must have area column).
+        flow_len_raster: Raster of maximum flow length (m).
+        slope_raster: Raster of mean basin slope (m/m).
+        id_col: Column with sub-basin names.
+        area_col: Column with sub-basin area (km²).
+
+    Returns:
+        DataFrame with columns 'Tc_hr' (time of concentration, hours)
+        and 'R_hr' (storage coefficient, hours).
+    """
+    try:
+        import geopandas as gpd
+        from rasterstats import zonal_stats
+    except ImportError as exc:
+        raise ImportError("geopandas and rasterstats are required") from exc
+
+    gdf = gpd.read_file(subbasins_shp)
+    len_stats   = zonal_stats(subbasins_shp, flow_len_raster, stats=["max"], nodata=-9999)
+    slope_stats = zonal_stats(subbasins_shp, slope_raster,    stats=["mean"], nodata=-9999)
+
+    df = pd.DataFrame(index=gdf[id_col].values)
+    L_m = np.array([s["max"] or 0.0 for s in len_stats])     # max flow length (m)
+    S   = np.array([s["mean"] or 0.001 for s in slope_stats]) # mean slope (m/m)
+
+    # Kirpich formula: Tc (min) = 0.0195 · (L^0.77) / (S^0.385)
+    Tc_min = 0.0195 * (L_m ** 0.77) / (S ** 0.385)
+    df["Tc_hr"] = Tc_min / 60.0
+    df["R_hr"]  = 0.6 * df["Tc_hr"]    # NRCS rule of thumb
+
+    return df
+
+
+def estimate_muskingum_k(
+    L_km: float,
+    slope: float,
+    velocity_mps: float | None = None,
+    method: str = "custom",
+) -> tuple[float, float]:
+    """Estimate Muskingum-Kunge routing parameters K and X.
+
+    Args:
+        L_km: Reach length (km).
+        slope: Reach slope (m/m).
+        velocity_mps: Mean flow velocity (m/s). If None, estimated from
+                      slope using Manning's approximation.
+        method: 'custom' uses the Viessman (1989) formula; 'usace' uses
+                the USACE recommendation.
+
+    Returns:
+        Tuple (K_hr, X) where K is the travel time (hours) and X is the
+        weighting factor (0–0.5).
+    """
+    L_m = L_km * 1000.0
+    if velocity_mps is None:
+        # Approximate V via Manning assuming n=0.04, hydraulic radius ≈ 1 m
+        velocity_mps = max((1.0 ** (2 / 3) * slope ** 0.5) / 0.04, 0.1)
+
+    K_hr = (L_m / velocity_mps) / 3600.0
+
+    # X: Cunge formula — X = 0.5*(1 - q/(B*S*V*L))
+    # Use empirical default range for natural channels
+    X = 0.2 if slope < 0.001 else 0.3
+
+    return round(K_hr, 3), round(X, 3)
+
+
+def update_basin_file(
+    basin_path: str,
+    df: pd.DataFrame,
+    parameter_map: dict[str, str],
+) -> None:
+    """Update parameter values in a HEC-HMS .basin file.
+
+    Reads the .basin file, finds each parameter keyword for each sub-basin,
+    and replaces its value in place.
+
+    Args:
+        basin_path: Path to the .basin file.
+        df: DataFrame indexed by sub-basin name; columns are parameter names.
+        parameter_map: Mapping from df column name → HEC-HMS keyword
+                       (e.g. {'CN': 'Curve Number', 'Tc_hr': 'Time of Concentration'}).
+    """
+    text = Path(basin_path).read_text()
+    for subbasin, row in df.iterrows():
+        for col, keyword in parameter_map.items():
+            if col not in row.index:
+                continue
+            val = row[col]
+            pattern = rf"(Subbasin:\s+{re.escape(str(subbasin))}.*?)(^\s+{re.escape(keyword)}:\s*)[\d\.\-]+"
+            replacement = rf"\g<1>\g<2>{val:.4f}"
+            text = re.sub(pattern, replacement, text, flags=re.MULTILINE | re.DOTALL)
+    Path(basin_path).write_text(text)
+    print(f"✓ {Path(basin_path).name} updated with {len(df)} sub-basins × {len(parameter_map)} parameters.")
+
+
+# ── Climate-change scenario runner ────────────────────────────────────────────
+
+def run_climate_change_scenarios(
+    path_model: str,
+    name_model: str,
+    file_basin: str,
+    file_gage: str,
+    file_dss: str,
+    time_interval: str,
+    scenarios: list[dict],
+    hms_python_api: bool = True,
+) -> None:
+    """Run HEC-HMS for a set of climate-change scenarios in batch.
+
+    Each scenario generates its own gage data, met model, control, and run.
+    Results are stored as individual DSS files inside the model folder.
+
+    Args:
+        path_model: Model directory.
+        name_model: Project name.
+        file_basin: .basin filename.
+        file_gage: .gage filename.
+        file_dss: DSS filename for precipitation.
+        time_interval: HEC-HMS time step string.
+        scenarios: List of dicts, each with keys:
+            - 'name': scenario label (e.g. 'SSP245_near').
+            - 'path_rain': CSV file with precipitation series.
+            - 'start_time': HEC-HMS start string.
+            - 'end_time': HEC-HMS end string.
+            - 'start_ctrl': control start date string.
+            - 'end_ctrl': control end date string.
+            - 'time_interval_ctrl': control time step (minutes as str).
+        hms_python_api: If True, attempt to run via HEC-HMS Python API.
+            Set False to only generate input files.
+    """
+    names_stations = read_gages(path_model, file_gage)
+    names_basin    = read_basin(path_model, file_basin)
+    names_control  = read_control(path_model, name_model + ".hms")
+
+    for sc in scenarios:
+        name = sc["name"]
+        print(f"\n── Scenario: {name} ──")
+
+        # Write precipitation into DSS
+        fill_gage(
+            names_stations=names_stations,
+            path_rain=sc["path_rain"],
+            time_interval=time_interval,
+            path_model=path_model,
+            file_dss=file_dss,
+            start_time=sc["start_time"],
+            end_time=sc["end_time"],
+        )
+
+        # Meteorological model
+        met_name = f"Met_{name}"
+        generate_met(
+            name_met=met_name,
+            names_sbasin=read_subbasin(path_model, file_basin),
+            names_gage=names_stations,
+            path_model=path_model,
+            name_basin=names_basin[0],
+            evapotranspiration=False,
+        )
+
+        # Control
+        ctrl_name = f"Control_{name}"
+        generate_control(
+            name_model=name_model,
+            path_model=path_model,
+            name_control=ctrl_name,
+            start_time=sc["start_ctrl"],
+            end_time=sc["end_ctrl"],
+            time_interval=sc["time_interval_ctrl"],
+        )
+
+        # Update .hms with the new met
+        all_mets = [f[:-4] for f in os.listdir(path_model) if f.endswith(".met")]
+        generate_hms(name_model, path_model, all_mets, file_dss, names_basin, names_control)
+
+        # Run entry
+        run_name = f"Run_{name}"
+        generate_run(
+            path_model=path_model,
+            name_model=name_model,
+            name_run=run_name,
+            name_met=met_name,
+            name_basin=names_basin[0],
+            name_control=ctrl_name,
+        )
+
+        if hms_python_api:
+            try:
+                from hms.model import Project
+                from hms import Hms
+                prj = Project.open(str(Path(path_model, name_model + ".hms")))
+                prj.computeRun(run_name)
+                prj.close()
+                Hms.shutdownEngine()
+                print(f"  ✓ Run completed → {run_name}.dss")
+            except Exception as exc:
+                print(f"  ✗ HEC-HMS API error: {exc}")
+        else:
+            generate_py(path_model, name_model, [run_name])
+            print(f"  ✓ Input files ready. Run compute_current.py manually.")
