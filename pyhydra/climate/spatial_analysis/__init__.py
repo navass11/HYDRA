@@ -3,6 +3,8 @@ from pyhydra.climate.spatial_analysis.copulas import (
     FloodEventCopula,
     fit_marginal,
     fit_discrete_marginal,
+    BivariateCopula,
+    TrivariateCopula,
 )
 from pyhydra.climate.spatial_analysis.rfa import (
     fit_gev_mle,
@@ -32,6 +34,8 @@ __all__ = [
     "FloodEventCopula",
     "fit_marginal",
     "fit_discrete_marginal",
+    "BivariateCopula",
+    "TrivariateCopula",
     # rfa
     "fit_gev_mle",
     "fit_gev_lmom",
