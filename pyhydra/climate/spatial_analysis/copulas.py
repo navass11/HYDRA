@@ -573,9 +573,10 @@ class BivariateCopula:
         if scenario == "both":
             fig.suptitle(title, fontsize=12, fontweight="bold")
             fig.tight_layout()
+            return fig, axes
         else:
             ax_.set_title(f"{lbl}\n{title}", fontsize=10)
-        return axes[0] if len(axes) == 1 else axes
+            return fig, axes[0]
 
 
 # ── TrivariateCopula ──────────────────────────────────────────────────────────
