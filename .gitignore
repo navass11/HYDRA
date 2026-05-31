@@ -81,3 +81,14 @@ data/hec_ras/*.exe
 data/sfincs/
 data/swat/
 *.pyc
+docker/cosmos_py-0.1.0-py3-none-any.whl
+Comunicacion_1_Salvador_Navas.pdf
+Comunicacion_Lluvias_Valencia_V1.pdf
+Comunicacion_Tanganika_Lake_JIA2025_V1.pdf
+thesis/*
+pyhydra.egg-info/dependency_links.txt
+pyhydra.egg-info/PKG-INFO
+pyhydra.egg-info/requires.txt
+pyhydra.egg-info/SOURCES.txt
+pyhydra.egg-info/top_level.txt
+PI_2026_SALVADOR_NAVAS_signed.pdf
