@@ -1,10 +1,14 @@
 """Tests for pyhydra.data_sources.rainfall.ogimet — offline functions only."""
 
+import inspect
 import numpy as np
 import pandas as pd
 import pytest
 
 from pyhydra.data_sources.rainfall.ogimet import (
+    OGIMETDownloader,
+    OgimetCSVLoader,
+    get_default_ogimet_stations_csv,
     normalize_filename,
     process_all_meteorological_variables,
 )
@@ -127,3 +131,18 @@ class TestProcessMeteorologicalVariables:
         df = pd.DataFrame({"date": pd.date_range("2020-01-01", periods=3), "val": [1, 2, 3]})
         with pytest.raises((ValueError, AttributeError)):
             process_all_meteorological_variables(df)
+
+
+class TestOgimetDefaults:
+    def test_default_station_catalogue_is_discoverable(self):
+        path = get_default_ogimet_stations_csv()
+        assert path.endswith("estaciones_ogimet_all.csv")
+
+    def test_loader_creates_default_folder(self, tmp_path):
+        folder = tmp_path / "ogimet"
+        loader = OgimetCSVLoader(folder)
+        assert folder.exists()
+        assert loader.load_station_data().empty
+
+    def test_downloader_station_csv_is_optional(self):
+        assert inspect.signature(OGIMETDownloader).parameters["stations_csv"].default is None

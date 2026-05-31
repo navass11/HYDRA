@@ -10,4 +10,5 @@ from .sensitivity import (
     flooded_area,
     spatial_stats,
     manning_flood_regression,
+    filter_anomalous_simulations,
 )

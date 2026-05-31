@@ -11,10 +11,39 @@ import time
 import unicodedata
 from datetime import datetime, timedelta
 from io import StringIO
+from pathlib import Path
 
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+
+
+DEFAULT_OGIMET_OUTPUT_DIR = Path(os.environ.get("HYDRA_OGIMET_DIR", "/workspace/data/ogimet"))
+
+
+def _candidate_stations_csv_paths():
+    """Return likely locations for the bundled OGIMET station catalogue."""
+    module_path = Path(__file__).resolve()
+    repo_root = module_path.parents[3]
+    return [
+        Path(os.environ["HYDRA_OGIMET_STATIONS_CSV"]) if os.environ.get("HYDRA_OGIMET_STATIONS_CSV") else None,
+        repo_root / "Data_Sources" / "Rainfall" / "OGIMET" / "data" / "estaciones_ogimet_all.csv",
+        Path("/workspace/Data_Sources/Rainfall/OGIMET/data/estaciones_ogimet_all.csv"),
+        Path.cwd() / "Data_Sources" / "Rainfall" / "OGIMET" / "data" / "estaciones_ogimet_all.csv",
+    ]
+
+
+def get_default_ogimet_stations_csv():
+    """Locate the default OGIMET station metadata CSV."""
+    for path in _candidate_stations_csv_paths():
+        if path and path.exists():
+            return str(path)
+    checked = "\n".join(f"- {p}" for p in _candidate_stations_csv_paths() if p)
+    raise FileNotFoundError(
+        "Could not find the OGIMET station catalogue. Pass stations_csv explicitly "
+        "or set HYDRA_OGIMET_STATIONS_CSV. Checked:\n"
+        f"{checked}"
+    )
 
 
 def normalize_filename(name):
@@ -159,24 +188,36 @@ def process_all_meteorological_variables(df):
     return grouped
 
 
-def OGIMETDownloader(stations_csv, zoom=5, center=(40.0, -3.5), max_markers=None):
+def OGIMETDownloader(
+    stations_csv=None,
+    zoom=5,
+    center=(40.0, -3.5),
+    max_markers=None,
+    output_folder=None,
+):
     """
     Interactive Jupyter widget for selecting and downloading OGIMET station series.
 
     Requires: ipyleaflet, ipywidgets, ipyfilechooser, beautifulsoup4 (Jupyter environment).
 
     Args:
-        stations_csv: Path to CSV with OGIMET station metadata
+        stations_csv: Path to CSV with OGIMET station metadata. If omitted, HYDRA
+                      uses the bundled estaciones_ogimet_all.csv catalogue.
                       (columns: Nombre, WIGOS ID, OACI, Latitud_decimal, Longitud_decimal, Altitud, Estado)
         zoom: Initial map zoom level
         center: Initial map center (lat, lon)
         max_markers: Limit number of markers shown (for performance; None = all)
+        output_folder: Initial download folder. Defaults to HYDRA_OGIMET_DIR or /workspace/data/ogimet.
     """
     from tqdm.auto import tqdm as _tqdm
     from IPython.display import display
     from ipyfilechooser import FileChooser
     from ipyleaflet import DrawControl, LayersControl, Map, Marker, MarkerCluster, Popup
     from ipywidgets import Button, DatePicker, HBox, HTML, IntProgress, Output, VBox
+
+    stations_csv = stations_csv or get_default_ogimet_stations_csv()
+    output_folder = Path(output_folder or DEFAULT_OGIMET_OUTPUT_DIR)
+    output_folder.mkdir(parents=True, exist_ok=True)
 
     stations_df = pd.read_csv(stations_csv)
     stations_df = stations_df[~stations_df["WIGOS ID"].str.contains("MISSING", case=False, na=False)]
@@ -190,7 +231,7 @@ def OGIMETDownloader(stations_csv, zoom=5, center=(40.0, -3.5), max_markers=None
 
     start_picker = DatePicker(description="Start Date", value=pd.Timestamp("2020-01-01"))
     end_picker = DatePicker(description="End Date", value=pd.Timestamp("2020-12-31"))
-    folder_chooser = FileChooser(".", title="Select output folder", select_dirs=True)
+    folder_chooser = FileChooser(str(output_folder), title="Select output folder", select_dirs=True)
     cancel_button = Button(description="Cancel Download", button_style="danger")
     cancel_button.on_click(lambda _: cancel_flag.update({"parar": True}))
 
@@ -212,6 +253,7 @@ def OGIMETDownloader(stations_csv, zoom=5, center=(40.0, -3.5), max_markers=None
                 folder = folder_chooser.selected_path
                 if not folder:
                     return
+                os.makedirs(folder, exist_ok=True)
                 base = normalize_filename(row["Nombre"])
                 parts = str(row["WIGOS ID"]).split("-")
                 code = parts[-1].strip() if len(parts) >= 4 and parts[-1].strip().isdigit() else None
@@ -255,6 +297,7 @@ def OGIMETDownloader(stations_csv, zoom=5, center=(40.0, -3.5), max_markers=None
         folder = folder_chooser.selected_path
         if not folder or not selected:
             return
+        os.makedirs(folder, exist_ok=True)
         cancel_flag["parar"] = False
         selected_df = stations_df[stations_df["Nombre"].isin(selected)]
         selected_df.to_csv(os.path.join(folder, "selected_stations.csv"), index=False)
@@ -300,13 +343,20 @@ def OGIMETDownloader(stations_csv, zoom=5, center=(40.0, -3.5), max_markers=None
 class OgimetCSVLoader:
     """Load and quality-check OGIMET series downloaded with OGIMETDownloader."""
 
-    def __init__(self, folder_path):
-        self.folder_path = folder_path
+    def __init__(self, folder_path=None, create=True):
+        self.folder_path = str(Path(folder_path or DEFAULT_OGIMET_OUTPUT_DIR))
+        if create:
+            Path(self.folder_path).mkdir(parents=True, exist_ok=True)
         self.station_df = None
         self.series_df = None
 
     def load_station_data(self):
         """Load all station metadata CSVs into a single DataFrame."""
+        if not os.path.isdir(self.folder_path):
+            raise FileNotFoundError(
+                f"OGIMET folder does not exist: {self.folder_path}. "
+                "Run OGIMETDownloader(output_folder=...) first or pass create=True."
+            )
         files = [f for f in os.listdir(self.folder_path) if f.startswith("station_") and f.endswith(".csv")]
         dfs = []
         for f in files:
@@ -326,6 +376,11 @@ class OgimetCSVLoader:
         """
         if variable is None:
             raise ValueError("Specify a variable to load.")
+        if not os.path.isdir(self.folder_path):
+            raise FileNotFoundError(
+                f"OGIMET folder does not exist: {self.folder_path}. "
+                "Run OGIMETDownloader(output_folder=...) first or pass create=True."
+            )
         files = [f for f in os.listdir(self.folder_path) if f.startswith("series_") and f.endswith(".csv")]
         dfs = []
         for f in files:

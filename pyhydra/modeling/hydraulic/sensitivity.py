@@ -286,9 +286,9 @@ def manning_flood_regression(
     """
     import xarray as xr
 
-    # Align both ensembles on the simulation coordinate
+    # Align both ensembles on the simulation coordinate only
     flood_ensemble, manning_ensemble = xr.align(
-        flood_ensemble, manning_ensemble, join="inner", dim="simulation"
+        flood_ensemble, manning_ensemble, join="inner", exclude=["x", "y"]
     )
 
     # Interpolate Manning to flood grid if resolutions differ
@@ -327,3 +327,77 @@ def manning_flood_regression(
         })
 
     return pd.DataFrame(records).set_index("simulation")
+
+
+# ── Outlier filtering ─────────────────────────────────────────────────────────
+
+def filter_anomalous_simulations(
+    *results: pd.DataFrame,
+    metrics: list[str] | None = None,
+    z_threshold: float = 3.0,
+) -> tuple[pd.Series, pd.DataFrame]:
+    """Remove simulations with extreme values in any metric from any model.
+
+    Uses a two-step strategy:
+    1. Z-score > *z_threshold* on each metric of each DataFrame (catches
+       clear numerical non-convergences — extreme isolated values).
+    2. The union of flagged indices is removed from every DataFrame so that
+       all returned DataFrames share the same simulation set.
+
+    The z-score is computed on a MAD-normalised scale
+    (z_i = |x_i - median| / (1.4826 × MAD)) which is robust against the very
+    outliers being detected.
+
+    Args:
+        *results: One or more DataFrames indexed by simulation number, each
+                  returned by :func:`manning_flood_regression`.
+        metrics: Column names to evaluate. Defaults to
+                 ``['depth_mean', 'flooded_area_m2', 'flooded_area_km2']``
+                 (whichever are present in each DataFrame).
+        z_threshold: Robust z-score threshold above which a simulation is
+                     flagged. Default 3.0 (≈ 3σ).
+
+    Returns:
+        Tuple of:
+        - ``flagged``: boolean Series (union index) — True where anomalous.
+        - ``report``: DataFrame with one row per flagged simulation showing
+          which model/metric triggered the flag and the robust z-score.
+    """
+    if metrics is None:
+        metrics = ["depth_mean", "flooded_area_m2", "flooded_area_km2"]
+
+    all_indices = results[0].index
+    for df in results[1:]:
+        all_indices = all_indices.union(df.index)
+
+    flagged = pd.Series(False, index=all_indices)
+    report_rows: list[dict] = []
+
+    for model_idx, df in enumerate(results):
+        for col in metrics:
+            if col not in df.columns:
+                continue
+            s = df[col].dropna()
+            med = s.median()
+            mad = (s - med).abs().median()
+            if mad == 0:
+                continue
+            robust_z = (s - med).abs() / (1.4826 * mad)
+            bad = robust_z[robust_z > z_threshold].index
+            for sim in bad:
+                if not flagged.loc[sim]:
+                    report_rows.append({
+                        "simulation": sim,
+                        "model": model_idx,
+                        "metric": col,
+                        "value": float(df.loc[sim, col]),
+                        "robust_z": float(robust_z.loc[sim]),
+                    })
+                flagged.loc[sim] = True
+
+    report = (
+        pd.DataFrame(report_rows).set_index("simulation")
+        if report_rows
+        else pd.DataFrame(columns=["model", "metric", "value", "robust_z"])
+    )
+    return flagged, report
