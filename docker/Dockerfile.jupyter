@@ -31,6 +31,12 @@ RUN pip install --no-cache-dir \
 RUN pip install --no-cache-dir \
         openturns lmoments3 NEOPRENE spotpy pySWATPlus pystan
 
+# Pre-compile the GEV Stan model so httpstan's cache is warm in the image.
+# This runs g++ at build time (plenty of RAM) instead of at user request time
+# (where Azure Container Apps memory limits kill the compiler).
+COPY docker/precompile_stan.py /tmp/precompile_stan.py
+RUN python3 /tmp/precompile_stan.py
+
 # Layer 4: DSS support (x86_64 only — pydsstools preferred, hecdss as fallback)
 RUN pip install --no-cache-dir pydsstools || echo "pydsstools not available — skipping"
 RUN pip install --no-cache-dir hecdss || echo "hecdss not available — skipping"
