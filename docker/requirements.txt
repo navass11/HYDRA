@@ -1,0 +1,37 @@
+# Core scientific stack
+numpy
+pandas
+xarray
+dask[array]
+scipy
+statsmodels
+scikit-learn
+matplotlib
+tqdm
+requests
+
+# Hydrological / statistical
+openturns
+lmoments3
+NEOPRENE
+
+# Jupyter + interactive widgets
+jupyterlab
+nbconvert
+ipykernel
+ipywidgets
+ipyleaflet
+ipyfilechooser
+
+# Geo / remote sensing
+geopandas
+rasterio
+rioxarray
+earthaccess
+
+# Hydraulic / hydrological modelling
+hydromt_sfincs>=1.0.0
+pydsstools>=3.0.0
+pySWATPlus
+spotpy
+rasterstats
