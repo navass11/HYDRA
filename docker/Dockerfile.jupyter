@@ -1,0 +1,80 @@
+# linux/amd64 required: pydsstools only ships x86_64 wheels (no ARM64 support)
+FROM --platform=linux/amd64 python:3.11-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        git build-essential \
+        xvfb xauth \
+        default-jre-headless \
+        libgfortran5 \
+        gdal-bin \
+        libgdal-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspace
+
+# Ensure pip build tools are present (needed by packages that compile from source)
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+
+# Install in layers so cache survives partial failures
+# Layer 1: core scientific stack
+RUN pip install --no-cache-dir \
+        numpy pandas scipy statsmodels scikit-learn \
+        matplotlib tqdm requests xarray "dask[array]"
+
+# Layer 2: geo/spatial
+RUN pip install --no-cache-dir \
+        geopandas rasterio rioxarray rasterstats earthaccess shapely pyproj
+
+# Layer 3: hydro/stats
+RUN pip install --no-cache-dir \
+        openturns lmoments3 NEOPRENE spotpy pySWATPlus pystan
+
+# Layer 4: DSS support (x86_64 only — pydsstools preferred, hecdss as fallback)
+RUN pip install --no-cache-dir pydsstools || echo "pydsstools not available — skipping"
+RUN pip install --no-cache-dir hecdss || echo "hecdss not available — skipping"
+
+# Layer 5: SFINCS via hydromt_sfincs
+RUN pip install --no-cache-dir hydromt_sfincs
+
+# Layer 6: Jupyter
+COPY docker/requirements.txt /tmp/hydra-requirements.txt
+RUN pip install --no-cache-dir jupyterlab nbconvert ipykernel ipywidgets ipyleaflet ipyfilechooser
+
+# Install cosmos_py from bundled wheel
+COPY docker/cosmos_py-0.1.0-py3-none-any.whl /tmp/
+RUN pip install --no-cache-dir /tmp/cosmos_py-0.1.0-py3-none-any.whl
+
+# Copy project and install pyhydra as package
+COPY . .
+RUN pip install --no-cache-dir -e .
+
+# Download publicly available model data (SWAT+ LREW, SFINCS test case)
+# Tifton HMS and HEC-RAS Muncie project files are committed in data/ and already present.
+# HEC-HMS 4.13 binary: if data/hms/HEC-HMS-4.13-linux64.tar.gz exists, extract it.
+RUN python data/setup.py || echo "data/setup.py completed with warnings" && \
+    if [ -f data/hms/HEC-HMS-4.13-linux64.tar.gz ]; then \
+        tar -xzf data/hms/HEC-HMS-4.13-linux64.tar.gz -C data/hms/ 2>/dev/null && \
+        echo "HEC-HMS 4.13 extracted" || echo "HEC-HMS extraction failed"; \
+    fi
+
+EXPOSE 8888
+
+# JUPYTER_TOKEN: empty = no auth (local dev). Set to a secret value in production.
+# JUPYTER_BASE_URL: /jupyter/ when served behind the HYDRA nginx proxy.
+ENV JUPYTER_TOKEN=""
+ENV JUPYTER_BASE_URL="/jupyter/"
+# Each session lives under this directory; users only see their own UUID folder.
+ENV JUPYTER_WORKDIR="/workspace/data/sessions"
+
+# mkdir ensures the directory exists on the Azure Files mount before Jupyter starts.
+CMD mkdir -p "${JUPYTER_WORKDIR}" && exec jupyter lab \
+    --ip=0.0.0.0 \
+    --port=8888 \
+    --no-browser \
+    --allow-root \
+    --ServerApp.token="${JUPYTER_TOKEN}" \
+    --ServerApp.password='' \
+    --ServerApp.allow_origin='*' \
+    --ServerApp.base_url="${JUPYTER_BASE_URL}" \
+    --ServerApp.disable_check_xsrf=True \
+    --notebook-dir="${JUPYTER_WORKDIR}"
