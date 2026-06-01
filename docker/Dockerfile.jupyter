@@ -12,8 +12,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /workspace
 
-# Ensure pip build tools are present (needed by packages that compile from source)
-RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+# Ensure pip build tools are present.
+# setuptools<80 required: >=80 drops pkg_resources as a top-level package,
+# breaking pystan/httpstan and other legacy packages that use it at import time.
+RUN pip install --no-cache-dir --upgrade pip "setuptools<80" wheel
 
 # Install in layers so cache survives partial failures
 # Layer 1: core scientific stack

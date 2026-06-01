@@ -9,8 +9,9 @@ WORKDIR /app
 # Install pyhydra dependencies + API dependencies
 COPY docker/requirements.txt /tmp/hydra-requirements.txt
 COPY api/requirements.txt /tmp/api-requirements.txt
-# pySWATPlus uses legacy setup.py that requires setuptools at build time but doesn't declare it.
-RUN pip install --no-cache-dir --upgrade setuptools && \
+# setuptools<80: >=80 drops pkg_resources, breaking pystan and other legacy packages.
+# pySWATPlus uses legacy setup.py requiring setuptools at build time (no-build-isolation).
+RUN pip install --no-cache-dir "setuptools<80" && \
     pip install --no-cache-dir --no-build-isolation pySWATPlus && \
     pip install --no-cache-dir \
         -r /tmp/hydra-requirements.txt \
