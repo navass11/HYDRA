@@ -968,39 +968,44 @@ class TrivariateCopula:
     def conditional_contours(self, z_quantile, T_list, scenario="AND",
                               n_pts=250):
         """
-        2-D iso-return-period curves in (X, Y) space, with Z fixed at its
-        *z_quantile* exceedance level (i.e. z₀ = F_Z^{-1}(z_quantile)).
+        2-D **conditional** iso-return-period curves in (X, Y) space, with Z
+        conditioned on Z > z₀ = F_Z^{-1}(z_quantile).
 
-        P(X>x AND Y>y AND Z>z₀) = 1/T  →  sweep x, solve for y.
+        **AND**: T = P(Z>z₀) / P(X>x ∧ Y>y ∧ Z>z₀)
+        **OR**:  T = 1 / P(X>x ∨ Y>y | Z>z₀)
+                   = 1 / [1 − (C₂(u,v) − C₃(u,v,w₀)) / P(Z>z₀)]
+
+        Both formulae give conditional return periods that are comparable
+        across different z_quantile levels.
 
         Returns:
             dict {T: (x_curve, y_curve)}
         """
         from scipy.optimize import brentq
 
-        z0 = self._z_ppf(z_quantile)
-        w0 = self._w(z0)
+        z0  = self._z_ppf(z_quantile)
+        w0  = self._w(z0)
+        pZ  = max(1.0 - w0, 1e-10)   # P(Z > z0)
 
         contours = {}
         for T in T_list:
             target = 1.0 / T
-            # Adaptive u-sweep: OR solutions for u > 1-1/T, AND for u < 1-1/T
-            if scenario == "AND":
-                u_arr = np.linspace(1e-4, max(1.0 - target - 1e-4, 2e-4), n_pts)
-            else:
-                level = 1.0 - target
-                u_arr = np.linspace(level + 1e-4, 1.0 - 1e-4, n_pts)
+            u_arr  = np.linspace(1e-4, 1.0 - 1e-4, n_pts)
 
             xc, yc = [], []
             for u in u_arr:
                 def _residual(vv, _u=u):
-                    c3  = self._cdf_3d(_u, vv, w0, self._theta)
+                    c3 = self._cdf_3d(_u, vv, w0, self._theta)
                     if scenario == "AND":
                         cxy = self._cdf_fn(_u, vv, self._theta)
                         cxz = self._cdf_fn(_u, w0, self._theta)
                         cyz = self._cdf_fn(vv, w0, self._theta)
-                        return (1.0 - _u - vv - w0 + cxy + cxz + cyz - c3) - target
-                    return (1.0 - c3) - target   # OR
+                        p_and = max(1.0 - _u - vv - w0 + cxy + cxz + cyz - c3, 0.0)
+                        return p_and / pZ - target
+                    else:
+                        # P(X>x OR Y>y | Z>z0) = 1-(C2(u,v)-C3(u,v,w0))/pZ
+                        c2 = self._cdf_fn(_u, vv, self._theta)
+                        return 1.0 - (c2 - c3) / pZ - target
 
                 try:
                     lo_val = _residual(1e-10)
@@ -1077,3 +1082,256 @@ class TrivariateCopula:
         )
         fig.tight_layout()
         return fig, axes
+
+    # ------------------------------------------------------------------
+    def sample(self, n, random_state=None):
+        """
+        Draw *n* samples from the fitted trivariate copula.
+
+        Returns:
+            ``(x_samples, y_samples, z_samples)`` — arrays of shape (n,).
+        """
+        rng   = np.random.default_rng(random_state)
+        theta = self._theta
+
+        if self.family == "gumbel":
+            alpha = 1.0 / theta
+            U_    = rng.uniform(0.0, np.pi, n)
+            W_    = rng.exponential(1.0, n)
+            log_V = ((1.0 / alpha) * np.log(np.sin(alpha * U_))
+                     + ((1.0 - alpha) / alpha) * np.log(np.sin((1.0 - alpha) * U_))
+                     - np.log(np.sin(U_))
+                     - ((1.0 - alpha) / alpha) * np.log(W_))
+            V  = np.exp(log_V)
+            e1 = rng.exponential(1.0, n)
+            e2 = rng.exponential(1.0, n)
+            e3 = rng.exponential(1.0, n)
+            u1 = np.exp(-(e1 / V) ** (1.0 / theta))
+            u2 = np.exp(-(e2 / V) ** (1.0 / theta))
+            u3 = np.exp(-(e3 / V) ** (1.0 / theta))
+
+        elif self.family == "clayton":
+            V  = rng.gamma(1.0 / theta, 1.0, n)
+            e1 = rng.exponential(1.0, n)
+            e2 = rng.exponential(1.0, n)
+            e3 = rng.exponential(1.0, n)
+            u1 = (1.0 + e1 / V) ** (-1.0 / theta)
+            u2 = (1.0 + e2 / V) ** (-1.0 / theta)
+            u3 = (1.0 + e3 / V) ** (-1.0 / theta)
+
+        elif self.family == "frank":
+            # Sequential conditional inversion.
+            # u1 ~ Unif; u2|u1 via bivariate Frank inversion (analytic);
+            # u3|u1,u2 via trivariate Frank inversion (analytic quadratic).
+            u1_  = rng.uniform(0.0, 1.0, n)
+            t2   = np.clip(rng.uniform(0.0, 1.0, n), 1e-9, 1 - 1e-9)
+            t3   = np.clip(rng.uniform(0.0, 1.0, n), 1e-9, 1 - 1e-9)
+
+            e0   = np.exp(-theta)           # scalar
+            eu1  = np.exp(-theta * u1_)
+            ev2  = ((eu1 * (1.0 - t2) + t2 * e0)
+                    / np.maximum(eu1 * (1.0 - t2) + t2, 1e-15))
+            u2_  = np.clip(-np.log(np.maximum(ev2, 1e-15)) / theta, 1e-10, 1 - 1e-10)
+
+            # Solve t3·K²·c² + (2t3·B·K − A·S2²)·c + t3·B² = 0
+            # c = e^{−θ·u3}−1; K = a·b; S2 = A+K; B = A²
+            A      = e0 - 1.0              # < 0 for θ > 0
+            a      = eu1 - 1.0
+            b      = np.exp(-theta * u2_) - 1.0
+            K      = a * b                 # > 0
+            S2     = A + K
+            B      = A ** 2
+
+            two_aq = 2.0 * t3 * K ** 2
+            b_q    = 2.0 * t3 * B * K - A * S2 ** 2
+            inner  = np.maximum(S2 ** 2 - 4.0 * t3 * A * K, 0.0)
+            sqrt_d = (-A) * np.abs(S2) * np.sqrt(inner)
+
+            degen  = np.abs(K) < 1e-8
+            safe   = np.where(two_aq > 1e-20, two_aq, 1e-20)
+            c3     = np.where(degen, A * t3, (-b_q + sqrt_d) / safe)
+            c3     = np.clip(c3, A + 1e-10, -1e-10)
+            u3_    = np.clip(-np.log(np.maximum(c3 + 1.0, 1e-15)) / theta,
+                             1e-10, 1 - 1e-10)
+            u1, u2, u3 = u1_, u2_, u3_
+
+        else:
+            raise ValueError(f"Unknown family: {self.family!r}")
+
+        u1 = np.clip(u1, 1e-10, 1 - 1e-10)
+        u2 = np.clip(u2, 1e-10, 1 - 1e-10)
+        u3 = np.clip(u3, 1e-10, 1 - 1e-10)
+        return self._x_ppf(u1), self._y_ppf(u2), self._z_ppf(u3)
+
+    # ------------------------------------------------------------------
+    def plot_joint(self, z_quantiles=(0.50, 0.80, 0.95),
+                   T_list=(2, 10, 50, 100, 500),
+                   n_synthetic=2000, figsize=(6, 6),
+                   colors=("indianred", "b"), n_grid=200):
+        """
+        One figure per z-quantile: conditional joint return period plot.
+
+        Each figure mirrors the ``BivariateCopula.plot_joint`` GridSpec(4,4)
+        layout, conditioning all contours on Z ≥ z₀ = F_Z^{-1}(α).
+
+        * **Main panel**: grey synthetic scatter filtered by Z ≥ z₀, black
+          observed scatter filtered, AND/OR conditional iso-return-period
+          contours, points coloured by conditional joint PDF, MaxProb 'x'.
+        * **Bottom panel** (xMarg): marginal PDF of X with T-year annotations.
+        * **Left panel** (yMarg): marginal PDF of Y with T-year annotations.
+        * **Legend**: separate axes to the right.
+
+        Returns:
+            list of ``(fig, (main_ax, xMarg_ax, yMarg_ax))`` — one per α.
+        """
+        import matplotlib.pyplot as plt
+
+        Ts = np.asarray(sorted(T_list), dtype=float)
+
+        if n_synthetic > 0:
+            xs_all, ys_all, zs_all = self.sample(n_synthetic)
+        else:
+            xs_all = ys_all = zs_all = None
+
+        results = []
+        for alpha in z_quantiles:
+            z0 = self._z_ppf(alpha)
+            w0 = float(self._w(z0))
+
+            if self._x is not None:
+                dx = (self._x.max() - self._x.min()) * 0.15
+                dy = (self._y.max() - self._y.min()) * 0.15
+                extent = [self._x.min() - dx, self._x.max() + dx,
+                          self._y.min() - dy, self._y.max() + dy]
+            else:
+                u_e = np.linspace(1e-3, 1 - 1e-3, n_grid)
+                extent = [float(self._x_ppf(u_e).min()),
+                          float(self._x_ppf(u_e).max()),
+                          float(self._y_ppf(u_e).min()),
+                          float(self._y_ppf(u_e).max())]
+
+            fig  = plt.figure(figsize=figsize)
+            grid = plt.GridSpec(4, 4, hspace=0.2, wspace=0.2, figure=fig)
+            main  = fig.add_subplot(grid[:-1, 1:])
+            yMarg = fig.add_subplot(grid[:-1, 0])
+            xMarg = fig.add_subplot(grid[-1,  1:])
+            main.set_xlim(extent[:2])
+            main.set_ylim(extent[2:])
+
+            if xs_all is not None:
+                mask_s = zs_all >= z0
+                main.scatter(xs_all[~mask_s], ys_all[~mask_s],
+                             marker='.', c='lightgrey', s=1, alpha=0.3,
+                             rasterized=True, zorder=2)
+                main.scatter(xs_all[mask_s], ys_all[mask_s],
+                             marker='.', c='grey', s=1, alpha=0.5,
+                             rasterized=True, zorder=2, label='aleatorios')
+
+            if self._x is not None:
+                mask_o = self._z >= z0
+                main.scatter(self._x[~mask_o], self._y[~mask_o],
+                             marker='.', c='lightgrey', s=12, alpha=0.3, zorder=3)
+                main.scatter(self._x[mask_o], self._y[mask_o],
+                             marker='.', c='k', s=12, zorder=3, label='observados')
+
+            # eps for 3-D copula density ∂³C/∂u∂v∂w: use 1e-4 so the
+            # denominator 8·eps³ ≈ 8e-12 stays well above float64 noise.
+            eps3 = 1e-4
+            w0p  = min(w0 + eps3, 1 - 1e-10)
+            w0m  = max(w0 - eps3, 1e-10)
+            for scn, cmap, c_line in zip(['AND', 'OR'], ['Reds', 'Blues'], colors):
+                ctrs = self.conditional_contours(alpha, Ts.tolist(), scenario=scn)
+                for T in Ts:
+                    xc, yc = ctrs[T]
+                    if len(xc) < 2:
+                        continue
+                    main.plot(xc, yc, color=c_line, lw=0.8, alpha=0.3, zorder=4)
+                    u_c  = np.clip(self._u(xc), 1e-10, 1 - 1e-10)
+                    v_c  = np.clip(self._v(yc), 1e-10, 1 - 1e-10)
+                    u_hi = np.clip(u_c + eps3, 1e-10, 1 - 1e-10)
+                    u_lo = np.clip(u_c - eps3, 1e-10, 1 - 1e-10)
+                    v_hi = np.clip(v_c + eps3, 1e-10, 1 - 1e-10)
+                    v_lo = np.clip(v_c - eps3, 1e-10, 1 - 1e-10)
+                    # Trivariate copula density ∂³C/∂u∂v∂w via 8-term finite diff
+                    c3_uvw = (
+                        self._cdf_3d(u_hi, v_hi, w0p, self._theta)
+                      - self._cdf_3d(u_hi, v_hi, w0m, self._theta)
+                      - self._cdf_3d(u_hi, v_lo, w0p, self._theta)
+                      + self._cdf_3d(u_hi, v_lo, w0m, self._theta)
+                      - self._cdf_3d(u_lo, v_hi, w0p, self._theta)
+                      + self._cdf_3d(u_lo, v_hi, w0m, self._theta)
+                      + self._cdf_3d(u_lo, v_lo, w0p, self._theta)
+                      - self._cdf_3d(u_lo, v_lo, w0m, self._theta)
+                    ) / (8 * eps3 ** 3)
+                    pdf   = np.clip(
+                        c3_uvw
+                        * self._mx[0].pdf(xc, *self._mx[1])
+                        * self._my[0].pdf(yc, *self._my[1]),
+                        0, None)
+                    main.scatter(xc, yc, c=pdf, cmap=cmap, s=0.25, zorder=5)
+                    mp_i = int(np.argmax(pdf))
+                    main.scatter(xc[mp_i], yc[mp_i], marker='x', color=c_line,
+                                 s=80, linewidths=1.5, zorder=7)
+                main.plot([-1e9], [-1e9], c=c_line, label=scn)
+                main.scatter([-1e9], [-1e9], marker='x', c=c_line,
+                             s=80, linewidths=1.5, label=f'MaxProb {scn}')
+
+            main.set(xlim=extent[:2], ylim=extent[2:])
+            main.set_xticklabels([])
+            main.set_yticklabels([])
+            z_lbl = self._labels[2] if len(self._labels) > 2 else 'Z'
+            main.set_title(f'α={alpha:.0%}  |  {z_lbl} ≥ {z0:.1f}', fontsize=10)
+
+            v0x    = np.linspace(extent[0], extent[1], 400)
+            pdf_x  = self._mx[0].pdf(v0x, *self._mx[1])
+            ymax_x = float(np.nanmax(pdf_x))
+            if ymax_x > 0:
+                xMarg.fill_between(v0x, pdf_x, color='olive', alpha=0.25)
+                xMarg.set(xlim=(extent[0], extent[1]), ylim=(ymax_x, 0))
+                ppfs_x = np.clip(self._mx[0].ppf(1 - 1 / Ts, *self._mx[1]),
+                                 extent[0], extent[1])
+                for T, ppf in zip(Ts, ppfs_x):
+                    xMarg.annotate(f'T{int(T)}',
+                                   xy=(ppf, 0), xytext=(ppf, ymax_x / 3),
+                                   color='olive', fontsize=11,
+                                   ha='center', va='top', rotation=90,
+                                   arrowprops=dict(arrowstyle='->', color='olive', lw=1))
+                xMarg.set_xlabel(self._labels[0], fontsize=13)
+                yticks = np.round(np.linspace(0, ymax_x, 3), 2)
+                xMarg.set_yticks(yticks)
+                xMarg.set_yticklabels(yticks)
+
+            v1y    = np.linspace(extent[2], extent[3], 400)
+            pdf_y  = self._my[0].pdf(v1y, *self._my[1])
+            xmax_y = float(np.nanmax(pdf_y))
+            if xmax_y > 0:
+                yMarg.fill_between(pdf_y, v1y, color='olive', alpha=0.25,
+                                   label='Distribución (PDF)')
+                yMarg.set(xlim=(xmax_y, 0), ylim=(extent[2], extent[3]))
+                ppfs_y = np.clip(self._my[0].ppf(1 - 1 / Ts, *self._my[1]),
+                                 extent[2], extent[3])
+                for T, ppf in zip(Ts, ppfs_y):
+                    yMarg.annotate(f'T{int(T)}',
+                                   xy=(0, ppf), xytext=(xmax_y / 3, ppf),
+                                   color='olive', fontsize=11,
+                                   ha='right', va='center',
+                                   arrowprops=dict(arrowstyle='->', color='olive', lw=1))
+                yMarg.set_ylabel(self._labels[1], fontsize=13)
+                xticks = np.round(np.linspace(0, xmax_y, 3), 2)
+                yMarg.set_xticks(xticks)
+                yMarg.set_xticklabels(xticks)
+
+            lgnd_ax = fig.add_axes([0.97, 0.3, 0.08, 0.4])
+            lgnd_ax.axis('off')
+            hndls, lbls = main.get_legend_handles_labels()
+            if len(hndls) >= 6:
+                order = [2, 3, 0, 4, 1, 5]
+                hndls = [hndls[i] for i in order]
+                lbls  = [lbls[i]  for i in order]
+            hndls1, lbls1 = yMarg.get_legend_handles_labels()
+            lgnd_ax.legend(hndls + hndls1, lbls + lbls1,
+                           ncol=1, loc='center left', fontsize=9)
+
+            results.append((fig, (main, xMarg, yMarg)))
+
+        return results
