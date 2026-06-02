@@ -681,24 +681,21 @@ class BivariateCopula:
                    colors=("indianred", "b"),
                    n_grid=200):
         """
-        Composite joint plot — GridSpec(4, 4) layout.
+        Composite joint plot — GridSpec(4, 4) layout matching the reference style.
 
-        Faithfully reproduces the reference visualization style:
-
-        * **Main panel** (top-right 3×3): grey synthetic scatter, black
-          observed scatter, AND contours (*colors[0]*) and OR contours
-          (*colors[1]*) on the same axes.  Points along each contour are
-          coloured by joint PDF (Reds for AND, Blues for OR); the most
-          probable point on each contour is marked with an 'x'.
-        * **Bottom panel** (xMarg): marginal PDF of X filled in olive, with
-          T-year return-level annotations.  Y-axis inverted so the PDF grows
-          upward toward the main panel.
-        * **Left panel** (yMarg): marginal PDF of Y (horizontal), similarly
-          annotated.  X-axis inverted so PDF grows rightward.
+        * **Main panel** (top-right 3×3): grey synthetic scatter, black observed
+          scatter, AND (*colors[0]*) and OR (*colors[1]*) iso-return-period
+          contours on the same axes, points coloured by joint PDF density,
+          MaxProb 'x' markers per contour level.
+        * **Bottom panel** (xMarg): marginal PDF of X (olive fill, y-axis
+          inverted so it grows upward toward main), T-year quantile annotations.
+        * **Left panel** (yMarg): marginal PDF of Y (horizontal, x-axis
+          inverted so it grows rightward), T-year quantile annotations.
+        * **Legend**: placed in a separate axes to the right of the figure.
 
         Args:
             T_list:      Return periods to draw.
-            n_synthetic: Number of synthetic copula samples (0 to skip).
+            n_synthetic: Synthetic copula samples for background scatter (0 to skip).
             figsize:     Figure size.
             colors:      ``(and_color, or_color)`` for base contour lines.
             n_grid:      Contour grid resolution.
@@ -707,7 +704,6 @@ class BivariateCopula:
             ``(fig, (main_ax, xMarg_ax, yMarg_ax))``
         """
         import matplotlib.pyplot as plt
-        from matplotlib.lines import Line2D
 
         Ts = np.asarray(sorted(T_list), dtype=float)
 
@@ -718,7 +714,7 @@ class BivariateCopula:
             extent = [self._x.min() - dx, self._x.max() + dx,
                       self._y.min() - dy, self._y.max() + dy]
         else:
-            u_e = np.linspace(1e-3, 1-1e-3, n_grid)
+            u_e = np.linspace(1e-3, 1 - 1e-3, n_grid)
             extent = [float(self._x_ppf(u_e).min()), float(self._x_ppf(u_e).max()),
                       float(self._y_ppf(u_e).min()), float(self._y_ppf(u_e).max())]
 
@@ -731,7 +727,7 @@ class BivariateCopula:
         XX = self._x_ppf(UU)
         YY = self._y_ppf(VV)
 
-        # --- Layout ---
+        # --- Layout: GridSpec(4, 4) identical to reference ---
         fig  = plt.figure(figsize=figsize)
         grid = plt.GridSpec(4, 4, hspace=0.2, wspace=0.2, figure=fig)
         main  = fig.add_subplot(grid[:-1, 1:])
@@ -740,52 +736,48 @@ class BivariateCopula:
         main.set_xlim(extent[:2])
         main.set_ylim(extent[2:])
 
-        # --- Synthetic scatter ---
+        # --- Synthetic scatter (grey, small) ---
         if n_synthetic > 0:
             xs, ys = self.sample(n_synthetic)
             main.scatter(xs, ys, marker='.', c='grey', s=1, alpha=0.5,
                          rasterized=True, zorder=2, label='aleatorios')
 
-        # --- Observed scatter ---
+        # --- Observed scatter (black) ---
         if self._x is not None:
             main.scatter(self._x, self._y, marker='.', c='k', s=12,
                          zorder=3, label='observados')
 
-        # --- Base contour lines (semi-transparent) ---
+        # --- Base contour lines ---
         cs_and = main.contour(XX, YY, T_and, levels=Ts.tolist(),
                               colors=colors[0], linewidths=0.8, alpha=0.3, zorder=4)
         cs_or  = main.contour(XX, YY, T_or,  levels=Ts.tolist(),
                               colors=colors[1], linewidths=0.8, alpha=0.3, zorder=4)
-        main.clabel(cs_and, fmt='%g yr', fontsize=7, inline=True)
-        main.clabel(cs_or,  fmt='%g yr', fontsize=7, inline=True)
+        main.clabel(cs_and, fmt='%g', fontsize=8, inline=True)
+        main.clabel(cs_or,  fmt='%g', fontsize=8, inline=True)
 
-        # --- Colour contour points by joint PDF + MPDE 'x' markers ---
+        # --- Colour contour points by joint PDF + MaxProb 'x' markers ---
         eps = 1e-5
+        c_and, c_or = colors[0], colors[1]
         for scn, cs, cmap, c_mpde in zip(
-                ['AND', 'OR'], [cs_and, cs_or], ['Reds', 'Blues'],
-                ['maroon', 'midnightblue']):
-            # Extract paths per T level (compatible with matplotlib ≥ 3.8)
+                ['AND', 'OR'], [cs_and, cs_or],
+                ['Reds', 'Blues'], [c_and, c_or]):
             try:
                 level_paths = [col.get_paths() for col in cs.collections]
             except AttributeError:
-                # newer API: cs.get_paths() returns all paths across levels
                 level_paths = [[p] for p in cs.get_paths()]
 
             for i, T in enumerate(Ts):
                 paths = level_paths[i] if i < len(level_paths) else []
                 if not paths:
                     continue
-                # pick the longest path at this level
                 pts = max(paths, key=lambda p: len(p.vertices)).vertices
-                # clip to extent
                 mask = ((pts[:, 0] >= extent[0]) & (pts[:, 0] <= extent[1]) &
                         (pts[:, 1] >= extent[2]) & (pts[:, 1] <= extent[3]))
                 pts = pts[mask]
                 if len(pts) < 2:
                     continue
-                # joint PDF at contour points
-                u = self._u(pts[:, 0])
-                v = self._v(pts[:, 1])
+                u   = self._u(pts[:, 0])
+                v   = self._v(pts[:, 1])
                 u_lo = np.clip(u - eps, 1e-10, 1 - 1e-10)
                 u_hi = np.clip(u + eps, 1e-10, 1 - 1e-10)
                 v_lo = np.clip(v - eps, 1e-10, 1 - 1e-10)
@@ -794,28 +786,28 @@ class BivariateCopula:
                         - self._cdf_fn(u_hi, v_lo, self._theta)
                         - self._cdf_fn(u_lo, v_hi, self._theta)
                         + self._cdf_fn(u_lo, v_lo, self._theta)) / (4 * eps ** 2)
-                fx  = self._mx[0].pdf(pts[:, 0], *self._mx[1])
-                fy  = self._my[0].pdf(pts[:, 1], *self._my[1])
-                pdf = np.clip(c_uv * fx * fy, 0, None)
+                pdf  = np.clip(c_uv
+                               * self._mx[0].pdf(pts[:, 0], *self._mx[1])
+                               * self._my[0].pdf(pts[:, 1], *self._my[1]), 0, None)
                 main.scatter(pts[:, 0], pts[:, 1], c=pdf, cmap=cmap,
                              s=0.25, zorder=5)
-                # most probable point
                 mp = pts[int(np.argmax(pdf))]
                 main.scatter(mp[0], mp[1], marker='x', color=c_mpde,
-                             s=70, linewidths=1.2, zorder=7)
+                             s=80, linewidths=1.5, zorder=7)
+
+            # Off-screen proxy artists for legend
             main.plot([-1e9], [-1e9], c=c_mpde, label=scn)
             main.scatter([-1e9], [-1e9], marker='x', c=c_mpde,
-                         s=70, linewidths=1.2, label=f'MaxProb {scn}')
+                         s=80, linewidths=1.5, label=f'MaxProb {scn}')
 
         main.set(xlim=extent[:2], ylim=extent[2:])
         main.set_xticklabels([])
         main.set_yticklabels([])
-        main.legend(fontsize=7, loc='upper left', ncol=1)
 
-        # --- X marginal (bottom): PDF, inverted y, T annotations ---
-        v0       = np.linspace(extent[0], extent[1], 400)
-        pdf_x    = self._mx[0].pdf(v0, *self._mx[1])
-        ymax_x   = float(np.nanmax(pdf_x))
+        # --- X marginal (bottom): PDF, y-axis inverted ---
+        v0     = np.linspace(extent[0], extent[1], 400)
+        pdf_x  = self._mx[0].pdf(v0, *self._mx[1])
+        ymax_x = float(np.nanmax(pdf_x))
         if ymax_x > 0:
             xMarg.fill_between(v0, pdf_x, color='olive', alpha=0.25)
             xMarg.set(xlim=(extent[0], extent[1]), ylim=(ymax_x, 0))
@@ -824,37 +816,49 @@ class BivariateCopula:
             for T, ppf in zip(Ts, ppfs_x):
                 xMarg.annotate(f'T{int(T)}',
                                xy=(ppf, 0), xytext=(ppf, ymax_x / 3),
-                               color='olive', fontsize=7,
+                               color='olive', fontsize=11,
                                ha='center', va='top', rotation=90,
-                               arrowprops=dict(arrowstyle='->', color='olive', lw=0.8))
-            xMarg.set_xlabel(self._labels[0], fontsize=11)
-            xMarg.set_yticks([])
+                               arrowprops=dict(arrowstyle='->', color='olive', lw=1))
+            xMarg.set_xlabel(self._labels[0], fontsize=13)
+            yticks = np.round(np.linspace(0, ymax_x, 3), 2)
+            xMarg.set_yticks(yticks)
+            xMarg.set_yticklabels(yticks)
 
-        # --- Y marginal (left): PDF horizontal, inverted x, T annotations ---
-        v1       = np.linspace(extent[2], extent[3], 400)
-        pdf_y    = self._my[0].pdf(v1, *self._my[1])
-        xmax_y   = float(np.nanmax(pdf_y))
+        # --- Y marginal (left): PDF horizontal, x-axis inverted ---
+        v1     = np.linspace(extent[2], extent[3], 400)
+        pdf_y  = self._my[0].pdf(v1, *self._my[1])
+        xmax_y = float(np.nanmax(pdf_y))
         if xmax_y > 0:
             yMarg.fill_between(pdf_y, v1, color='olive', alpha=0.25,
-                               label='PDF')
+                               label='Distribución (PDF)')
             yMarg.set(xlim=(xmax_y, 0), ylim=(extent[2], extent[3]))
             ppfs_y = np.clip(self._my[0].ppf(1 - 1 / Ts, *self._my[1]),
                              extent[2], extent[3])
             for T, ppf in zip(Ts, ppfs_y):
                 yMarg.annotate(f'T{int(T)}',
                                xy=(0, ppf), xytext=(xmax_y / 3, ppf),
-                               color='olive', fontsize=7,
+                               color='olive', fontsize=11,
                                ha='right', va='center',
-                               arrowprops=dict(arrowstyle='->', color='olive', lw=0.8))
-            yMarg.set_ylabel(self._labels[1], fontsize=11)
-            yMarg.set_xticks([])
-            yMarg.legend(fontsize=7, loc='upper left')
+                               arrowprops=dict(arrowstyle='->', color='olive', lw=1))
+            yMarg.set_ylabel(self._labels[1], fontsize=13)
+            xticks = np.round(np.linspace(0, xmax_y, 3), 2)
+            yMarg.set_xticks(xticks)
+            yMarg.set_xticklabels(xticks)
 
-        fig.suptitle(
-            f"{self.family.capitalize()} copula  "
-            f"(τ={self._tau:.2f}, θ={self._theta:.2f})",
-            fontsize=11, fontweight='bold',
-        )
+        # --- Legend: outside to the right (reference style) ---
+        lgnd_ax = fig.add_axes([0.97, 0.3, 0.08, 0.4])
+        lgnd_ax.axis('off')
+        # Handles from main: [0]=aleatorios [1]=observados [2]=AND [3]=MaxProbAND
+        #                    [4]=OR [5]=MaxProbOR  → reorder [2,3,0,4,1,5]
+        hndls, lbls = main.get_legend_handles_labels()
+        if len(hndls) >= 6:
+            order = [2, 3, 0, 4, 1, 5]
+            hndls = [hndls[i] for i in order]
+            lbls  = [lbls[i]  for i in order]
+        hndls1, lbls1 = yMarg.get_legend_handles_labels()
+        lgnd_ax.legend(hndls + hndls1, lbls + lbls1,
+                       ncol=1, loc='center left', fontsize=9)
+
         return fig, (main, xMarg, yMarg)
 
 
