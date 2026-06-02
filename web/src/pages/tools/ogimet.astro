@@ -1,0 +1,430 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Descarga OGIMET — HYDRA">
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIINfQvmlWDh0ccsn0jD7N2o3f5Z0Lk7Jk="
+    crossorigin=""
+  />
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+    is:inline
+  ></script>
+
+  <section class="pt-24 pb-10 bg-gradient-to-br from-slate-950 via-sky-950 to-cyan-800 text-white">
+    <div class="max-w-7xl mx-auto px-6">
+      <a href="/" class="inline-flex items-center gap-2 text-white/65 hover:text-white text-sm mb-6 transition-colors">
+        ← Volver al inicio
+      </a>
+      <h1 class="text-4xl font-extrabold mb-2">Descarga directa de OGIMET</h1>
+      <p class="text-white/76 text-lg max-w-3xl">
+        Genera peticiones SYNOP por bloques temporales para estaciones OGIMET sin credenciales ni API externa.
+      </p>
+    </div>
+  </section>
+
+  <div class="max-w-7xl mx-auto px-6 py-10">
+    <div class="grid lg:grid-cols-[340px_1fr] gap-8">
+      <aside class="space-y-6">
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-6">
+          <div>
+            <label class="block text-sm font-semibold text-gray-800 mb-2" for="station-id">Indicativo OGIMET</label>
+            <input id="station-id" value="08221" inputmode="numeric" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-hydra-400" />
+            <p id="selected-station-name" class="text-xs text-gray-400 mt-1">Madrid / Barajas · 40.467, -3.556</p>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-gray-800 mb-2" for="station-search">Buscar estación</label>
+            <input id="station-search" list="station-options" value="Madrid / Barajas" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-hydra-400" />
+            <datalist id="station-options"></datalist>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-semibold text-gray-800 mb-2" for="start-date">Inicio</label>
+              <input id="start-date" type="date" value="2024-10-01" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-hydra-400" />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-800 mb-2" for="end-date">Fin</label>
+              <input id="end-date" type="date" value="2024-10-31" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-hydra-400" />
+            </div>
+          </div>
+
+          <div>
+            <label class="flex justify-between text-sm font-semibold text-gray-800 mb-2">
+              Días por bloque
+              <span id="chunk-days-val" class="text-hydra-600 font-bold">30</span>
+            </label>
+            <input id="chunk-days" type="range" min="7" max="31" value="30" step="1" class="w-full accent-hydra-600" />
+            <p class="text-xs text-gray-400 mt-1">OGIMET trabaja cómodamente con ventanas cortas.</p>
+          </div>
+
+          <button id="generate-btn" class="w-full bg-hydra-600 hover:bg-hydra-700 text-white font-semibold py-3 rounded-xl transition-colors">
+            Generar enlaces
+          </button>
+          <button id="copy-btn" class="w-full border border-gray-200 hover:border-hydra-300 text-gray-700 font-semibold py-3 rounded-xl transition-colors">
+            Copiar URLs
+          </button>
+          <div id="error-box" class="hidden bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700"></div>
+        </div>
+
+        <div class="bg-sky-50 border border-sky-100 rounded-2xl p-5 text-sm text-sky-900 space-y-2">
+          <p class="font-semibold">Integración HYDRA</p>
+          <p>Estos enlaces reproducen la lógica de descarga de <code class="text-sky-700">pyhydra.data_sources.rainfall.ogimet</code>. El procesado tabular se mantiene en Python para controlar codificación, limpieza y trazabilidad.</p>
+        </div>
+      </aside>
+
+      <main class="space-y-8">
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <div class="flex flex-wrap items-start justify-between gap-4 mb-5">
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-1">Mapa de estaciones</h3>
+              <p class="text-sm text-gray-400">Haz clic en una estación para cargar su indicativo y generar las peticiones OGIMET.</p>
+            </div>
+            <button id="fit-map-btn" class="border border-gray-200 hover:border-hydra-300 text-gray-700 font-semibold px-4 py-2 rounded-xl transition-colors">
+              Ver red
+            </button>
+          </div>
+          <div id="ogimet-map" class="relative z-0 h-[520px] min-h-[420px] w-full rounded-xl border border-gray-100 overflow-hidden bg-slate-100"></div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <div class="flex flex-wrap items-start justify-between gap-4 mb-5">
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-1">Peticiones generadas</h3>
+              <p id="summary" class="text-sm text-gray-400">Configura la estación y el periodo para preparar la descarga.</p>
+            </div>
+            <a id="open-first" href="#" target="_blank" rel="noopener noreferrer" class="hidden bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-semibold px-4 py-2 rounded-xl transition-colors">
+              Abrir primera
+            </a>
+          </div>
+          <div id="links-list" class="space-y-3"></div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-4" id="stats-row">
+          <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+            <p class="text-xs text-gray-400 uppercase tracking-wide mb-2">Estación</p>
+            <p id="stat-station" class="text-2xl font-bold text-gray-900">08221</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+            <p class="text-xs text-gray-400 uppercase tracking-wide mb-2">Días</p>
+            <p id="stat-days" class="text-2xl font-bold text-gray-900">31</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+            <p class="text-xs text-gray-400 uppercase tracking-wide mb-2">Bloques</p>
+            <p id="stat-blocks" class="text-2xl font-bold text-gray-900">2</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  :global(.leaflet-popup-content-wrapper) {
+    border-radius: 8px;
+  }
+
+  :global(.leaflet-container) {
+    font-family: Inter, system-ui, sans-serif;
+  }
+</style>
+
+<script>
+declare const L: any;
+
+type Station = {
+  code: string;
+  name: string;
+  country: string;
+  lat: number;
+  lon: number;
+  alt: number;
+  oaci: string;
+};
+
+type OgimetLink = {
+  label: string;
+  start: Date;
+  end: Date;
+  days: number;
+  url: string;
+};
+
+const STATIONS: Station[] = [
+  { code: '08021', name: 'Santander / Parayas', country: 'Spain', lat: 43.4292, lon: -3.8314, alt: 5, oaci: 'LEXJ' },
+  { code: '08023', name: 'Santander', country: 'Spain', lat: 43.4911, lon: -3.8006, alt: 52, oaci: '----' },
+  { code: '08025', name: 'Bilbao / Sondica', country: 'Spain', lat: 43.2981, lon: -2.9058, alt: 42, oaci: 'LEBB' },
+  { code: '08042', name: 'Santiago / Lavacolla', country: 'Spain', lat: 42.8881, lon: -8.4106, alt: 370, oaci: 'LEST' },
+  { code: '08065', name: 'Gijon-Campus', country: 'Spain', lat: 43.5231, lon: -5.6211, alt: 32, oaci: '----' },
+  { code: '08140', name: 'Valladolid / Villanubla', country: 'Spain', lat: 41.7119, lon: -4.8556, alt: 846, oaci: 'LEVD' },
+  { code: '08160', name: 'Zaragoza / Aeropuerto', country: 'Spain', lat: 41.6606, lon: -1.0042, alt: 263, oaci: 'LEZG' },
+  { code: '08181', name: 'Barcelona / Aeropuerto', country: 'Spain', lat: 41.2928, lon: 2.07, alt: 4, oaci: 'LEBL' },
+  { code: '08221', name: 'Madrid / Barajas', country: 'Spain', lat: 40.4667, lon: -3.5556, alt: 609, oaci: 'LEMD' },
+  { code: '08284', name: 'Valencia / Aeropuerto', country: 'Spain', lat: 39.485, lon: -0.4747, alt: 60, oaci: 'LEVC' },
+  { code: '08285', name: 'Valencia', country: 'Spain', lat: 39.4806, lon: -0.3664, alt: 11, oaci: '----' },
+  { code: '08306', name: 'Palma de Mallorca / Son San Juan', country: 'Spain', lat: 39.5608, lon: 2.7367, alt: 8, oaci: 'LEPA' },
+  { code: '08330', name: 'Badajoz / Talavera la Real', country: 'Spain', lat: 38.8833, lon: -6.8139, alt: 185, oaci: 'LEBZ' },
+  { code: '08360', name: 'Alicante / El Altet', country: 'Spain', lat: 38.2828, lon: -0.5708, alt: 43, oaci: 'LEAL' },
+  { code: '08391', name: 'Sevilla / San Pablo', country: 'Spain', lat: 37.4167, lon: -5.8792, alt: 34, oaci: 'LEZL' },
+  { code: '08419', name: 'Granada / Aeropuerto', country: 'Spain', lat: 37.1897, lon: -3.7894, alt: 567, oaci: 'LEGR' },
+  { code: '08429', name: 'Murcia / Alcantarilla', country: 'Spain', lat: 37.9578, lon: -1.2286, alt: 75, oaci: 'LERI' },
+  { code: '60005', name: 'La Palma / Aeropuerto', country: 'Spain', lat: 28.6331, lon: -17.755, alt: 33, oaci: 'GCLA' },
+  { code: '60015', name: 'Tenerife / Los Rodeos', country: 'Spain', lat: 28.4775, lon: -16.3294, alt: 632, oaci: 'GCXO' },
+  { code: '60025', name: 'Tenerife Sur', country: 'Spain', lat: 28.0475, lon: -16.5608, alt: 64, oaci: 'GCTS' },
+  { code: '60030', name: 'Las Palmas de Gran Canaria / Gando', country: 'Spain', lat: 27.9225, lon: -15.3894, alt: 24, oaci: 'GCLP' },
+];
+
+const stationInput = document.getElementById('station-id') as HTMLInputElement;
+const stationNameEl = document.getElementById('selected-station-name')!;
+const stationSearch = document.getElementById('station-search') as HTMLInputElement;
+const stationOptions = document.getElementById('station-options')!;
+const startInput = document.getElementById('start-date') as HTMLInputElement;
+const endInput = document.getElementById('end-date') as HTMLInputElement;
+const chunkInput = document.getElementById('chunk-days') as HTMLInputElement;
+const chunkVal = document.getElementById('chunk-days-val')!;
+const generateBtn = document.getElementById('generate-btn')!;
+const copyBtn = document.getElementById('copy-btn')!;
+const errorBox = document.getElementById('error-box')!;
+const summary = document.getElementById('summary')!;
+const linksList = document.getElementById('links-list')!;
+const openFirst = document.getElementById('open-first') as HTMLAnchorElement;
+const statStation = document.getElementById('stat-station')!;
+const statDays = document.getElementById('stat-days')!;
+const statBlocks = document.getElementById('stat-blocks')!;
+const fitMapBtn = document.getElementById('fit-map-btn')!;
+
+let currentLinks: OgimetLink[] = [];
+let selectedStation = STATIONS.find((station) => station.code === stationInput.value) ?? STATIONS[0];
+let map: any = null;
+const markers = new Map<string, any>();
+
+function showError(message: string) {
+  errorBox.textContent = message;
+  errorBox.classList.remove('hidden');
+}
+
+function clearError() {
+  errorBox.textContent = '';
+  errorBox.classList.add('hidden');
+}
+
+function parseLocalDate(value: string) {
+  const parts = value.split('-').map(Number);
+  if (parts.length !== 3 || parts.some(Number.isNaN)) return null;
+  return new Date(parts[0], parts[1] - 1, parts[2]);
+}
+
+function dateLabel(date: Date) {
+  return date.toISOString().slice(0, 10);
+}
+
+function addDays(date: Date, days: number) {
+  const copy = new Date(date);
+  copy.setDate(copy.getDate() + days);
+  return copy;
+}
+
+function diffDaysInclusive(start: Date, end: Date) {
+  return Math.floor((end.getTime() - start.getTime()) / 86400000) + 1;
+}
+
+function buildUrl(station: string, end: Date, days: number) {
+  const params = new URLSearchParams({
+    ind: station,
+    ndays: String(days),
+    ano: String(end.getFullYear()),
+    mes: String(end.getMonth() + 1),
+    day: String(end.getDate()),
+    hora: '0',
+    ord: 'REV',
+    enviar: 'Ver',
+  });
+  return `https://www.ogimet.com/cgi-bin/gsynres?${params.toString()}`;
+}
+
+function stationLabel(station: Station) {
+  return `${station.name} (${station.code})`;
+}
+
+function renderStationOptions() {
+  stationOptions.innerHTML = STATIONS.map((station) => (
+    `<option value="${stationLabel(station)}"></option>`
+  )).join('');
+}
+
+function markerStyle(active = false) {
+  return {
+    radius: active ? 9 : 6,
+    color: active ? '#0f172a' : '#ffffff',
+    weight: active ? 3 : 2,
+    fillColor: active ? '#facc15' : '#0891b2',
+    fillOpacity: 0.95,
+    opacity: 1,
+  };
+}
+
+function syncSelectedStation(station: Station, fly = true) {
+  selectedStation = station;
+  stationInput.value = station.code;
+  stationSearch.value = stationLabel(station);
+  stationNameEl.textContent = `${station.name} · ${station.lat.toFixed(3)}, ${station.lon.toFixed(3)} · ${station.alt} m`;
+
+  markers.forEach((marker, code) => marker.setStyle(markerStyle(code === station.code)));
+  const marker = markers.get(station.code);
+  if (marker) marker.openPopup();
+  if (fly && map) map.flyTo([station.lat, station.lon], Math.max(map.getZoom(), 8), { duration: 0.45 });
+  renderLinks();
+}
+
+function initMap() {
+  const mapEl = document.getElementById('ogimet-map');
+  if (!mapEl) return;
+  if (typeof L === 'undefined') {
+    mapEl.innerHTML = '<div class="h-full flex items-center justify-center text-sm text-slate-500">No se pudo cargar Leaflet. Revisa la conexión a la CDN.</div>';
+    return;
+  }
+  map = L.map('ogimet-map', { scrollWheelZoom: false }).setView([40.1, -3.6], 6);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '&copy; OpenStreetMap',
+  }).addTo(map);
+
+  STATIONS.forEach((station) => {
+    const marker = L.circleMarker([station.lat, station.lon], markerStyle(station.code === selectedStation.code)).addTo(map);
+    marker.bindPopup(`
+      <div class="text-sm">
+        <p class="font-semibold text-gray-900">${station.name}</p>
+        <p class="text-gray-500">OGIMET ${station.code} · ${station.oaci}</p>
+        <p class="text-gray-500">${station.lat.toFixed(4)}, ${station.lon.toFixed(4)} · ${station.alt} m</p>
+        <button type="button" data-station-code="${station.code}" class="mt-2 rounded-md bg-cyan-500 px-3 py-1.5 text-xs font-semibold text-slate-950">Usar estación</button>
+      </div>
+    `);
+    marker.on('click', () => syncSelectedStation(station, false));
+    markers.set(station.code, marker);
+  });
+
+  const bounds = L.latLngBounds(STATIONS.map((station) => [station.lat, station.lon]));
+  map.fitBounds(bounds, { padding: [28, 28], maxZoom: 6 });
+  window.setTimeout(() => map.invalidateSize(), 0);
+  window.setTimeout(() => map.invalidateSize(), 250);
+  window.addEventListener('resize', () => map.invalidateSize());
+
+  map.on('popupopen', (event: any) => {
+    const button = event.popup.getElement()?.querySelector('[data-station-code]');
+    button?.addEventListener('click', () => {
+      const code = button.getAttribute('data-station-code');
+      const station = STATIONS.find((item) => item.code === code);
+      if (station) syncSelectedStation(station);
+    });
+  });
+}
+
+function generateLinks() {
+  clearError();
+  const station = stationInput.value.trim();
+  const start = parseLocalDate(startInput.value);
+  const end = parseLocalDate(endInput.value);
+  const chunkDays = Number(chunkInput.value);
+
+  if (!station) {
+    showError('Introduce un indicativo OGIMET.');
+    return [];
+  }
+  if (!start || !end || end < start) {
+    showError('El periodo no es válido.');
+    return [];
+  }
+
+  const links: OgimetLink[] = [];
+  let cursor = new Date(start);
+  while (cursor <= end) {
+    const blockEnd = addDays(cursor, chunkDays - 1);
+    const clippedEnd = blockEnd > end ? end : blockEnd;
+    const days = diffDaysInclusive(cursor, clippedEnd);
+    links.push({
+      label: `${dateLabel(cursor)} a ${dateLabel(clippedEnd)}`,
+      start: new Date(cursor),
+      end: new Date(clippedEnd),
+      days,
+      url: buildUrl(station, clippedEnd, days),
+    });
+    cursor = addDays(clippedEnd, 1);
+  }
+  return links;
+}
+
+function renderLinks() {
+  currentLinks = generateLinks();
+  linksList.innerHTML = '';
+  if (!currentLinks.length) {
+    openFirst.classList.add('hidden');
+    return;
+  }
+
+  const totalDays = currentLinks.reduce((acc, item) => acc + item.days, 0);
+  summary.textContent = `${currentLinks.length} peticiones para ${totalDays} días de datos SYNOP.`;
+  statStation.textContent = stationInput.value.trim();
+  statDays.textContent = String(totalDays);
+  statBlocks.textContent = String(currentLinks.length);
+  openFirst.href = currentLinks[0].url;
+  openFirst.classList.remove('hidden');
+
+  currentLinks.forEach((item, index) => {
+    const row = document.createElement('div');
+    row.className = 'rounded-xl border border-gray-100 bg-gray-50 p-4';
+    row.innerHTML = `
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
+        <div>
+          <p class="font-semibold text-gray-800">Bloque ${index + 1}</p>
+          <p class="text-sm text-gray-500">${item.label} · ${item.days} días</p>
+        </div>
+        <a class="text-sm font-semibold text-hydra-700 hover:text-hydra-900" href="${item.url}" target="_blank" rel="noopener noreferrer">Abrir en OGIMET →</a>
+      </div>
+      <code class="block text-xs text-gray-500 break-all bg-white border border-gray-100 rounded-lg p-3">${item.url}</code>
+    `;
+    linksList.appendChild(row);
+  });
+}
+
+chunkInput.addEventListener('input', () => {
+  chunkVal.textContent = chunkInput.value;
+});
+generateBtn.addEventListener('click', renderLinks);
+stationInput.addEventListener('change', () => {
+  const station = STATIONS.find((item) => item.code === stationInput.value.trim());
+  if (station) syncSelectedStation(station);
+  else {
+    selectedStation = { ...selectedStation, code: stationInput.value.trim() };
+    stationNameEl.textContent = 'Indicativo introducido manualmente';
+    renderLinks();
+  }
+});
+stationSearch.addEventListener('change', () => {
+  const value = stationSearch.value.trim().toLowerCase();
+  const station = STATIONS.find((item) => stationLabel(item).toLowerCase() === value)
+    ?? STATIONS.find((item) => item.name.toLowerCase().includes(value) || item.code === value);
+  if (station) syncSelectedStation(station);
+});
+fitMapBtn.addEventListener('click', () => {
+  if (!map) return;
+  const bounds = L.latLngBounds(STATIONS.map((station) => [station.lat, station.lon]));
+  map.fitBounds(bounds, { padding: [24, 24] });
+});
+copyBtn.addEventListener('click', async () => {
+  if (!currentLinks.length) renderLinks();
+  if (!currentLinks.length) return;
+  await navigator.clipboard.writeText(currentLinks.map((item) => item.url).join('\n'));
+  copyBtn.textContent = 'URLs copiadas';
+  window.setTimeout(() => { copyBtn.textContent = 'Copiar URLs'; }, 1600);
+});
+
+renderStationOptions();
+initMap();
+syncSelectedStation(selectedStation, false);
+</script>

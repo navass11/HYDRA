@@ -1,0 +1,375 @@
+---
+import Layout from '../../layouts/Layout.astro';
+const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
+---
+
+<Layout title="Generación Estocástica — HYDRA">
+
+  <!-- Plotly CDN -->
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js" is:inline></script>
+
+  <!-- Hero -->
+  <section class="pt-24 pb-10 bg-gradient-to-br from-hydra-900 to-hydra-600 text-white">
+    <div class="max-w-7xl mx-auto px-6">
+      <a href="/" class="inline-flex items-center gap-2 text-white/60 hover:text-white text-sm mb-6 transition-colors">
+        ← Volver al inicio
+      </a>
+      <h1 class="text-4xl font-extrabold mb-2">Generación Estocástica</h1>
+      <p class="text-white/75 text-lg max-w-2xl">
+        Ajusta un modelo estacional (CoSMoS) a una serie temporal y genera un ensemble de realizaciones sintéticas preservando la estacionalidad, la distribución marginal y la estructura de autocorrelación.
+      </p>
+    </div>
+  </section>
+
+  <!-- Main content -->
+  <div class="max-w-7xl mx-auto px-6 py-10" id="app" data-api-url={apiUrl}>
+    <div class="grid lg:grid-cols-[320px_1fr] gap-8">
+
+      <!-- ── PANEL IZQUIERDO: Controles ── -->
+      <aside class="space-y-6">
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-6">
+
+          <!-- Datos de entrada -->
+          <div>
+            <h3 class="font-semibold text-gray-800 mb-3 text-sm uppercase tracking-wide">Datos de entrada</h3>
+            <div class="grid grid-cols-2 gap-2 mb-3">
+              <button id="btn-demo"
+                class="src-btn py-2 px-3 rounded-lg text-sm font-medium border-2 border-hydra-500 bg-hydra-50 text-hydra-700">
+                Demo
+              </button>
+              <button id="btn-upload"
+                class="src-btn py-2 px-3 rounded-lg text-sm font-medium border-2 border-gray-200 text-gray-600 hover:border-hydra-300 transition-colors">
+                Subir CSV
+              </button>
+            </div>
+            <input type="file" id="file-input" accept=".csv" class="hidden" />
+            <p id="file-name" class="text-xs text-gray-400 italic">Datos de demo: caudal diario 1990–2019</p>
+            <div id="csv-hint" class="hidden mt-2 text-xs text-gray-400 bg-gray-50 rounded-lg p-3">
+              CSV con dos columnas: <br/>
+              <code class="text-hydra-600">fecha,valor</code><br/>
+              La fecha debe ser parseable por pandas.
+            </div>
+          </div>
+
+          <!-- Distribución marginal -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-800 mb-2" for="dist-select">
+              Distribución marginal
+            </label>
+            <select id="dist-select"
+              class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-hydra-400">
+              <option value="gengamma" selected>Gamma generalizada</option>
+              <option value="lnorm">Log-normal</option>
+              <option value="paretoII">Pareto tipo II</option>
+              <option value="gev">GEV</option>
+              <option value="burrXII">Burr XII</option>
+            </select>
+          </div>
+
+          <!-- Nº simulaciones -->
+          <div>
+            <label class="flex justify-between text-sm font-semibold text-gray-800 mb-2">
+              Nº de simulaciones
+              <span id="n-sims-val" class="text-hydra-600 font-bold">30</span>
+            </label>
+            <input type="range" id="n-sims" min="5" max="100" value="30" step="5"
+              class="w-full accent-hydra-600" />
+            <div class="flex justify-between text-xs text-gray-400 mt-1">
+              <span>5</span><span>100</span>
+            </div>
+          </div>
+
+          <!-- Año de simulación -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-800 mb-2" for="sim-year">
+              Año de simulación
+            </label>
+            <input type="number" id="sim-year" value="2025" min="1950" max="2100"
+              class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-hydra-400" />
+          </div>
+
+          <!-- Semilla -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-800 mb-2" for="seed">
+              Semilla aleatoria
+            </label>
+            <input type="number" id="seed" value="42" min="0" max="999999"
+              class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-hydra-400" />
+            <p class="text-xs text-gray-400 mt-1">Permite repetir exactamente el ensemble.</p>
+          </div>
+
+          <!-- Botón ejecutar -->
+          <button id="run-btn"
+            class="w-full bg-hydra-600 hover:bg-hydra-700 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2">
+            <span id="run-label">Ejecutar simulación</span>
+            <svg id="run-arrow" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+            </svg>
+            <svg id="run-spinner" class="hidden w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+            </svg>
+          </button>
+
+          <!-- Error -->
+          <div id="error-box" class="hidden bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700"></div>
+        </div>
+
+        <!-- Info box -->
+        <div class="bg-blue-50 border border-blue-100 rounded-2xl p-5 text-sm text-blue-800 space-y-2">
+          <p class="font-semibold">¿Cómo funciona?</p>
+          <ol class="list-decimal list-inside space-y-1 text-blue-700">
+            <li>Ajusta una distribución marginal por mes</li>
+            <li>Ajusta una función de autocorrelación (Weibull)</li>
+            <li>Genera N realizaciones preservando ambas</li>
+          </ol>
+          <a href="/tools/sensitivity" class="inline-flex items-center text-blue-900 font-semibold hover:underline pt-2">
+            Ver sensibilidad Manning →
+          </a>
+        </div>
+      </aside>
+
+      <!-- ── PANEL DERECHO: Resultados ── -->
+      <main>
+        <!-- Placeholder inicial -->
+        <div id="placeholder" class="h-full min-h-[400px] flex flex-col items-center justify-center text-center rounded-2xl border-2 border-dashed border-gray-200 p-12">
+          <div class="text-6xl mb-4">🎲</div>
+          <h3 class="text-xl font-semibold text-gray-700 mb-2">Listo para simular</h3>
+          <p class="text-gray-400 max-w-sm">
+            Configura los parámetros en el panel izquierdo y pulsa <strong>Ejecutar simulación</strong>.
+            Puedes usar los datos de demo o subir tu propia serie en CSV.
+          </p>
+        </div>
+
+        <!-- Resultados (oculto hasta ejecutar) -->
+        <div id="results" class="hidden space-y-8">
+
+          <!-- Stats summary -->
+          <div id="stats-row" class="grid grid-cols-2 sm:grid-cols-4 gap-4"></div>
+
+          <!-- Seasonal model charts -->
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h3 class="font-semibold text-gray-800 mb-1">Modelo estacional</h3>
+            <p class="text-sm text-gray-400 mb-4">Estadísticos observados vs modelo ajustado por mes</p>
+            <div class="grid md:grid-cols-3 gap-4">
+              <div id="chart-mean"  class="h-52"></div>
+              <div id="chart-std"   class="h-52"></div>
+              <div id="chart-acf1" class="h-52"></div>
+            </div>
+          </div>
+
+          <!-- Ensemble chart -->
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h3 class="font-semibold text-gray-800 mb-1">Ensemble sintético vs observado</h3>
+            <p id="ensemble-subtitle" class="text-sm text-gray-400 mb-4"></p>
+            <div id="chart-ensemble" class="h-80"></div>
+          </div>
+
+        </div>
+      </main>
+
+    </div>
+  </div>
+
+</Layout>
+
+<script>
+declare const Plotly: any;
+const MONTHS = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const TEAL   = '#0d9488';
+const ORANGE = '#f97316';
+const layout_base = {
+  paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+  margin: { t: 30, r: 10, b: 40, l: 50 },
+  font: { family: 'Inter, system-ui, sans-serif', size: 11 },
+  legend: { orientation: 'h', y: -0.25 },
+};
+
+// ── State ────────────────────────────────────────────────────────────────────
+let useDemo = true;
+let isRunning = false;
+
+// ── Elements ─────────────────────────────────────────────────────────────────
+const appEl      = document.getElementById('app')!;
+const apiUrl     = appEl.dataset.apiUrl!;
+const btnDemo    = document.getElementById('btn-demo')!;
+const btnUpload  = document.getElementById('btn-upload')!;
+const fileInput  = document.getElementById('file-input') as HTMLInputElement;
+const fileNameEl = document.getElementById('file-name')!;
+const csvHintEl  = document.getElementById('csv-hint')!;
+const nSimsInput = document.getElementById('n-sims') as HTMLInputElement;
+const nSimsVal   = document.getElementById('n-sims-val')!;
+const runBtn     = document.getElementById('run-btn')!;
+const runLabel   = document.getElementById('run-label')!;
+const runArrow   = document.getElementById('run-arrow')!;
+const runSpinner = document.getElementById('run-spinner')!;
+const errorBox   = document.getElementById('error-box')!;
+const placeholder = document.getElementById('placeholder')!;
+const resultsEl   = document.getElementById('results')!;
+
+// ── UI helpers ────────────────────────────────────────────────────────────────
+function setSource(demo: boolean) {
+  useDemo = demo;
+  btnDemo.className   = `src-btn py-2 px-3 rounded-lg text-sm font-medium border-2 transition-colors ${demo ? 'border-hydra-500 bg-hydra-50 text-hydra-700' : 'border-gray-200 text-gray-600 hover:border-hydra-300'}`;
+  btnUpload.className = `src-btn py-2 px-3 rounded-lg text-sm font-medium border-2 transition-colors ${!demo ? 'border-hydra-500 bg-hydra-50 text-hydra-700' : 'border-gray-200 text-gray-600 hover:border-hydra-300'}`;
+  csvHintEl.classList.toggle('hidden', demo);
+  if (demo) fileNameEl.textContent = 'Datos de demo: caudal diario 1990–2019';
+}
+
+function setRunning(running: boolean) {
+  isRunning = running;
+  runBtn.disabled = running;
+  runLabel.textContent = running ? 'Calculando...' : 'Ejecutar simulación';
+  runArrow.classList.toggle('hidden', running);
+  runSpinner.classList.toggle('hidden', !running);
+}
+
+function showError(msg: string) {
+  errorBox.textContent = msg;
+  errorBox.classList.remove('hidden');
+}
+
+function clearError() {
+  errorBox.classList.add('hidden');
+  errorBox.textContent = '';
+}
+
+// ── Event listeners ───────────────────────────────────────────────────────────
+nSimsInput.addEventListener('input', () => { nSimsVal.textContent = nSimsInput.value; });
+btnDemo.addEventListener('click',   () => setSource(true));
+btnUpload.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', () => {
+  if (fileInput.files?.[0]) {
+    setSource(false);
+    fileNameEl.textContent = fileInput.files[0].name;
+  }
+});
+
+// ── Run ───────────────────────────────────────────────────────────────────────
+runBtn.addEventListener('click', async () => {
+  if (isRunning) return;
+  clearError();
+  if (!useDemo && !fileInput.files?.[0]) {
+    showError('Selecciona un CSV o vuelve a usar los datos demo.');
+    return;
+  }
+  setRunning(true);
+
+  const fd = new FormData();
+  fd.append('demo',     useDemo ? 'true' : 'false');
+  fd.append('dist',     (document.getElementById('dist-select') as HTMLSelectElement).value);
+  fd.append('n_sims',   nSimsInput.value);
+  fd.append('sim_year', (document.getElementById('sim-year') as HTMLInputElement).value);
+  fd.append('seed',     (document.getElementById('seed') as HTMLInputElement).value);
+  if (!useDemo && fileInput.files?.[0]) fd.append('file', fileInput.files[0]);
+
+  try {
+    const res = await fetch(`${apiUrl}/api/stochastic/generate`, { method: 'POST', body: fd });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail ?? 'Error en el servidor');
+    }
+    const data = await res.json();
+    renderResults(data);
+  } catch (err: any) {
+    showError(err.message ?? 'Error desconocido');
+  } finally {
+    setRunning(false);
+  }
+});
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function statCard(label: string, obs: string, sim: string, unit: string): string {
+  return `
+    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+      <p class="text-xs text-gray-400 uppercase tracking-wide mb-2">${label}</p>
+      <div class="flex items-end justify-between">
+        <div>
+          <p class="text-xs text-gray-500">Observado</p>
+          <p class="text-xl font-bold text-gray-900">${obs}</p>
+        </div>
+        <div class="text-right">
+          <p class="text-xs text-gray-500">Sintético</p>
+          <p class="text-xl font-bold text-hydra-600">${sim}</p>
+        </div>
+      </div>
+      <p class="text-xs text-gray-400 mt-1">${unit}</p>
+    </div>`;
+}
+
+function renderResults(data: any) {
+  placeholder.classList.add('hidden');
+  resultsEl.classList.remove('hidden');
+
+  // Stats row
+  const s = data.summary;
+  document.getElementById('stats-row')!.innerHTML =
+    statCard('Media',         s.obs_mean, s.sim_mean, 'm³/s') +
+    statCard('Desv. estándar', s.obs_std,  s.sim_std,  'm³/s') +
+    `<div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+      <p class="text-xs text-gray-400 uppercase tracking-wide mb-2">Años de calibración</p>
+      <p class="text-3xl font-bold text-gray-900">${s.n_years}</p>
+    </div>` +
+    `<div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+      <p class="text-xs text-gray-400 uppercase tracking-wide mb-2">Realizaciones</p>
+      <p class="text-3xl font-bold text-hydra-600">${s.n_sims}</p>
+      <p class="text-xs text-gray-400 mt-1">seed ${s.seed ?? 'auto'}</p>
+    </div>`;
+
+  // Seasonal charts: bars = observed, line = ensemble simulation
+  const m = data.monthly;
+  const seasonTrace = (obs: number[], sim: number[]) => ([
+    { x: MONTHS, y: obs, name: 'Observado', type: 'bar',
+      marker: { color: TEAL, opacity: 0.55 } },
+    { x: MONTHS, y: sim, name: 'Simulado', type: 'scatter', mode: 'lines+markers',
+      line: { color: ORANGE, width: 2 }, marker: { size: 5 } },
+  ]);
+
+  const layout_seasonal = {
+    ...layout_base, height: 208,
+    showlegend: true,
+    legend: { orientation: 'h', y: -0.35, font: { size: 10 } },
+    yaxis: { gridcolor: '#f3f4f6' },
+    xaxis: { tickfont: { size: 10 } },
+  };
+
+  Plotly.newPlot('chart-mean', seasonTrace(m.obs_mean, m.sim_mean),
+    { ...layout_seasonal, title: { text: 'Media mensual', font: { size: 12 } } },
+    { responsive: true, displayModeBar: false });
+  Plotly.newPlot('chart-std',  seasonTrace(m.obs_std, m.sim_std),
+    { ...layout_seasonal, title: { text: 'Desv. estándar', font: { size: 12 } } },
+    { responsive: true, displayModeBar: false });
+  Plotly.newPlot('chart-acf1', seasonTrace(m.obs_acf1, m.sim_acf1),
+    { ...layout_seasonal, title: { text: 'ACF lag-1', font: { size: 12 } },
+      yaxis: { gridcolor: '#f3f4f6', rangemode: 'tozero' } },
+    { responsive: true, displayModeBar: false });
+
+  // Ensemble chart
+  const e = data.ensemble;
+  const o = data.observed;
+  document.getElementById('ensemble-subtitle')!.textContent =
+    `${s.n_sims} realizaciones para ${e.year} · Calibración: ${o.year}–${o.year + s.n_years - 1}`;
+
+  // Remap observed dates to the simulation year so both traces share the same Jan–Dec axis
+  const simYearStr = e.year.toString();
+  const obsRemapped = (o.dates as string[]).map(d => d.replace(/^\d{4}/, simYearStr));
+
+  Plotly.newPlot('chart-ensemble', [
+    { x: e.dates, y: e.p90, mode: 'lines', line: { width: 0 }, showlegend: false, hoverinfo: 'skip' },
+    { x: e.dates, y: e.p10, fill: 'tonexty', mode: 'lines', line: { width: 0 },
+      fillcolor: 'rgba(13,148,136,0.12)', name: 'P10–P90' },
+    { x: e.dates, y: e.p75, mode: 'lines', line: { width: 0 }, showlegend: false, hoverinfo: 'skip' },
+    { x: e.dates, y: e.p25, fill: 'tonexty', mode: 'lines', line: { width: 0 },
+      fillcolor: 'rgba(13,148,136,0.25)', name: 'P25–P75' },
+    { x: e.dates, y: e.p50, mode: 'lines', line: { color: TEAL, width: 2, dash: 'dash' }, name: 'Mediana' },
+    { x: obsRemapped, y: o.values, mode: 'lines', line: { color: '#111827', width: 1.5 }, name: `Observado ${o.year}` },
+  ], {
+    ...layout_base,
+    height: 320,
+    showlegend: true,
+    yaxis: { title: 'm³/s', gridcolor: '#f3f4f6' },
+    xaxis: { gridcolor: '#f3f4f6' },
+    legend: { orientation: 'h', y: -0.2 },
+  }, { responsive: true, displayModeBar: false });
+}
+</script>

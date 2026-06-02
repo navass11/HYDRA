@@ -1,0 +1,1500 @@
+Run: 1970 simulation
+     Description: Jan to Jun 1970
+     Log File: 1970_simulation.log
+     DSS File: 1970_simulation.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 16 September 2018
+     Last Modified Time: 13:55:33
+     Basin: Tifton
+     Precip: Tifton Hyetograph
+     Control: Jan1-Jun30 1970
+     Save State Type: None
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T2
+     Default Description: Yes
+     Log File: T2.log
+     DSS File: T2.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Last Execution Date: 30 May 2026
+     Last Execution Time: 15:09:39
+     Basin: Tifton
+     Precip: IDF T2
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T5
+     Default Description: Yes
+     Log File: T5.log
+     DSS File: T5.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Last Execution Date: 30 May 2026
+     Last Execution Time: 15:09:40
+     Basin: Tifton
+     Precip: IDF T5
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T10
+     Default Description: Yes
+     Log File: T10.log
+     DSS File: T10.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Last Execution Date: 30 May 2026
+     Last Execution Time: 15:09:40
+     Basin: Tifton
+     Precip: IDF T10
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T25
+     Default Description: Yes
+     Log File: T25.log
+     DSS File: T25.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Last Execution Date: 30 May 2026
+     Last Execution Time: 15:09:40
+     Basin: Tifton
+     Precip: IDF T25
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T50
+     Default Description: Yes
+     Log File: T50.log
+     DSS File: T50.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Last Execution Date: 30 May 2026
+     Last Execution Time: 15:09:40
+     Basin: Tifton
+     Precip: IDF T50
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T100
+     Default Description: Yes
+     Log File: T100.log
+     DSS File: T100.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Last Execution Date: 30 May 2026
+     Last Execution Time: 15:09:40
+     Basin: Tifton
+     Precip: IDF T100
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T500
+     Default Description: Yes
+     Log File: T500.log
+     DSS File: T500.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Last Execution Date: 30 May 2026
+     Last Execution Time: 15:09:41
+     Basin: Tifton
+     Precip: IDF T500
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T2
+     Default Description: Yes
+     Log File: T2.log
+     DSS File: T2.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T2
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T5
+     Default Description: Yes
+     Log File: T5.log
+     DSS File: T5.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T5
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T10
+     Default Description: Yes
+     Log File: T10.log
+     DSS File: T10.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T10
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T25
+     Default Description: Yes
+     Log File: T25.log
+     DSS File: T25.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T25
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T50
+     Default Description: Yes
+     Log File: T50.log
+     DSS File: T50.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T50
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T100
+     Default Description: Yes
+     Log File: T100.log
+     DSS File: T100.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T100
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T500
+     Default Description: Yes
+     Log File: T500.log
+     DSS File: T500.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T500
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T2
+     Default Description: Yes
+     Log File: T2.log
+     DSS File: T2.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T2
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T5
+     Default Description: Yes
+     Log File: T5.log
+     DSS File: T5.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T5
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T10
+     Default Description: Yes
+     Log File: T10.log
+     DSS File: T10.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T10
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T25
+     Default Description: Yes
+     Log File: T25.log
+     DSS File: T25.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T25
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T50
+     Default Description: Yes
+     Log File: T50.log
+     DSS File: T50.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T50
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T100
+     Default Description: Yes
+     Log File: T100.log
+     DSS File: T100.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T100
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T500
+     Default Description: Yes
+     Log File: T500.log
+     DSS File: T500.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T500
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T2
+     Default Description: Yes
+     Log File: T2.log
+     DSS File: T2.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T2
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T5
+     Default Description: Yes
+     Log File: T5.log
+     DSS File: T5.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T5
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T10
+     Default Description: Yes
+     Log File: T10.log
+     DSS File: T10.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T10
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T25
+     Default Description: Yes
+     Log File: T25.log
+     DSS File: T25.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T25
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T50
+     Default Description: Yes
+     Log File: T50.log
+     DSS File: T50.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T50
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T100
+     Default Description: Yes
+     Log File: T100.log
+     DSS File: T100.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T100
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T500
+     Default Description: Yes
+     Log File: T500.log
+     DSS File: T500.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T500
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T2
+     Default Description: Yes
+     Log File: T2.log
+     DSS File: T2.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T2
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T5
+     Default Description: Yes
+     Log File: T5.log
+     DSS File: T5.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T5
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T10
+     Default Description: Yes
+     Log File: T10.log
+     DSS File: T10.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T10
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T25
+     Default Description: Yes
+     Log File: T25.log
+     DSS File: T25.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T25
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T50
+     Default Description: Yes
+     Log File: T50.log
+     DSS File: T50.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T50
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T100
+     Default Description: Yes
+     Log File: T100.log
+     DSS File: T100.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T100
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T500
+     Default Description: Yes
+     Log File: T500.log
+     DSS File: T500.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T500
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T2
+     Default Description: Yes
+     Log File: T2.log
+     DSS File: T2.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T2
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T5
+     Default Description: Yes
+     Log File: T5.log
+     DSS File: T5.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T5
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T10
+     Default Description: Yes
+     Log File: T10.log
+     DSS File: T10.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T10
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T25
+     Default Description: Yes
+     Log File: T25.log
+     DSS File: T25.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T25
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T50
+     Default Description: Yes
+     Log File: T50.log
+     DSS File: T50.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T50
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T100
+     Default Description: Yes
+     Log File: T100.log
+     DSS File: T100.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T100
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T500
+     Default Description: Yes
+     Log File: T500.log
+     DSS File: T500.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T500
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T2
+     Default Description: Yes
+     Log File: T2.log
+     DSS File: T2.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T2
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T5
+     Default Description: Yes
+     Log File: T5.log
+     DSS File: T5.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T5
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T10
+     Default Description: Yes
+     Log File: T10.log
+     DSS File: T10.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T10
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T25
+     Default Description: Yes
+     Log File: T25.log
+     DSS File: T25.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T25
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T50
+     Default Description: Yes
+     Log File: T50.log
+     DSS File: T50.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T50
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T100
+     Default Description: Yes
+     Log File: T100.log
+     DSS File: T100.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T100
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T500
+     Default Description: Yes
+     Log File: T500.log
+     DSS File: T500.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T500
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T2
+     Default Description: Yes
+     Log File: T2.log
+     DSS File: T2.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T2
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T5
+     Default Description: Yes
+     Log File: T5.log
+     DSS File: T5.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T5
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T10
+     Default Description: Yes
+     Log File: T10.log
+     DSS File: T10.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T10
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T25
+     Default Description: Yes
+     Log File: T25.log
+     DSS File: T25.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T25
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T50
+     Default Description: Yes
+     Log File: T50.log
+     DSS File: T50.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T50
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T100
+     Default Description: Yes
+     Log File: T100.log
+     DSS File: T100.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T100
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T500
+     Default Description: Yes
+     Log File: T500.log
+     DSS File: T500.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T500
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T2
+     Default Description: Yes
+     Log File: T2.log
+     DSS File: T2.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T2
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T5
+     Default Description: Yes
+     Log File: T5.log
+     DSS File: T5.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T5
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T10
+     Default Description: Yes
+     Log File: T10.log
+     DSS File: T10.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T10
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T25
+     Default Description: Yes
+     Log File: T25.log
+     DSS File: T25.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T25
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T50
+     Default Description: Yes
+     Log File: T50.log
+     DSS File: T50.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T50
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T100
+     Default Description: Yes
+     Log File: T100.log
+     DSS File: T100.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T100
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T500
+     Default Description: Yes
+     Log File: T500.log
+     DSS File: T500.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T500
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T2
+     Default Description: Yes
+     Log File: T2.log
+     DSS File: T2.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T2
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T5
+     Default Description: Yes
+     Log File: T5.log
+     DSS File: T5.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T5
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T10
+     Default Description: Yes
+     Log File: T10.log
+     DSS File: T10.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T10
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T25
+     Default Description: Yes
+     Log File: T25.log
+     DSS File: T25.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T25
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T50
+     Default Description: Yes
+     Log File: T50.log
+     DSS File: T50.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T50
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T100
+     Default Description: Yes
+     Log File: T100.log
+     DSS File: T100.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T100
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T500
+     Default Description: Yes
+     Log File: T500.log
+     DSS File: T500.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T500
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T2
+     Default Description: Yes
+     Log File: T2.log
+     DSS File: T2.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T2
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T5
+     Default Description: Yes
+     Log File: T5.log
+     DSS File: T5.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T5
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T10
+     Default Description: Yes
+     Log File: T10.log
+     DSS File: T10.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T10
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T25
+     Default Description: Yes
+     Log File: T25.log
+     DSS File: T25.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T25
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T50
+     Default Description: Yes
+     Log File: T50.log
+     DSS File: T50.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T50
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T100
+     Default Description: Yes
+     Log File: T100.log
+     DSS File: T100.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T100
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T500
+     Default Description: Yes
+     Log File: T500.log
+     DSS File: T500.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T500
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T2
+     Default Description: Yes
+     Log File: T2.log
+     DSS File: T2.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T2
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T5
+     Default Description: Yes
+     Log File: T5.log
+     DSS File: T5.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T5
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T10
+     Default Description: Yes
+     Log File: T10.log
+     DSS File: T10.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T10
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T25
+     Default Description: Yes
+     Log File: T25.log
+     DSS File: T25.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T25
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T50
+     Default Description: Yes
+     Log File: T50.log
+     DSS File: T50.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T50
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T100
+     Default Description: Yes
+     Log File: T100.log
+     DSS File: T100.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T100
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T500
+     Default Description: Yes
+     Log File: T500.log
+     DSS File: T500.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T500
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T2
+     Default Description: Yes
+     Log File: T2.log
+     DSS File: T2.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T2
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T5
+     Default Description: Yes
+     Log File: T5.log
+     DSS File: T5.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T5
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T10
+     Default Description: Yes
+     Log File: T10.log
+     DSS File: T10.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T10
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T25
+     Default Description: Yes
+     Log File: T25.log
+     DSS File: T25.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T25
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T50
+     Default Description: Yes
+     Log File: T50.log
+     DSS File: T50.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T50
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T100
+     Default Description: Yes
+     Log File: T100.log
+     DSS File: T100.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T100
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T500
+     Default Description: Yes
+     Log File: T500.log
+     DSS File: T500.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T500
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T2
+     Default Description: Yes
+     Log File: T2.log
+     DSS File: T2.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T2
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T5
+     Default Description: Yes
+     Log File: T5.log
+     DSS File: T5.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T5
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T10
+     Default Description: Yes
+     Log File: T10.log
+     DSS File: T10.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T10
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T25
+     Default Description: Yes
+     Log File: T25.log
+     DSS File: T25.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T25
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T50
+     Default Description: Yes
+     Log File: T50.log
+     DSS File: T50.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T50
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T100
+     Default Description: Yes
+     Log File: T100.log
+     DSS File: T100.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T100
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
+Run: T500
+     Default Description: Yes
+     Log File: T500.log
+     DSS File: T500.dss
+     Is Save Spatial Results: No
+     Last Modified Date: 17 November 2020
+     Last Modified Time: 09:31:48
+     Basin: Tifton
+     Precip: IDF T500
+     Control: IDF Control
+     Time-Series Output: Save All
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+End:
+
