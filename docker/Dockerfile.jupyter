@@ -21,7 +21,7 @@ RUN pip install --no-cache-dir --upgrade pip "setuptools<80" wheel
 # Layer 1: core scientific stack
 RUN pip install --no-cache-dir \
         numpy pandas scipy statsmodels scikit-learn \
-        matplotlib tqdm requests xarray "dask[array]"
+        matplotlib tqdm requests beautifulsoup4 lxml xarray "dask[array]"
 
 # Layer 2: geo/spatial
 RUN pip install --no-cache-dir \
@@ -29,13 +29,7 @@ RUN pip install --no-cache-dir \
 
 # Layer 3: hydro/stats
 RUN pip install --no-cache-dir \
-        openturns lmoments3 NEOPRENE spotpy pySWATPlus pystan
-
-# Pre-compile the GEV Stan model so httpstan's cache is warm in the image.
-# This runs g++ at build time (plenty of RAM) instead of at user request time
-# (where Azure Container Apps memory limits kill the compiler).
-COPY docker/precompile_stan.py /tmp/precompile_stan.py
-RUN python3 /tmp/precompile_stan.py
+        openturns lmoments3 NEOPRENE spotpy pySWATPlus pymc
 
 # Layer 4: DSS support (x86_64 only — pydsstools preferred, hecdss as fallback)
 RUN pip install --no-cache-dir pydsstools || echo "pydsstools not available — skipping"
@@ -56,6 +50,9 @@ RUN pip install --no-cache-dir /tmp/cosmos_py-0.1.0-py3-none-any.whl
 COPY . .
 RUN pip install --no-cache-dir -e .
 
+# Jupyter server config: hides non-notebook dirs from the file browser
+COPY jupyter_server_config.py /workspace/jupyter_server_config.py
+
 # Download publicly available model data (SWAT+ LREW, SFINCS test case)
 # Tifton HMS and HEC-RAS Muncie project files are committed in data/ and already present.
 # HEC-HMS 4.13 binary: if data/hms/HEC-HMS-4.13-linux64.tar.gz exists, extract it.
@@ -74,7 +71,9 @@ ENV JUPYTER_BASE_URL="/jupyter/"
 # Each session lives under this directory; users only see their own UUID folder.
 ENV JUPYTER_WORKDIR="/workspace/data/sessions"
 
-# mkdir ensures the directory exists on the Azure Files mount before Jupyter starts.
+# mkdir ensures the Azure Files mount directory exists before Jupyter starts.
+# notebook-dir=/workspace exposes the full project (notebooks/, data/, etc.).
+# The server config hides non-relevant directories from the file browser.
 CMD mkdir -p "${JUPYTER_WORKDIR}" && exec jupyter lab \
     --ip=0.0.0.0 \
     --port=8888 \
@@ -85,4 +84,5 @@ CMD mkdir -p "${JUPYTER_WORKDIR}" && exec jupyter lab \
     --ServerApp.allow_origin='*' \
     --ServerApp.base_url="${JUPYTER_BASE_URL}" \
     --ServerApp.disable_check_xsrf=True \
-    --notebook-dir="${JUPYTER_WORKDIR}"
+    --config=/workspace/jupyter_server_config.py \
+    --notebook-dir="/workspace"

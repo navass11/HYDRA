@@ -9,12 +9,14 @@ scikit-learn
 matplotlib
 tqdm
 requests
+beautifulsoup4
+lxml
 
 # Hydrological / statistical
 openturns
 lmoments3
 NEOPRENE
-pystan
+pymc
 
 # Jupyter + interactive widgets
 jupyterlab

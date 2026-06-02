@@ -1,0 +1,177 @@
+[
+  {
+    "slug": "climate--bias_correction",
+    "title": "Corrección de sesgo",
+    "category": "Clima",
+    "icon": "⚖️",
+    "href": "http://localhost/jupyter/lab/tree/climate/bias_correction.ipynb"
+  },
+  {
+    "slug": "climate--event_extraction",
+    "title": "Extracción de eventos",
+    "category": "Clima",
+    "icon": "🌊",
+    "href": "http://localhost/jupyter/lab/tree/climate/event_extraction.ipynb"
+  },
+  {
+    "slug": "climate--extreme_value_analysis",
+    "title": "Análisis de extremos",
+    "category": "Clima",
+    "icon": "📈",
+    "href": "http://localhost/jupyter/lab/tree/climate/extreme_value_analysis.ipynb"
+  },
+  {
+    "slug": "climate--spatial_analysis--bayes_hierarchical",
+    "title": "Bayes jerárquico",
+    "category": "Análisis esp.",
+    "icon": "🧮",
+    "href": "http://localhost/jupyter/lab/tree/climate/spatial_analysis/bayes_hierarchical.ipynb"
+  },
+  {
+    "slug": "climate--spatial_analysis--compound_flooding",
+    "title": "Compound Flooding",
+    "category": "Análisis esp.",
+    "icon": "🌊",
+    "href": "http://localhost/jupyter/lab/tree/climate/spatial_analysis/compound_flooding.ipynb"
+  },
+  {
+    "slug": "climate--spatial_analysis--copulas",
+    "title": "Cópulas",
+    "category": "Análisis esp.",
+    "icon": "🔗",
+    "href": "http://localhost/jupyter/lab/tree/climate/spatial_analysis/copulas.ipynb"
+  },
+  {
+    "slug": "climate--spatial_analysis--interpolation",
+    "title": "Interpolación",
+    "category": "Análisis esp.",
+    "icon": "📍",
+    "href": "http://localhost/jupyter/lab/tree/climate/spatial_analysis/interpolation.ipynb"
+  },
+  {
+    "slug": "climate--spatial_analysis--regional_frequency_analysis",
+    "title": "Frecuencia regional",
+    "category": "Análisis esp.",
+    "icon": "📉",
+    "href": "http://localhost/jupyter/lab/tree/climate/spatial_analysis/regional_frequency_analysis.ipynb"
+  },
+  {
+    "slug": "climate--spatial_field_generation",
+    "title": "Campos espaciales",
+    "category": "Clima",
+    "icon": "🗺️",
+    "href": "http://localhost/jupyter/lab/tree/climate/spatial_field_generation.ipynb"
+  },
+  {
+    "slug": "climate--stochastic_generation",
+    "title": "Generación estocástica",
+    "category": "Clima",
+    "icon": "🎲",
+    "href": "http://localhost/jupyter/lab/tree/climate/stochastic_generation.ipynb"
+  },
+  {
+    "slug": "data_sources--climate_change--CDS_download",
+    "title": "CDS / Copernicus",
+    "category": "Datos",
+    "icon": "☁️",
+    "href": "http://localhost/jupyter/lab/tree/data_sources/climate_change/CDS_download.ipynb"
+  },
+  {
+    "slug": "data_sources--climate_change--ESGF_download",
+    "title": "ESGF / CMIP6",
+    "category": "Datos",
+    "icon": "🌡️",
+    "href": "http://localhost/jupyter/lab/tree/data_sources/climate_change/ESGF_download.ipynb"
+  },
+  {
+    "slug": "data_sources--rainfall--AEMET_download",
+    "title": "AEMET",
+    "category": "Datos",
+    "icon": "🌦️",
+    "href": "http://localhost/jupyter/lab/tree/data_sources/rainfall/AEMET_download.ipynb"
+  },
+  {
+    "slug": "data_sources--rainfall--ERA5_download",
+    "title": "ERA5",
+    "category": "Datos",
+    "icon": "🌍",
+    "href": "http://localhost/jupyter/lab/tree/data_sources/rainfall/ERA5_download.ipynb"
+  },
+  {
+    "slug": "data_sources--rainfall--GPM_download",
+    "title": "GPM / IMERG",
+    "category": "Datos",
+    "icon": "🛰️",
+    "href": "http://localhost/jupyter/lab/tree/data_sources/rainfall/GPM_download.ipynb"
+  },
+  {
+    "slug": "data_sources--rainfall--OGIMET_download",
+    "title": "OGIMET SYNOP",
+    "category": "Datos",
+    "icon": "📡",
+    "href": "http://localhost/jupyter/lab/tree/data_sources/rainfall/OGIMET_download.ipynb"
+  },
+  {
+    "slug": "data_sources--rainfall--PERSSIAN_download",
+    "title": "PERSIANN",
+    "category": "Datos",
+    "icon": "🌂",
+    "href": "http://localhost/jupyter/lab/tree/data_sources/rainfall/PERSSIAN_download.ipynb"
+  },
+  {
+    "slug": "data_sources--river_discharge--GRDC_download",
+    "title": "GRDC",
+    "category": "Datos",
+    "icon": "🌊",
+    "href": "http://localhost/jupyter/lab/tree/data_sources/river_discharge/GRDC_download.ipynb"
+  },
+  {
+    "slug": "data_sources--river_discharge--GloFAS_download",
+    "title": "GloFAS",
+    "category": "Datos",
+    "icon": "🏞️",
+    "href": "http://localhost/jupyter/lab/tree/data_sources/river_discharge/GloFAS_download.ipynb"
+  },
+  {
+    "slug": "data_sources--river_discharge--USGS_download",
+    "title": "USGS",
+    "category": "Datos",
+    "icon": "💧",
+    "href": "http://localhost/jupyter/lab/tree/data_sources/river_discharge/USGS_download.ipynb"
+  },
+  {
+    "slug": "data_sources--soils--SoilGrids_download",
+    "title": "SoilGrids",
+    "category": "Datos",
+    "icon": "🪨",
+    "href": "http://localhost/jupyter/lab/tree/data_sources/soils/SoilGrids_download.ipynb"
+  },
+  {
+    "slug": "modeling--hydraulic--HEC_RAS",
+    "title": "HEC-RAS",
+    "category": "Modelización",
+    "icon": "🌊",
+    "href": "http://localhost/jupyter/lab/tree/modeling/hydraulic/HEC_RAS.ipynb"
+  },
+  {
+    "slug": "modeling--hydraulic--SFINCS",
+    "title": "SFINCS",
+    "category": "Modelización",
+    "icon": "🌀",
+    "href": "http://localhost/jupyter/lab/tree/modeling/hydraulic/SFINCS.ipynb"
+  },
+  {
+    "slug": "modeling--hydrology--HEC_HMS",
+    "title": "HEC-HMS",
+    "category": "Modelización",
+    "icon": "🏔️",
+    "href": "http://localhost/jupyter/lab/tree/modeling/hydrology/HEC_HMS.ipynb"
+  },
+  {
+    "slug": "modeling--hydrology--SWAT",
+    "title": "SWAT+",
+    "category": "Modelización",
+    "icon": "🌿",
+    "href": "http://localhost/jupyter/lab/tree/modeling/hydrology/SWAT.ipynb"
+  }
+]

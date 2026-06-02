@@ -15,10 +15,17 @@ from pathlib import Path
 
 import pandas as pd
 import requests
-from bs4 import BeautifulSoup
 
 
-DEFAULT_OGIMET_OUTPUT_DIR = Path(os.environ.get("HYDRA_OGIMET_DIR", "/workspace/data/ogimet"))
+def _resolve_output_dir() -> Path:
+    if os.environ.get("HYDRA_OGIMET_DIR"):
+        return Path(os.environ["HYDRA_OGIMET_DIR"])
+    if Path("/workspace").exists():
+        return Path("/workspace/data/ogimet")
+    return Path.home() / "hydra_data" / "ogimet"
+
+
+DEFAULT_OGIMET_OUTPUT_DIR = _resolve_output_dir()
 
 
 def _candidate_stations_csv_paths():
@@ -54,6 +61,18 @@ def normalize_filename(name):
     return name
 
 
+_BROWSER_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/124.0.0.0 Safari/537.36"
+    ),
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Referer": "https://www.ogimet.com/synops.phtml",
+}
+
+
 def download_synop(station_id, start_date, end_date, progress=None, cancel_flag=None):
     """
     Download SYNOP daily data for a single station from ogimet.com.
@@ -86,7 +105,15 @@ def download_synop(station_id, start_date, end_date, progress=None, cancel_flag=
         )
 
         try:
-            r = requests.get(url, timeout=30)
+            from bs4 import BeautifulSoup
+            r = requests.get(url, headers=_BROWSER_HEADERS, timeout=30)
+            if r.status_code != 200:
+                print(f"  [OGIMET] HTTP {r.status_code} for {url}")
+                date -= pd.Timedelta(days=ndays)
+                if progress:
+                    progress.value += 1
+                time.sleep(1.0)
+                continue
             soup = BeautifulSoup(r.content, "html.parser")
             tables = pd.read_html(StringIO(str(soup)))
             if len(tables) > 2:
@@ -97,11 +124,18 @@ def download_synop(station_id, start_date, end_date, progress=None, cancel_flag=
                     df[date_col] = pd.to_datetime(df[date_col], format="%d/%m/%Y", errors="coerce")
                     df = df.sort_values(by=date_col)
                     all_data.append(df)
+                else:
+                    print(f"  [OGIMET] No 'Fecha' column found in table for station {station_id} ({date.date()})")
+            else:
+                print(
+                    f"  [OGIMET] Expected >2 tables but got {len(tables)} for station {station_id} "
+                    f"({date.date()}). OGIMET may be blocking this request or returning an error page."
+                )
         except Exception as exc:
-            print(f"Error downloading {station_id}: {exc}")
+            print(f"  [OGIMET] Error for station {station_id} ({date.date()}): {exc}")
 
         date -= pd.Timedelta(days=ndays)
-        time.sleep(0.5)
+        time.sleep(1.0)
         if progress:
             progress.value += 1
 
@@ -173,16 +207,16 @@ def process_all_meteorological_variables(df):
         "temperatura_c_max": "tmax_celsius",
         "temperatura_c_min": "tmin_celsius",
         "temperatura_c_med": "tmed_celsius",
-        "td_med_c_td_med_c": "dewpoint_mean_celsius",
-        "hr_med_pct_hr_med_pct": "humidity_mean_percent",
-        "viento_kmh_dir": "wind_direction_deg",
-        "viento_kmh_vel": "wind_speed_kmh",
-        "pres_n_mar_hp_pres_n_mar_hp": "pressure_msl_hpa",
-        "prec_mm_prec_mm": "precipitation_mm",
-        "nub_tot_oct_nub_tot_oct": "cloud_total_oktas",
-        "nub_baj_oct_nub_baj_oct": "cloud_low_oktas",
-        "sol_d_1_h_sol_d_1_h": "sun_hours_day_before",
-        "vis_km_vis_km": "visibility_km",
+        "td_med_c": "dewpoint_mean_celsius",
+        "hr_med_pct": "humidity_mean_percent",
+        "viento_km_h_dir": "wind_direction_deg",
+        "viento_km_h_vel": "wind_speed_kmh",
+        "pres_n_mar_hp": "pressure_msl_hpa",
+        "prec_mm": "precipitation_mm",
+        "nub_tot_oct": "cloud_total_oktas",
+        "nub_baj_oct": "cloud_low_oktas",
+        "sol_d_1_h": "sun_hours_day_before",
+        "vis_km": "visibility_km",
     }
     grouped.rename(columns={k: v for k, v in rename_map.items() if k in grouped.columns}, inplace=True)
     return grouped
@@ -226,6 +260,7 @@ def OGIMETDownloader(
 
     output = Output()
     m = Map(center=center, zoom=zoom, scroll_wheel_zoom=True)
+    m.layout.height = "480px"
     selected = set()
     cancel_flag = {"parar": False}
 
@@ -250,28 +285,37 @@ def OGIMETDownloader(
             btn = Button(description="Download", button_style="info", layout={"width": "auto"})
 
             def download_single(_, row=row):
-                folder = folder_chooser.selected_path
-                if not folder:
-                    return
-                os.makedirs(folder, exist_ok=True)
+                folder = str(Path(folder_chooser.selected or str(output_folder)))
                 base = normalize_filename(row["Nombre"])
                 parts = str(row["WIGOS ID"]).split("-")
                 code = parts[-1].strip() if len(parts) >= 4 and parts[-1].strip().isdigit() else None
                 if not code:
+                    with output:
+                        print(f"Cannot parse station code from WIGOS ID '{row['WIGOS ID']}'")
                     return
                 total_days = (pd.to_datetime(end_picker.value) - pd.to_datetime(start_picker.value)).days + 1
                 prog = IntProgress(value=0, min=0, max=(total_days + 29) // 30, description="Download:")
-                display(VBox([prog]))
-                df_raw = download_synop(code, start_picker.value, end_picker.value,
-                                        progress=prog, cancel_flag=cancel_flag)
-                if df_raw is not None:
+                status = HTML(value=f"<b>Downloading {row['Nombre']}</b> → <code>{folder}</code>")
+                display(VBox([status, prog]))
+
+                def _do():
                     try:
-                        df_proc = process_all_meteorological_variables(df_raw)
-                        df_proc.to_csv(os.path.join(folder, f"series_{base}.csv"), index=False)
-                        pd.DataFrame([row]).to_csv(os.path.join(folder, f"station_{base}.csv"), index=False)
+                        os.makedirs(folder, exist_ok=True)
+                        with output:
+                            df_raw = download_synop(code, start_picker.value, end_picker.value,
+                                                    progress=prog, cancel_flag=cancel_flag)
+                        if df_raw is not None:
+                            df_proc = process_all_meteorological_variables(df_raw)
+                            df_proc.to_csv(os.path.join(folder, f"series_{base}.csv"), index=False)
+                            pd.DataFrame([row]).to_csv(os.path.join(folder, f"station_{base}.csv"), index=False)
+                            status.value = f"Saved → <code>{folder}/series_{base}.csv</code>"
+                        else:
+                            status.value = f"<span style='color:red'>No data for {row['Nombre']} (code {code})</span>"
                     except Exception as exc:
                         with output:
-                            print(f"Error processing {base}: {exc}")
+                            print(f"Error downloading {base}: {exc}")
+
+                threading.Thread(target=_do).start()
 
             btn.on_click(download_single)
             marker.popup = Popup(location=marker.location, child=VBox([info, btn]),
@@ -287,6 +331,31 @@ def OGIMETDownloader(
     draw_control.rectangle = {"shapeOptions": {"color": "#6bc2e5", "fillOpacity": 0.3}}
     m.add_control(draw_control)
 
+    selection_label = HTML(value="<i>Draw a rectangle on the map to select stations.</i>")
+
+    def _on_draw(_, action, geo_json):
+        if action != "created":
+            return
+        try:
+            coords = geo_json["geometry"]["coordinates"][0]
+            lats = [c[1] for c in coords]
+            lons = [c[0] for c in coords]
+            lat_min, lat_max = min(lats), max(lats)
+            lon_min, lon_max = min(lons), max(lons)
+            in_bounds = stations_df[
+                (pd.to_numeric(stations_df["Latitud_decimal"], errors="coerce") >= lat_min) &
+                (pd.to_numeric(stations_df["Latitud_decimal"], errors="coerce") <= lat_max) &
+                (pd.to_numeric(stations_df["Longitud_decimal"], errors="coerce") >= lon_min) &
+                (pd.to_numeric(stations_df["Longitud_decimal"], errors="coerce") <= lon_max)
+            ]
+            selected.clear()
+            selected.update(in_bounds["Nombre"].tolist())
+            selection_label.value = f"<b>{len(selected)} stations selected.</b> Click 'Download Selected Area' to start."
+        except Exception as exc:
+            selection_label.value = f"<span style='color:red'>Draw error: {exc}</span>"
+
+    draw_control.on_draw(_on_draw)
+
     download_area_btn = Button(description="Download Selected Area", button_style="success")
     download_thread = None
 
@@ -294,57 +363,74 @@ def OGIMETDownloader(
         nonlocal download_thread
         if download_thread and download_thread.is_alive():
             return
-        folder = folder_chooser.selected_path
-        if not folder or not selected:
+        if not selected:
+            selection_label.value = "<i>Draw a rectangle on the map to select stations first.</i>"
             return
-        os.makedirs(folder, exist_ok=True)
+        folder = str(Path(folder_chooser.selected or str(output_folder)))
         cancel_flag["parar"] = False
         selected_df = stations_df[stations_df["Nombre"].isin(selected)]
-        selected_df.to_csv(os.path.join(folder, "selected_stations.csv"), index=False)
 
         prog_total = IntProgress(value=0, min=0, max=len(selected_df), description="Total:")
         prog_station = IntProgress(value=0, min=0, max=1, description="Station:")
-        prog_label = HTML(value="Starting download...")
-        display(VBox([prog_label, prog_total, prog_station, cancel_button]))
+        prog_label = HTML(value=f"Starting download → <code>{folder}</code>")
+        display(VBox([prog_label, prog_total, prog_station, cancel_button, output]))
 
         def _run():
-            for i, (_, row) in enumerate(selected_df.iterrows(), 1):
-                if cancel_flag["parar"]:
-                    break
-                prog_label.value = f"<b>Station {i}/{len(selected_df)}: {row['Nombre']}</b>"
-                base = normalize_filename(row["Nombre"])
-                parts = str(row["WIGOS ID"]).split("-")
-                code = parts[-1].strip() if len(parts) >= 4 and parts[-1].strip().isdigit() else None
-                if not code:
-                    prog_total.value = i
-                    continue
-                total_days = (pd.to_datetime(end_picker.value) - pd.to_datetime(start_picker.value)).days + 1
-                prog_station.max = (total_days + 29) // 30
-                prog_station.value = 0
-                df_raw = download_synop(code, start_picker.value, end_picker.value,
-                                        progress=prog_station, cancel_flag=cancel_flag)
-                if df_raw is not None:
-                    try:
-                        df_proc = process_all_meteorological_variables(df_raw)
-                        df_proc.to_csv(os.path.join(folder, f"series_{base}.csv"), index=False)
-                        pd.DataFrame([row]).to_csv(os.path.join(folder, f"station_{base}.csv"), index=False)
-                    except Exception as exc:
+            try:
+                os.makedirs(folder, exist_ok=True)
+                selected_df.to_csv(os.path.join(folder, "selected_stations.csv"), index=False)
+                for i, (_, row) in enumerate(selected_df.iterrows(), 1):
+                    if cancel_flag["parar"]:
+                        break
+                    prog_label.value = (
+                        f"<b>Station {i}/{len(selected_df)}: {row['Nombre']}</b> "
+                        f"→ <code>{folder}</code>"
+                    )
+                    base = normalize_filename(row["Nombre"])
+                    parts = str(row["WIGOS ID"]).split("-")
+                    code = parts[-1].strip() if len(parts) >= 4 and parts[-1].strip().isdigit() else None
+                    if not code:
                         with output:
-                            print(f"Error {base}: {exc}")
-                prog_total.value = i
+                            print(f"Skipping {row['Nombre']}: bad WIGOS ID '{row['WIGOS ID']}'")
+                        prog_total.value = i
+                        continue
+                    total_days = (pd.to_datetime(end_picker.value) - pd.to_datetime(start_picker.value)).days + 1
+                    prog_station.max = (total_days + 29) // 30
+                    prog_station.value = 0
+                    with output:
+                        df_raw = download_synop(code, start_picker.value, end_picker.value,
+                                                progress=prog_station, cancel_flag=cancel_flag)
+                    if df_raw is not None:
+                        try:
+                            df_proc = process_all_meteorological_variables(df_raw)
+                            df_proc.to_csv(os.path.join(folder, f"series_{base}.csv"), index=False)
+                            pd.DataFrame([row]).to_csv(os.path.join(folder, f"station_{base}.csv"), index=False)
+                        except Exception as exc:
+                            with output:
+                                print(f"Processing error {base}: {exc}")
+                    else:
+                        with output:
+                            print(f"No data for {row['Nombre']} (code {code})")
+                    prog_total.value = i
+                prog_label.value = f"<b>Download complete.</b> Files saved to <code>{folder}</code>"
+            except Exception as exc:
+                with output:
+                    print(f"Fatal download error: {exc}")
+                prog_label.value = f"<span style='color:red'>Error: {exc}</span>"
 
-        download_thread = threading.Thread(target=_run)
+        download_thread = threading.Thread(target=_run, daemon=True)
         download_thread.start()
 
     download_area_btn.on_click(start_download)
-    display(VBox([m, HBox([start_picker, end_picker]), folder_chooser, download_area_btn, output]))
+    display(VBox([m, HBox([start_picker, end_picker]), folder_chooser,
+                  HBox([download_area_btn, selection_label]), output]))
 
 
 class OgimetCSVLoader:
     """Load and quality-check OGIMET series downloaded with OGIMETDownloader."""
 
     def __init__(self, folder_path=None, create=True):
-        self.folder_path = str(Path(folder_path or DEFAULT_OGIMET_OUTPUT_DIR))
+        self.folder_path = str(Path(folder_path) if folder_path else DEFAULT_OGIMET_OUTPUT_DIR)
         if create:
             Path(self.folder_path).mkdir(parents=True, exist_ok=True)
         self.station_df = None

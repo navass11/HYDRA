@@ -7,7 +7,7 @@ meteorological variable:
 
 - **MLE**   — Maximum Likelihood Estimation via scipy.
 - **L-moments** — Method of L-moments via lmoments3.
-- **Bayesian** — MCMC via pystan (weakly informative priors).
+- **Bayesian** — MCMC via PyMC + NUTS (weakly informative priors).
 
 Regional analysis normalises each station's series by its index flood
 (mean annual maximum) before fitting a single regional GEV, then
@@ -17,7 +17,7 @@ Dependencies
 ------------
 - scipy (always available)
 - lmoments3: ``pip install lmoments3``
-- pystan: ``pip install pystan``  (Stan 2.x)
+- pymc: ``pip install pymc``  (Bayesian method only)
 """
 
 from __future__ import annotations
@@ -43,20 +43,6 @@ def _require_lmoments():
         ) from exc
 
 
-def _require_stan():
-    try:
-        import stan
-        try:
-            import nest_asyncio
-            nest_asyncio.apply()
-        except ImportError:
-            pass
-        return stan
-    except ImportError as exc:
-        raise ImportError(
-            "pystan is required for Bayesian GEV fitting.\n"
-            "Install it with: pip install pystan"
-        ) from exc
 
 
 # ---------------------------------------------------------------------------
@@ -156,45 +142,9 @@ def return_level(params, T):
                           scale=params["sigma"])
 
 
-_BAYES_GEV_CODE = """
-data {
-    int<lower=1> N;
-    vector[N] y;
-    real y_mean;
-    real<lower=0> y_sd;
-}
-parameters {
-    real mu_raw;                    // non-centred: mu = y_mean + y_sd * mu_raw
-    real<lower=0> sigma;
-    real<lower=-1, upper=1> xi;
-}
-transformed parameters {
-    real mu = y_mean + y_sd * mu_raw;
-}
-model {
-    mu_raw ~ normal(0, 1);
-    sigma  ~ lognormal(log(y_sd), 1);
-    xi     ~ normal(0, 0.5);
-    for (n in 1:N) {
-        real z = (y[n] - mu) / sigma;
-        if (abs(xi) > 1e-6) {
-            real t = 1.0 + xi * z;
-            if (t > 0)
-                target += -log(sigma) - (1.0 + 1.0/xi) * log(t)
-                          - pow(t, -1.0/xi);
-            else
-                target += negative_infinity();
-        } else {
-            target += -log(sigma) - z - exp(-z);
-        }
-    }
-}
-"""
-
-
 def fit_gev_bayes(data, n_chains=4, n_samples=1000):
     """
-    Fit a GEV distribution by Bayesian MCMC (Stan).
+    Fit a GEV distribution by Bayesian MCMC (PyMC + NUTS).
 
     Args:
         data:      1-D array of annual maxima.
@@ -204,23 +154,8 @@ def fit_gev_bayes(data, n_chains=4, n_samples=1000):
     Returns:
         pd.DataFrame of posterior samples with columns ``mu``, ``sigma``, ``xi``.
     """
-    stan = _require_stan()
-    arr = np.asarray(data, dtype=float)
-    arr = arr[np.isfinite(arr)]
-    stan_data = {
-        "N":      len(arr),
-        "y":      arr.tolist(),
-        "y_mean": float(arr.mean()),
-        "y_sd":   float(arr.std()),
-    }
-    model = stan.build(_BAYES_GEV_CODE, data=stan_data)
-    fit = model.sample(num_chains=n_chains, num_samples=n_samples)
-    # `mu` is a transformed parameter — pystan 3.x exposes it directly
-    return pd.DataFrame({
-        "mu":    np.asarray(fit["mu"]).flatten(),
-        "sigma": np.asarray(fit["sigma"]).flatten(),
-        "xi":    np.asarray(fit["xi"]).flatten(),
-    })
+    from pyhydra.climate.time_series.extremes import fit_gev_mcmc
+    return fit_gev_mcmc(data, n_samples=n_samples, n_chains=n_chains)
 
 
 def return_level_bayes(posterior, T, credible=0.95):

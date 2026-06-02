@@ -1,0 +1,315 @@
+---
+import Layout from '../../layouts/Layout.astro';
+const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
+---
+
+<Layout title="Eventos y GEV Bayesiana — HYDRA">
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js" is:inline></script>
+
+  <section class="pt-24 pb-10 bg-gradient-to-br from-slate-950 via-indigo-950 to-hydra-800 text-white">
+    <div class="max-w-7xl mx-auto px-6">
+      <a href="/" class="inline-flex items-center gap-2 text-white/65 hover:text-white text-sm mb-6 transition-colors">
+        ← Volver al inicio
+      </a>
+      <h1 class="text-4xl font-extrabold mb-2">Selección de eventos y ajuste GEV bayesiano</h1>
+      <p class="text-white/76 text-lg max-w-3xl">
+        Extrae eventos extremos, calcula máximos anuales y ajusta una GEV con estimación MAP bayesiana y bandas de incertidumbre aproximadas.
+      </p>
+    </div>
+  </section>
+
+  <div class="max-w-7xl mx-auto px-6 py-10" id="app" data-api-url={apiUrl}>
+    <div class="grid lg:grid-cols-[350px_1fr] gap-8">
+      <aside class="space-y-6">
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-6">
+          <div>
+            <h3 class="font-semibold text-gray-800 mb-3 text-sm uppercase tracking-wide">Datos</h3>
+            <div class="grid grid-cols-2 gap-2 mb-3">
+              <button id="btn-demo" class="src-btn py-2 px-3 rounded-lg text-sm font-medium border-2 border-hydra-500 bg-hydra-50 text-hydra-700">Demo</button>
+              <button id="btn-upload" class="src-btn py-2 px-3 rounded-lg text-sm font-medium border-2 border-gray-200 text-gray-600 hover:border-hydra-300 transition-colors">Subir CSV</button>
+            </div>
+            <input type="file" id="file-input" accept=".csv" class="hidden" />
+            <p id="file-name" class="text-xs text-gray-400 italic">Demo: precipitación diaria 1980-2024</p>
+            <div id="csv-hint" class="hidden mt-2 text-xs text-gray-500 bg-gray-50 rounded-lg p-3">
+              CSV con dos columnas: <code class="text-hydra-700">fecha, valor</code>. La primera columna se interpreta como fecha.
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-gray-800 mb-2" for="variable">Variable</label>
+            <select id="variable" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-hydra-400">
+              <option value="precipitation" selected>Precipitación</option>
+              <option value="discharge">Caudal</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="flex justify-between text-sm font-semibold text-gray-800 mb-2">
+              Cuantil de umbral
+              <span id="quantile-val" class="text-hydra-600 font-bold">0.95</span>
+            </label>
+            <input type="range" id="threshold-quantile" min="0.80" max="0.99" value="0.95" step="0.01" class="w-full accent-hydra-600" />
+            <p class="text-xs text-gray-400 mt-1">Se aplica sobre valores positivos si no se fija umbral manual.</p>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-gray-800 mb-2" for="threshold">Umbral manual</label>
+            <input type="number" id="threshold" placeholder="auto" step="0.1" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-hydra-400" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-gray-800 mb-2" for="min-sep">Separación entre eventos (días)</label>
+            <input type="number" id="min-sep" value="5" min="1" max="60" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-hydra-400" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-gray-800 mb-2" for="n-samples">Muestras de incertidumbre</label>
+            <input type="number" id="n-samples" value="1500" min="200" max="10000" step="100" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-hydra-400" />
+          </div>
+
+          <button id="run-btn" class="w-full bg-hydra-600 hover:bg-hydra-700 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2">
+            <span id="run-label">Ajustar modelo</span>
+            <svg id="run-arrow" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+            </svg>
+            <svg id="run-spinner" class="hidden w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+            </svg>
+          </button>
+          <div id="error-box" class="hidden bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700"></div>
+        </div>
+
+        <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-5 text-sm text-indigo-900 space-y-2">
+          <p class="font-semibold">Método</p>
+          <p>Eventos POT con de-clustering, máximos anuales y GEV con MAP bayesiano. Las bandas se aproximan con matriz de Fisher para mantener la herramienta interactiva.</p>
+        </div>
+      </aside>
+
+      <main>
+        <div id="placeholder" class="min-h-[430px] flex flex-col items-center justify-center text-center rounded-2xl border-2 border-dashed border-gray-200 p-12">
+          <div class="w-16 h-16 rounded-2xl bg-indigo-100 text-indigo-800 flex items-center justify-center mb-4">
+            <svg class="w-9 h-9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M4 19V5"/><path d="M4 19h16"/><path d="M7 14l3-3 3 2 5-7"/><path d="M9 21h6"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-700 mb-2">Listo para ajustar</h3>
+          <p class="text-gray-400 max-w-md">Ejecuta la demo o sube una serie diaria para seleccionar eventos y estimar niveles de retorno.</p>
+        </div>
+
+        <div id="results" class="hidden space-y-8">
+          <div id="stats-row" class="grid grid-cols-2 lg:grid-cols-4 gap-4"></div>
+
+          <div class="grid lg:grid-cols-[1fr_360px] gap-8">
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <h3 class="font-semibold text-gray-800 mb-1">Niveles de retorno</h3>
+              <p class="text-sm text-gray-400 mb-4">Estimación MAP y banda aproximada 5-95 %.</p>
+              <div id="chart-return-levels" class="h-80"></div>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <h3 class="font-semibold text-gray-800 mb-4">Parámetros GEV</h3>
+              <div id="params-box" class="space-y-3"></div>
+            </div>
+          </div>
+
+          <div class="grid lg:grid-cols-2 gap-8">
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <h3 class="font-semibold text-gray-800 mb-1">Máximos anuales</h3>
+              <p class="text-sm text-gray-400 mb-4">Serie usada para el ajuste GEV.</p>
+              <div id="chart-maxima" class="h-72"></div>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <h3 class="font-semibold text-gray-800 mb-1">Eventos seleccionados</h3>
+              <p class="text-sm text-gray-400 mb-4">Eventos principales ordenados por pico.</p>
+              <div class="overflow-auto max-h-72">
+                <table class="w-full text-sm">
+                  <thead class="text-left text-gray-500">
+                    <tr><th class="py-2">Pico</th><th>Fecha</th><th>Duración</th><th>Total/vol.</th></tr>
+                  </thead>
+                  <tbody id="events-table" class="divide-y divide-gray-100"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</Layout>
+
+<script>
+declare const Plotly: any;
+
+const layoutBase = {
+  paper_bgcolor: 'transparent',
+  plot_bgcolor: 'transparent',
+  margin: { t: 20, r: 16, b: 48, l: 58 },
+  font: { family: 'Inter, system-ui, sans-serif', size: 11 },
+};
+
+let useDemo = true;
+let isRunning = false;
+
+const appEl = document.getElementById('app')!;
+const apiUrl = appEl.dataset.apiUrl!;
+const btnDemo = document.getElementById('btn-demo')!;
+const btnUpload = document.getElementById('btn-upload')!;
+const fileInput = document.getElementById('file-input') as HTMLInputElement;
+const fileNameEl = document.getElementById('file-name')!;
+const csvHintEl = document.getElementById('csv-hint')!;
+const quantileInput = document.getElementById('threshold-quantile') as HTMLInputElement;
+const quantileVal = document.getElementById('quantile-val')!;
+const runBtn = document.getElementById('run-btn')!;
+const runLabel = document.getElementById('run-label')!;
+const runArrow = document.getElementById('run-arrow')!;
+const runSpinner = document.getElementById('run-spinner')!;
+const errorBox = document.getElementById('error-box')!;
+const placeholder = document.getElementById('placeholder')!;
+const resultsEl = document.getElementById('results')!;
+
+function setSource(demo: boolean) {
+  useDemo = demo;
+  btnDemo.className = `src-btn py-2 px-3 rounded-lg text-sm font-medium border-2 transition-colors ${demo ? 'border-hydra-500 bg-hydra-50 text-hydra-700' : 'border-gray-200 text-gray-600 hover:border-hydra-300'}`;
+  btnUpload.className = `src-btn py-2 px-3 rounded-lg text-sm font-medium border-2 transition-colors ${!demo ? 'border-hydra-500 bg-hydra-50 text-hydra-700' : 'border-gray-200 text-gray-600 hover:border-hydra-300'}`;
+  csvHintEl.classList.toggle('hidden', demo);
+  if (demo) fileNameEl.textContent = 'Demo: precipitación diaria 1980-2024';
+}
+
+function setRunning(running: boolean) {
+  isRunning = running;
+  runBtn.disabled = running;
+  runLabel.textContent = running ? 'Ajustando...' : 'Ajustar modelo';
+  runArrow.classList.toggle('hidden', running);
+  runSpinner.classList.toggle('hidden', !running);
+}
+
+function showError(msg: string) {
+  errorBox.textContent = msg;
+  errorBox.classList.remove('hidden');
+}
+
+function clearError() {
+  errorBox.classList.add('hidden');
+  errorBox.textContent = '';
+}
+
+btnDemo.addEventListener('click', () => setSource(true));
+btnUpload.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', () => {
+  if (fileInput.files?.[0]) {
+    setSource(false);
+    fileNameEl.textContent = fileInput.files[0].name;
+  }
+});
+quantileInput.addEventListener('input', () => { quantileVal.textContent = Number(quantileInput.value).toFixed(2); });
+
+runBtn.addEventListener('click', async () => {
+  if (isRunning) return;
+  clearError();
+  if (!useDemo && !fileInput.files?.[0]) {
+    showError('Selecciona un CSV o vuelve a usar los datos demo.');
+    return;
+  }
+  setRunning(true);
+
+  const fd = new FormData();
+  fd.append('demo', useDemo ? 'true' : 'false');
+  fd.append('variable', (document.getElementById('variable') as HTMLSelectElement).value);
+  fd.append('threshold_quantile', quantileInput.value);
+  fd.append('min_sep', (document.getElementById('min-sep') as HTMLInputElement).value);
+  fd.append('n_samples', (document.getElementById('n-samples') as HTMLInputElement).value);
+  const threshold = (document.getElementById('threshold') as HTMLInputElement).value;
+  if (threshold !== '') fd.append('threshold', threshold);
+  if (!useDemo && fileInput.files?.[0]) fd.append('file', fileInput.files[0]);
+
+  try {
+    const res = await fetch(`${apiUrl}/api/statistical/events-gev`, { method: 'POST', body: fd });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail ?? 'Error en el servidor');
+    }
+    renderResults(await res.json());
+  } catch (err: any) {
+    showError(err.message ?? 'Error desconocido');
+  } finally {
+    setRunning(false);
+  }
+});
+
+function statCard(label: string, value: string, unit = '') {
+  return `<div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+    <p class="text-xs text-gray-400 uppercase tracking-wide mb-2">${label}</p>
+    <p class="text-3xl font-bold text-gray-900">${value}</p>
+    <p class="text-xs text-gray-400 mt-1">${unit}</p>
+  </div>`;
+}
+
+function paramCard(label: string, value: number, posterior?: any) {
+  const band = posterior ? `<p class="text-xs text-gray-400 mt-1">P5 ${posterior.q05} · P50 ${posterior.q50} · P95 ${posterior.q95}</p>` : '';
+  return `<div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
+    <p class="text-xs text-gray-400 uppercase tracking-wide">${label}</p>
+    <p class="text-2xl font-bold text-gray-900 mt-1">${value}</p>
+    ${band}
+  </div>`;
+}
+
+function renderResults(data: any) {
+  placeholder.classList.add('hidden');
+  resultsEl.classList.remove('hidden');
+
+  const s = data.summary;
+  document.getElementById('stats-row')!.innerHTML =
+    statCard('Años', `${s.n_years}`, `${s.start} - ${s.end}`) +
+    statCard('Eventos', `${s.n_events}`, `umbral ${s.threshold}`) +
+    statCard('Máximos anuales', `${s.n_maxima}`, 'GEV block maxima') +
+    statCard('Separación', `${s.min_sep}`, 'días');
+
+  const params = data.params_map;
+  const post = data.posterior_summary ?? {};
+  document.getElementById('params-box')!.innerHTML =
+    paramCard('mu', params.mu, post.mu) +
+    paramCard('sigma', params.sigma, post.sigma) +
+    paramCard('xi', params.xi, post.xi) +
+    `<div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
+      <p class="text-xs text-gray-400 uppercase tracking-wide">log posterior MAP</p>
+      <p class="text-2xl font-bold text-hydra-700 mt-1">${params.map_logpost}</p>
+    </div>`;
+
+  const periods = Object.keys(data.return_levels).map(Number);
+  const point = periods.map(t => data.return_levels[String(t)]);
+  const q05 = periods.map(t => data.return_level_bands[String(t)]?.q05);
+  const q95 = periods.map(t => data.return_level_bands[String(t)]?.q95);
+
+  Plotly.newPlot('chart-return-levels', [
+    { x: periods, y: q95, mode: 'lines', line: { width: 0 }, showlegend: false, hoverinfo: 'skip' },
+    { x: periods, y: q05, fill: 'tonexty', mode: 'lines', line: { width: 0 }, fillcolor: 'rgba(79,70,229,0.18)', name: 'P5-P95' },
+    { x: periods, y: point, mode: 'lines+markers', line: { color: '#0d9488', width: 3 }, marker: { size: 7 }, name: 'MAP' },
+  ], {
+    ...layoutBase,
+    xaxis: { title: 'Periodo de retorno (años)', type: 'log', gridcolor: '#f3f4f6' },
+    yaxis: { title: s.variable === 'precipitation' ? 'mm/día' : 'caudal', gridcolor: '#f3f4f6' },
+    legend: { orientation: 'h', y: -0.22 },
+  }, { responsive: true, displayModeBar: false });
+
+  Plotly.newPlot('chart-maxima', [{
+    x: data.maxima.map((m: any) => m.year),
+    y: data.maxima.map((m: any) => m.value),
+    type: 'bar',
+    marker: { color: '#0d9488', opacity: 0.76 },
+    name: 'Máximo anual',
+  }], {
+    ...layoutBase,
+    xaxis: { title: 'Año', gridcolor: '#f3f4f6' },
+    yaxis: { title: s.variable === 'precipitation' ? 'mm/día' : 'valor', gridcolor: '#f3f4f6' },
+  }, { responsive: true, displayModeBar: false });
+
+  document.getElementById('events-table')!.innerHTML = data.events.slice(0, 20).map((evt: any) => `
+    <tr>
+      <td class="py-2 font-semibold text-gray-900">${evt.peak}</td>
+      <td class="text-gray-600">${evt.peak_date}</td>
+      <td class="text-gray-600">${evt.duration}</td>
+      <td class="text-gray-600">${evt.total_or_volume}</td>
+    </tr>
+  `).join('');
+}
+</script>

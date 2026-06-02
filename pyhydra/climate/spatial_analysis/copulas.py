@@ -329,18 +329,20 @@ def _tau_to_theta(tau, family):
         return max(2.0 * tau / (1.0 - tau), 1e-4)  # θ = 2τ/(1-τ)
 
     if family == "frank":
-        # τ = 1 - 4/θ * (1 - 1/θ * ∫₀^θ t/(e^t-1) dt)
-        # Solve numerically via Debye function approximation
+        # τ = 1 - 4/θ * (1 - 1/θ * ∫₀^θ t/(e^t-1) dt)  (Debye function relation)
         def _frank_tau(theta):
             if abs(theta) < 1e-8:
                 return 0.0
             from scipy.integrate import quad
             D1 = quad(lambda t: t / (np.exp(t) - 1.0), 0, theta)[0] / theta
             return 1.0 - 4.0 / theta * (1.0 - D1)
+        if abs(tau) < 1e-6:
+            return 1e-4
+        lo, hi = (1e-4, 50.0) if tau > 0 else (-50.0, -1e-4)
         try:
-            return brentq(lambda t: _frank_tau(t) - tau, 1e-4, 50.0)
+            return brentq(lambda t: _frank_tau(t) - tau, lo, hi)
         except ValueError:
-            return 5.0  # fallback
+            return np.sign(tau) * 5.0
 
     raise ValueError(f"Unknown copula family: {family!r}")
 
@@ -484,8 +486,8 @@ class BivariateCopula:
         """
         Iso-return-period curve in physical (x, y) space.
 
-        For OR:  C(u,v) = 1 − 1/T
-        For AND: 1 − u − v + C(u,v) = 1/T
+        For OR:  C(u,v) = 1 − 1/T   → solutions exist for u ∈ (1−1/T, 1)
+        For AND: 1 − u − v + C(u,v) = 1/T  → solutions exist for u ∈ (0, 1−1/T)
 
         Returns:
             x_curve, y_curve: arrays of physical coordinates.
@@ -494,23 +496,27 @@ class BivariateCopula:
 
         target = 1.0 / T
 
+        # Adaptive u-sweep: concentrate points in the region where solutions exist.
+        if scenario == "OR":
+            level = 1.0 - target
+            u_arr = np.linspace(level + 1e-4, 1.0 - 1e-4, n_pts)
+        else:  # AND
+            u_arr = np.linspace(1e-4, max(1.0 - target - 1e-4, 2e-4), n_pts)
+
         x_out, y_out = [], []
-        for u in np.linspace(1e-4, 1 - 1e-4, n_pts):
+        for u in u_arr:
             try:
                 if scenario == "OR":
-                    level = 1.0 - target
                     if self._cdf_fn(u, 1 - 1e-10, self._theta) < level:
-                        continue
-                    if self._cdf_fn(u, 1e-10, self._theta) > level:
                         continue
                     v = brentq(
                         lambda vv: self._cdf_fn(u, vv, self._theta) - level,
                         1e-10, 1 - 1e-10, xtol=1e-8,
                     )
                 else:  # AND
-                    if (1 - u - 1e-10 + self._cdf_fn(u, 1e-10, self._theta)) < target:
-                        continue
-                    if (1 - u - (1-1e-10) + self._cdf_fn(u, 1-1e-10, self._theta)) > target:
+                    lo_val = 1.0 - u - 1e-10 + self._cdf_fn(u, 1e-10, self._theta)
+                    hi_val = 1.0 - u - (1 - 1e-10) + self._cdf_fn(u, 1 - 1e-10, self._theta)
+                    if lo_val < target or hi_val > target:
                         continue
                     v = brentq(
                         lambda vv: 1.0 - u - vv + self._cdf_fn(u, vv, self._theta) - target,
@@ -522,6 +528,96 @@ class BivariateCopula:
                 continue
 
         return np.array(x_out), np.array(y_out)
+
+    # ------------------------------------------------------------------
+    def most_probable_event(self, T, scenario="OR", n_pts=500):
+        """
+        Most Probable Design Event (MPDE) on the T-year iso-return-period contour.
+
+        Among all (x, y) combinations on the iso-contour, returns the one that
+        maximises the joint density f(x,y) = c(F_X(x), F_Y(y))·f_X(x)·f_Y(y).
+
+        Args:
+            T:        Return period (years).
+            scenario: ``'OR'`` or ``'AND'``.
+            n_pts:    Contour resolution (higher → more precise MPDE location).
+
+        Returns:
+            (x_mpde, y_mpde) as floats, or (None, None) if the contour is empty.
+        """
+        xc, yc = self.return_period_contour(T, scenario=scenario, n_pts=n_pts)
+        if len(xc) == 0:
+            return None, None
+
+        u = self._u(xc)
+        v = self._v(yc)
+
+        # Copula density via central finite differences
+        eps = 1e-5
+        u_lo, u_hi = np.maximum(u - eps, eps), np.minimum(u + eps, 1 - eps)
+        v_lo, v_hi = np.maximum(v - eps, eps), np.minimum(v + eps, 1 - eps)
+        c_uv = (self._cdf_fn(u_hi, v_hi, self._theta)
+                - self._cdf_fn(u_hi, v_lo, self._theta)
+                - self._cdf_fn(u_lo, v_hi, self._theta)
+                + self._cdf_fn(u_lo, v_lo, self._theta)) / (4 * eps ** 2)
+        c_uv = np.maximum(c_uv, 0.0)
+
+        # Marginal PDFs
+        fx = self._mx[0].pdf(xc, *self._mx[1])
+        fy = self._my[0].pdf(yc, *self._my[1])
+
+        idx = int(np.argmax(c_uv * fx * fy))
+        return float(xc[idx]), float(yc[idx])
+
+    # ------------------------------------------------------------------
+    def sample(self, n, random_state=None):
+        """
+        Draw *n* synthetic paired samples from the fitted bivariate copula.
+
+        Uses family-specific exact algorithms (Marshall–Olkin for Gumbel,
+        Gamma-frailty for Clayton, conditional inversion for Frank).
+
+        Returns:
+            (x_synth, y_synth): two 1-D arrays of length *n* in physical space.
+        """
+        rng   = np.random.default_rng(random_state)
+        theta = self._theta
+
+        if self.family == "gumbel":
+            alpha = 1.0 / theta
+            U  = rng.uniform(0.0, np.pi, n)
+            E  = rng.exponential(1.0, n)
+            V  = ((np.sin(alpha * U) / np.sin(U))
+                  * (np.sin((1 - alpha) * U) / (E * np.sin(U))) ** ((1 - alpha) / alpha))
+            e1 = rng.exponential(1.0, n)
+            e2 = rng.exponential(1.0, n)
+            u1 = np.exp(-(e1 / V) ** (1.0 / theta))
+            u2 = np.exp(-(e2 / V) ** (1.0 / theta))
+
+        elif self.family == "clayton":
+            V  = rng.gamma(1.0 / theta, 1.0, n)
+            e1 = rng.exponential(1.0, n)
+            e2 = rng.exponential(1.0, n)
+            u1 = (1.0 + e1 / V) ** (-1.0 / theta)
+            u2 = (1.0 + e2 / V) ** (-1.0 / theta)
+
+        elif self.family == "frank":
+            # Analytical conditional inversion: set h(v|u) = t and solve for v.
+            # Result: ev = [eu*(1-t) + t*e0] / [eu*(1-t) + t]  where
+            # e0 = exp(-θ), eu = exp(-θu), ev = exp(-θv); then v = -log(ev)/θ.
+            u1 = rng.uniform(0.0, 1.0, n)
+            t  = np.clip(rng.uniform(0.0, 1.0, n), 1e-9, 1 - 1e-9)
+            e0 = np.exp(-theta)
+            eu = np.exp(-theta * u1)
+            ev = (eu * (1.0 - t) + t * e0) / np.maximum(eu * (1.0 - t) + t, 1e-15)
+            u2 = np.clip(-np.log(np.maximum(ev, 1e-15)) / theta, 1e-10, 1 - 1e-10)
+
+        else:
+            raise ValueError(f"Unknown family: {self.family!r}")
+
+        u1 = np.clip(u1, 1e-10, 1 - 1e-10)
+        u2 = np.clip(u2, 1e-10, 1 - 1e-10)
+        return self._x_ppf(u1), self._y_ppf(u2)
 
     # ------------------------------------------------------------------
     def plot_contours(self, T_list=(2, 5, 10, 25, 50, 100),
@@ -545,6 +641,7 @@ class BivariateCopula:
             if ax is None:
                 fig, axes = plt.subplots(figsize=(6, 5))
             else:
+                fig = ax.figure
                 axes = ax
             axes = [axes]
 
@@ -577,6 +674,188 @@ class BivariateCopula:
         else:
             ax_.set_title(f"{lbl}\n{title}", fontsize=10)
             return fig, axes[0]
+
+    # ------------------------------------------------------------------
+    def plot_joint(self, T_list=(2, 10, 50, 100, 500),
+                   n_synthetic=2000, figsize=(6, 6),
+                   colors=("indianred", "b"),
+                   n_grid=200):
+        """
+        Composite joint plot — GridSpec(4, 4) layout.
+
+        Faithfully reproduces the reference visualization style:
+
+        * **Main panel** (top-right 3×3): grey synthetic scatter, black
+          observed scatter, AND contours (*colors[0]*) and OR contours
+          (*colors[1]*) on the same axes.  Points along each contour are
+          coloured by joint PDF (Reds for AND, Blues for OR); the most
+          probable point on each contour is marked with an 'x'.
+        * **Bottom panel** (xMarg): marginal PDF of X filled in olive, with
+          T-year return-level annotations.  Y-axis inverted so the PDF grows
+          upward toward the main panel.
+        * **Left panel** (yMarg): marginal PDF of Y (horizontal), similarly
+          annotated.  X-axis inverted so PDF grows rightward.
+
+        Args:
+            T_list:      Return periods to draw.
+            n_synthetic: Number of synthetic copula samples (0 to skip).
+            figsize:     Figure size.
+            colors:      ``(and_color, or_color)`` for base contour lines.
+            n_grid:      Contour grid resolution.
+
+        Returns:
+            ``(fig, (main_ax, xMarg_ax, yMarg_ax))``
+        """
+        import matplotlib.pyplot as plt
+        from matplotlib.lines import Line2D
+
+        Ts = np.asarray(sorted(T_list), dtype=float)
+
+        # --- Physical-space extent from data ---
+        if self._x is not None:
+            dx = (self._x.max() - self._x.min()) * 0.15
+            dy = (self._y.max() - self._y.min()) * 0.15
+            extent = [self._x.min() - dx, self._x.max() + dx,
+                      self._y.min() - dy, self._y.max() + dy]
+        else:
+            u_e = np.linspace(1e-3, 1-1e-3, n_grid)
+            extent = [float(self._x_ppf(u_e).min()), float(self._x_ppf(u_e).max()),
+                      float(self._y_ppf(u_e).min()), float(self._y_ppf(u_e).max())]
+
+        # --- Return-period grids ---
+        u_lin = np.linspace(1e-3, 1 - 1e-3, n_grid)
+        UU, VV = np.meshgrid(u_lin, u_lin)
+        C     = self._cdf_fn(UU, VV, self._theta)
+        T_or  = 1.0 / np.maximum(1.0 - C, 1e-12)
+        T_and = 1.0 / np.maximum(1.0 - UU - VV + C, 1e-12)
+        XX = self._x_ppf(UU)
+        YY = self._y_ppf(VV)
+
+        # --- Layout ---
+        fig  = plt.figure(figsize=figsize)
+        grid = plt.GridSpec(4, 4, hspace=0.2, wspace=0.2, figure=fig)
+        main  = fig.add_subplot(grid[:-1, 1:])
+        yMarg = fig.add_subplot(grid[:-1, 0])
+        xMarg = fig.add_subplot(grid[-1,  1:])
+        main.set_xlim(extent[:2])
+        main.set_ylim(extent[2:])
+
+        # --- Synthetic scatter ---
+        if n_synthetic > 0:
+            xs, ys = self.sample(n_synthetic)
+            main.scatter(xs, ys, marker='.', c='grey', s=1, alpha=0.5,
+                         rasterized=True, zorder=2, label='aleatorios')
+
+        # --- Observed scatter ---
+        if self._x is not None:
+            main.scatter(self._x, self._y, marker='.', c='k', s=12,
+                         zorder=3, label='observados')
+
+        # --- Base contour lines (semi-transparent) ---
+        cs_and = main.contour(XX, YY, T_and, levels=Ts.tolist(),
+                              colors=colors[0], linewidths=0.8, alpha=0.3, zorder=4)
+        cs_or  = main.contour(XX, YY, T_or,  levels=Ts.tolist(),
+                              colors=colors[1], linewidths=0.8, alpha=0.3, zorder=4)
+        main.clabel(cs_and, fmt='%g yr', fontsize=7, inline=True)
+        main.clabel(cs_or,  fmt='%g yr', fontsize=7, inline=True)
+
+        # --- Colour contour points by joint PDF + MPDE 'x' markers ---
+        eps = 1e-5
+        for scn, cs, cmap, c_mpde in zip(
+                ['AND', 'OR'], [cs_and, cs_or], ['Reds', 'Blues'],
+                ['maroon', 'midnightblue']):
+            # Extract paths per T level (compatible with matplotlib ≥ 3.8)
+            try:
+                level_paths = [col.get_paths() for col in cs.collections]
+            except AttributeError:
+                # newer API: cs.get_paths() returns all paths across levels
+                level_paths = [[p] for p in cs.get_paths()]
+
+            for i, T in enumerate(Ts):
+                paths = level_paths[i] if i < len(level_paths) else []
+                if not paths:
+                    continue
+                # pick the longest path at this level
+                pts = max(paths, key=lambda p: len(p.vertices)).vertices
+                # clip to extent
+                mask = ((pts[:, 0] >= extent[0]) & (pts[:, 0] <= extent[1]) &
+                        (pts[:, 1] >= extent[2]) & (pts[:, 1] <= extent[3]))
+                pts = pts[mask]
+                if len(pts) < 2:
+                    continue
+                # joint PDF at contour points
+                u = self._u(pts[:, 0])
+                v = self._v(pts[:, 1])
+                u_lo = np.clip(u - eps, 1e-10, 1 - 1e-10)
+                u_hi = np.clip(u + eps, 1e-10, 1 - 1e-10)
+                v_lo = np.clip(v - eps, 1e-10, 1 - 1e-10)
+                v_hi = np.clip(v + eps, 1e-10, 1 - 1e-10)
+                c_uv = (self._cdf_fn(u_hi, v_hi, self._theta)
+                        - self._cdf_fn(u_hi, v_lo, self._theta)
+                        - self._cdf_fn(u_lo, v_hi, self._theta)
+                        + self._cdf_fn(u_lo, v_lo, self._theta)) / (4 * eps ** 2)
+                fx  = self._mx[0].pdf(pts[:, 0], *self._mx[1])
+                fy  = self._my[0].pdf(pts[:, 1], *self._my[1])
+                pdf = np.clip(c_uv * fx * fy, 0, None)
+                main.scatter(pts[:, 0], pts[:, 1], c=pdf, cmap=cmap,
+                             s=0.25, zorder=5)
+                # most probable point
+                mp = pts[int(np.argmax(pdf))]
+                main.scatter(mp[0], mp[1], marker='x', color=c_mpde,
+                             s=70, linewidths=1.2, zorder=7)
+            main.plot([-1e9], [-1e9], c=c_mpde, label=scn)
+            main.scatter([-1e9], [-1e9], marker='x', c=c_mpde,
+                         s=70, linewidths=1.2, label=f'MaxProb {scn}')
+
+        main.set(xlim=extent[:2], ylim=extent[2:])
+        main.set_xticklabels([])
+        main.set_yticklabels([])
+        main.legend(fontsize=7, loc='upper left', ncol=1)
+
+        # --- X marginal (bottom): PDF, inverted y, T annotations ---
+        v0       = np.linspace(extent[0], extent[1], 400)
+        pdf_x    = self._mx[0].pdf(v0, *self._mx[1])
+        ymax_x   = float(np.nanmax(pdf_x))
+        if ymax_x > 0:
+            xMarg.fill_between(v0, pdf_x, color='olive', alpha=0.25)
+            xMarg.set(xlim=(extent[0], extent[1]), ylim=(ymax_x, 0))
+            ppfs_x = np.clip(self._mx[0].ppf(1 - 1 / Ts, *self._mx[1]),
+                             extent[0], extent[1])
+            for T, ppf in zip(Ts, ppfs_x):
+                xMarg.annotate(f'T{int(T)}',
+                               xy=(ppf, 0), xytext=(ppf, ymax_x / 3),
+                               color='olive', fontsize=7,
+                               ha='center', va='top', rotation=90,
+                               arrowprops=dict(arrowstyle='->', color='olive', lw=0.8))
+            xMarg.set_xlabel(self._labels[0], fontsize=11)
+            xMarg.set_yticks([])
+
+        # --- Y marginal (left): PDF horizontal, inverted x, T annotations ---
+        v1       = np.linspace(extent[2], extent[3], 400)
+        pdf_y    = self._my[0].pdf(v1, *self._my[1])
+        xmax_y   = float(np.nanmax(pdf_y))
+        if xmax_y > 0:
+            yMarg.fill_between(pdf_y, v1, color='olive', alpha=0.25,
+                               label='PDF')
+            yMarg.set(xlim=(xmax_y, 0), ylim=(extent[2], extent[3]))
+            ppfs_y = np.clip(self._my[0].ppf(1 - 1 / Ts, *self._my[1]),
+                             extent[2], extent[3])
+            for T, ppf in zip(Ts, ppfs_y):
+                yMarg.annotate(f'T{int(T)}',
+                               xy=(0, ppf), xytext=(xmax_y / 3, ppf),
+                               color='olive', fontsize=7,
+                               ha='right', va='center',
+                               arrowprops=dict(arrowstyle='->', color='olive', lw=0.8))
+            yMarg.set_ylabel(self._labels[1], fontsize=11)
+            yMarg.set_xticks([])
+            yMarg.legend(fontsize=7, loc='upper left')
+
+        fig.suptitle(
+            f"{self.family.capitalize()} copula  "
+            f"(τ={self._tau:.2f}, θ={self._theta:.2f})",
+            fontsize=11, fontweight='bold',
+        )
+        return fig, (main, xMarg, yMarg)
 
 
 # ── TrivariateCopula ──────────────────────────────────────────────────────────
@@ -700,16 +979,23 @@ class TrivariateCopula:
 
         contours = {}
         for T in T_list:
-            target  = 1.0 / T
-            xc, yc  = [], []
-            for u in np.linspace(1e-4, 1 - 1e-4, n_pts):
-                def _residual(vv):
-                    c3  = self._cdf_3d(u, vv, w0, self._theta)
+            target = 1.0 / T
+            # Adaptive u-sweep: OR solutions for u > 1-1/T, AND for u < 1-1/T
+            if scenario == "AND":
+                u_arr = np.linspace(1e-4, max(1.0 - target - 1e-4, 2e-4), n_pts)
+            else:
+                level = 1.0 - target
+                u_arr = np.linspace(level + 1e-4, 1.0 - 1e-4, n_pts)
+
+            xc, yc = [], []
+            for u in u_arr:
+                def _residual(vv, _u=u):
+                    c3  = self._cdf_3d(_u, vv, w0, self._theta)
                     if scenario == "AND":
-                        cxy = self._cdf_fn(u, vv, self._theta)
-                        cxz = self._cdf_fn(u, w0, self._theta)
+                        cxy = self._cdf_fn(_u, vv, self._theta)
+                        cxz = self._cdf_fn(_u, w0, self._theta)
                         cyz = self._cdf_fn(vv, w0, self._theta)
-                        return (1.0 - u - vv - w0 + cxy + cxz + cyz - c3) - target
+                        return (1.0 - _u - vv - w0 + cxy + cxz + cyz - c3) - target
                     return (1.0 - c3) - target   # OR
 
                 try:

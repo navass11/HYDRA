@@ -1,0 +1,440 @@
+---
+export interface Props {
+  title?: string;
+  description?: string;
+}
+const {
+  title = 'HYDRA',
+  description = 'Librería modular de Python para análisis hidrológico y climático',
+} = Astro.props;
+
+const base = import.meta.env.BASE_URL;
+const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
+---
+
+<!doctype html>
+<html lang="es" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/svg+xml" href={asset('/favicon.svg')} />
+    <script is:inline>
+      (() => {
+        const storedTheme = localStorage.getItem('hydra-theme');
+        const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+        const theme = storedTheme ?? (prefersDark ? 'dark' : 'light');
+        document.documentElement.classList.toggle('dark', theme === 'dark');
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.lang = localStorage.getItem('hydra-lang') ?? 'es';
+      })();
+    </script>
+  </head>
+  <body class="bg-white text-gray-900 font-sans antialiased transition-colors duration-300">
+    <!-- Navbar -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/80">
+      <nav class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        <a href={base} class="flex items-center gap-2.5 font-bold text-xl text-hydra-800">
+          <img src={asset('/assets/hydra-mark.svg')} alt="" class="h-9 w-9 rounded-xl shadow-sm" />
+          HYDRA
+        </a>
+        <div class="flex md:hidden items-center gap-2">
+          <div class="flex items-center gap-1 rounded-full border border-slate-200 bg-white/75 p-1 shadow-sm">
+            <button type="button" class="hydra-lang-btn rounded-full px-2.5 py-1 text-xs font-bold text-slate-600 transition-colors" data-lang="es" aria-label="Español">ES</button>
+            <button type="button" class="hydra-lang-btn rounded-full px-2.5 py-1 text-xs font-bold text-slate-600 transition-colors" data-lang="en" aria-label="English">EN</button>
+          </div>
+          <button
+            type="button"
+            class="theme-toggle inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white/75 text-slate-700 shadow-sm transition-colors hover:border-hydra-400 hover:text-hydra-700"
+            aria-label="Cambiar modo claro u oscuro"
+            title="Tema claro/oscuro"
+          >
+            <svg class="theme-icon-light h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+            </svg>
+            <svg class="theme-icon-dark hidden h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5 7 7 0 1 0 20.5 14.5Z"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
+          <a href="/#modulos" class="hover:text-hydra-600 transition-colors" data-i18n="nav.modules">Módulos</a>
+          <a href="/#notebooks" class="hover:text-hydra-600 transition-colors" data-i18n="nav.notebooks">Notebooks</a>
+          <a href="/#herramientas" class="hover:text-hydra-600 transition-colors font-semibold text-hydra-700" data-i18n="nav.tools">Herramientas</a>
+          <a href="/#instalacion" class="hover:text-hydra-600 transition-colors" data-i18n="nav.install">Instalación</a>
+          <div class="flex items-center gap-1 rounded-full border border-slate-200 bg-white/75 p-1 shadow-sm">
+            <button
+              type="button"
+              class="hydra-lang-btn rounded-full px-2.5 py-1 text-xs font-bold text-slate-600 transition-colors"
+              data-lang="es"
+              aria-label="Español"
+            >
+              ES
+            </button>
+            <button
+              type="button"
+              class="hydra-lang-btn rounded-full px-2.5 py-1 text-xs font-bold text-slate-600 transition-colors"
+              data-lang="en"
+              aria-label="English"
+            >
+              EN
+            </button>
+          </div>
+          <button
+            type="button"
+            class="theme-toggle inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white/75 text-slate-700 shadow-sm transition-colors hover:border-hydra-400 hover:text-hydra-700"
+            aria-label="Cambiar modo claro u oscuro"
+            title="Tema claro/oscuro"
+          >
+            <svg class="theme-icon-light h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+            </svg>
+            <svg class="theme-icon-dark hidden h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5 7 7 0 1 0 20.5 14.5Z"></path>
+            </svg>
+          </button>
+          <a
+            href="https://github.com/navass11/HYDRA"
+            target="_blank"
+            class="flex items-center gap-1.5 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+          >
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+            </svg>
+            GitHub
+          </a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-950 text-gray-400 py-12 mt-24">
+      <div class="max-w-7xl mx-auto px-6 text-center">
+        <div class="flex items-center justify-center gap-2 text-white font-semibold text-lg mb-3">
+          <img src={asset('/assets/hydra-mark.svg')} alt="" class="h-8 w-8 rounded-lg" />
+          HYDRA
+        </div>
+        <p class="text-sm" data-i18n="footer.description">Librería modular de Python para análisis hidrológico y climático.</p>
+        <p class="text-sm mt-2">
+          <a href="https://github.com/navass11/HYDRA" class="hover:text-hydra-400 transition-colors underline" target="_blank">
+            github.com/navass11/HYDRA
+          </a>
+        </p>
+      </div>
+    </footer>
+
+    <!-- Smooth scroll, theme and language controls -->
+    <script>
+      const translations = {
+        es: {
+          'nav.modules': 'Módulos',
+          'nav.notebooks': 'Notebooks',
+          'nav.tools': 'Herramientas',
+          'nav.install': 'Instalación',
+          'footer.description': 'Librería modular de Python para análisis hidrológico y climático.',
+          'hero.kicker': 'Python · Hidrología · Clima · Riesgo',
+          'hero.description': 'Librería modular para análisis hidrológico, climático y modelización de inundaciones. Integra datos, extremos, generación estocástica y modelos físicos en flujos reproducibles.',
+          'hero.notebooks': 'Ver notebooks',
+          'hero.tools': 'Explorar herramientas',
+          'stats.notebooks': 'Notebooks',
+          'stats.modules': 'Módulos',
+          'stats.sources': 'Fuentes de datos',
+          'modules.title': 'Módulos principales',
+          'modules.description': 'Cuatro bloques conectados para pasar de datos brutos a escenarios, simulaciones y productos de riesgo.',
+          'tools.title': 'Herramientas interactivas',
+          'tools.description': 'Interfaces ligeras para probar funcionalidades de HYDRA sin abrir un notebook.',
+          'tools.open': 'Abrir herramienta',
+          'notebooks.title': 'Notebooks',
+          'notebooks.description': 'notebooks ejecutables. Haz clic para ver el contenido completo con código y resultados.',
+          'filter.all': 'Todos',
+          'filter.climate': 'Clima',
+          'filter.spatial': 'Análisis esp.',
+          'filter.data': 'Datos',
+          'filter.modeling': 'Modelización',
+          'notebooks.run': 'Ejecutar',
+          'install.title': 'Instalación',
+          'install.description': 'Dos opciones para empezar en minutos.',
+        },
+        en: {
+          'nav.modules': 'Modules',
+          'nav.notebooks': 'Notebooks',
+          'nav.tools': 'Tools',
+          'nav.install': 'Install',
+          'footer.description': 'Modular Python library for hydrological and climate analysis.',
+          'hero.kicker': 'Python · Hydrology · Climate · Risk',
+          'hero.description': 'A modular library for hydrological and climate analysis and flood modelling. HYDRA connects data, extremes, stochastic generation and physical models in reproducible workflows.',
+          'hero.notebooks': 'View notebooks',
+          'hero.tools': 'Explore tools',
+          'stats.notebooks': 'Notebooks',
+          'stats.modules': 'Modules',
+          'stats.sources': 'Data sources',
+          'modules.title': 'Main modules',
+          'modules.description': 'Four connected blocks to move from raw data to scenarios, simulations and risk products.',
+          'tools.title': 'Interactive tools',
+          'tools.description': 'Lightweight interfaces to test HYDRA capabilities without opening a notebook.',
+          'tools.open': 'Open tool',
+          'notebooks.title': 'Notebooks',
+          'notebooks.description': 'executable notebooks. Click to open the full content with code and results.',
+          'filter.all': 'All',
+          'filter.climate': 'Climate',
+          'filter.spatial': 'Spatial analysis',
+          'filter.data': 'Data',
+          'filter.modeling': 'Modelling',
+          'notebooks.run': 'Run',
+          'install.title': 'Install',
+          'install.description': 'Two ways to get started in minutes.',
+        },
+      };
+      const phraseTranslations = {
+        '← Volver al inicio': '← Back to home',
+        '← Volver a modulos': '← Back to modules',
+        'Fuentes de datos': 'Data sources',
+        'Análisis climático': 'Climate analysis',
+        'Generación estocástica': 'Stochastic generation',
+        'Modelización': 'Modelling',
+        'Ver modulo →': 'View module →',
+        'Generación Estocástica': 'Stochastic Generation',
+        'Sensibilidad de Manning': 'Manning Sensitivity',
+        'Eventos + GEV bayesiana': 'Events + Bayesian GEV',
+        'Descarga OGIMET': 'OGIMET download',
+        'Cópulas de eventos': 'Event copulas',
+        'Cópulas multivariantes de eventos': 'Multivariate event copulas',
+        'Descarga directa de OGIMET': 'Direct OGIMET download',
+        'Selección de eventos y ajuste GEV bayesiano': 'Event selection and Bayesian GEV fitting',
+        'En que consiste': 'What it does',
+        'Herramientas relacionadas': 'Related tools',
+        'Flujo de trabajo': 'Workflow',
+        'Entradas': 'Inputs',
+        'Salidas': 'Outputs',
+        'Capacidades implementadas': 'Implemented capabilities',
+        'Validacion y control': 'Validation and control',
+        'Piezas de codigo HYDRA': 'HYDRA code pieces',
+        'Figuras de analisis': 'Analysis figures',
+        'Uso industrial': 'Industrial use',
+        'Papel dentro de HYDRA': 'Role inside HYDRA',
+        'Datos': 'Data',
+        'Datos de entrada': 'Input data',
+        'Demo': 'Demo',
+        'Subir CSV': 'Upload CSV',
+        'Variables continuas': 'Continuous variables',
+        'Variables discretas': 'Discrete variables',
+        'Muestras sintéticas': 'Synthetic samples',
+        'Ajustar cópula': 'Fit copula',
+        'Ajustar modelo': 'Fit model',
+        'Analizar sensibilidad': 'Analyse sensitivity',
+        'Variable': 'Variable',
+        'Precipitación': 'Precipitation',
+        'Caudal': 'Discharge',
+        'Cuantil de umbral': 'Threshold quantile',
+        'Umbral manual': 'Manual threshold',
+        'Indicativo OGIMET': 'OGIMET station id',
+        'Buscar estación': 'Search station',
+        'Inicio': 'Start',
+        'Fin': 'End',
+        'Días por bloque': 'Days per block',
+        'Distribución marginal': 'Marginal distribution',
+        'Instalación manual': 'Manual install',
+        'Recomendado — sin configurar dependencias': 'Recommended, no dependency setup',
+        'Python 3.9 o superior requerido': 'Python 3.9 or later required',
+        'Abrir →': 'Open →',
+        'Lectura rápida': 'Quick read',
+        // Module descriptions
+        'Descarga automática de precipitación (GPM, ERA5, AEMET), caudal (GloFAS, GRDC, USGS), cambio climático (CMIP6/ESGF) y texturas de suelo (SoilGrids).': 'Automatic download of precipitation (GPM, ERA5, AEMET), streamflow (GloFAS, GRDC, USGS), climate projections (CMIP6/ESGF) and soil textures (SoilGrids).',
+        'Series temporales, valores extremos, análisis de frecuencia regional, cópulas, interpolación espacial y modelos jerárquicos bayesianos.': 'Time series, extreme values, regional frequency analysis, copulas, spatial interpolation and Bayesian hierarchical models.',
+        'Generación estocástica de series (CoSMoS) y precipitación (NSRP via NEOPRENE), incluyendo modelos multisitio espacio-temporales.': 'Stochastic generation of time series (CoSMoS) and precipitation (NSRP via NEOPRENE), including multi-site space–time models.',
+        'Integración y automatización de modelos hidrológicos (HEC-HMS, SWAT+) e hidráulicos (HEC-RAS, SFINCS).': 'Integration and automation of hydrological (HEC-HMS, SWAT+) and hydraulic (HEC-RAS, SFINCS) models.',
+        // Tool descriptions
+        'Ajusta un modelo estacional CoSMoS a una serie diaria y genera un ensemble sintético reproducible.': 'Fit a seasonal CoSMoS model to a daily series and generate a reproducible synthetic ensemble.',
+        'Explora ensembles hidráulicos y relaciona rugosidad, calados y área inundada mediante correlaciones y regresión.': 'Explore hydraulic ensembles and relate roughness, water depths and flooded area via correlations and regression.',
+        'Selecciona eventos extremos y estima niveles de retorno con una GEV MAP bayesiana y bandas aproximadas.': 'Select extreme events and estimate return levels with a Bayesian MAP GEV and approximate uncertainty bands.',
+        'Genera enlaces SYNOP por ventanas temporales para estaciones OGIMET sin credenciales ni API externa.': 'Generate SYNOP request links for OGIMET stations without credentials or external API.',
+        'Ajusta dependencias multivariantes entre pico, volumen, duración y variables discretas para generar eventos sintéticos.': 'Fit multivariate dependencies between peak, volume, duration and discrete variables to generate synthetic events.',
+        // Tags and category badges
+        'Clima': 'Climate',
+        'Hidráulica': 'Hydraulics',
+        'Extremos': 'Extremes',
+        'Análisis': 'Analysis',
+        'Análisis esp.': 'Spatial analysis',
+        'Modelización': 'Modelling',
+        'Todos': 'All',
+        'Datos': 'Data',
+        // Notebook titles
+        'Corrección de sesgo': 'Bias correction',
+        'Extracción de eventos': 'Event extraction',
+        'Análisis de extremos': 'Extreme value analysis',
+        'Bayes jerárquico': 'Hierarchical Bayes',
+        'Cópulas': 'Copulas',
+        'Interpolación': 'Interpolation',
+        'Frecuencia regional': 'Regional frequency',
+        'Campos espaciales': 'Spatial fields',
+        // Install section
+        'Recomendado — sin configurar dependencias': 'Recommended — no dependency setup',
+        'Python 3.9 o superior requerido': 'Python 3.9 or later required',
+        // API Reference static labels
+        'Índice': 'Index',
+        'Clases': 'Classes',
+        'Funciones': 'Functions',
+        'Parámetros del constructor': 'Constructor parameters',
+        'Métodos': 'Methods',
+        'Ejemplo': 'Example',
+        'Dependencia: ': 'Dependency: ',
+        'Parámetros': 'Parameters',
+        'Parámetro': 'Parameter',
+        'Nombre': 'Name',
+        'Tipo': 'Type',
+        'Defecto': 'Default',
+        'Descripción': 'Description',
+        'Descripción general': 'Overview',
+        '← Volver al módulo': '← Back to module',
+        'Sin documentación disponible todavía para este módulo.': 'No documentation available yet for this module.',
+      };
+      const originalTextNodes = new WeakMap();
+
+      const translateTextNodes = (lang) => {
+        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+        const nodes = [];
+        while (walker.nextNode()) nodes.push(walker.currentNode);
+        nodes.forEach((node) => {
+          const parent = node.parentElement;
+          if (!parent || parent.closest('script, style, code, pre, [data-i18n], [data-t-es], [data-t-en]')) return;
+          if (!originalTextNodes.has(node)) originalTextNodes.set(node, node.nodeValue ?? '');
+          const original = originalTextNodes.get(node);
+          const trimmed = original.trim();
+          if (!trimmed) return;
+          const translated = lang === 'en' ? phraseTranslations[trimmed] : trimmed;
+          if (!translated) {
+            node.nodeValue = original;
+            return;
+          }
+          node.nodeValue = original.replace(trimmed, translated);
+        });
+      };
+
+      const setTheme = (theme) => {
+        document.documentElement.classList.toggle('dark', theme === 'dark');
+        document.documentElement.dataset.theme = theme;
+        localStorage.setItem('hydra-theme', theme);
+        document.querySelectorAll('.theme-icon-light').forEach((icon) => icon.classList.toggle('hidden', theme === 'dark'));
+        document.querySelectorAll('.theme-icon-dark').forEach((icon) => icon.classList.toggle('hidden', theme !== 'dark'));
+      };
+
+      const setLanguage = (lang) => {
+        const dict = translations[lang] ?? translations.es;
+        document.documentElement.lang = lang;
+        localStorage.setItem('hydra-lang', lang);
+        document.querySelectorAll('[data-i18n]').forEach((el) => {
+          const key = el.getAttribute('data-i18n');
+          if (key && dict[key]) el.textContent = dict[key];
+        });
+        document.querySelectorAll('.hydra-lang-btn').forEach((btn) => {
+          const active = btn.getAttribute('data-lang') === lang;
+          btn.classList.toggle('is-active', active);
+          btn.setAttribute('aria-pressed', String(active));
+        });
+        translateTextNodes(lang);
+      };
+
+      const observer = new IntersectionObserver(
+        (entries) => entries.forEach(e => e.isIntersecting && e.target.classList.add('visible')),
+        { threshold: 0.1 }
+      );
+      document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+      document.querySelectorAll('.hydra-lang-btn').forEach((btn) => {
+        btn.addEventListener('click', () => setLanguage(btn.getAttribute('data-lang') ?? 'es'));
+      });
+      document.querySelectorAll('.theme-toggle').forEach((button) => {
+        button.addEventListener('click', () => {
+          const current = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+          setTheme(current === 'dark' ? 'light' : 'dark');
+        });
+      });
+      setTheme(localStorage.getItem('hydra-theme') ?? (document.documentElement.classList.contains('dark') ? 'dark' : 'light'));
+      setLanguage(localStorage.getItem('hydra-lang') ?? 'es');
+    </script>
+
+    <style is:global>
+      .fade-in {
+        opacity: 0;
+        transform: translateY(24px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+      }
+      .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .hydra-lang-btn.is-active {
+        background: #0d9488;
+        color: #ffffff;
+      }
+      html.dark body {
+        background: #020617;
+        color: #e5edf6;
+      }
+      html.dark header {
+        background: rgba(2, 6, 23, 0.88);
+        border-color: rgba(51, 65, 85, 0.8);
+      }
+      html.dark footer,
+      html.dark .bg-gray-950,
+      html.dark .bg-slate-950 {
+        background-color: #020617;
+      }
+      html.dark .bg-white,
+      html.dark .bg-gray-50 {
+        background-color: #0f172a;
+      }
+      html.dark .bg-white\/75 {
+        background-color: rgba(15, 23, 42, 0.82);
+      }
+      html.dark .bg-white\/90 {
+        background-color: rgba(2, 6, 23, 0.88);
+      }
+      html.dark .border-gray-100,
+      html.dark .border-gray-200,
+      html.dark .border-slate-200\/80,
+      html.dark .border-slate-200 {
+        border-color: rgba(71, 85, 105, 0.8);
+      }
+      html.dark .text-gray-900,
+      html.dark .text-gray-800,
+      html.dark .text-slate-700,
+      html.dark .text-slate-600 {
+        color: #e2e8f0;
+      }
+      html.dark .text-gray-700,
+      html.dark .text-gray-600,
+      html.dark .text-gray-500,
+      html.dark .text-gray-400,
+      html.dark .text-slate-500 {
+        color: #94a3b8;
+      }
+      html.dark input,
+      html.dark select,
+      html.dark textarea {
+        background-color: #020617;
+        border-color: #334155;
+        color: #e2e8f0;
+      }
+      html.dark .shadow-sm,
+      html.dark .shadow-lg,
+      html.dark .shadow-xl,
+      html.dark .shadow-2xl {
+        box-shadow: none;
+      }
+    </style>
+  </body>
+</html>

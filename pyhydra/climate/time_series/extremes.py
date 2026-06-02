@@ -23,13 +23,13 @@ Fitting methods
             Fast uncertainty estimation without MCMC.
 - MAP     : Maximum A Posteriori — fast Bayesian point estimate with weakly
             informative priors via scipy optimisation.
-- MCMC    : Full posterior via pystan (non-centred parameterisation for better
-            convergence).
+- MCMC    : Full posterior via PyMC + NUTS (non-centred parameterisation for
+            better convergence; no C++ compilation at runtime).
 
 All fitting functions fall back gracefully:
   1. MLE with L-moments warm-start.
   2. If MLE fails: L-moments estimate.
-  3. Bayesian MAP via scipy; full MCMC only when pystan is installed.
+  3. Bayesian MAP via scipy; full MCMC only when pymc is installed.
 """
 
 from __future__ import annotations
@@ -54,22 +54,6 @@ def _require_lmoments():
         raise ImportError(
             "lmoments3 is required for L-moment fitting.\n"
             "Install with: pip install lmoments3"
-        ) from exc
-
-
-def _require_pystan():
-    try:
-        import stan
-        try:
-            import nest_asyncio
-            nest_asyncio.apply()
-        except ImportError:
-            pass
-        return stan
-    except ImportError as exc:
-        raise ImportError(
-            "pystan is required for full MCMC Bayesian GEV fitting.\n"
-            "Install with: pip install pystan"
         ) from exc
 
 
@@ -774,13 +758,13 @@ def fit_gev_mcmc(data: np.ndarray | pd.Series,
                  n_chains: int = 4,
                  adapt_delta: float = 0.95) -> pd.DataFrame:
     """
-    Full Bayesian GEV via MCMC (pystan, non-centred parameterisation).
+    Full Bayesian GEV via MCMC (PyMC + NUTS sampler).
 
-    Uses non-centred parameterisation for mu to improve MCMC mixing.
-    Priors match the hierarchical model used in the DANA analysis:
-    - mu ~ Normal(y_mean, y_sd)  [via non-centred mu_raw]
-    - sigma ~ LogNormal(log(y_sd), 1)
-    - xi ~ Normal(0, 0.5), bounded to (-1, 1)
+    Non-centred parameterisation: mu = y_mean + y_sd * mu_raw.
+    Priors:
+      mu_raw ~ Normal(0, 1)
+      sigma  ~ LogNormal(log(y_sd), 1)
+      xi     ~ Normal(0, 0.5), bounded to (-1, 1)
 
     Parameters
     ----------
@@ -789,7 +773,7 @@ def fit_gev_mcmc(data: np.ndarray | pd.Series,
     n_samples : int
         Posterior draws per chain (default 2000).
     n_chains : int
-        Number of MCMC chains (default 4).
+        Number of independent chains (default 4).
     adapt_delta : float
         NUTS target acceptance rate (default 0.95).
 
@@ -799,49 +783,72 @@ def fit_gev_mcmc(data: np.ndarray | pd.Series,
 
     Notes
     -----
-    Requires: pip install pystan
+    Requires: pip install pymc
     """
-    _require_pystan()
-    import stan
-
-    arr = np.asarray(data, dtype=float)
-    arr = arr[np.isfinite(arr)]
-
-    stan_data = {
-        "N":      len(arr),
-        "y":      arr.tolist(),
-        "y_mean": float(arr.mean()),
-        "y_sd":   float(arr.std()),
-    }
-
-    model = stan.build(_GEV_STAN_CODE, data=stan_data)
-
-    # Initialise chains at the MLE estimate to avoid the degenerate sigma→0 mode.
-    # Stan's default Uniform(-2,2) on the unconstrained scale gives sigma in
-    # (0.13, 7.4) m³/s — orders of magnitude below the data scale.
-    y_mean = float(arr.mean())
-    y_sd   = float(arr.std())
     try:
-        mle        = _fit_gev_mle_robust(arr)
-        mu_raw0    = (mle["mu"] - y_mean) / y_sd
-        sigma0     = float(np.clip(mle["sigma"], y_sd * 0.05, y_sd * 10))
-        xi0        = float(np.clip(mle["xi"], -0.8, 0.8))
-    except Exception:
-        mu_raw0, sigma0, xi0 = 0.0, y_sd, 0.1
-    init_list = [{"mu_raw": mu_raw0, "sigma": sigma0, "xi": xi0}
-                 for _ in range(n_chains)]
+        import pymc as pm
+        import pytensor.tensor as pt
+    except ImportError as exc:
+        raise ImportError(
+            "pymc is required for full MCMC Bayesian GEV fitting.\n"
+            "Install with: pip install pymc"
+        ) from exc
 
-    fit = model.sample(
-        num_chains=n_chains,
-        num_samples=n_samples,
-        delta=adapt_delta,
-        init=init_list,
-    )
+    arr    = np.asarray(data, dtype=float)
+    arr    = arr[np.isfinite(arr)]
+    y_mean = float(arr.mean())
+    y_sd   = float(max(arr.std(), 1e-6))
 
+    with pm.Model() as model:
+        # Non-centred parameterisation for mu
+        mu_raw = pm.Normal("mu_raw", mu=0.0, sigma=1.0)
+        sigma  = pm.LogNormal("sigma", mu=np.log(y_sd), sigma=1.0)
+        xi     = pm.TruncatedNormal("xi", mu=0.0, sigma=0.5, lower=-1.0, upper=1.0)
+        mu     = pm.Deterministic("mu", y_mean + y_sd * mu_raw)
+
+        # GEV log-likelihood via CustomDist
+        def gev_logp(y, mu, sigma, xi):
+            z = (y - mu) / sigma
+            # Safe xi: substitute 1e-6 when |xi|<=1e-6; Gumbel branch handles that.
+            xi_safe = pt.where(pt.abs(xi) > 1e-6, xi, pt.ones_like(xi) * 1e-6)
+            # Clip t away from zero so log/power are always finite.
+            t = pt.clip(1.0 + xi_safe * z, 1e-10, 1e30)
+            gev_lp = pt.sum(
+                -pt.log(sigma)
+                - (1.0 + 1.0 / xi_safe) * pt.log(t)
+                - t ** (-1.0 / xi_safe)
+            )
+            gumbel_lp = pt.sum(-pt.log(sigma) - z - pt.exp(-z))
+            return pt.switch(pt.abs(xi) > 1e-6, gev_lp, gumbel_lp)
+
+        pm.CustomDist("obs", mu, sigma, xi,
+                      logp=gev_logp, observed=arr)
+
+        # Warm-start from MLE
+        try:
+            mle    = _fit_gev_mle_robust(arr)
+            start  = {
+                "mu_raw": (mle["mu"] - y_mean) / y_sd,
+                "sigma":  float(np.clip(mle["sigma"], y_sd * 0.05, y_sd * 10)),
+                "xi":     float(np.clip(mle["xi"], -0.8, 0.8)),
+            }
+        except Exception:
+            start = None
+
+        idata = pm.sample(
+            draws=n_samples,
+            chains=n_chains,
+            target_accept=adapt_delta,
+            initvals=start,
+            progressbar=True,
+            return_inferencedata=True,
+        )
+
+    posterior = idata.posterior
     return pd.DataFrame({
-        "mu":    fit["mu"].flatten(),
-        "sigma": fit["sigma"].flatten(),
-        "xi":    fit["xi"].flatten(),
+        "mu":    posterior["mu"].values.flatten(),
+        "sigma": posterior["sigma"].values.flatten(),
+        "xi":    posterior["xi"].values.flatten(),
     })
 
 

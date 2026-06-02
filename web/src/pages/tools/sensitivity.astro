@@ -1,0 +1,292 @@
+---
+import Layout from '../../layouts/Layout.astro';
+const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
+---
+
+<Layout title="Sensibilidad Manning — HYDRA">
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js" is:inline></script>
+
+  <section class="pt-24 pb-10 bg-gradient-to-br from-slate-950 via-hydra-900 to-sky-700 text-white">
+    <div class="max-w-7xl mx-auto px-6">
+      <a href="/" class="inline-flex items-center gap-2 text-white/65 hover:text-white text-sm mb-6 transition-colors">
+        ← Volver al inicio
+      </a>
+      <h1 class="text-4xl font-extrabold mb-2">Sensibilidad de Manning</h1>
+      <p class="text-white/76 text-lg max-w-3xl">
+        Explora cómo las combinaciones Monte Carlo de rugosidad se relacionan con calados medios, medianos y área inundada en resultados HEC-RAS/SFINCS.
+      </p>
+    </div>
+  </section>
+
+  <div class="max-w-7xl mx-auto px-6 py-10" id="app" data-api-url={apiUrl}>
+    <div class="grid lg:grid-cols-[340px_1fr] gap-8">
+      <aside class="space-y-6">
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-6">
+          <div>
+            <h3 class="font-semibold text-gray-800 mb-3 text-sm uppercase tracking-wide">Datos de entrada</h3>
+            <div class="grid grid-cols-2 gap-2 mb-3">
+              <button id="btn-demo" class="src-btn py-2 px-3 rounded-lg text-sm font-medium border-2 border-hydra-500 bg-hydra-50 text-hydra-700">
+                Demo HEC-RAS
+              </button>
+              <button id="btn-upload" class="src-btn py-2 px-3 rounded-lg text-sm font-medium border-2 border-gray-200 text-gray-600 hover:border-hydra-300 transition-colors">
+                Subir CSV
+              </button>
+            </div>
+            <input type="file" id="file-input" accept=".csv" class="hidden" />
+            <p id="file-name" class="text-xs text-gray-400 italic">Demo: 1000 simulaciones Manning + calado</p>
+            <div id="csv-hint" class="hidden mt-2 text-xs text-gray-500 bg-gray-50 rounded-lg p-3">
+              Columnas requeridas:<br />
+              <code class="text-hydra-700">simulation, manning_mean, manning_median, depth_mean, depth_median, flooded_area_km2</code>
+            </div>
+          </div>
+
+          <button id="run-btn" class="w-full bg-hydra-600 hover:bg-hydra-700 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2">
+            <span id="run-label">Analizar sensibilidad</span>
+            <svg id="run-arrow" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+            </svg>
+            <svg id="run-spinner" class="hidden w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+            </svg>
+          </button>
+
+          <div id="error-box" class="hidden bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700"></div>
+        </div>
+
+        <div class="bg-amber-50 border border-amber-100 rounded-2xl p-5 text-sm text-amber-900 space-y-2">
+          <p class="font-semibold">Lectura rápida</p>
+          <p>La herramienta resume si los cambios de Manning se trasladan a variaciones de calado o área inundada, y detecta simulaciones atípicas.</p>
+        </div>
+      </aside>
+
+      <main>
+        <div id="placeholder" class="min-h-[430px] flex flex-col items-center justify-center text-center rounded-2xl border-2 border-dashed border-gray-200 p-12">
+          <div class="w-16 h-16 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center mb-4">
+            <svg class="w-9 h-9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M4 19V5"/><path d="M4 19h16"/><path d="M7 15l4-4 3 2 5-7"/><path d="M7 15h.01M11 11h.01M14 13h.01M19 6h.01"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-700 mb-2">Listo para analizar</h3>
+          <p class="text-gray-400 max-w-md">
+            Usa el CSV demo de sensibilidad Manning o sube tus resultados de ensemble hidráulico.
+          </p>
+        </div>
+
+        <div id="results" class="hidden space-y-8">
+          <div id="stats-row" class="grid grid-cols-2 lg:grid-cols-4 gap-4"></div>
+
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h3 class="font-semibold text-gray-800 mb-1">Relación Manning - impacto hidráulico</h3>
+            <p class="text-sm text-gray-400 mb-4">Dispersión por simulación y ajuste lineal simple.</p>
+            <div class="grid lg:grid-cols-3 gap-4">
+              <div id="chart-depth-mean" class="h-72"></div>
+              <div id="chart-depth-median" class="h-72"></div>
+              <div id="chart-area" class="h-72"></div>
+            </div>
+          </div>
+
+          <div class="grid lg:grid-cols-[1fr_360px] gap-8">
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <h3 class="font-semibold text-gray-800 mb-1">Matriz de correlación</h3>
+              <p class="text-sm text-gray-400 mb-4">Correlaciones de Pearson entre métricas del ensemble.</p>
+              <div id="chart-corr" class="h-80"></div>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <h3 class="font-semibold text-gray-800 mb-4">Regresiones</h3>
+              <div id="regression-list" class="space-y-3"></div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</Layout>
+
+<script>
+declare const Plotly: any;
+
+const TEAL = '#0d9488';
+const AMBER = '#f59e0b';
+const BLUE = '#0284c7';
+const layoutBase = {
+  paper_bgcolor: 'transparent',
+  plot_bgcolor: 'transparent',
+  margin: { t: 28, r: 12, b: 48, l: 56 },
+  font: { family: 'Inter, system-ui, sans-serif', size: 11 },
+};
+
+let useDemo = true;
+let isRunning = false;
+
+const appEl = document.getElementById('app')!;
+const apiUrl = appEl.dataset.apiUrl!;
+const btnDemo = document.getElementById('btn-demo')!;
+const btnUpload = document.getElementById('btn-upload')!;
+const fileInput = document.getElementById('file-input') as HTMLInputElement;
+const fileNameEl = document.getElementById('file-name')!;
+const csvHintEl = document.getElementById('csv-hint')!;
+const runBtn = document.getElementById('run-btn')!;
+const runLabel = document.getElementById('run-label')!;
+const runArrow = document.getElementById('run-arrow')!;
+const runSpinner = document.getElementById('run-spinner')!;
+const errorBox = document.getElementById('error-box')!;
+const placeholder = document.getElementById('placeholder')!;
+const resultsEl = document.getElementById('results')!;
+
+function setSource(demo: boolean) {
+  useDemo = demo;
+  btnDemo.className = `src-btn py-2 px-3 rounded-lg text-sm font-medium border-2 transition-colors ${demo ? 'border-hydra-500 bg-hydra-50 text-hydra-700' : 'border-gray-200 text-gray-600 hover:border-hydra-300'}`;
+  btnUpload.className = `src-btn py-2 px-3 rounded-lg text-sm font-medium border-2 transition-colors ${!demo ? 'border-hydra-500 bg-hydra-50 text-hydra-700' : 'border-gray-200 text-gray-600 hover:border-hydra-300'}`;
+  csvHintEl.classList.toggle('hidden', demo);
+  if (demo) fileNameEl.textContent = 'Demo: 1000 simulaciones Manning + calado';
+}
+
+function setRunning(running: boolean) {
+  isRunning = running;
+  runBtn.disabled = running;
+  runLabel.textContent = running ? 'Analizando...' : 'Analizar sensibilidad';
+  runArrow.classList.toggle('hidden', running);
+  runSpinner.classList.toggle('hidden', !running);
+}
+
+function showError(msg: string) {
+  errorBox.textContent = msg;
+  errorBox.classList.remove('hidden');
+}
+
+function clearError() {
+  errorBox.classList.add('hidden');
+  errorBox.textContent = '';
+}
+
+btnDemo.addEventListener('click', () => setSource(true));
+btnUpload.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', () => {
+  if (fileInput.files?.[0]) {
+    setSource(false);
+    fileNameEl.textContent = fileInput.files[0].name;
+  }
+});
+
+runBtn.addEventListener('click', async () => {
+  if (isRunning) return;
+  clearError();
+  if (!useDemo && !fileInput.files?.[0]) {
+    showError('Selecciona un CSV o vuelve a usar los datos demo.');
+    return;
+  }
+  setRunning(true);
+
+  const fd = new FormData();
+  if (!useDemo && fileInput.files?.[0]) fd.append('file', fileInput.files[0]);
+
+  try {
+    const res = await fetch(`${apiUrl}/api/sensitivity/manning`, { method: 'POST', body: fd });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail ?? 'Error en el servidor');
+    }
+    renderResults(await res.json());
+  } catch (err: any) {
+    showError(err.message ?? 'Error desconocido');
+  } finally {
+    setRunning(false);
+  }
+});
+
+function statCard(label: string, value: string, unit = '') {
+  return `<div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+    <p class="text-xs text-gray-400 uppercase tracking-wide mb-2">${label}</p>
+    <p class="text-3xl font-bold text-gray-900">${value}</p>
+    <p class="text-xs text-gray-400 mt-1">${unit}</p>
+  </div>`;
+}
+
+function fitLine(records: any[], xKey: string, yKey: string, fit: any) {
+  const xs = records.map(r => r[xKey]);
+  const minX = Math.min(...xs);
+  const maxX = Math.max(...xs);
+  return {
+    x: [minX, maxX],
+    y: [fit.slope * minX + fit.intercept, fit.slope * maxX + fit.intercept],
+    mode: 'lines',
+    line: { color: '#111827', width: 2 },
+    name: `R² ${fit.r2}`,
+  };
+}
+
+function scatterChart(id: string, records: any[], xKey: string, yKey: string, fit: any, title: string, color: string, yTitle: string) {
+  Plotly.newPlot(id, [
+    {
+      x: records.map(r => r[xKey]),
+      y: records.map(r => r[yKey]),
+      mode: 'markers',
+      marker: { color, size: 6, opacity: 0.62 },
+      name: 'Simulación',
+      text: records.map(r => `sim ${r.simulation}`),
+    },
+    fitLine(records, xKey, yKey, fit),
+  ], {
+    ...layoutBase,
+    title: { text: title, font: { size: 13 } },
+    xaxis: { title: 'Manning n', gridcolor: '#f3f4f6' },
+    yaxis: { title: yTitle, gridcolor: '#f3f4f6' },
+    legend: { orientation: 'h', y: -0.28 },
+  }, { responsive: true, displayModeBar: false });
+}
+
+function renderResults(data: any) {
+  placeholder.classList.add('hidden');
+  resultsEl.classList.remove('hidden');
+
+  const s = data.summary;
+  document.getElementById('stats-row')!.innerHTML =
+    statCard('Simulaciones', `${s.n_sims}`, s.source === 'demo' ? 'CSV demo HEC-RAS' : s.source) +
+    statCard('Manning medio', `${s.manning_mean_min} - ${s.manning_mean_max}`, 'rango n') +
+    statCard('Calado medio', `${s.depth_mean_avg}`, `max ${s.depth_mean_max} m`) +
+    statCard('Área inundada', `${s.flooded_area_avg}`, `max ${s.flooded_area_max} km²`);
+
+  const records = data.records;
+  const fits = data.regressions;
+  scatterChart('chart-depth-mean', records, 'manning_mean', 'depth_mean', fits.depth_mean, 'Manning medio vs calado medio', TEAL, 'm');
+  scatterChart('chart-depth-median', records, 'manning_median', 'depth_median', fits.depth_median, 'Manning mediano vs calado mediano', AMBER, 'm');
+  scatterChart('chart-area', records, 'manning_mean', 'flooded_area_km2', fits.flooded_area_km2, 'Manning medio vs área inundada', BLUE, 'km²');
+
+  const labels = ['manning_mean', 'manning_median', 'depth_mean', 'depth_median', 'flooded_area_km2'];
+  const pretty = ['n medio', 'n mediano', 'calado medio', 'calado mediano', 'área'];
+  const z = labels.map(row => labels.map(col => data.correlations[row][col]));
+  Plotly.newPlot('chart-corr', [{
+    z,
+    x: pretty,
+    y: pretty,
+    type: 'heatmap',
+    colorscale: 'RdBu',
+    zmin: -1,
+    zmax: 1,
+    text: z.map(row => row.map(v => v.toFixed(2))),
+    texttemplate: '%{text}',
+    hovertemplate: '%{y} vs %{x}: %{z:.3f}<extra></extra>',
+  }], {
+    ...layoutBase,
+    margin: { t: 20, r: 20, b: 80, l: 92 },
+    xaxis: { tickangle: -25 },
+  }, { responsive: true, displayModeBar: false });
+
+  const names: Record<string, string> = {
+    depth_mean: 'Calado medio',
+    depth_median: 'Calado mediano',
+    flooded_area_km2: 'Área inundada',
+  };
+  document.getElementById('regression-list')!.innerHTML = Object.entries(fits).map(([key, fit]: [string, any]) => `
+    <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
+      <p class="font-semibold text-gray-800">${names[key]}</p>
+      <div class="mt-2 grid grid-cols-2 gap-3 text-sm">
+        <span class="text-gray-500">correlación</span><span class="font-semibold text-right">${fit.corr}</span>
+        <span class="text-gray-500">R²</span><span class="font-semibold text-right">${fit.r2}</span>
+        <span class="text-gray-500">pendiente</span><span class="font-semibold text-right">${fit.slope}</span>
+      </div>
+    </div>
+  `).join('');
+}
+</script>

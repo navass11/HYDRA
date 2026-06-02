@@ -218,7 +218,9 @@ def read_glofas_nc(filepath, lat: float, lon: float,
             f"Available variables: {available}"
         )
 
-    da = ds[variable].sel(latitude=lat, longitude=lon, method="nearest")
+    lat_dim = "latitude" if "latitude" in ds.coords else "lat"
+    lon_dim = "longitude" if "longitude" in ds.coords else "lon"
+    da = ds[variable].sel({lat_dim: lat, lon_dim: lon}, method="nearest")
     df = da.to_dataframe().reset_index()[["time", variable]]
     df = df.rename(columns={"time": "date", variable: "discharge"})
     df["date"] = pd.to_datetime(df["date"]).dt.normalize()

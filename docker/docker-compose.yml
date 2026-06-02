@@ -1,0 +1,57 @@
+services:
+
+  # ── JupyterLab: executes all HYDRA notebooks ──────────────────────────────
+  jupyter:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.jupyter
+    restart: unless-stopped
+    environment:
+      - PYTHONPATH=/workspace
+      - JUPYTER_TOKEN=          # empty = no auth in local dev
+      - JUPYTER_BASE_URL=/jupyter/
+    volumes:
+      # Mount notebooks and source code so executions/edits happen against the
+      # working tree, while the container still provides the full environment.
+      - ../notebooks:/workspace/notebooks
+      - ../pyhydra:/workspace/pyhydra
+      # Mount the HYDRA data workspace. By default this is the local repo data/
+      # directory, but it can point to a host-mounted Azure Files share:
+      #
+      #   HYDRA_DATA_PATH="/Volumes/<azure-share>/hydra-data"
+      #   docker compose -f docker/docker-compose.yml up -d
+      #
+      # Place your HEC-HMS / HEC-RAS / SWAT+ / SFINCS project folders here:
+      #   <HYDRA_DATA_PATH>/hms/<project>/        → /workspace/data/hms/<project>/
+      #   <HYDRA_DATA_PATH>/hec_ras/<project>/    → /workspace/data/hec_ras/<project>/
+      #   <HYDRA_DATA_PATH>/swat/<project>/       → /workspace/data/swat/<project>/
+      #   <HYDRA_DATA_PATH>/sfincs/<project>/     → /workspace/data/sfincs/<project>/
+      - ${HYDRA_DATA_PATH:-../data}:/workspace/data
+
+  # ── FastAPI tools backend ──────────────────────────────────────────────────
+  api:
+    build:
+      context: ..
+      dockerfile: api/Dockerfile
+    restart: unless-stopped
+    environment:
+      - PYTHONPATH=/app
+      - JUPYTER_INTERNAL_URL=http://jupyter:8888
+    volumes:
+      - ../pyhydra:/app/pyhydra
+      - ${HYDRA_DATA_PATH:-../data}:/workspace/data
+
+  # ── Astro landing page + nginx reverse proxy ──────────────────────────────
+  web:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.web
+    ports:
+      - "80:80"
+    environment:
+      - JUPYTER_UPSTREAM=http://jupyter:8888
+      - API_UPSTREAM=http://api:8000
+    depends_on:
+      - jupyter
+      - api
+    restart: unless-stopped

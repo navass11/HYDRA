@@ -24,12 +24,12 @@ def download_aemet_daily_data(path_output, api_key, start_date_str, end_date_str
     Args:
         path_output: Directory to store output NetCDF files
         api_key: AEMET OpenData API key
-        start_date_str: Start date in '%Y-%m-%dT%H:%M:%S%Z' format
-        end_date_str: End date in '%Y-%m-%dT%H:%M:%S%Z' format
+        start_date_str: Start date in '%Y-%m-%dT%H:%M:%S[UTC]' format
+        end_date_str: End date in '%Y-%m-%dT%H:%M:%S[UTC]' format
         interval_days: Download chunk size in days (default 15, AEMET limit)
     """
-    start_date = datetime.strptime(start_date_str, "%Y-%m-%dT%H:%M:%S%Z")
-    end_date = datetime.strptime(end_date_str, "%Y-%m-%dT%H:%M:%S%Z")
+    start_date = datetime.strptime(start_date_str[:19], "%Y-%m-%dT%H:%M:%S")
+    end_date = datetime.strptime(end_date_str[:19], "%Y-%m-%dT%H:%M:%S")
     interval = timedelta(days=interval_days)
     base_url = "https://opendata.aemet.es/opendata/api/valores/climatologicos/diarios/datos"
     date_ranges = [start_date + i * interval for i in range((end_date - start_date) // interval + 1)]
@@ -111,25 +111,25 @@ def download_aemet_daily_data(path_output, api_key, start_date_str, end_date_str
         print(f"Saved: {filename}")
 
 
-def AEMETDownloader(stations_shapefile, netcdf_folder):
+def AEMETDownloader(netcdf_folder, stations_shapefile=None):
     """
     Interactive Jupyter widget for selecting and downloading AEMET station series.
 
-    Requires: ipyleaflet, ipywidgets, ipyfilechooser, geopandas (Jupyter environment).
+    Requires: ipyleaflet, ipywidgets, ipyfilechooser (Jupyter environment).
+    geopandas is only needed when stations_shapefile is provided.
 
     Args:
-        stations_shapefile: Path to AEMET stations shapefile (EPSG:4326)
         netcdf_folder: Folder containing NetCDF files from download_aemet_daily_data()
+        stations_shapefile: Optional path to AEMET stations shapefile (EPSG:4326).
+                            If omitted, station positions are extracted from the NetCDF files.
     """
     import threading
 
-    import geopandas as gpd
     from IPython.display import display
     from ipyfilechooser import FileChooser
     from ipyleaflet import DrawControl, LayersControl, Map, Marker, MarkerCluster, Popup
     from ipywidgets import Button, DatePicker, HBox, HTML, IntProgress, Output, SelectMultiple, VBox
 
-    gdf = gpd.read_file(stations_shapefile).to_crs("EPSG:4326")
     output = Output()
     cancel_flag = {"stop": False}
     selected_ids = set()
@@ -142,13 +142,46 @@ def AEMETDownloader(stations_shapefile, netcdf_folder):
     cancel_button.on_click(lambda _: cancel_flag.update({"stop": True}))
 
     try:
-        sample_nc = sorted(f for f in os.listdir(netcdf_folder) if f.endswith(".nc"))[0]
-        ds_sample = xr.open_dataset(os.path.join(netcdf_folder, sample_nc))
+        nc_files_available = sorted(f for f in os.listdir(netcdf_folder) if f.endswith(".nc"))
+        if not nc_files_available:
+            raise FileNotFoundError(f"No .nc files found in {netcdf_folder}")
+        ds_sample = xr.open_dataset(os.path.join(netcdf_folder, nc_files_available[0]))
         variable_selector = SelectMultiple(options=list(ds_sample.data_vars), description="Variables")
     except Exception as exc:
         with output:
             print(f"Error loading NetCDF sample: {exc}")
         return
+
+    # Build station metadata DataFrame from shapefile or from NetCDF coordinates
+    stations_meta = None
+    if stations_shapefile is not None:
+        try:
+            import geopandas as gpd
+            gdf = gpd.read_file(stations_shapefile).to_crs("EPSG:4326")
+            stations_meta = pd.DataFrame({
+                "idema": gdf["idema"].values,
+                "nombre": gdf["NOMBRE"].values if "NOMBRE" in gdf.columns else gdf["idema"].values,
+                "lat": gdf.geometry.y.values,
+                "lon": gdf.geometry.x.values,
+            })
+        except Exception as exc:
+            with output:
+                print(f"Warning: could not load shapefile ({exc}). Extracting stations from NetCDF.")
+
+    if stations_meta is None:
+        try:
+            idemas = ds_sample["idema"].values
+            lats = ds_sample.coords["lat"].values if "lat" in ds_sample.coords else np.zeros(len(idemas))
+            lons = ds_sample.coords["lon"].values if "lon" in ds_sample.coords else np.zeros(len(idemas))
+            names = (ds_sample.coords["ubi"].values.astype(str)
+                     if "ubi" in ds_sample.coords else idemas.astype(str))
+            stations_meta = pd.DataFrame({"idema": idemas, "nombre": names, "lat": lats, "lon": lons})
+            stations_meta = stations_meta.dropna(subset=["lat", "lon"])
+            stations_meta = stations_meta[(stations_meta["lat"] != 0) | (stations_meta["lon"] != 0)]
+        except Exception as exc:
+            with output:
+                print(f"Warning: could not extract station positions from NetCDF ({exc}). Markers disabled.")
+            stations_meta = pd.DataFrame(columns=["idema", "nombre", "lat", "lon"])
 
     def extract_series_bulk(station_ids, variables, out_folder, start, end, prog_total, prog_station, prog_label):
         files = sorted(f for f in os.listdir(netcdf_folder) if f.endswith(".nc"))
@@ -179,9 +212,9 @@ def AEMETDownloader(stations_shapefile, netcdf_folder):
                 df.to_csv(os.path.join(out_folder, f"AEMET_{sid}_series.csv"))
 
     markers = []
-    for _, row in gdf.iterrows():
-        marker = Marker(location=(row.geometry.y, row.geometry.x))
-        html = HTML(value=f"<b>{row['idema']}</b><br>{row['NOMBRE']}")
+    for _, row in stations_meta.iterrows():
+        marker = Marker(location=(float(row["lat"]), float(row["lon"])))
+        html = HTML(value=f"<b>{row['idema']}</b><br>{row['nombre']}")
         btn = Button(description="Download", button_style="info", layout={"width": "auto"})
 
         def on_click(_, sid=row["idema"]):
@@ -205,9 +238,32 @@ def AEMETDownloader(stations_shapefile, netcdf_folder):
     m.add_layer(MarkerCluster(markers=markers))
     m.add_control(LayersControl())
 
-    draw_control = DrawControl(circlemarker={}, marker={})
-    draw_control.on_draw(lambda self, action, geo_json: None)
+    draw_control = DrawControl(circlemarker={}, marker={}, polygon={}, polyline={})
+    draw_control.rectangle = {"shapeOptions": {"color": "#3388ff", "fillOpacity": 0.2}}
     m.add_control(draw_control)
+
+    def _on_draw(_, action, geo_json):
+        if action != "created":
+            return
+        try:
+            coords = geo_json["geometry"]["coordinates"][0]
+            lats = [c[1] for c in coords]
+            lons = [c[0] for c in coords]
+            lat_min, lat_max = min(lats), max(lats)
+            lon_min, lon_max = min(lons), max(lons)
+            in_bounds = stations_meta[
+                (stations_meta["lat"] >= lat_min) & (stations_meta["lat"] <= lat_max) &
+                (stations_meta["lon"] >= lon_min) & (stations_meta["lon"] <= lon_max)
+            ]
+            selected_ids.clear()
+            selected_ids.update(in_bounds["idema"].tolist())
+            with output:
+                print(f"Selected {len(selected_ids)} stations in drawn area.")
+        except Exception as exc:
+            with output:
+                print(f"Draw callback error: {exc}")
+
+    draw_control.on_draw(_on_draw)
 
     download_btn = Button(description="Download Selected Area", button_style="success")
     download_thread = None
@@ -217,6 +273,8 @@ def AEMETDownloader(stations_shapefile, netcdf_folder):
         if download_thread and download_thread.is_alive():
             return
         if not selected_ids or not variable_selector.value or not folder_chooser.selected_path:
+            with output:
+                print("Select a region on the map, choose variables, and set an output folder first.")
             return
         cancel_flag["stop"] = False
         prog_total = IntProgress(value=0, min=0, max=len(selected_ids), description="Total:")

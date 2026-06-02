@@ -40,7 +40,7 @@ class PERSSIANDownloader:
     """
 
     def __init__(self, lon=None, lat=None, lon_min=None, lon_max=None,
-                 lat_min=None, lat_max=None, path_output="output", max_workers=5):
+                 lat_min=None, lat_max=None, path_output="output", max_workers=2):
         self.max_workers = max_workers
         self.path_output = path_output
         os.makedirs(path_output, exist_ok=True)
@@ -91,8 +91,8 @@ class PERSSIANDownloader:
         def fetch(dt):
             url = self._build_url(dt, time_step)
             retries = 5
+            temp_path = os.path.join(self.path_output, f"temp_{threading.get_ident()}.bin")
             for attempt in range(retries):
-                temp_path = os.path.join(self.path_output, f"temp_{threading.get_ident()}.bin")
                 try:
                     with urllib.request.urlopen(url) as resp, gzip.GzipFile(fileobj=resp) as gz:
                         with open(temp_path, "wb") as f:
@@ -106,6 +106,7 @@ class PERSSIANDownloader:
                             values[key] = da.sel(lon=lon_pt, lat=lat_pt, method="nearest").values.item()
                         except Exception:
                             values[key] = np.nan
+                    del da  # release the full-grid array immediately
                     return dt, values
                 except Exception as exc:
                     logging.warning(f"Attempt {attempt + 1}/{retries} failed for {dt}: {exc}")
@@ -118,7 +119,9 @@ class PERSSIANDownloader:
                     if attempt + 1 == retries:
                         return dt, {f"({lon},{lat})": np.nan for lon, lat in self.points}
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers) as ex:
+        # max_workers=1 for point mode: each file loads the full global grid (~216 MB as
+        # float64). Running serially prevents OOM in memory-constrained environments.
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as ex:
             results = list(tqdm(ex.map(fetch, dates), total=len(dates), desc="Overall progress"))
 
         times, values_dicts = zip(*results)
