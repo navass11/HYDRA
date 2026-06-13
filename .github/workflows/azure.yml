@@ -47,7 +47,7 @@ jobs:
 
       # ── Web image ─────────────────────────────────────────────────────────────
       - name: Build and push web
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v5
         with:
           context: .
           file: docker/Dockerfile.web
@@ -61,7 +61,7 @@ jobs:
 
       # ── API image ─────────────────────────────────────────────────────────────
       - name: Build and push api
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v5
         with:
           context: .
           file: api/Dockerfile
@@ -75,7 +75,7 @@ jobs:
 
       # ── Jupyter image ─────────────────────────────────────────────────────────
       - name: Build and push jupyter
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v5
         with:
           context: .
           file: docker/Dockerfile.jupyter
