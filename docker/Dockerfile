@@ -15,9 +15,9 @@ RUN pip install --no-cache-dir --upgrade setuptools && \
     pip install --no-cache-dir --no-build-isolation pySWATPlus && \
     pip install --no-cache-dir -r /tmp/requirements.txt
 
-# Install CoSMoS_py from the bundled wheel (avoids git clone inside the build container)
-COPY docker/cosmos_py-0.1.0-py3-none-any.whl /tmp/
-RUN pip install --no-cache-dir /tmp/cosmos_py-0.1.0-py3-none-any.whl
+# Install CoSMoS_py from GitHub. The old bundled wheel is not committed,
+# so CI builds must fetch the package from its source repository.
+RUN pip install --no-cache-dir git+https://github.com/navass11/CoSMoS_py.git
 
 # Copy the full repo and install pyhydra
 COPY . .

@@ -17,9 +17,9 @@ RUN pip install --no-cache-dir "setuptools<80" && \
         -r /tmp/hydra-requirements.txt \
         -r /tmp/api-requirements.txt
 
-# Install CoSMoS_py from bundled wheel (private package, not on PyPI)
-COPY docker/cosmos_py-0.1.0-py3-none-any.whl /tmp/
-RUN pip install --no-cache-dir /tmp/cosmos_py-0.1.0-py3-none-any.whl
+# Install CoSMoS_py from GitHub. The old bundled wheel is not committed,
+# so CI builds must fetch the package from its source repository.
+RUN pip install --no-cache-dir git+https://github.com/navass11/CoSMoS_py.git
 
 # Copy project and install pyhydra
 COPY . .
