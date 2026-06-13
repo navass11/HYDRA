@@ -110,9 +110,21 @@ notebooks/modeling/hydraulic/manning_sensitivity/generated/
 **/.DS_Store
 
 # LaTeX build artifacts
-*.aux *.bbl *.blg *.fdb_latexmk *.fls *.log *.out *.synctex.gz texput.log
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+texput.log
 main.bbl
 main.blg
+
+# Local runtime artifacts
+sessions/
+docs/notebooks
 
 # Large binary/data files at repo root
 thesis.zip
