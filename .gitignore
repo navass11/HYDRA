@@ -90,7 +90,6 @@ data/pilot_cases/los_corrales_buelna/models/hec_hms/Run_1.dss
 data/sfincs/
 data/swat/
 *.pyc
-docker/cosmos_py-0.1.0-py3-none-any.whl
 Comunicacion_1_Salvador_Navas.pdf
 Comunicacion_Lluvias_Valencia_V1.pdf
 Comunicacion_Tanganika_Lake_JIA2025_V1.pdf
