@@ -15,6 +15,7 @@ Exit codes:
 import argparse
 import io
 import json
+import math
 import os
 import sys
 import traceback
@@ -52,6 +53,17 @@ def _strip_magic(src):
     return ''.join(lines)
 
 
+def _json_safe(obj):
+    """Replace non-standard JSON floats so executed notebooks stay parseable."""
+    if isinstance(obj, float):
+        return None if not math.isfinite(obj) else obj
+    if isinstance(obj, list):
+        return [_json_safe(item) for item in obj]
+    if isinstance(obj, dict):
+        return {key: _json_safe(value) for key, value in obj.items()}
+    return obj
+
+
 def run_notebook(nb_path, timeout=300):
     nb_path = Path(nb_path).resolve()
     nb = json.loads(nb_path.read_text())
@@ -86,6 +98,7 @@ def run_notebook(nb_path, timeout=300):
 
         src_exec = _strip_magic(src)
         cell_idx += 1
+        cell['execution_count'] = cell_idx
 
         stdout_buf = _CaptureIO(sys.__stdout__)
         stderr_buf = _CaptureIO(sys.__stderr__)
@@ -123,7 +136,7 @@ def run_notebook(nb_path, timeout=300):
         status = 'OK ' if ok else 'ERR'
         print(f'  [{status}] cell {cell_idx:3d}: {first_line}', flush=True)
 
-    nb_path.write_text(json.dumps(nb, ensure_ascii=False, indent=1))
+    nb_path.write_text(json.dumps(_json_safe(nb), ensure_ascii=False, indent=1, allow_nan=False))
     os.chdir(original_dir)
 
     if errors:

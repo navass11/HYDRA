@@ -11,3 +11,10 @@ c.ContentsManager.hide_globs = [
     "build", "dist", "site", ".cache", ".pytest_cache",
     "mkdocs.yml", "*.pdf",
 ]
+
+# Keep Azure/Jupyter sessions from accumulating idle kernels until websockets
+# start timing out. Long notebook executions are still allowed while connected.
+c.MappingKernelManager.cull_idle_timeout = 1800
+c.MappingKernelManager.cull_interval = 300
+c.MappingKernelManager.cull_connected = False
+c.MappingKernelManager.shutdown_wait_time = 10

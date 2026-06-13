@@ -33,9 +33,9 @@ def _empirical_cdf(values: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     sorted_idx = np.argsort(values)
     sorted_vals = values[sorted_idx]
     pp = _plotting_positions(len(values))
-    cdf = np.empty_like(values)
-    cdf[sorted_idx] = pp
-    return sorted_vals, pp
+    cdf = np.empty(len(values), dtype=float)
+    cdf[sorted_idx] = pp  # reorder: cdf[i] = F(values[i])
+    return sorted_vals, cdf
 
 
 def _kendall_tau(u: np.ndarray, v: np.ndarray) -> float:
@@ -65,7 +65,7 @@ def _gaussian_copula_cdf(u: np.ndarray, v: np.ndarray, rho: float) -> np.ndarray
     z2 = ndtri(v_c)
     cov = [[1.0, rho], [rho, 1.0]]
     points = np.column_stack([z1, z2])
-    return multivariate_normal.cdf(points, mean=[0, 0], cov=cov)
+    return np.atleast_1d(multivariate_normal.cdf(points, mean=[0, 0], cov=cov))
 
 
 def _gumbel_copula_cdf(u: np.ndarray, v: np.ndarray, theta: float) -> np.ndarray:

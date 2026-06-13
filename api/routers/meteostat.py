@@ -13,9 +13,16 @@ router = APIRouter()
 
 try:
     from meteostat import Daily, Hourly, Monthly, Point, Stations
+    _METEOSTAT_API = "classes"
     _METEOSTAT_OK = True
 except ImportError:
-    _METEOSTAT_OK = False
+    try:
+        from meteostat import Point, daily, hourly, monthly, stations
+        _METEOSTAT_API = "functions"
+        _METEOSTAT_OK = True
+    except ImportError:
+        _METEOSTAT_API = ""
+        _METEOSTAT_OK = False
 
 
 def _check_meteostat():
@@ -33,15 +40,22 @@ def search_stations(
 ):
     _check_meteostat()
     try:
-        stations = Stations()
-        stations = stations.nearby(lat, lon, radius * 1000)
-        if country:
-            stations = stations.region(country.upper())
-        df = stations.fetch(limit)
+        country_code = country.upper() if isinstance(country, str) and country else ""
+        if _METEOSTAT_API == "classes":
+            station_query = Stations()
+            station_query = station_query.nearby(lat, lon, radius * 1000)
+            if country_code:
+                station_query = station_query.region(country_code)
+            df = station_query.fetch(limit)
+        else:
+            df = stations.nearby(Point(lat, lon), radius=int(radius * 1000), limit=limit)
+            if country_code and not df.empty and "country" in df.columns:
+                df = df[df["country"].str.upper() == country_code].head(limit)
         if df.empty:
             return {"stations": []}
         df = df.reset_index()
-        df = df.rename(columns={"id": "wmo"})
+        id_col = df.columns[0]
+        df = df.rename(columns={"id": "wmo", id_col: "wmo"})
         for col in ["latitude", "longitude", "elevation"]:
             if col in df.columns:
                 df[col] = df[col].round(4)
@@ -81,11 +95,15 @@ def get_station_data(
         raise HTTPException(status_code=400, detail="El rango máximo es 50 años.")
 
     try:
-        if freq == "monthly":
-            data = Monthly(station, start_dt, end_dt)
+        if _METEOSTAT_API == "classes":
+            if freq == "monthly":
+                data = Monthly(station, start_dt, end_dt)
+            else:
+                data = Daily(station, start_dt, end_dt)
+            df = data.fetch()
         else:
-            data = Daily(station, start_dt, end_dt)
-        df = data.fetch()
+            data = monthly(station, start_dt, end_dt) if freq == "monthly" else daily(station, start_dt, end_dt)
+            df = data.fetch() if hasattr(data, "fetch") else data
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Error descargando datos: {exc}")
 
@@ -93,25 +111,33 @@ def get_station_data(
         raise HTTPException(status_code=404, detail="No hay datos para esta estación y periodo.")
 
     df = df.reset_index()
+    # meteostat ≥2.1 uses Parameter enum objects as column names → normalize to str
+    df.columns = [c.value if hasattr(c, "value") else str(c) for c in df.columns]
     df = df.rename(columns={"time": "date"})
-    df["date"] = df["date"].dt.strftime("%Y-%m-%d")
+    if "date" in df.columns:
+        df["date"] = df["date"].dt.strftime("%Y-%m-%d")
 
     rename_map = {
         "prcp": "precip_mm",
         "tavg": "temp_mean_C",
+        "temp": "temp_mean_C",
         "tmin": "temp_min_C",
         "tmax": "temp_max_C",
         "wspd": "wind_mean_kmh",
         "wpgt": "wind_peak_kmh",
         "pres": "pressure_hPa",
         "tsun": "sunshine_min",
-        "snow": "snow_mm",
+        "snwd": "snow_depth_mm",
+        "rhum": "humidity_pct",
+        "cldc": "cloud_cover_pct",
         "wdir": "wind_dir_deg",
     }
     df = df.rename(columns={k: v for k, v in rename_map.items() if k in df.columns})
 
     for col in df.select_dtypes("float64").columns:
         df[col] = df[col].round(2)
+    # Convert pandas NA / Int64 to float/None so JSON serialization works
+    df = df.where(df.notna(), other=None)
 
     if download:
         csv_buf = io.StringIO()
