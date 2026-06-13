@@ -1,0 +1,41 @@
+version: v1.1.0
+
+# ACR Task: triggered on push of hydra-jupyter:latest
+# Uses the registry's system-assigned managed identity to authenticate
+# with Azure and update all three sidecars in the Container App.
+#
+# Setup (run once):
+#   az acr task create --registry hydratoolsacr --name deploy-on-push \
+#     --file deploy/azure/acr-deploy-task.yaml \
+#     --context /dev/null \
+#     --assign-identity "[system]" \
+#     --trigger-enabled true
+#   (trigger is registered via: az acr task trigger add ...)
+
+steps:
+  - cmd: >
+      mcr.microsoft.com/azure-cli
+      bash -c "
+        az login --identity --output none &&
+        az containerapp update
+          --name hydra-web
+          --resource-group 'VisualStudioOnline-3F607BE982BD4B06820771DA8F2FFB4B'
+          --container-name web
+          --image hydratoolsacr.azurecr.io/hydra-web:latest
+          --output none &&
+        az containerapp update
+          --name hydra-web
+          --resource-group 'VisualStudioOnline-3F607BE982BD4B06820771DA8F2FFB4B'
+          --container-name api
+          --image hydratoolsacr.azurecr.io/hydra-api:latest
+          --output none &&
+        az containerapp update
+          --name hydra-web
+          --resource-group 'VisualStudioOnline-3F607BE982BD4B06820771DA8F2FFB4B'
+          --container-name jupyter
+          --image hydratoolsacr.azurecr.io/hydra-jupyter:latest
+          --output none &&
+        echo 'Deploy completed successfully'
+      "
+    id: deploy-containers
+    timeout: 300

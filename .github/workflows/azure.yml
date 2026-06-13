@@ -12,105 +12,94 @@ on:
   workflow_dispatch:
 
 permissions:
-  id-token: write   # required for OIDC login
   contents: read
 
 env:
-  # Single Container App that holds web, api and jupyter as sidecars.
-  RESOURCE_GROUP: VisualStudioOnline-3F607BE982BD4B06820771DA8F2FFB4B
-  CONTAINER_APP:  hydra-web
+  REGISTRY:        hydratoolsacr.azurecr.io
+  RESOURCE_GROUP:  VisualStudioOnline-3F607BE982BD4B06820771DA8F2FFB4B
+  CONTAINER_APP:   hydra-web
 
 jobs:
-  deploy:
+  build-and-push:
     runs-on: ubuntu-latest
+
+    outputs:
+      tag: ${{ steps.meta.outputs.tag }}
 
     steps:
       - uses: actions/checkout@v4
 
-      # ── Azure login via OIDC (no client secret stored in GitHub) ──────────
-      - name: Azure login
-        uses: azure/login@v2
-        with:
-          client-id:       ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id:       ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      # ── Tag = short SHA ──────────────────────────────────────────────────────
+      - name: Set image tag
+        id: meta
+        run: echo "tag=${GITHUB_SHA::8}" >> "$GITHUB_OUTPUT"
 
-      - name: Resolve ACR login server
-        id: acr
-        run: |
-          server=$(az acr show --name ${{ secrets.ACR_NAME }} \
-                               --resource-group $RESOURCE_GROUP \
-                               --query loginServer -o tsv)
-          echo "server=$server" >> $GITHUB_OUTPUT
-
+      # ── Log in to ACR with admin credentials ─────────────────────────────────
       - name: Log in to ACR
-        run: az acr login --name ${{ secrets.ACR_NAME }}
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
 
-      # ── Docker Buildx (needed for BuildKit cache) ─────────────────────────
+      # ── Docker Buildx ─────────────────────────────────────────────────────────
       - uses: docker/setup-buildx-action@v3
 
-      # ── Web image (Astro + nginx, amd64) ──────────────────────────────────
+      # ── Web image ─────────────────────────────────────────────────────────────
       - name: Build and push web
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: docker/Dockerfile.web
+          platforms: linux/amd64
           push: true
           tags: |
-            ${{ steps.acr.outputs.server }}/hydra-web:latest
-            ${{ steps.acr.outputs.server }}/hydra-web:${{ github.sha }}
-          cache-from: type=registry,ref=${{ steps.acr.outputs.server }}/hydra-web:latest
+            ${{ env.REGISTRY }}/hydra-web:latest
+            ${{ env.REGISTRY }}/hydra-web:${{ steps.meta.outputs.tag }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/hydra-web:latest
           cache-to: type=inline
 
-      # ── API image (FastAPI + pyhydra) ──────────────────────────────────────
+      # ── API image ─────────────────────────────────────────────────────────────
       - name: Build and push api
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: api/Dockerfile
           platforms: linux/amd64
           push: true
           tags: |
-            ${{ steps.acr.outputs.server }}/hydra-api:latest
-            ${{ steps.acr.outputs.server }}/hydra-api:${{ github.sha }}
-          cache-from: type=registry,ref=${{ steps.acr.outputs.server }}/hydra-api:latest
+            ${{ env.REGISTRY }}/hydra-api:latest
+            ${{ env.REGISTRY }}/hydra-api:${{ steps.meta.outputs.tag }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/hydra-api:latest
           cache-to: type=inline
 
-      # ── Jupyter image (pyhydra full stack, must be linux/amd64) ───────────
+      # ── Jupyter image ─────────────────────────────────────────────────────────
       - name: Build and push jupyter
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: docker/Dockerfile.jupyter
           platforms: linux/amd64
           push: true
           tags: |
-            ${{ steps.acr.outputs.server }}/hydra-jupyter:latest
-            ${{ steps.acr.outputs.server }}/hydra-jupyter:${{ github.sha }}
-          cache-from: type=registry,ref=${{ steps.acr.outputs.server }}/hydra-jupyter:latest
+            ${{ env.REGISTRY }}/hydra-jupyter:latest
+            ${{ env.REGISTRY }}/hydra-jupyter:${{ steps.meta.outputs.tag }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/hydra-jupyter:latest
           cache-to: type=inline
 
-      # ── Deploy all three containers in the single Container App ───────────
-      - name: Update web container
+      # ── Print deploy command ───────────────────────────────────────────────────
+      # Azure for Students restricts service principal creation (no OIDC possible).
+      # Run this from your local terminal after the workflow finishes:
+      - name: Print container app update command
         run: |
-          az containerapp update \
-            --name $CONTAINER_APP \
-            --resource-group $RESOURCE_GROUP \
-            --container-name web \
-            --image ${{ steps.acr.outputs.server }}/hydra-web:${{ github.sha }}
-
-      - name: Update api container
-        run: |
-          az containerapp update \
-            --name $CONTAINER_APP \
-            --resource-group $RESOURCE_GROUP \
-            --container-name api \
-            --image ${{ steps.acr.outputs.server }}/hydra-api:${{ github.sha }}
-
-      - name: Update jupyter container
-        run: |
-          az containerapp update \
-            --name $CONTAINER_APP \
-            --resource-group $RESOURCE_GROUP \
-            --container-name jupyter \
-            --image ${{ steps.acr.outputs.server }}/hydra-jupyter:${{ github.sha }}
+          TAG="${{ steps.meta.outputs.tag }}"
+          echo "============================================================"
+          echo "Images pushed. Run locally to deploy to Container Apps:"
+          echo ""
+          echo "  az containerapp update -n $CONTAINER_APP -g $RESOURCE_GROUP \\"
+          echo "    --container-name web    --image $REGISTRY/hydra-web:${TAG}"
+          echo "  az containerapp update -n $CONTAINER_APP -g $RESOURCE_GROUP \\"
+          echo "    --container-name api    --image $REGISTRY/hydra-api:${TAG}"
+          echo "  az containerapp update -n $CONTAINER_APP -g $RESOURCE_GROUP \\"
+          echo "    --container-name jupyter --image $REGISTRY/hydra-jupyter:${TAG}"
+          echo "============================================================"
