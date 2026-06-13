@@ -29,39 +29,30 @@ Precip Method Parameters: Frequency Based Hypothetical
      Time Interval: 5
      Percent of Duration Before Peak Rainfall: 50
      Depth-Area Reduction Method: No Reduction
-     Depth 5: 16.900000
-     Depth 10: 23.100000
-     Depth 15: 27.800000
-     Depth 30: 38.000000
-     Depth 60: 52.000000
-     Depth 120: 67.000000
-     Depth 180: 77.000000
-     Depth 360: 98.000000
-     Depth 720: 126.000000
-     Depth 1440: 162.000000
-     Depth 2880: 
-     Depth 4320: 
-     Depth 5760: 
-     Depth 10080: 
-     Depth 14400: 
+     Depth 5: 16.9
+     Depth 10: 23.1
+     Depth 15: 27.8
+     Depth 30: 38.0
+     Depth 60: 52.0
+     Depth 120: 67.0
+     Depth 180: 77.0
+     Depth 360: 98.0
+     Depth 720: 126.0
+     Depth 1440: 162.0
 End:
 
 Subbasin: 74006
      Last Modified Date: 13 November 2020
      Last Modified Time: 11:16:56
-     Depth 5: 16.900000
-     Depth 10: 23.100000
-     Depth 15: 27.800000
-     Depth 30: 38.000000
-     Depth 60: 52.000000
-     Depth 120: 67.000000
-     Depth 180: 77.000000
-     Depth 360: 98.000000
-     Depth 720: 126.000000
-     Depth 1440: 162.000000
-     Depth 2880: 
-     Depth 4320: 
-     Depth 5760: 
-     Depth 10080: 
-     Depth 14400: 
+     Depth 5: 16.9
+     Depth 10: 23.1
+     Depth 15: 27.8
+     Depth 30: 38.0
+     Depth 60: 52.0
+     Depth 120: 67.0
+     Depth 180: 77.0
+     Depth 360: 98.0
+     Depth 720: 126.0
+     Depth 1440: 162.0
 End:
+

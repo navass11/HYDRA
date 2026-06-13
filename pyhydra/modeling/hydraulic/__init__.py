@@ -5,6 +5,7 @@ from .hec_ras import (
 from .sfincs import setup_sfincs_model, run_sfincs
 from .sensitivity import (
     generate_manning_combinations,
+    generate_manning_combinations_correlated,
     load_flood_ensemble,
     build_manning_ensemble,
     flooded_area,

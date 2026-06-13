@@ -75,6 +75,13 @@ data/hec_ras/*
 !data/hec_ras/Muncie/**
 data/hec_ras/*.exe
 
+# Pilot cases: real project data (track everything except large result files)
+!data/pilot_cases/
+data/pilot_cases/*
+!data/pilot_cases/los_corrales_buelna/
+!data/pilot_cases/los_corrales_buelna/**
+data/pilot_cases/los_corrales_buelna/models/hec_hms/Run_1.dss
+
 # GIS (small reference data)
 !data/gis/
 !data/gis/**
@@ -94,3 +101,25 @@ pyhydra.egg-info/requires.txt
 pyhydra.egg-info/SOURCES.txt
 pyhydra.egg-info/top_level.txt
 PI_2026_SALVADOR_NAVAS_signed.pdf
+data/pilot_cases/*
+
+# Notebook-derived outputs
+notebooks/modeling/hydraulic/manning_sensitivity/generated/
+
+# macOS metadata
+.DS_Store
+**/.DS_Store
+
+# LaTeX build artifacts
+*.aux *.bbl *.blg *.fdb_latexmk *.fls *.log *.out *.synctex.gz texput.log
+main.bbl
+main.blg
+
+# Large binary/data files at repo root
+thesis.zip
+thesis/
+papers/
+meteostat_daily_*.csv
+
+# Notebook-derived data files (not raw data)
+notebooks/data_sources/climate_change/opendap_links_final.csv

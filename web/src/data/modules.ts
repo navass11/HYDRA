@@ -1,25 +1,27 @@
+export type I18n = { es: string; en: string };
+
 export type ModuleDetail = {
   slug: string;
   title: string;
-  subtitle: string;
+  subtitle: I18n;
   tag: string;
   color: string;
-  summary: string;
-  purpose: string;
-  workflow: string[];
-  capabilities: string[];
+  summary: I18n;
+  purpose: I18n;
+  workflow: I18n[];
+  capabilities: I18n[];
   methods: Array<{
     name: string;
-    description: string;
+    description: I18n;
   }>;
-  inputs: string[];
-  outputs: string[];
-  validation: string[];
-  industrialUse: string[];
-  hydra: string[];
+  inputs: I18n[];
+  outputs: I18n[];
+  validation: I18n[];
+  industrialUse: I18n[];
+  hydra: I18n[];
   figures: Array<{
-    title: string;
-    caption: string;
+    title: I18n;
+    caption: I18n;
     svg: string;
   }>;
 };
@@ -34,8 +36,8 @@ const dataPipelineSvg = `
     <rect x="28" y="54" width="178" height="240" rx="8" fill="white" stroke="#dbeafe" stroke-width="1.5"/>
     <text x="48" y="80" font-size="13" font-weight="700" fill="#1e40af">Fuentes</text>
     <g font-size="11.5" fill="#334155">
-      <text x="48" y="106">OGIMET / AEMET</text>
-      <text x="48" y="128">ERA5 / GPM IMERG</text>
+      <text x="48" y="106">Meteostat / OGIMET</text>
+      <text x="48" y="128">AEMET / ERA5</text>
       <text x="48" y="150">PERSIANN-CCS</text>
       <text x="48" y="172">CMIP6 CDS / ESGF</text>
       <text x="48" y="194">GloFAS / GRDC / USGS</text>
@@ -444,261 +446,364 @@ export const modules: ModuleDetail[] = [
   {
     slug: 'fuentes-datos',
     title: 'Fuentes de datos',
-    subtitle: 'Ingesta, normalización y trazabilidad de datos hidrometeorológicos, climatológicos y geoespaciales.',
+    subtitle: {
+      es: 'Ingesta, normalización y trazabilidad de datos hidrometeorológicos, climatológicos y geoespaciales.',
+      en: 'Ingestion, normalisation and traceability of hydrometeorological, climatological and geospatial data.',
+    },
     tag: 'Datos',
     color: 'from-sky-950 via-cyan-900 to-teal-700',
-    summary: 'El módulo de fuentes de datos centraliza la descarga de todos los inputs que necesita un análisis hidrológico completo: precipitación observada y de satélite, caudales históricos y modelizados, proyecciones climáticas CMIP6 y texturas de suelo. Cada conector aplica bloques temporales, reintentos automáticos y normalización de unidades para garantizar reproducibilidad sin intervención manual.',
-    purpose: 'Eliminar la dependencia de scripts no documentados para construir el dataset de cada caso de estudio. Cuando el registro observado llega de múltiples fuentes con formatos distintos, este módulo los convierte en series coherentes con trazabilidad completa desde el portal de datos hasta el producto final. En una tesis industrial, esta capa es determinante para justificar la calidad del input ante tribunales y clientes.',
+    summary: {
+      es: 'El módulo de fuentes de datos centraliza la descarga de todos los inputs que necesita un análisis hidrológico completo: precipitación observada (Meteostat, AEMET, OGIMET), precipitación de satélite y reanálisis, caudales históricos y modelizados, proyecciones climáticas CMIP6 y texturas de suelo. Cada conector aplica bloques temporales, reintentos automáticos y normalización de unidades para garantizar reproducibilidad sin intervención manual.',
+      en: 'The data sources module centralises the download of all inputs required for a complete hydrological analysis: observed precipitation (Meteostat, AEMET, OGIMET), satellite and reanalysis precipitation, historical and modelled streamflows, CMIP6 climate projections and soil textures. Each connector applies temporal chunking, automatic retries and unit normalisation to guarantee reproducibility without manual intervention.',
+    },
+    purpose: {
+      es: 'Eliminar la dependencia de scripts no documentados para construir el dataset de cada caso de estudio. Cuando el registro observado llega de múltiples fuentes con formatos distintos, este módulo los convierte en series coherentes con trazabilidad completa desde el portal de datos hasta el producto final. En una tesis industrial, esta capa es determinante para justificar la calidad del input ante tribunales y clientes.',
+      en: 'Eliminate the dependence on undocumented scripts for building the dataset for each case study. When the observational record comes from multiple sources in different formats, this module converts them into consistent time series with full traceability from the data portal to the final product. In an industrial thesis, this layer is decisive for justifying input quality before review committees and clients.',
+    },
     workflow: [
-      'Definición del dominio espacio-temporal y variables requeridas',
-      'Descarga por bloques con control de errores y reintentos automáticos',
-      'Normalización de fechas, unidades, coordenadas y metadatos',
-      'Exportación a CSV, NetCDF, GeoTIFF o estructuras pandas/xarray',
+      { es: 'Definición del dominio espacio-temporal y variables requeridas', en: 'Define the spatio-temporal domain and required variables' },
+      { es: 'Descarga por bloques con control de errores y reintentos automáticos', en: 'Block-based download with error control and automatic retries' },
+      { es: 'Normalización de fechas, unidades, coordenadas y metadatos', en: 'Normalisation of dates, units, coordinates and metadata' },
+      { es: 'Exportación a CSV, NetCDF, GeoTIFF o estructuras pandas/xarray', en: 'Export to CSV, NetCDF, GeoTIFF or pandas/xarray structures' },
     ],
     capabilities: [
-      'Descarga de precipitación desde GPM IMERG (NASA Earthdata), PERSIANN-CCS (UCI FTP), ERA5 (Copernicus CDS), AEMET OpenData y OGIMET SYNOP; resoluciones desde horaria a mensual, modos puntual y área.',
-      'Acceso a proyecciones CMIP6 mediante Copernicus CDS (download_CDS_CMIP6) y red federada ESGF (get_dataset_metadata, get_all_urls, process_file), con filtrado por modelo, experimento, variable y variante; descarga OPeNDAP y HTTPServer con recorte a bounding box.',
-      'Descarga y lectura de caudales desde GloFAS (reanálisis y reproyecciones), GRDC (archivos .day/.mon con centinelas -999) y USGS NWIS (conversión ft³/s a m³/s, búsqueda por bounding box).',
-      'Descarga de GeoTIFFs de texturas de suelo SoilGrids 2017 (ISRIC, 250 m): 21 capas de arena, limo y arcilla para 7 profundidades, con metadatos auxiliares opcionales.',
-      'Exportación orientada a reproducibilidad: CSV por estación con index temporal, NetCDF con CRS y metadatos CF, inventarios de estaciones y logs de descarga para auditoría por caso de estudio.',
+      {
+        es: 'Descarga de precipitación desde Meteostat, GPM IMERG (NASA Earthdata), PERSIANN-CCS (UCI FTP), ERA5 (Copernicus CDS), AEMET OpenData y OGIMET SYNOP; resoluciones desde horaria a mensual, modos puntual y área.',
+        en: 'Precipitation download from Meteostat, GPM IMERG (NASA Earthdata), PERSIANN-CCS (UCI FTP), ERA5 (Copernicus CDS), AEMET OpenData and OGIMET SYNOP; resolutions from hourly to monthly, point and area modes.',
+      },
+      {
+        es: 'Acceso a proyecciones CMIP6 mediante Copernicus CDS (download_CDS_CMIP6) y red federada ESGF (get_dataset_metadata, get_all_urls, process_file), con filtrado por modelo, experimento, variable y variante; descarga OPeNDAP y HTTPServer con recorte a bounding box.',
+        en: 'Access to CMIP6 projections via Copernicus CDS (download_CDS_CMIP6) and the federated ESGF network (get_dataset_metadata, get_all_urls, process_file), filtered by model, experiment, variable and variant; OPeNDAP and HTTPServer download with bounding-box clipping.',
+      },
+      {
+        es: 'Descarga y lectura de caudales desde GloFAS (reanálisis y reproyecciones), GRDC (archivos .day/.mon con centinelas -999) y USGS NWIS (conversión ft³/s a m³/s, búsqueda por bounding box).',
+        en: 'Download and reading of streamflows from GloFAS (reanalysis and re-forecasts), GRDC (.day/.mon files with −999 sentinels) and USGS NWIS (ft³/s to m³/s conversion, bounding-box station search).',
+      },
+      {
+        es: 'Descarga de GeoTIFFs de texturas de suelo SoilGrids 2017 (ISRIC, 250 m): 21 capas de arena, limo y arcilla para 7 profundidades, con metadatos auxiliares opcionales.',
+        en: 'Download of SoilGrids 2017 (ISRIC, 250 m) soil texture GeoTIFFs: 21 sand, silt and clay layers for 7 depths, with optional auxiliary metadata.',
+      },
+      {
+        es: 'Exportación orientada a reproducibilidad: CSV por estación con index temporal, NetCDF con CRS y metadatos CF, inventarios de estaciones y logs de descarga para auditoría por caso de estudio.',
+        en: 'Reproducibility-oriented export: per-station CSV with temporal index, NetCDF with CRS and CF metadata, station inventories and download logs for case-study auditing.',
+      },
     ],
     methods: [
-      { name: 'OGIMETDownloader / download_synop', description: 'Widget Jupyter interactivo y función de descarga por bloques de datos SYNOP diarios desde ogimet.com.' },
-      { name: 'download_aemet_daily_data', description: 'Descarga diaria AEMET OpenData con chunks de 15 días, exportación a NetCDF y control de rate limit.' },
-      { name: 'GPMDownloader / PERSSIANDownloader / download_era5', description: 'Conectores de satélite y reanálisis: GPM (earthaccess), PERSIANN (FTP paralelo), ERA5 (cdsapi multihilo).' },
-      { name: 'download_CDS_CMIP6', description: 'Descarga paralela de proyecciones CMIP6 desde Copernicus CDS con reintentos por año y modelo.' },
-      { name: 'get_dataset_metadata / get_all_urls / process_file', description: 'Pipeline ESGF completo: búsqueda de metadatos, obtención de URLs y descarga+recorte OPeNDAP o HTTP.' },
-      { name: 'download_glofas / download_glofas_by_year / read_glofas_nc', description: 'Caudal GloFAS desde Copernicus EWDS: petición global o por año, extracción puntual NetCDF.' },
-      { name: 'read_grdc / read_grdc_folder / analyze_grdc_quality', description: 'Lectura y diagnóstico de archivos GRDC diarios o mensuales con gestión de centinelas.' },
-      { name: 'download_usgs / search_usgs_sites', description: 'Caudal diario USGS NWIS con conversión de unidades y búsqueda espacial de estaciones.' },
-      { name: 'download_soilgrids', description: 'Descarga de 21 GeoTIFFs de texturas SoilGrids 2017 con reintentos robustos.' },
+      { name: 'OGIMETDownloader / download_synop', description: { es: 'Widget Jupyter interactivo y función de descarga por bloques de datos SYNOP diarios desde ogimet.com.', en: 'Interactive Jupyter widget and block-based download function for daily SYNOP data from ogimet.com.' } },
+      { name: 'Meteostat', description: { es: 'Notebook de descarga de observaciones meteorológicas históricas desde Meteostat con exportación organizada por estación y variable.', en: 'Notebook for downloading historical weather observations from Meteostat with station- and variable-oriented exports.' } },
+      { name: 'download_aemet_daily_data', description: { es: 'Descarga diaria AEMET OpenData con chunks de 15 días, exportación a NetCDF y control de rate limit.', en: 'AEMET OpenData daily download in 15-day chunks, NetCDF export and rate-limit control.' } },
+      { name: 'GPMDownloader / PERSSIANDownloader / download_era5', description: { es: 'Conectores de satélite y reanálisis: GPM (earthaccess), PERSIANN (FTP paralelo), ERA5 (cdsapi multihilo).', en: 'Satellite and reanalysis connectors: GPM (earthaccess), PERSIANN (parallel FTP), ERA5 (multi-threaded cdsapi).' } },
+      { name: 'download_CDS_CMIP6', description: { es: 'Descarga paralela de proyecciones CMIP6 desde Copernicus CDS con reintentos por año y modelo.', en: 'Parallel CMIP6 projection download from Copernicus CDS with per-year and per-model retries.' } },
+      { name: 'get_dataset_metadata / get_all_urls / process_file', description: { es: 'Pipeline ESGF completo: búsqueda de metadatos, obtención de URLs y descarga+recorte OPeNDAP o HTTP.', en: 'Full ESGF pipeline: metadata search, URL retrieval and OPeNDAP or HTTP download with spatial clipping.' } },
+      { name: 'download_glofas / download_glofas_by_year / read_glofas_nc', description: { es: 'Caudal GloFAS desde Copernicus EWDS: petición global o por año, extracción puntual NetCDF.', en: 'GloFAS streamflow from Copernicus EWDS: global or yearly request, point extraction from NetCDF.' } },
+      { name: 'read_grdc / read_grdc_folder / analyze_grdc_quality', description: { es: 'Lectura y diagnóstico de archivos GRDC diarios o mensuales con gestión de centinelas.', en: 'Reading and quality assessment of daily or monthly GRDC files with sentinel management.' } },
+      { name: 'download_usgs / search_usgs_sites', description: { es: 'Caudal diario USGS NWIS con conversión de unidades y búsqueda espacial de estaciones.', en: 'Daily USGS NWIS streamflow with unit conversion and spatial station search.' } },
+      { name: 'download_soilgrids', description: { es: 'Descarga de 21 GeoTIFFs de texturas SoilGrids 2017 con reintentos robustos.', en: 'Download of 21 SoilGrids 2017 soil texture GeoTIFFs with robust retries.' } },
     ],
     inputs: [
-      'Dominio espacio-temporal: bounding box, fechas, estaciones o identificadores',
-      'Credenciales: API keys AEMET, CDS Copernicus, EWDS; cuenta NASA Earthdata',
-      'Filtros CMIP6/ESGF: model, experiment, variable, variant, table',
-      'Metadatos de estaciones GRDC/USGS para lectura de archivos locales',
+      { es: 'Dominio espacio-temporal: bounding box, fechas, estaciones o identificadores', en: 'Spatio-temporal domain: bounding box, dates, stations or identifiers' },
+      { es: 'Credenciales: API keys AEMET, CDS Copernicus, EWDS; cuenta NASA Earthdata', en: 'Credentials: AEMET, CDS Copernicus, EWDS API keys; NASA Earthdata account' },
+      { es: 'Filtros CMIP6/ESGF: model, experiment, variable, variant, table', en: 'CMIP6/ESGF filters: model, experiment, variable, variant, table' },
+      { es: 'Metadatos de estaciones GRDC/USGS para lectura de archivos locales', en: 'GRDC/USGS station metadata for reading local files' },
     ],
     outputs: [
-      'Series temporales limpias por estación en CSV o DataFrame pandas',
-      'Cubos NetCDF espaciales listos para análisis con xarray',
-      'GeoTIFFs de texturas de suelo referenciados geoespacialmente',
-      'Inventarios de estaciones, logs de descarga y metadatos de trazabilidad',
+      { es: 'Series temporales limpias por estación en CSV o DataFrame pandas', en: 'Clean per-station time series in CSV or pandas DataFrame' },
+      { es: 'Cubos NetCDF espaciales listos para análisis con xarray', en: 'Spatial NetCDF cubes ready for analysis with xarray' },
+      { es: 'GeoTIFFs de texturas de suelo referenciados geoespacialmente', en: 'Geospatially referenced soil texture GeoTIFFs' },
+      { es: 'Inventarios de estaciones, logs de descarga y metadatos de trazabilidad', en: 'Station inventories, download logs and traceability metadata' },
     ],
     validation: [
-      'Descarga en bloques temporales para evitar timeouts de servidor (AEMET máx 15 días, GloFAS por año).',
-      'Reintentos automáticos con backoff exponencial para fallos transitorios de red.',
-      'Conservación de coordenadas, altitud, identificadores SYNOP/GRDC/USGS y fuente original como metadatos.',
-      'Separación entre descarga bruta, procesado y producto final para auditar cada caso de estudio.',
-      'Control de valores centinela (-999 GRDC, -99 SWAT+) y conversión de unidades en la capa de normalización.',
+      { es: 'Descarga en bloques temporales para evitar timeouts de servidor (AEMET máx 15 días, GloFAS por año).', en: 'Block-based temporal download to avoid server timeouts (AEMET max 15 days, GloFAS per year).' },
+      { es: 'Reintentos automáticos con backoff exponencial para fallos transitorios de red.', en: 'Automatic retries with exponential back-off for transient network failures.' },
+      { es: 'Conservación de coordenadas, altitud, identificadores SYNOP/GRDC/USGS y fuente original como metadatos.', en: 'Preservation of coordinates, elevation, SYNOP/GRDC/USGS identifiers and original source as metadata.' },
+      { es: 'Separación entre descarga bruta, procesado y producto final para auditar cada caso de estudio.', en: 'Separation between raw download, processing and final product to audit each case study.' },
+      { es: 'Control de valores centinela (-999 GRDC, -99 SWAT+) y conversión de unidades en la capa de normalización.', en: 'Sentinel value control (−999 GRDC, −99 SWAT+) and unit conversion in the normalisation layer.' },
     ],
     industrialUse: [
-      'Montar el dataset completo de una cuenca en horas, con todos los inputs documentados para un informe técnico o capítulo de tesis.',
-      'Preparar los forzantes meteorológicos e hidrológicos para HEC-HMS, SWAT+, SFINCS y HEC-RAS directamente desde las fuentes originales.',
-      'Descargar y verificar combinaciones CMIP6 completas (todas las variables requeridas) antes de iniciar el pipeline de corrección de sesgo y downscaling.',
+      { es: 'Montar el dataset completo de una cuenca en horas, con todos los inputs documentados para un informe técnico o capítulo de tesis.', en: 'Assemble the complete dataset for a catchment in hours, with all inputs documented for a technical report or thesis chapter.' },
+      { es: 'Preparar los forzantes meteorológicos e hidrológicos para HEC-HMS, SWAT+, SFINCS y HEC-RAS directamente desde las fuentes originales.', en: 'Prepare meteorological and hydrological forcings for HEC-HMS, SWAT+, SFINCS and HEC-RAS directly from original sources.' },
+      { es: 'Descargar y verificar combinaciones CMIP6 completas (todas las variables requeridas) antes de iniciar el pipeline de corrección de sesgo y downscaling.', en: 'Download and verify complete CMIP6 combinations (all required variables) before starting the bias-correction and downscaling pipeline.' },
     ],
     hydra: [
-      'Base de todos los análisis de extremos, generación estocástica y modelización: sin datos limpios no hay pipeline.',
-      'Los conectores CMIP6/ESGF alimentan directamente el módulo de corrección de sesgo y el downscaling híbrido.',
-      'Conecta la web con la herramienta interactiva de descarga OGIMET y los notebooks de fuentes de datos.',
+      { es: 'Base de todos los análisis de extremos, generación estocástica y modelización: sin datos limpios no hay pipeline.', en: 'Foundation of all extreme-value analyses, stochastic generation and modelling: no clean data, no pipeline.' },
+      { es: 'Los conectores CMIP6/ESGF alimentan directamente el módulo de corrección de sesgo y el downscaling híbrido.', en: 'CMIP6/ESGF connectors feed directly into the bias-correction module and the hybrid downscaling pipeline.' },
+      { es: 'Conecta la web con la herramienta interactiva de descarga OGIMET y los notebooks de fuentes de datos, incluyendo Meteostat para observaciones meteorológicas históricas.', en: 'Links the web with the interactive OGIMET download tool and the data-sources notebooks, including Meteostat for historical weather observations.' },
     ],
     figures: [
-      { title: 'Pipeline de ingesta', caption: 'Las fuentes entran con formatos heterogéneos y HYDRA los transforma en datasets trazables y reproducibles.', svg: dataPipelineSvg },
-      { title: 'CMIP6 / ESGF', caption: 'Búsqueda de metadatos en nodos ESGF y Copernicus CDS, filtrado por modelo/experimento/variable y descarga con recorte espacial.', svg: cmip6Svg },
+      { title: { es: 'Pipeline de ingesta', en: 'Ingestion pipeline' }, caption: { es: 'Las fuentes entran con formatos heterogéneos y HYDRA los transforma en datasets trazables y reproducibles.', en: 'Sources arrive in heterogeneous formats and HYDRA transforms them into traceable, reproducible datasets.' }, svg: dataPipelineSvg },
+      { title: { es: 'CMIP6 / ESGF', en: 'CMIP6 / ESGF' }, caption: { es: 'Búsqueda de metadatos en nodos ESGF y Copernicus CDS, filtrado por modelo/experimento/variable y descarga con recorte espacial.', en: 'Metadata search across ESGF nodes and Copernicus CDS, filtered by model/experiment/variable, with spatial clipping on download.' }, svg: cmip6Svg },
     ],
   },
 
   {
     slug: 'analisis-climatico',
     title: 'Análisis climático',
-    subtitle: 'Extremos, dependencia multivariante, corrección de sesgo y downscaling híbrido de mapas de inundación.',
+    subtitle: {
+      es: 'Extremos, dependencia multivariante, corrección de sesgo y downscaling híbrido de mapas de inundación.',
+      en: 'Extreme values, multivariate dependence, bias correction and hybrid downscaling of flood inundation maps.',
+    },
     tag: 'Clima',
     color: 'from-slate-950 via-indigo-950 to-violet-800',
-    summary: 'Este módulo transforma series climáticas en información de diseño: periodos de retorno con incertidumbre, dependencia entre variables, corrección de proyecciones CMIP6 y generación de mapas de inundación por periodo de retorno mediante el pipeline de downscaling híbrido.',
-    purpose: 'Evaluar el comportamiento estadístico de lluvias, caudales y variables climáticas con énfasis en extremos, desde análisis local y regional hasta la propagación de incertidumbre climática en mapas de inundación. La combinación de cópulas, clasificación morfológica y simulación hidráulica masiva permite producir mapas de periodo de retorno sin necesidad de correr miles de simulaciones hidráulicas costosas.',
+    summary: {
+      es: 'Este módulo transforma series climáticas en información de diseño: periodos de retorno con incertidumbre, dependencia entre variables, corrección de proyecciones CMIP6 y generación de mapas de inundación por periodo de retorno mediante el pipeline de downscaling híbrido.',
+      en: 'This module transforms climate series into design information: return periods with uncertainty, inter-variable dependence, CMIP6 projection correction and flood inundation maps by return period via the hybrid downscaling pipeline.',
+    },
+    purpose: {
+      es: 'Evaluar el comportamiento estadístico de lluvias, caudales y variables climáticas con énfasis en extremos, desde análisis local y regional hasta la propagación de incertidumbre climática en mapas de inundación. La combinación de cópulas, clasificación morfológica y simulación hidráulica masiva permite producir mapas de periodo de retorno sin necesidad de correr miles de simulaciones hidráulicas costosas.',
+      en: 'Evaluate the statistical behaviour of rainfall, streamflow and climate variables with a focus on extremes, from local and regional analysis to the propagation of climate uncertainty in flood inundation maps. The combination of copulas, morphological classification and massive hydraulic simulation makes it possible to produce return-period maps without running thousands of costly hydraulic simulations.',
+    },
     workflow: [
-      'Extracción de eventos extremos o máximos por bloque desde series observadas',
-      'Ajuste probabilístico con incertidumbre (GEV, GPD, L-momentos, Bayes)',
-      'Análisis de dependencia multivariante mediante cópulas',
-      'Corrección de sesgo de proyecciones CMIP6 y downscaling híbrido a mapas T',
+      { es: 'Extracción de eventos extremos o máximos por bloque desde series observadas', en: 'Extraction of extreme events or block maxima from observed series' },
+      { es: 'Ajuste probabilístico con incertidumbre (GEV, GPD, L-momentos, Bayes)', en: 'Probabilistic fitting with uncertainty (GEV, GPD, L-moments, Bayes)' },
+      { es: 'Análisis de dependencia multivariante mediante cópulas', en: 'Multivariate dependence analysis using copulas' },
+      { es: 'Corrección de sesgo de proyecciones CMIP6 y downscaling híbrido a mapas T', en: 'Bias correction of CMIP6 projections and hybrid downscaling to return-period maps' },
     ],
     capabilities: [
-      'Extracción de eventos por umbral (spell), POT con declustering, ventanas n-días y eventos concurrentes multi-estación; con separación mínima configurable entre eventos.',
-      'Análisis de valores extremos: GEV y GPD por MLE robusto multi-arranque, L-momentos, MAP bayesiano, intervalos de Fisher y MCMC (PyMC/PyStan); diagnósticos QQ/PP y curvas de nivel de retorno.',
-      'Análisis de frecuencia regional (RFA): índice de avenida, GEV regional, niveles de retorno locales escalados y estimación bayesiana jerárquica multi-estación (HierarchicalGEV con PyMC).',
-      'Interpolación espacial de campos climáticos: IDW, Kriging Universal (pykrige) y Proceso Gaussiano con covariables de altitud (scikit-learn).',
-      'Cópulas Archimedanas bivariantes y trivariantes (Gumbel, Clayton, Frank) para análisis de inundación compuesta; FloodEventCopula Normal multivariante para generación sintética de hidrogramas.',
-      'Corrección de sesgo cuantílica: Delta mensual, mapeo cuantílico aditivo (QM), delta cuantílico multiplicativo (QDM) y mapeo de distribución escalada paramétrico gamma/normal (SDM).',
-      'Pipeline de downscaling híbrido: clasificación morfológica de crecidas (PCA+K-means), muestreo por cópula Normal multivariante, selección MaxDiss de representativos, simulaciones hidráulicas SFINCS, interpolación k-NN en espacio de cópula y cálculo pixel a pixel de mapas por periodo de retorno.',
+      {
+        es: 'Extracción de eventos por umbral (spell), POT con declustering, ventanas n-días y eventos concurrentes multi-estación; con separación mínima configurable entre eventos.',
+        en: 'Threshold-based event extraction (spell), POT with declustering, n-day windows and concurrent multi-station events; with configurable minimum separation between events.',
+      },
+      {
+        es: 'Análisis de valores extremos: GEV y GPD por MLE robusto multi-arranque, L-momentos, MAP bayesiano, intervalos de Fisher y MCMC (PyMC/PyStan); diagnósticos QQ/PP y curvas de nivel de retorno.',
+        en: 'Extreme value analysis: GEV and GPD via robust multi-start MLE, L-moments, Bayesian MAP, Fisher intervals and MCMC (PyMC/PyStan); QQ/PP diagnostics and return-level curves.',
+      },
+      {
+        es: 'Análisis de frecuencia regional (RFA): índice de avenida, GEV regional, niveles de retorno locales escalados y estimación bayesiana jerárquica multi-estación (HierarchicalGEV con PyMC).',
+        en: 'Regional frequency analysis (RFA): index flood, regional GEV, scaled local return levels and multi-site Bayesian hierarchical estimation (HierarchicalGEV with PyMC).',
+      },
+      {
+        es: 'Interpolación espacial de campos climáticos: IDW, Kriging Universal (pykrige) y Proceso Gaussiano con covariables de altitud (scikit-learn).',
+        en: 'Spatial interpolation of climate fields: IDW, Universal Kriging (pykrige) and Gaussian Process with elevation covariates (scikit-learn).',
+      },
+      {
+        es: 'Cópulas Archimedanas bivariantes y trivariantes (Gumbel, Clayton, Frank) para análisis de inundación compuesta; FloodEventCopula Normal multivariante para generación sintética de hidrogramas.',
+        en: 'Bivariate and trivariate Archimedean copulas (Gumbel, Clayton, Frank) for compound flood analysis; multivariate Normal FloodEventCopula for synthetic hydrograph generation.',
+      },
+      {
+        es: 'Corrección de sesgo cuantílica: Delta mensual, mapeo cuantílico aditivo (QM), delta cuantílico multiplicativo (QDM) y mapeo de distribución escalada paramétrico gamma/normal (SDM).',
+        en: 'Quantile bias correction: monthly Delta, additive quantile mapping (QM), multiplicative quantile-delta (QDM) and parametric scaled distribution mapping gamma/normal (SDM).',
+      },
+      {
+        es: 'Pipeline de downscaling híbrido: clasificación morfológica de crecidas (PCA+K-means), muestreo por cópula Normal multivariante, selección MaxDiss de representativos, simulaciones hidráulicas SFINCS, interpolación k-NN en espacio de cópula y cálculo pixel a pixel de mapas por periodo de retorno.',
+        en: 'Hybrid downscaling pipeline: morphological flood classification (PCA+K-means), multivariate Normal copula sampling, MaxDiss representative selection, SFINCS hydraulic simulations, k-NN interpolation in copula space and pixel-by-pixel computation of return-period maps.',
+      },
     ],
     methods: [
-      { name: 'extract_events / extract_discharge_events / extract_precipitation_events_pot', description: 'Extracción reproducible de eventos de crecida y precipitación con POT, spell y ventana n-días.' },
-      { name: 'fit_gev / fit_gev_mle / fit_gev_lmom / fit_gev_bayes / return_level', description: 'Ajuste GEV local con MLE, L-momentos, MAP bayesiano y MCMC; niveles de retorno con incertidumbre.' },
-      { name: 'regional_index_flood / fit_regional_gev / regional_return_levels / HierarchicalGEV', description: 'Análisis de frecuencia regional e inferencia bayesiana jerárquica multi-estación.' },
-      { name: 'IDWInterpolator / KrigingInterpolator / GaussianProcessInterpolator', description: 'Reconstrucción espacial de variables climáticas o de crecida.' },
-      { name: 'BivariateCopula / TrivariateCopula / FloodEventCopula', description: 'Dependencia multivariante para inundación compuesta (caudal, nivel del mar, precipitación) y generación sintética de hidrogramas.' },
-      { name: 'BiasCorrection (QM / QDM / SDM) / delta_method', description: 'Corrección de sesgo cuantílica empírica y paramétrica para proyecciones climáticas.' },
-      { name: 'HydrographClassifier / HydrographReconstructor / maxdiss', description: 'Clasificación morfológica de crecidas y selección MaxDiss de eventos representativos para simulación hidráulica masiva.' },
-      { name: 'FloodMapInterpolator / FloodMapInterpolatorCC / pixel_return_period / save_return_period_geotiffs', description: 'Interpolación k-NN de mapas de inundación y cálculo pixel a pixel de mapas GeoTIFF por periodo de retorno (histórico y CC).' },
+      { name: 'extract_events / extract_discharge_events / extract_precipitation_events_pot', description: { es: 'Extracción reproducible de eventos de crecida y precipitación con POT, spell y ventana n-días.', en: 'Reproducible extraction of flood and precipitation events with POT, spell and n-day window approaches.' } },
+      { name: 'fit_gev / fit_gev_mle / fit_gev_lmom / fit_gev_bayes / return_level', description: { es: 'Ajuste GEV local con MLE, L-momentos, MAP bayesiano y MCMC; niveles de retorno con incertidumbre.', en: 'Local GEV fitting with MLE, L-moments, Bayesian MAP and MCMC; return levels with uncertainty bands.' } },
+      { name: 'regional_index_flood / fit_regional_gev / regional_return_levels / HierarchicalGEV', description: { es: 'Análisis de frecuencia regional e inferencia bayesiana jerárquica multi-estación.', en: 'Regional frequency analysis and multi-site Bayesian hierarchical inference.' } },
+      { name: 'IDWInterpolator / KrigingInterpolator / GaussianProcessInterpolator', description: { es: 'Reconstrucción espacial de variables climáticas o de crecida.', en: 'Spatial reconstruction of climate or flood variables.' } },
+      { name: 'BivariateCopula / TrivariateCopula / FloodEventCopula', description: { es: 'Dependencia multivariante para inundación compuesta (caudal, nivel del mar, precipitación) y generación sintética de hidrogramas.', en: 'Multivariate dependence for compound flooding (flow, sea level, precipitation) and synthetic hydrograph generation.' } },
+      { name: 'BiasCorrection (QM / QDM / SDM) / delta_method', description: { es: 'Corrección de sesgo cuantílica empírica y paramétrica para proyecciones climáticas.', en: 'Empirical and parametric quantile bias correction for climate projections.' } },
+      { name: 'HydrographClassifier / HydrographReconstructor / maxdiss', description: { es: 'Clasificación morfológica de crecidas y selección MaxDiss de eventos representativos para simulación hidráulica masiva.', en: 'Flood morphological classification and MaxDiss event selection for massive hydraulic simulation.' } },
+      { name: 'FloodMapInterpolator / FloodMapInterpolatorCC / pixel_return_period / save_return_period_geotiffs', description: { es: 'Interpolación k-NN de mapas de inundación y cálculo pixel a pixel de mapas GeoTIFF por periodo de retorno (histórico y CC).', en: 'k-NN interpolation of flood maps and pixel-by-pixel computation of return-period GeoTIFFs (historical and climate-change scenarios).' } },
     ],
     inputs: [
-      'Series observadas de precipitación y caudal con DatetimeIndex',
-      'Proyecciones CMIP6 históricas y SSP (pr, tas, tasmax…)',
-      'Eventos extraídos, máximos anuales y metadatos espaciales',
-      'Hidrogramas de simulación hidráulica (SFINCS) en directorio de salida',
+      { es: 'Series observadas de precipitación y caudal con DatetimeIndex', en: 'Observed precipitation and streamflow series with DatetimeIndex' },
+      { es: 'Proyecciones CMIP6 históricas y SSP (pr, tas, tasmax…)', en: 'Historical and SSP CMIP6 projections (pr, tas, tasmax…)' },
+      { es: 'Eventos extraídos, máximos anuales y metadatos espaciales', en: 'Extracted events, annual maxima and spatial metadata' },
+      { es: 'Hidrogramas de simulación hidráulica (SFINCS) en directorio de salida', en: 'Hydraulic simulation (SFINCS) hydrographs in output directory' },
     ],
     outputs: [
-      'Niveles de retorno con intervalos de confianza o credibles',
-      'Eventos sintéticos multivariantes coherentes (Qmax, Qmed, Duración, tipo)',
-      'Series y campos con sesgo corregido para el periodo futuro',
-      'GeoTIFFs de calado máximo esperado por periodo de retorno (T=5 a T=1000)',
+      { es: 'Niveles de retorno con intervalos de confianza o credibles', en: 'Return levels with confidence or credible intervals' },
+      { es: 'Eventos sintéticos multivariantes coherentes (Qmax, Qmed, Duración, tipo)', en: 'Coherent multivariate synthetic events (Qmax, Qmed, Duration, type)' },
+      { es: 'Series y campos con sesgo corregido para el periodo futuro', en: 'Bias-corrected series and fields for the future period' },
+      { es: 'GeoTIFFs de calado máximo esperado por periodo de retorno (T=5 a T=1000)', en: 'Maximum expected water-depth GeoTIFFs by return period (T=5 to T=1000)' },
     ],
     validation: [
-      'Diagnósticos QQ/PP y curvas de nivel de retorno empíricas frente al ajuste.',
-      'Comparación de estadísticos observados frente a corregidos o simulados (media, varianza, percentiles extremos).',
-      'Revisión de estabilidad de umbral GPD y separación mínima entre eventos POT.',
-      'Contraste entre correlación observada y sintética para cópulas y FloodEventCopula.',
-      'Diagnóstico de convergencia MCMC (R-hat, ESS) en modelos HierarchicalGEV y fit_gev_bayes.',
+      { es: 'Diagnósticos QQ/PP y curvas de nivel de retorno empíricas frente al ajuste.', en: 'QQ/PP diagnostics and empirical return-level curves against the fit.' },
+      { es: 'Comparación de estadísticos observados frente a corregidos o simulados (media, varianza, percentiles extremos).', en: 'Comparison of observed vs corrected or simulated statistics (mean, variance, extreme percentiles).' },
+      { es: 'Revisión de estabilidad de umbral GPD y separación mínima entre eventos POT.', en: 'GPD threshold stability review and minimum separation between POT events.' },
+      { es: 'Contraste entre correlación observada y sintética para cópulas y FloodEventCopula.', en: 'Contrast between observed and synthetic correlation for copulas and FloodEventCopula.' },
+      { es: 'Diagnóstico de convergencia MCMC (R-hat, ESS) en modelos HierarchicalGEV y fit_gev_bayes.', en: 'MCMC convergence diagnostics (R-hat, ESS) for HierarchicalGEV and fit_gev_bayes models.' },
     ],
     industrialUse: [
-      'Convertir series climáticas y proyecciones CMIP6 en valores de diseño hidrológico con incertidumbre cuantificada para informes técnicos.',
-      'Generar mapas de inundación por periodo de retorno para cualquier escenario climático sin necesidad de correr miles de simulaciones hidráulicas completas.',
-      'Documentar la cadena estadística completa (datos → extremos → corrección → downscaling) en la memoria doctoral con reproducibilidad total.',
+      { es: 'Convertir series climáticas y proyecciones CMIP6 en valores de diseño hidrológico con incertidumbre cuantificada para informes técnicos.', en: 'Convert climate series and CMIP6 projections into hydrological design values with quantified uncertainty for technical reports.' },
+      { es: 'Generar mapas de inundación por periodo de retorno para cualquier escenario climático sin necesidad de correr miles de simulaciones hidráulicas completas.', en: 'Generate flood inundation maps by return period for any climate scenario without running thousands of full hydraulic simulations.' },
+      { es: 'Documentar la cadena estadística completa (datos → extremos → corrección → downscaling) en la memoria doctoral con reproducibilidad total.', en: 'Document the full statistical chain (data → extremes → correction → downscaling) in the doctoral thesis with complete reproducibility.' },
     ],
     hydra: [
-      'Alimenta las herramientas interactivas de eventos + GEV bayesiana y cópulas de eventos de la web.',
-      'El pipeline de downscaling híbrido conecta directamente con los modelos hidráulicos del módulo de modelización.',
-      'Produce los escenarios climáticos que alimentan HEC-HMS, SWAT+, SFINCS y HEC-RAS.',
+      { es: 'Alimenta las herramientas interactivas de eventos + GEV bayesiana y cópulas de eventos de la web.', en: "Feeds the web's interactive event + Bayesian GEV and event copula tools." },
+      { es: 'El pipeline de downscaling híbrido conecta directamente con los modelos hidráulicos del módulo de modelización.', en: 'The hybrid downscaling pipeline connects directly with the hydraulic models in the modelling module.' },
+      { es: 'Produce los escenarios climáticos que alimentan HEC-HMS, SWAT+, SFINCS y HEC-RAS.', en: 'Produces climate scenarios that feed HEC-HMS, SWAT+, SFINCS and HEC-RAS.' },
     ],
     figures: [
-      { title: 'Análisis de extremos', caption: 'Curva de periodo de retorno GEV con banda de incertidumbre, posterior MCMC de parámetros y diagnóstico QQ para diseño hidrológico.', svg: extremesSvg },
-      { title: 'Downscaling híbrido', caption: 'Pipeline completo: clasificación morfológica → cópula → MaxDiss → simulaciones SFINCS → interpolación k-NN → mapas GeoTIFF de periodo de retorno.', svg: downscalingSvg },
+      { title: { es: 'Análisis de extremos', en: 'Extreme-value analysis' }, caption: { es: 'Curva de periodo de retorno GEV con banda de incertidumbre, posterior MCMC de parámetros y diagnóstico QQ para diseño hidrológico.', en: 'GEV return-level curve with uncertainty band, MCMC parameter posterior and QQ diagnostic for hydrological design.' }, svg: extremesSvg },
+      { title: { es: 'Downscaling híbrido', en: 'Hybrid downscaling' }, caption: { es: 'Pipeline completo: clasificación morfológica → cópula → MaxDiss → simulaciones SFINCS → interpolación k-NN → mapas GeoTIFF de periodo de retorno.', en: 'Full pipeline: morphological classification → copula → MaxDiss → SFINCS simulations → k-NN interpolation → return-period GeoTIFF maps.' }, svg: downscalingSvg },
     ],
   },
 
   {
     slug: 'generacion-estocastica',
     title: 'Generación estocástica',
-    subtitle: 'Series, campos y ensembles sintéticos que preservan distribución marginal, estacionalidad y dependencia espacio-temporal.',
+    subtitle: {
+      es: 'Series, campos y ensembles sintéticos que preservan distribución marginal, estacionalidad y dependencia espacio-temporal.',
+      en: 'Synthetic series, fields and ensembles preserving marginal distribution, seasonality and spatio-temporal dependence.',
+    },
     tag: 'Simulación',
     color: 'from-slate-950 via-emerald-950 to-teal-700',
-    summary: 'Este módulo genera escenarios plausibles cuando el registro observado es demasiado corto para explorar riesgo e incertidumbre. Abarca desde series puntuales mediante CoSMoS y NSRP hasta campos espaciales aleatorios multisitio con estructura de correlación espacio-temporal parametrizada.',
-    purpose: 'Ajustar modelos estocásticos que reproduzcan distribución marginal, estacionalidad, autocorrelación y dependencia espacial. Los ensembles resultantes alimentan modelos físicos y análisis de robustez. El enfoque NSRP (Neyman-Scott Rectangular Pulses) es especialmente útil para precipitación intermitente, mientras que CoSMoS VAR(p) permite simular cualquier variable con estructura espacio-temporal.',
+    summary: {
+      es: 'Este módulo genera escenarios plausibles cuando el registro observado es demasiado corto para explorar riesgo e incertidumbre. Abarca desde series puntuales mediante CoSMoS y NSRP hasta campos espaciales aleatorios multisitio con estructura de correlación espacio-temporal parametrizada.',
+      en: 'This module generates plausible scenarios when the observational record is too short to explore risk and uncertainty. It covers point series via CoSMoS and NSRP through to multi-site random spatial fields with a parametrised spatio-temporal correlation structure.',
+    },
+    purpose: {
+      es: 'Ajustar modelos estocásticos que reproduzcan distribución marginal, estacionalidad, autocorrelación y dependencia espacial. Los ensembles resultantes alimentan modelos físicos y análisis de robustez. El enfoque NSRP (Neyman-Scott Rectangular Pulses) es especialmente útil para precipitación intermitente, mientras que CoSMoS VAR(p) permite simular cualquier variable con estructura espacio-temporal.',
+      en: 'Fit stochastic models that reproduce marginal distribution, seasonality, autocorrelation and spatial dependence. The resulting ensembles feed physical models and robustness analyses. The NSRP (Neyman-Scott Rectangular Pulses) approach is especially useful for intermittent precipitation, while CoSMoS VAR(p) allows simulation of any variable with a spatio-temporal structure.',
+    },
     workflow: [
-      'Ajuste de marginales estacionales y estructura temporal (ACF) sobre la serie observada',
-      'Calibración PSO de parámetros NSRP o ajuste VAR(p) del campo espacial',
-      'Simulación de ensembles con semilla reproducible',
-      'Diagnóstico frente a estadísticos observados: media, varianza, ACF, correlación espacial',
+      { es: 'Ajuste de marginales estacionales y estructura temporal (ACF) sobre la serie observada', en: 'Fit seasonal marginals and temporal structure (ACF) from the observed series' },
+      { es: 'Calibración PSO de parámetros NSRP o ajuste VAR(p) del campo espacial', en: 'PSO calibration of NSRP parameters or VAR(p) fitting of the spatial field' },
+      { es: 'Simulación de ensembles con semilla reproducible', en: 'Ensemble simulation with reproducible seed' },
+      { es: 'Diagnóstico frente a estadísticos observados: media, varianza, ACF, correlación espacial', en: 'Diagnostic against observed statistics: mean, variance, ACF, spatial correlation' },
     ],
     capabilities: [
-      'Generación puntual de series con CoSMoS (analyze_ts / simulate_ts): marginales flexibles (gengamma, BurrXII, GEV…), probabilidad de cero p0, autocorrelación estacional mensual o semanal.',
-      'Modelo NSRP puntual (NSRPModel vía NEOPRENE): proceso de Poisson de tormentas con celdas rectangulares aleatorias, calibración PSO sobre estadísticos observados, resolución diaria u horaria con estacionalidad mensual.',
-      'Modelo STNSRP multi-estación (STNSRPModel): preserva correlaciones espaciales entre estaciones con coordenadas geográficas o UTM; calibración PSO con enjambre de 1000 partículas para producción.',
-      'Campos aleatorios espacio-temporales con CoSMoS_py (SpatialFieldModel): VAR(p), marginales flexibles, estructuras de correlación espacio-temporal (Clayton, Gneiting), cópulas de dependencia Gauss/Student/Bardossy, advección uniforme/rotación/espiral y anisotropía afín.',
-      'Soporte para rejillas regulares y ubicaciones irregulares; diagnóstico completo de media, varianza, ACF, matriz de correlación y excedencia conjunta.',
+      {
+        es: 'Generación puntual de series con CoSMoS (analyze_ts / simulate_ts): marginales flexibles (gengamma, BurrXII, GEV…), probabilidad de cero p0, autocorrelación estacional mensual o semanal.',
+        en: 'Point series generation with CoSMoS (analyze_ts / simulate_ts): flexible marginals (gengamma, BurrXII, GEV…), zero-probability p0, monthly or weekly seasonal autocorrelation.',
+      },
+      {
+        es: 'Modelo NSRP puntual (NSRPModel vía NEOPRENE): proceso de Poisson de tormentas con celdas rectangulares aleatorias, calibración PSO sobre estadísticos observados, resolución diaria u horaria con estacionalidad mensual.',
+        en: 'Point NSRP model (NSRPModel via NEOPRENE): Poisson storm process with random rectangular cells, PSO calibration against observed statistics, daily or hourly resolution with monthly seasonality.',
+      },
+      {
+        es: 'Modelo STNSRP multi-estación (STNSRPModel): preserva correlaciones espaciales entre estaciones con coordenadas geográficas o UTM; calibración PSO con enjambre de 1000 partículas para producción.',
+        en: 'Multi-site STNSRP model (STNSRPModel): preserves spatial correlations between stations with geographic or UTM coordinates; PSO calibration with a 1000-particle swarm for production runs.',
+      },
+      {
+        es: 'Campos aleatorios espacio-temporales con CoSMoS_py (SpatialFieldModel): VAR(p), marginales flexibles, estructuras de correlación espacio-temporal (Clayton, Gneiting), cópulas de dependencia Gauss/Student/Bardossy, advección uniforme/rotación/espiral y anisotropía afín.',
+        en: 'Spatio-temporal random fields with CoSMoS_py (SpatialFieldModel): VAR(p), flexible marginals, spatio-temporal correlation structures (Clayton, Gneiting), Gauss/Student/Bardossy dependence copulas, uniform advection/rotation/swirl and affine anisotropy.',
+      },
+      {
+        es: 'Soporte para rejillas regulares y ubicaciones irregulares; diagnóstico completo de media, varianza, ACF, matriz de correlación y excedencia conjunta.',
+        en: 'Support for regular grids and irregular locations; complete diagnostics of mean, variance, ACF, correlation matrix and joint exceedance.',
+      },
     ],
     methods: [
-      { name: 'analyze_ts / simulate_ts / report_ts', description: 'Ajuste estacional CoSMoS y simulación de series temporales puntuales con diagnóstico completo.' },
-      { name: 'NSRPModel.fit() / NSRPModel.simulate()', description: 'Modelo NSRP puntual calibrado con PSO sobre estadísticos diarios: media, varianza, probabilidad de lluvia, ACF y autocovarianza.' },
-      { name: 'STNSRPModel.fit() / STNSRPModel.simulate()', description: 'Extensión multisitio del NSRP que preserva correlaciones espaciales cruzadas entre estaciones.' },
-      { name: 'SpatialFieldModel.fit() / SpatialFieldModel.simulate()', description: 'Campo aleatorio VAR(p) con distribución marginal y estructura de correlación espacio-temporal parametrizada.' },
-      { name: 'fit_spatial_model / generate_random_field / check_random_field', description: 'API funcional para ajuste, simulación y diagnóstico de campos espaciales en rejilla o ubicaciones irregulares.' },
+      { name: 'analyze_ts / simulate_ts / report_ts', description: { es: 'Ajuste estacional CoSMoS y simulación de series temporales puntuales con diagnóstico completo.', en: 'Seasonal CoSMoS fitting and point time-series simulation with complete diagnostics.' } },
+      { name: 'NSRPModel.fit() / NSRPModel.simulate()', description: { es: 'Modelo NSRP puntual calibrado con PSO sobre estadísticos diarios: media, varianza, probabilidad de lluvia, ACF y autocovarianza.', en: 'Point NSRP model calibrated with PSO against daily statistics: mean, variance, rain probability, ACF and autocovariance.' } },
+      { name: 'STNSRPModel.fit() / STNSRPModel.simulate()', description: { es: 'Extensión multisitio del NSRP que preserva correlaciones espaciales cruzadas entre estaciones.', en: 'Multi-site NSRP extension preserving spatial cross-correlations between stations.' } },
+      { name: 'SpatialFieldModel.fit() / SpatialFieldModel.simulate()', description: { es: 'Campo aleatorio VAR(p) con distribución marginal y estructura de correlación espacio-temporal parametrizada.', en: 'VAR(p) random field with marginal distribution and parametrised spatio-temporal correlation structure.' } },
+      { name: 'fit_spatial_model / generate_random_field / check_random_field', description: { es: 'API funcional para ajuste, simulación y diagnóstico de campos espaciales en rejilla o ubicaciones irregulares.', en: 'Functional API for fitting, simulation and diagnostics of spatial fields on grids or irregular locations.' } },
     ],
     inputs: [
-      'Series diarias o sub-diarias observadas con DatetimeIndex (precipitación, caudal, temperatura…)',
-      'Coordenadas de estaciones (lat/lon o UTM) para modelos multisitio y campos',
-      'Distribución marginal, p0, orden VAR y parámetros de correlación para SpatialFieldModel',
-      'Horizonte de simulación y semilla aleatoria para reproducibilidad del ensemble',
+      { es: 'Series diarias o sub-diarias observadas con DatetimeIndex (precipitación, caudal, temperatura…)', en: 'Daily or sub-daily observed series with DatetimeIndex (precipitation, streamflow, temperature…)' },
+      { es: 'Coordenadas de estaciones (lat/lon o UTM) para modelos multisitio y campos', en: 'Station coordinates (lat/lon or UTM) for multi-site and spatial field models' },
+      { es: 'Distribución marginal, p0, orden VAR y parámetros de correlación para SpatialFieldModel', en: 'Marginal distribution, p0, VAR order and correlation parameters for SpatialFieldModel' },
+      { es: 'Horizonte de simulación y semilla aleatoria para reproducibilidad del ensemble', en: 'Simulation horizon and random seed for ensemble reproducibility' },
     ],
     outputs: [
-      'Ensembles sintéticos puntuales de cualquier longitud (pd.Series)',
-      'Campos espacio-temporales sintéticos (ndarray n_steps × n_sites)',
-      'Series multisitio correlacionadas (pd.DataFrame con DatetimeIndex)',
-      'Diagnósticos de media, varianza, ACF, correlación espacial y dependencia de cola',
+      { es: 'Ensembles sintéticos puntuales de cualquier longitud (pd.Series)', en: 'Synthetic point ensembles of any length (pd.Series)' },
+      { es: 'Campos espacio-temporales sintéticos (ndarray n_steps × n_sites)', en: 'Synthetic spatio-temporal fields (ndarray n_steps × n_sites)' },
+      { es: 'Series multisitio correlacionadas (pd.DataFrame con DatetimeIndex)', en: 'Correlated multi-site series (pd.DataFrame with DatetimeIndex)' },
+      { es: 'Diagnósticos de media, varianza, ACF, correlación espacial y dependencia de cola', en: 'Diagnostics of mean, variance, ACF, spatial correlation and tail dependence' },
     ],
     validation: [
-      'Comparación mensual de estadísticos observados y simulados (media, varianza, p0, correlaciones).',
-      'Evaluación de ACF empírica frente al modelo de autocorrelación ajustado.',
-      'Matriz de correlación entre estaciones para validar la preservación de dependencia espacial.',
-      'Análisis de excedencia conjunta para revisar eventos extremos simultáneos en el ensemble.',
+      { es: 'Comparación mensual de estadísticos observados y simulados (media, varianza, p0, correlaciones).', en: 'Monthly comparison of observed and simulated statistics (mean, variance, p0, correlations).' },
+      { es: 'Evaluación de ACF empírica frente al modelo de autocorrelación ajustado.', en: 'Evaluation of empirical ACF against the fitted autocorrelation model.' },
+      { es: 'Matriz de correlación entre estaciones para validar la preservación de dependencia espacial.', en: 'Inter-station correlation matrix to validate spatial dependence preservation.' },
+      { es: 'Análisis de excedencia conjunta para revisar eventos extremos simultáneos en el ensemble.', en: 'Joint exceedance analysis to review simultaneous extreme events in the ensemble.' },
     ],
     industrialUse: [
-      'Ampliar el número de escenarios para diseño hidrológico cuando el registro histórico es corto (< 30 años).',
-      'Construir ensembles de lluvia sintética para análisis de sensibilidad de modelos HEC-HMS o SWAT+.',
-      'Explorar riesgo compuesto y eventos plausibles no observados en el periodo histórico disponible.',
+      { es: 'Ampliar el número de escenarios para diseño hidrológico cuando el registro histórico es corto (< 30 años).', en: 'Expand the number of scenarios for hydrological design when the historical record is short (< 30 years).' },
+      { es: 'Construir ensembles de lluvia sintética para análisis de sensibilidad de modelos HEC-HMS o SWAT+.', en: 'Build synthetic rainfall ensembles for sensitivity analysis of HEC-HMS or SWAT+ models.' },
+      { es: 'Explorar riesgo compuesto y eventos plausibles no observados en el periodo histórico disponible.', en: 'Explore compound risk and plausible unobserved events beyond the available historical period.' },
     ],
     hydra: [
-      'Alimenta la herramienta web de generación estocástica con CoSMoS.',
-      'Los ensembles sintéticos se usan como forzantes en HEC-HMS, SWAT+ y SFINCS.',
-      'Conecta con el análisis de extremos para validar la representación de eventos raros.',
+      { es: 'Alimenta la herramienta web de generación estocástica con CoSMoS.', en: "Feeds the web's stochastic generation tool with CoSMoS." },
+      { es: 'Los ensembles sintéticos se usan como forzantes en HEC-HMS, SWAT+ y SFINCS.', en: 'Synthetic ensembles are used as forcings in HEC-HMS, SWAT+ and SFINCS.' },
+      { es: 'Conecta con el análisis de extremos para validar la representación de eventos raros.', en: 'Connects with extreme-value analysis to validate rare-event representation.' },
     ],
     figures: [
-      { title: 'Modelo NSRP', caption: 'Proceso de Poisson de tormentas con celdas rectangulares aleatorias (NSRPModel) y calibración PSO sobre estadísticos observados.', svg: nsrpSvg },
-      { title: 'Campo espacio-temporal', caption: 'SpatialFieldModel VAR(p): campo sintético sobre rejilla, función de correlación espacial y series multisitio correlacionadas.', svg: spatialFieldSvg },
+      { title: { es: 'Modelo NSRP', en: 'NSRP model' }, caption: { es: 'Proceso de Poisson de tormentas con celdas rectangulares aleatorias (NSRPModel) y calibración PSO sobre estadísticos observados.', en: 'Poisson storm process with random rectangular cells (NSRPModel) and PSO calibration against observed statistics.' }, svg: nsrpSvg },
+      { title: { es: 'Campo espacio-temporal', en: 'Spatio-temporal field' }, caption: { es: 'SpatialFieldModel VAR(p): campo sintético sobre rejilla, función de correlación espacial y series multisitio correlacionadas.', en: 'SpatialFieldModel VAR(p): synthetic field on a grid, spatial correlation function and correlated multi-site series.' }, svg: spatialFieldSvg },
     ],
   },
 
   {
     slug: 'modelizacion',
     title: 'Modelización',
-    subtitle: 'Automatización de modelos hidrológicos e hidráulicos en flujos reproducibles orientados a casos de estudio reales.',
+    subtitle: {
+      es: 'Automatización de modelos hidrológicos e hidráulicos en flujos reproducibles orientados a casos de estudio reales.',
+      en: 'Automation of hydrological and hydraulic models in reproducible workflows oriented to real case studies.',
+    },
     tag: 'Modelos',
     color: 'from-slate-950 via-orange-950 to-amber-700',
-    summary: 'Este módulo convierte datos y escenarios climáticos en simulaciones hidrológicas e hidráulicas reproducibles. Integra HEC-HMS, SWAT+, HEC-RAS y SFINCS en flujos automatizables: preparación de entradas, ejecución, extracción de resultados y análisis de sensibilidad, eliminando el trabajo manual repetitivo que domina los estudios de consultoría.',
-    purpose: 'Automatizar las operaciones más costosas en tiempo de modelización: generación de archivos de entrada, ejecución de escenarios en lote, lectura de resultados DSS y análisis de sensibilidad de parámetros. En proyectos con decenas o cientos de escenarios climáticos o de Manning, la diferencia entre hacerlo manual o con HYDRA puede ser de días a minutos.',
+    summary: {
+      es: 'Este módulo convierte datos y escenarios climáticos en simulaciones hidrológicas e hidráulicas reproducibles. Integra HEC-HMS, SWAT+, HEC-RAS y SFINCS en flujos automatizables: preparación de entradas, ejecución, extracción de resultados y análisis de sensibilidad, eliminando el trabajo manual repetitivo que domina los estudios de consultoría.',
+      en: 'This module converts data and climate scenarios into reproducible hydrological and hydraulic simulations. It integrates HEC-HMS, SWAT+, HEC-RAS and SFINCS in automatable workflows: input preparation, execution, result extraction and sensitivity analysis, eliminating the repetitive manual work that dominates consultancy studies.',
+    },
+    purpose: {
+      es: 'Automatizar las operaciones más costosas en tiempo de modelización: generación de archivos de entrada, ejecución de escenarios en lote, lectura de resultados DSS y análisis de sensibilidad de parámetros. En proyectos con decenas o cientos de escenarios climáticos o de Manning, la diferencia entre hacerlo manual o con HYDRA puede ser de días a minutos.',
+      en: 'Automate the most time-consuming modelling operations: input file generation, batch scenario execution, DSS result reading and parameter sensitivity analysis. In projects with tens or hundreds of climate or Manning scenarios, the difference between doing this manually or with HYDRA can be days versus minutes.',
+    },
     workflow: [
-      'Preparación de forzantes meteorológicos e hidráulicos desde datos observados o sintéticos',
-      'Generación automática de archivos de proyecto para HEC-HMS, SWAT+, HEC-RAS o SFINCS',
-      'Ejecución del modelo en lote (un escenario o ensemble completo)',
-      'Extracción de hidrogramas, calados, velocidades y áreas inundadas para análisis y sensibilidad',
+      { es: 'Preparación de forzantes meteorológicos e hidráulicos desde datos observados o sintéticos', en: 'Preparation of meteorological and hydraulic forcings from observed or synthetic data' },
+      { es: 'Generación automática de archivos de proyecto para HEC-HMS, SWAT+, HEC-RAS o SFINCS', en: 'Automatic generation of project files for HEC-HMS, SWAT+, HEC-RAS or SFINCS' },
+      { es: 'Ejecución del modelo en lote (un escenario o ensemble completo)', en: 'Batch model execution (single scenario or full ensemble)' },
+      { es: 'Extracción de hidrogramas, calados, velocidades y áreas inundadas para análisis y sensibilidad', en: 'Extraction of hydrographs, water depths, velocities and flooded areas for analysis and sensitivity studies' },
     ],
     capabilities: [
-      'HEC-HMS completo: generación de archivos .gage, .met, .control, .run y .hms; lectura de hidrogramas desde DSS; parametrización automática de Curve Number, Clark y Muskingum-K; ejecución de escenarios de cambio climático en lote.',
-      'SWAT+: escritura de archivos de precipitación multi-estación (.pcp legacy y uno por estación), temperatura (.tmp), modificación de file.cio (periodo de simulación) y ejecución del binario.',
-      'HEC-RAS: modificación automática de archivos de flujo no estacionario (.u##) e archivos de plan (.p##) para automatizar series de escenarios; conversión de hidrogramas a formato DSS.',
-      'SFINCS: configuración de malla desde DEM, condiciones de contorno de caudal (fuentes puntuales), condición de contorno aguas abajo por profundidad normal de Manning, rugosidad uniforme y ejecución del binario.',
-      'Análisis de sensibilidad de Manning: generación Monte Carlo de combinaciones de rugosidad por uso del suelo, carga de ensembles de mapas GeoTIFF, construcción del raster de Manning por escenario, regresión Manning → calado/área y filtrado de simulaciones anómalas por Z-score MAD.',
+      {
+        es: 'HEC-HMS completo: generación de archivos .gage, .met, .control, .run y .hms; lectura de hidrogramas desde DSS; parametrización automática de Curve Number, Clark y Muskingum-K; ejecución de escenarios de cambio climático en lote.',
+        en: 'Complete HEC-HMS: generation of .gage, .met, .control, .run and .hms files; reading hydrographs from DSS; automatic parametrisation of Curve Number, Clark and Muskingum-K; batch climate-change scenario execution.',
+      },
+      {
+        es: 'SWAT+: escritura de archivos de precipitación multi-estación (.pcp legacy y uno por estación), temperatura (.tmp), modificación de file.cio (periodo de simulación) y ejecución del binario.',
+        en: 'SWAT+: writing multi-station precipitation files (.pcp legacy and one per station), temperature (.tmp), modification of file.cio (simulation period) and binary execution.',
+      },
+      {
+        es: 'HEC-RAS: modificación automática de archivos de flujo no estacionario (.u##) e archivos de plan (.p##) para automatizar series de escenarios; conversión de hidrogramas a formato DSS.',
+        en: 'HEC-RAS: automatic modification of unsteady-flow (.u##) and plan (.p##) files to automate series of scenarios; hydrograph conversion to DSS format.',
+      },
+      {
+        es: 'SFINCS: configuración de malla desde DEM, condiciones de contorno de caudal (fuentes puntuales), condición de contorno aguas abajo por profundidad normal de Manning, rugosidad uniforme y ejecución del binario.',
+        en: 'SFINCS: mesh configuration from DEM, point-source flow boundary conditions, normal-depth Manning downstream boundary condition, uniform roughness and binary execution.',
+      },
+      {
+        es: 'Análisis de sensibilidad de Manning: generación Monte Carlo de combinaciones de rugosidad por uso del suelo, carga de ensembles de mapas GeoTIFF, construcción del raster de Manning por escenario, regresión Manning → calado/área y filtrado de simulaciones anómalas por Z-score MAD.',
+        en: 'Manning sensitivity analysis: Monte Carlo generation of land-use roughness combinations, loading of GeoTIFF map ensembles, Manning raster construction per scenario, Manning → depth/area regression and anomalous simulation filtering by MAD Z-score.',
+      },
     ],
     methods: [
-      { name: 'HMSModel / generate_gage / generate_met / generate_control / generate_run', description: 'Construcción completa y ejecución reproducible de proyectos HEC-HMS con múltiples pluviómetros y subcuencas.' },
-      { name: 'generate_flow / read_dss6_timeseries', description: 'Extracción de hidrogramas e hyetogramas desde archivos DSS de HEC-HMS y HEC-RAS.' },
-      { name: 'extract_curve_number / calculate_clark_parameters / estimate_muskingum_k', description: 'Parametrización hidrológica desde rasters: CN por uso/suelo, tiempos de Clark y K de Muskingum.' },
-      { name: 'write_precipitation_file / write_swatplus_precipitation_files / write_swatplus_temperature_files / run_swat', description: 'Escritura de entradas meteorológicas SWAT+ (formatos legacy y uno-por-estación) y ejecución del modelo.' },
-      { name: 'modify_unsteady_file / modify_plan_file', description: 'Actualización automática de archivos HEC-RAS para ejecutar series de escenarios sin intervención manual.' },
-      { name: 'setup_sfincs_model / write_manning_wl_boundary / run_sfincs', description: 'Configuración, condiciones de contorno y ejecución de modelos SFINCS para inundación fluvial simplificada.' },
-      { name: 'generate_manning_combinations / build_manning_ensemble / manning_flood_regression / filter_anomalous_simulations', description: 'Diseño y análisis estadístico de ensembles de rugosidad Manning para sensibilidad hidráulica.' },
+      { name: 'HMSModel / generate_gage / generate_met / generate_control / generate_run', description: { es: 'Construcción completa y ejecución reproducible de proyectos HEC-HMS con múltiples pluviómetros y subcuencas.', en: 'Complete construction and reproducible execution of HEC-HMS projects with multiple rain gauges and sub-catchments.' } },
+      { name: 'generate_flow / read_dss6_timeseries', description: { es: 'Extracción de hidrogramas e hyetogramas desde archivos DSS de HEC-HMS y HEC-RAS.', en: 'Extraction of hydrographs and hyetographs from HEC-HMS and HEC-RAS DSS files.' } },
+      { name: 'extract_curve_number / calculate_clark_parameters / estimate_muskingum_k', description: { es: 'Parametrización hidrológica desde rasters: CN por uso/suelo, tiempos de Clark y K de Muskingum.', en: 'Hydrological parametrisation from rasters: CN by land use/soil, Clark times and Muskingum K.' } },
+      { name: 'write_precipitation_file / write_swatplus_precipitation_files / write_swatplus_temperature_files / run_swat', description: { es: 'Escritura de entradas meteorológicas SWAT+ (formatos legacy y uno-por-estación) y ejecución del modelo.', en: 'Writing SWAT+ meteorological inputs (legacy and per-station formats) and model execution.' } },
+      { name: 'modify_unsteady_file / modify_plan_file', description: { es: 'Actualización automática de archivos HEC-RAS para ejecutar series de escenarios sin intervención manual.', en: 'Automatic update of HEC-RAS files for batch scenario execution without manual intervention.' } },
+      { name: 'setup_sfincs_model / write_manning_wl_boundary / run_sfincs', description: { es: 'Configuración, condiciones de contorno y ejecución de modelos SFINCS para inundación fluvial simplificada.', en: 'Configuration, boundary conditions and execution of SFINCS models for simplified fluvial flooding.' } },
+      { name: 'generate_manning_combinations / build_manning_ensemble / manning_flood_regression / filter_anomalous_simulations', description: { es: 'Diseño y análisis estadístico de ensembles de rugosidad Manning para sensibilidad hidráulica.', en: 'Design and statistical analysis of Manning roughness ensembles for hydraulic sensitivity.' } },
     ],
     inputs: [
-      'Precipitación, temperatura, caudal, CN, topografía, rugosidad y condiciones de contorno',
-      'Configuraciones de proyecto HEC-HMS, SWAT+, HEC-RAS y SFINCS existentes',
-      'Escenarios históricos, sintéticos (NSRPModel) o climáticos (BiasCorrection)',
-      'Mapas raster de uso del suelo y DEM para parametrización y configuración de malla SFINCS',
+      { es: 'Precipitación, temperatura, caudal, CN, topografía, rugosidad y condiciones de contorno', en: 'Precipitation, temperature, streamflow, CN, topography, roughness and boundary conditions' },
+      { es: 'Configuraciones de proyecto HEC-HMS, SWAT+, HEC-RAS y SFINCS existentes', en: 'Existing HEC-HMS, SWAT+, HEC-RAS and SFINCS project configurations' },
+      { es: 'Escenarios históricos, sintéticos (NSRPModel) o climáticos (BiasCorrection)', en: 'Historical, synthetic (NSRPModel) or climate (BiasCorrection) scenarios' },
+      { es: 'Mapas raster de uso del suelo y DEM para parametrización y configuración de malla SFINCS', en: 'Land-use raster maps and DEM for parametrisation and SFINCS mesh configuration' },
     ],
     outputs: [
-      'Hidrogramas simulados en pandas Series y archivos DSS',
-      'Mapas de calado, velocidad y extensión inundada (NetCDF, GeoTIFF)',
-      'Métricas de área inundada y calado medio por simulación',
-      'Resultados de sensibilidad Manning: regresión, filtrado de anomalías y estadísticos espaciales',
+      { es: 'Hidrogramas simulados en pandas Series y archivos DSS', en: 'Simulated hydrographs in pandas Series and DSS files' },
+      { es: 'Mapas de calado, velocidad y extensión inundada (NetCDF, GeoTIFF)', en: 'Water depth, velocity and flood extent maps (NetCDF, GeoTIFF)' },
+      { es: 'Métricas de área inundada y calado medio por simulación', en: 'Flooded area and mean depth metrics per simulation' },
+      { es: 'Resultados de sensibilidad Manning: regresión, filtrado de anomalías y estadísticos espaciales', en: 'Manning sensitivity results: regression, anomaly filtering and spatial statistics' },
     ],
     validation: [
-      'Comparación de hidrogramas simulados y observados con NSE, sesgo y correlación.',
-      'Revisión de coherencia hidráulica en calados, velocidades y extensión inundada por escenario.',
-      'Análisis de sensibilidad de Manning con filtrado Z-score MAD para eliminar simulaciones degeneradas.',
-      'Trazabilidad completa: cada escenario referencia su forcing de entrada, su configuración de modelo y su resultado.',
+      { es: 'Comparación de hidrogramas simulados y observados con NSE, sesgo y correlación.', en: 'Comparison of simulated and observed hydrographs with NSE, bias and correlation.' },
+      { es: 'Revisión de coherencia hidráulica en calados, velocidades y extensión inundada por escenario.', en: 'Hydraulic consistency review of depths, velocities and flood extent per scenario.' },
+      { es: 'Análisis de sensibilidad de Manning con filtrado Z-score MAD para eliminar simulaciones degeneradas.', en: 'Manning sensitivity analysis with MAD Z-score filtering to remove degenerate simulations.' },
+      { es: 'Trazabilidad completa: cada escenario referencia su forcing de entrada, su configuración de modelo y su resultado.', en: 'Full traceability: each scenario references its input forcing, model configuration and result.' },
     ],
     industrialUse: [
-      'Reducir días de trabajo a horas en la preparación de 50–500 escenarios de precipitación o Manning para un estudio de riesgo.',
-      'Transformar proyecciones climáticas o ensembles sintéticos en mapas y métricas operativas para administraciones y consultoras.',
-      'Construir un manual práctico reproducible con scripts, parámetros y resultados verificables para la memoria doctoral o un informe técnico.',
+      { es: 'Reducir días de trabajo a horas en la preparación de 50–500 escenarios de precipitación o Manning para un estudio de riesgo.', en: 'Reduce days of work to hours when preparing 50–500 precipitation or Manning scenarios for a risk study.' },
+      { es: 'Transformar proyecciones climáticas o ensembles sintéticos en mapas y métricas operativas para administraciones y consultoras.', en: 'Transform climate projections or synthetic ensembles into operational maps and metrics for authorities and consultancies.' },
+      { es: 'Construir un manual práctico reproducible con scripts, parámetros y resultados verificables para la memoria doctoral o un informe técnico.', en: 'Build a reproducible practical manual with scripts, parameters and verifiable results for the doctoral thesis or a technical report.' },
     ],
     hydra: [
-      'Da forma industrial al manual práctico de la tesis: los notebooks de HEC-HMS, SWAT+, HEC-RAS y SFINCS son casos de uso reales.',
-      'Conecta con los ensembles del módulo de análisis climático: los hidrogramas sintéticos de FloodEventCopula alimentan SFINCS.',
-      'Traduce el análisis estadístico climático en resultados operativos (mapas de inundación) para toma de decisiones.',
+      { es: 'Da forma industrial al manual práctico de la tesis: los notebooks de HEC-HMS, SWAT+, HEC-RAS y SFINCS son casos de uso reales.', en: 'Gives industrial form to the thesis practical manual: HEC-HMS, SWAT+, HEC-RAS and SFINCS notebooks are real case studies.' },
+      { es: 'Conecta con los ensembles del módulo de análisis climático: los hidrogramas sintéticos de FloodEventCopula alimentan SFINCS.', en: 'Connects with ensembles from the climate analysis module: FloodEventCopula synthetic hydrographs feed SFINCS.' },
+      { es: 'Traduce el análisis estadístico climático en resultados operativos (mapas de inundación) para toma de decisiones.', en: 'Translates statistical climate analysis into operational results (flood maps) for decision-making.' },
     ],
     figures: [
-      { title: 'Cadena de modelos', caption: 'Pipeline completo desde precipitación hasta mapa de inundación: HEC-HMS genera el hidrograma y SFINCS/HEC-RAS produce el mapa de calados.', svg: hydrographSvg },
-      { title: 'Sensibilidad de Manning', caption: 'Ensemble Monte Carlo de combinaciones de rugosidad: regresión Manning n → calado medio y área inundada con bandas de incertidumbre.', svg: sensitivitySvg },
+      { title: { es: 'Cadena de modelos', en: 'Model chain' }, caption: { es: 'Pipeline completo desde precipitación hasta mapa de inundación: HEC-HMS genera el hidrograma y SFINCS/HEC-RAS produce el mapa de calados.', en: 'Full pipeline from precipitation to flood map: HEC-HMS generates the hydrograph and SFINCS/HEC-RAS produces the water depth map.' }, svg: hydrographSvg },
+      { title: { es: 'Sensibilidad de Manning', en: 'Manning sensitivity' }, caption: { es: 'Ensemble Monte Carlo de combinaciones de rugosidad: regresión Manning n → calado medio y área inundada con bandas de incertidumbre.', en: 'Monte Carlo ensemble of roughness combinations: Manning n → mean depth and flooded area regression with uncertainty bands.' }, svg: sensitivitySvg },
     ],
   },
 ];

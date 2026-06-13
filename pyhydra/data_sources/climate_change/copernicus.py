@@ -54,16 +54,28 @@ def download_CDS_CMIP6(
         fname = f"combinaciones_validas_{temporal_resolution}.csv"
         combinations_csv = os.path.join(download_base_dir, fname)
 
-    if not os.path.exists(combinations_csv):
-        raise FileNotFoundError(
-            f"Combinations CSV not found: {combinations_csv}. "
-            "Provide the path via combinations_csv= parameter."
-        )
-
     if temporal_resolution not in ("daily", "monthly"):
         raise ValueError("temporal_resolution must be 'daily' or 'monthly'.")
 
-    all_combinations = pd.read_csv(combinations_csv)
+    if os.path.exists(combinations_csv):
+        all_combinations = pd.read_csv(combinations_csv)
+    else:
+        # No combinations CSV available — build one from the requested parameters
+        _models = [model] if model != "All" else [
+            "ACCESS-CM2", "ACCESS-ESM1-5", "BCC-CSM2-MR", "CanESM5",
+            "CMCC-ESM2", "CNRM-CM6-1", "CNRM-ESM2-1", "EC-Earth3",
+            "EC-Earth3-Veg", "FGOALS-g3", "GFDL-ESM4", "INM-CM5-0",
+            "IPSL-CM6A-LR", "KACE-1-0-G", "MIROC-ES2L", "MIROC6",
+            "MPI-ESM1-2-HR", "MPI-ESM1-2-LR", "MRI-ESM2-0", "NorESM2-LM",
+            "NorESM2-MM", "TaiESM1", "UKESM1-0-LL",
+        ]
+        rows = [
+            {"model": m, "experiment": e, "variable": v}
+            for m in _models for e in experiments for v in variables
+        ]
+        all_combinations = pd.DataFrame(rows)
+        print(f"[CDS] No combinations CSV found — using all requested model/experiment/variable combinations ({len(rows)} rows).")
+
     filtered = all_combinations[
         all_combinations["experiment"].isin(experiments)
         & all_combinations["variable"].isin(variables)

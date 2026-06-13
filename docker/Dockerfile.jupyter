@@ -21,19 +21,24 @@ RUN pip install --no-cache-dir --upgrade pip "setuptools<80" wheel
 # Layer 1: core scientific stack
 RUN pip install --no-cache-dir \
         numpy pandas scipy statsmodels scikit-learn \
-        matplotlib tqdm requests beautifulsoup4 lxml xarray "dask[array]"
+        matplotlib tqdm requests beautifulsoup4 lxml xarray "dask[array]" \
+        xlrd openpyxl seaborn
 
 # Layer 2: geo/spatial
 RUN pip install --no-cache-dir \
-        geopandas rasterio rioxarray rasterstats earthaccess shapely pyproj
+        geopandas rasterio rioxarray rasterstats earthaccess shapely pyproj contextily
+
+# Layer 2b: data-source clients used by notebooks
+RUN pip install --no-cache-dir \
+        cdsapi meteostat
 
 # Layer 3: hydro/stats
 RUN pip install --no-cache-dir \
-        openturns lmoments3 NEOPRENE spotpy pySWATPlus pymc
+        openturns lmoments3 spotpy pySWATPlus pymc pyvinecopulib pykrige && \
+    pip install --no-cache-dir git+https://github.com/navass11/NEOPRENE.git
 
-# Layer 4: DSS support (x86_64 only — pydsstools preferred, hecdss as fallback)
-RUN pip install --no-cache-dir pydsstools || echo "pydsstools not available — skipping"
-RUN pip install --no-cache-dir hecdss || echo "hecdss not available — skipping"
+# Layer 4: DSS support — hecdss works with any numpy version
+RUN pip install --no-cache-dir hecdss
 
 # Layer 5: SFINCS via hydromt_sfincs
 RUN pip install --no-cache-dir hydromt_sfincs
@@ -49,6 +54,15 @@ RUN pip install --no-cache-dir /tmp/cosmos_py-0.1.0-py3-none-any.whl
 # Copy project and install pyhydra as package
 COPY . .
 RUN pip install --no-cache-dir -e .
+
+# Release builds can bake executed notebooks into the image:
+#   docker buildx build --build-arg EXECUTE_NOTEBOOKS=true ...
+ARG EXECUTE_NOTEBOOKS=false
+ARG NOTEBOOK_TIMEOUT=900
+RUN if [ "$EXECUTE_NOTEBOOKS" = "true" ]; then \
+        MPLBACKEND=Agg MPLCONFIGDIR=/tmp/matplotlib \
+        python scripts/execute_all_notebooks.py --timeout "$NOTEBOOK_TIMEOUT" ; \
+    fi
 
 # Jupyter server config: hides non-notebook dirs from the file browser
 COPY jupyter_server_config.py /workspace/jupyter_server_config.py
@@ -68,12 +82,12 @@ EXPOSE 8888
 # JUPYTER_BASE_URL: /jupyter/ when served behind the HYDRA nginx proxy.
 ENV JUPYTER_TOKEN=""
 ENV JUPYTER_BASE_URL="/jupyter/"
-# Each session lives under this directory; users only see their own UUID folder.
-ENV JUPYTER_WORKDIR="/workspace/data/sessions"
+# Editable user/session copies live in a writable volume; shared data should be read-only.
+ENV JUPYTER_WORKDIR="/workspace/sessions"
+ENV HYDRA_JUPYTER_SESSIONS_PATH=""
 
 # mkdir ensures the Azure Files mount directory exists before Jupyter starts.
-# notebook-dir=/workspace exposes the full project (notebooks/, data/, etc.).
-# The server config hides non-relevant directories from the file browser.
+# notebook-dir is limited to session copies so users cannot browse/edit shared data.
 CMD mkdir -p "${JUPYTER_WORKDIR}" && exec jupyter lab \
     --ip=0.0.0.0 \
     --port=8888 \
@@ -85,4 +99,4 @@ CMD mkdir -p "${JUPYTER_WORKDIR}" && exec jupyter lab \
     --ServerApp.base_url="${JUPYTER_BASE_URL}" \
     --ServerApp.disable_check_xsrf=True \
     --config=/workspace/jupyter_server_config.py \
-    --notebook-dir="/workspace"
+    --notebook-dir="${JUPYTER_WORKDIR}"

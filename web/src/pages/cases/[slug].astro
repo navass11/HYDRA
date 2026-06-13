@@ -1,0 +1,272 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { pilotCases } from '../../data/pilot_cases';
+
+export function getStaticPaths() {
+  return pilotCases.map((c) => ({
+    params: { slug: c.slug },
+    props: { case: c },
+  }));
+}
+
+const { case: pc } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const notebookSessionHref = (path: string) => `/api/notebooks/session?path=${encodeURIComponent(path)}`;
+
+const stepColors: Record<number, string> = {
+  1: 'border-sky-200 bg-sky-50',
+  2: 'border-violet-200 bg-violet-50',
+  3: 'border-indigo-200 bg-indigo-50',
+  4: 'border-amber-200 bg-amber-50',
+  5: 'border-amber-200 bg-amber-50',
+  6: 'border-purple-200 bg-purple-50',
+  7: 'border-orange-200 bg-orange-50',
+  8: 'border-rose-200 bg-rose-50',
+};
+
+const stepNumColors: Record<number, string> = {
+  1: 'text-sky-700 bg-sky-100',
+  2: 'text-violet-700 bg-violet-100',
+  3: 'text-indigo-700 bg-indigo-100',
+  4: 'text-amber-700 bg-amber-100',
+  5: 'text-amber-700 bg-amber-100',
+  6: 'text-purple-700 bg-purple-100',
+  7: 'text-orange-700 bg-orange-100',
+  8: 'text-rose-700 bg-rose-100',
+};
+
+const validationText = {
+  es: 'La ortofoto de 1946 documenta la llanura fluvial histórica del Besaya. La mancha generada para T10 coincide geométricamente con esa llanura, demostrando que la metodología produce inundaciones físicamente plausibles.',
+  en: 'The 1946 orthophoto documents the historical Besaya floodplain. The T10 flood extent matches that floodplain geometrically, showing that the methodology produces physically plausible inundations.',
+};
+---
+
+<Layout title={`${pc.title} — HYDRA`}>
+
+  <!-- ── HERO ── -->
+  <section class={`pt-24 pb-16 bg-gradient-to-br ${pc.color} text-white`}>
+    <div class="max-w-7xl mx-auto px-6">
+      <a href={`${base}#casos-piloto`} class="inline-flex items-center gap-2 text-white/65 hover:text-white text-sm mb-6 transition-colors" data-i18n="back.cases">
+        ← Casos piloto
+      </a>
+      <div class="flex flex-wrap items-center gap-3 mb-5">
+        <span class="inline-flex rounded-full bg-white/12 border border-white/20 px-3 py-1 text-sm text-white/80" data-t-es="Caso Piloto" data-t-en="Pilot case">
+          {pc.tag}
+        </span>
+        <span class="inline-flex rounded-full bg-white/12 border border-white/20 px-3 py-1 text-sm text-white/80">
+          {pc.river}
+        </span>
+        <span class="inline-flex rounded-full bg-white/12 border border-white/20 px-3 py-1 text-sm text-white/80">
+          {pc.region}<span data-t-es=", España" data-t-en=", Spain">, España</span>
+        </span>
+      </div>
+      <h1 class="text-4xl md:text-6xl font-extrabold mb-4">{pc.title}</h1>
+      <p
+        class="text-xl text-white/78 max-w-3xl leading-relaxed"
+        data-t-es={pc.subtitle.es}
+        data-t-en={pc.subtitle.en}
+      >{pc.subtitle.es}</p>
+
+      <!-- Stats row -->
+      <div class="flex flex-wrap gap-10 mt-10">
+        {pc.stats.map((s) => (
+          <div>
+            <span class="block text-3xl font-bold text-white">{s.value}</span>
+            <span class="text-sm text-white/65" data-t-es={s.label.es} data-t-en={s.label.en}>{s.label.es}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <main class="max-w-7xl mx-auto px-6 py-14 space-y-16">
+
+    <!-- ── RESUMEN + RETO ── -->
+    <section class="grid lg:grid-cols-2 gap-10">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-900 mb-4" data-i18n="case.summary">Descripción del caso</h2>
+        <p
+          class="text-gray-600 leading-relaxed text-lg"
+          data-t-es={pc.summary.es}
+          data-t-en={pc.summary.en}
+        >{pc.summary.es}</p>
+      </div>
+      <div class="rounded-2xl border border-amber-200 bg-amber-50 p-7">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-9 h-9 rounded-lg bg-amber-200 flex items-center justify-center">
+            <svg class="w-5 h-5 text-amber-800" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          </div>
+          <h3 class="font-bold text-amber-900 text-lg" data-i18n="case.challenge">Reto hidrológico</h3>
+        </div>
+        <p
+          class="text-amber-900 leading-relaxed"
+          data-t-es={pc.challenge.es}
+          data-t-en={pc.challenge.en}
+        >{pc.challenge.es}</p>
+      </div>
+    </section>
+
+    <!-- ── ENFOQUE HYDRA ── -->
+    <section class="rounded-2xl border border-blue-100 bg-blue-50 p-8">
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center">
+          <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 8v4l3 3"/>
+          </svg>
+        </div>
+        <h2 class="text-xl font-bold text-blue-900" data-i18n="case.approach">Enfoque HYDRA</h2>
+      </div>
+      <p
+        class="text-blue-900 leading-relaxed max-w-5xl"
+        data-t-es={pc.approach.es}
+        data-t-en={pc.approach.en}
+      >{pc.approach.es}</p>
+    </section>
+
+    <!-- ── WORKFLOW ── -->
+    <section>
+      <div class="mb-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-2" data-i18n="case.workflow.title">Flujo de trabajo</h2>
+        <p class="text-gray-500" data-i18n="case.workflow.description">8 notebooks ejecutables — haz clic en cualquier paso para abrir en Jupyter Lab.</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-5">
+        {pc.steps.map((step) => (
+          <a
+            href={notebookSessionHref(step.notebookPath)}
+            target="_blank"
+            rel="noopener noreferrer"
+            class={`group rounded-2xl border-2 p-5 transition-all hover:shadow-md hover:-translate-y-0.5 ${stepColors[step.number] ?? 'border-gray-200 bg-gray-50'}`}
+          >
+            <div class="flex items-center gap-3 mb-3">
+              <span class={`inline-flex w-8 h-8 rounded-lg items-center justify-center text-sm font-black ${stepNumColors[step.number] ?? 'bg-gray-100 text-gray-700'}`}>
+                {String(step.number).padStart(2, '0')}
+              </span>
+              <div class="flex flex-wrap gap-1">
+                {step.tags.map((tag) => (
+                  <span class={`text-xs font-medium px-2 py-0.5 rounded-full ${step.tagColor}`}>{tag}</span>
+                ))}
+              </div>
+            </div>
+            <h3
+              class="font-bold text-gray-900 mb-2 group-hover:text-hydra-700 transition-colors"
+              data-t-es={step.title.es}
+              data-t-en={step.title.en}
+            >{step.title.es}</h3>
+            <p
+              class="text-sm text-gray-600 leading-relaxed"
+              data-t-es={step.description.es}
+              data-t-en={step.description.en}
+            >{step.description.es}</p>
+            <span class="inline-flex mt-3 text-xs font-semibold text-gray-400 group-hover:text-hydra-600 transition-colors">
+              ▶ <span data-i18n="case.open_notebook">Abrir notebook</span>
+            </span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    {pc.references?.length ? (
+      <section>
+        <div class="mb-6">
+          <h2 class="text-3xl font-bold text-gray-900 mb-2" data-i18n="case.references.title">Referencias del caso</h2>
+          <p class="text-gray-500 max-w-3xl" data-i18n="case.references.description">
+            Fuentes de datos, métodos y validaciones que sustentan el caso piloto de Los Corrales de Buelna.
+          </p>
+        </div>
+        <div class="grid md:grid-cols-2 gap-5">
+          {pc.references.map((ref) => (
+            <article class="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+              <h3
+                class="font-bold text-gray-900 mb-2"
+                data-t-es={ref.title.es}
+                data-t-en={ref.title.en}
+              >{ref.title.es}</h3>
+              <p
+                class="text-sm text-gray-600 leading-relaxed"
+                data-t-es={ref.description.es}
+                data-t-en={ref.description.en}
+              >{ref.description.es}</p>
+              {ref.href ? (
+                <a
+                  href={ref.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex mt-4 text-sm font-semibold text-hydra-700 hover:text-hydra-900 transition-colors"
+                  data-t-es={ref.cta?.es ?? 'Abrir referencia'}
+                  data-t-en={ref.cta?.en ?? 'Open reference'}
+                >
+                  {ref.cta?.es ?? 'Abrir referencia'} →
+                </a>
+              ) : null}
+            </article>
+          ))}
+        </div>
+      </section>
+    ) : null}
+
+    <!-- ── FIGURA SVG ── -->
+    {pc.figures.map((fig) => (
+      <section class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+        <h3
+          class="font-bold text-gray-900 mb-1"
+          data-t-es={fig.title.es}
+          data-t-en={fig.title.en}
+        >{fig.title.es}</h3>
+        <p
+          class="text-sm text-gray-500 mb-5 max-w-3xl"
+          data-t-es={fig.caption.es}
+          data-t-en={fig.caption.en}
+        >{fig.caption.es}</p>
+        <div class="w-full overflow-x-auto" set:html={fig.svg} />
+      </section>
+    ))}
+
+    <!-- ── CONCLUSIONES ── -->
+    <section class="grid lg:grid-cols-[1fr_1.5fr] gap-10 items-start">
+      <div>
+        <h2 class="text-3xl font-bold text-gray-900 mb-3" data-i18n="case.findings.title">Hallazgos clave</h2>
+        <p class="text-gray-500 leading-relaxed" data-i18n="case.findings.description">Resultados principales extraídos del análisis completo de riesgo de inundación del río Besaya a su paso por Los Corrales de Buelna.</p>
+        <div class="mt-6 p-5 rounded-xl bg-slate-900 text-white">
+          <p class="text-sm text-slate-300 mb-2" data-i18n="case.validation.label">Validación independiente</p>
+          <p
+            class="font-semibold leading-relaxed"
+            data-t-es={validationText.es}
+            data-t-en={validationText.en}
+          >{validationText.es}</p>
+        </div>
+      </div>
+      <ul class="space-y-4">
+        {pc.keyFindings.map((finding) => (
+          <li class="flex gap-4 rounded-xl border border-gray-100 p-5 bg-gray-50">
+            <div class="mt-0.5 flex-shrink-0 w-6 h-6 rounded-full bg-hydra-600 flex items-center justify-center">
+              <svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+            <p
+              class="text-gray-700 leading-relaxed"
+              data-t-es={finding.es}
+              data-t-en={finding.en}
+            >{finding.es}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- ── NAVEGACIÓN VOLVER ── -->
+    <div class="border-t border-gray-100 pt-10 flex items-center justify-between">
+      <a href={`${base}#casos-piloto`} class="inline-flex items-center gap-2 text-gray-500 hover:text-hydra-700 font-medium transition-colors">
+        ← <span data-i18n="case.back_all">Todos los casos piloto</span>
+      </a>
+      <a href={`${base}#modulos`} class="inline-flex items-center gap-2 text-gray-500 hover:text-hydra-700 font-medium transition-colors">
+        <span data-i18n="case.explore_modules">Explorar módulos HYDRA</span> →
+      </a>
+    </div>
+
+  </main>
+</Layout>

@@ -1,10 +1,12 @@
 from pyhydra.climate.spatial_analysis import copulas, rfa, interpolation, bayes_hierarchical
 from pyhydra.climate.spatial_analysis.copulas import (
     FloodEventCopula,
+    GaussianCopulaSampler,
     fit_marginal,
     fit_discrete_marginal,
     BivariateCopula,
     TrivariateCopula,
+    VineCopula,
 )
 from pyhydra.climate.spatial_analysis.rfa import (
     fit_gev_mle,
@@ -32,10 +34,12 @@ __all__ = [
     "bayes_hierarchical",
     # copulas
     "FloodEventCopula",
+    "GaussianCopulaSampler",
     "fit_marginal",
     "fit_discrete_marginal",
     "BivariateCopula",
     "TrivariateCopula",
+    "VineCopula",
     # rfa
     "fit_gev_mle",
     "fit_gev_lmom",

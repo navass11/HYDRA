@@ -7,9 +7,10 @@ server {
     # Redirect bare notebook URLs (no session prefix) through the session API
     # so every user gets an isolated copy of the notebooks tree.
     # Excluded patterns (already have a session prefix):
-    #   - jupyter_sessions/<uuid>/...  (legacy format, never used now)
-    #   - <32-hex-chars>/notebooks/... (current session format)
-    location ~ "^/jupyter/lab/tree/(?!jupyter_sessions/)(?![0-9a-f]{32}/notebooks/)(.*\.ipynb)$" {
+    #   - <32-hex-chars>/notebooks/...      (current session format)
+    #   - data/jupyter_sessions/<uuid>/...  (legacy)
+    #   - jupyter_sessions/<uuid>/...       (legacy)
+    location ~ "^/jupyter/lab/tree/(?!data/jupyter_sessions/)(?!jupyter_sessions/)(?![0-9a-f]{32}/notebooks/)(.*\.ipynb)$" {
         return 302 /api/notebooks/session?path=$1;
     }
 

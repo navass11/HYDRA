@@ -1,8 +1,8 @@
 """
 Multivariate copula fitting — synthetic event sampling and return period analysis.
 
-Two complementary tools
------------------------
+Three complementary tools
+-------------------------
 1. **FloodEventCopula** (openturns)
    Gaussian copula for synthetic flood event generation.  Fits BIC-selected
    marginals and a Normal copula, then samples arbitrary synthetic catalogues.
@@ -19,6 +19,13 @@ Two complementary tools
    Reference:
      Salvadori et al. (2016) Multivariate return periods in hydrology.
      Serinaldi (2015) Dismissing return periods.
+
+3. **GaussianCopulaSampler** (scipy only, no openturns required)
+   Parameterised Gaussian copula for uncertainty propagation.  The user
+   specifies marginal distributions (fitted externally or via BIC on data)
+   and a correlation structure (equi-correlation scalar or full matrix).
+   Designed for sensitivity analyses where the correlation between variables
+   is prescribed rather than estimated from observations.
 """
 
 from __future__ import annotations
@@ -463,6 +470,23 @@ class BivariateCopula:
         d, p = self._my[0], self._my[1]
         return d.ppf(v, *p)
 
+    # ── Public marginal helpers ───────────────────────────────────────────────
+    def marginal_cdf_x(self, x):
+        """CDF of the fitted X marginal evaluated at x."""
+        return self._u(x)
+
+    def marginal_cdf_y(self, y):
+        """CDF of the fitted Y marginal evaluated at y."""
+        return self._v(y)
+
+    def marginal_ppf_x(self, p):
+        """Quantile (inverse CDF) of the fitted X marginal at probability p."""
+        return self._x_ppf(p)
+
+    def marginal_ppf_y(self, p):
+        """Quantile (inverse CDF) of the fitted Y marginal at probability p."""
+        return self._y_ppf(p)
+
     def cdf(self, u, v):
         """Copula CDF at uniform margins u, v."""
         return self._cdf_fn(u, v, self._theta)
@@ -861,6 +885,145 @@ class BivariateCopula:
 
         return fig, (main, xMarg, yMarg)
 
+    # ------------------------------------------------------------------
+    def kendall_function(self, t_values=None, n_sim=50_000, random_state=None):
+        """
+        Monte Carlo estimate of the Kendall distribution K(t) = P[C(U,V) ≤ t].
+
+        The Kendall function is the basis of the Kendall return period
+        (Salvadori et al. 2011, 2016) — dimension-invariant and comparable
+        across different copula families.
+
+        Args:
+            t_values:     Grid of t ∈ (0, 1); default 200 equally-spaced points.
+            n_sim:        Monte Carlo pool size.
+            random_state: RNG seed.
+
+        Returns:
+            ``(t_arr, K_arr)`` — evaluation points and K(t) values.
+        """
+        rng = np.random.default_rng(random_state)
+        xs, ys = self.sample(n_sim, random_state=rng)
+        c_vals = self._cdf_fn(self._u(xs), self._v(ys), self._theta)
+        if t_values is None:
+            t_values = np.linspace(0.01, 0.99, 200)
+        t_arr = np.asarray(t_values, float)
+        return t_arr, np.array([np.mean(c_vals <= t) for t in t_arr])
+
+    # ------------------------------------------------------------------
+    def kendall_return_period(self, T, mu=1.0, n_sim=50_000, random_state=None):
+        """
+        Kendall return period analysis (Salvadori et al. 2011).
+
+        Inverts K(t*) = 1 − μ/T to find the critical Kendall level t*, then
+        builds the iso-probability curve C(u, v) = t* in physical (x, y) space.
+
+        Args:
+            T:            Target return period (same units as μ).
+            mu:           Mean inter-occurrence time; 1 for annual maxima.
+            n_sim:        Monte Carlo sample size for K estimation.
+            random_state: RNG seed.
+
+        Returns:
+            dict with keys:
+
+            * ``t_star``  — Kendall probability level.
+            * ``K_t``     — K(t*) ≈ 1 − μ/T.
+            * ``T_K``     — Kendall return period (= T by construction).
+            * ``contour`` — ``(x_arr, y_arr)`` on the C(u,v) = t* isoline.
+        """
+        from scipy.interpolate import interp1d
+        from scipy.optimize import brentq
+
+        target_K = np.clip(1.0 - mu / T, 0.001, 0.999)
+        t_arr, K_arr = self.kendall_function(n_sim=n_sim, random_state=random_state)
+        f_inv = interp1d(K_arr, t_arr, kind='linear',
+                         bounds_error=False, fill_value=(t_arr[0], t_arr[-1]))
+        t_star = float(f_inv(target_K))
+
+        # C(u,v) ≤ min(u,v), so the isoline C=t* only exists for u > t_star.
+        # Focus the grid there to avoid wasting 300 points below the threshold.
+        u_lo = float(np.clip(t_star + 5e-4, 1e-4, 1 - 2e-4))
+        xc, yc = [], []
+        for u in np.linspace(u_lo, 1 - 1e-4, 300):
+            try:
+                hi = self._cdf_fn(u, 1 - 1e-8, self._theta)
+                if hi < t_star:
+                    continue
+                vv = brentq(lambda v_: self._cdf_fn(u, v_, self._theta) - t_star,
+                            1e-8, 1 - 1e-8, xtol=1e-8)
+                xc.append(self._x_ppf(u))
+                yc.append(self._y_ppf(vv))
+            except Exception:
+                continue
+
+        return {'t_star': t_star, 'K_t': float(target_K), 'T_K': T,
+                'contour': (np.array(xc), np.array(yc))}
+
+    # ------------------------------------------------------------------
+    def design_storm_ensemble(self, T, n_events=50, n_sim=100_000,
+                              mu=1.0, random_state=None, eps_rel=0.05):
+        """
+        Ensemble of design events on the Kendall critical layer T_K = T.
+
+        Draws *n_sim* samples from the copula, selects those within an ε-band
+        of the critical Kendall level t*, then ranks by joint density.  The
+        top *n_events* rows represent a physically diverse set of events that
+        all share (approximately) the same Kendall return period T.
+
+        Args:
+            T:            Kendall return period.
+            n_events:     Number of design events to return.
+            n_sim:        Monte Carlo pool size.
+            mu:           Mean inter-occurrence time (1 for annual maxima).
+            random_state: RNG seed.
+            eps_rel:      Relative band half-width around t* (0.05 = ±5 %).
+
+        Returns:
+            pd.DataFrame columns: variable labels, ``'C_uv'``, ``'joint_pdf'``,
+            ``'t_star'``; sorted by descending joint density.
+        """
+        rng = np.random.default_rng(random_state)
+        kr = self.kendall_return_period(T, mu=mu,
+                                        n_sim=min(n_sim // 2, 50_000),
+                                        random_state=rng)
+        t_star = kr['t_star']
+        eps = eps_rel * t_star
+
+        xs, ys = self.sample(n_sim, random_state=rng)
+        u = self._u(xs)
+        v = self._v(ys)
+        c_vals = self._cdf_fn(u, v, self._theta)
+
+        mask = np.abs(c_vals - t_star) < eps
+        if mask.sum() < max(n_events, 10):
+            eps = np.sort(np.abs(c_vals - t_star))[
+                min(n_events * 5, len(c_vals) - 1)]
+            mask = np.abs(c_vals - t_star) < eps
+
+        xf, yf, cf = xs[mask], ys[mask], c_vals[mask]
+        uf, vf = u[mask], v[mask]
+
+        eps_d = 1e-5
+        cu = np.clip(uf + eps_d, 1e-10, 1 - 1e-10)
+        cl = np.clip(uf - eps_d, 1e-10, 1 - 1e-10)
+        vu = np.clip(vf + eps_d, 1e-10, 1 - 1e-10)
+        vl = np.clip(vf - eps_d, 1e-10, 1 - 1e-10)
+        c_uv = (self._cdf_fn(cu, vu, self._theta) - self._cdf_fn(cu, vl, self._theta)
+              - self._cdf_fn(cl, vu, self._theta) + self._cdf_fn(cl, vl, self._theta)
+               ) / (4 * eps_d ** 2)
+        pdf = np.clip(c_uv * self._mx[0].pdf(xf, *self._mx[1])
+                           * self._my[0].pdf(yf, *self._my[1]), 0, None)
+
+        idx = np.argsort(-pdf)[:n_events]
+        return pd.DataFrame({
+            self._labels[0]: xf[idx],
+            self._labels[1]: yf[idx],
+            'C_uv':      cf[idx],
+            'joint_pdf': pdf[idx],
+            't_star':    t_star,
+        })
+
 
 # ── TrivariateCopula ──────────────────────────────────────────────────────────
 
@@ -940,6 +1103,31 @@ class TrivariateCopula:
     def _x_ppf(self, u): d, p = self._mx[0], self._mx[1]; return d.ppf(u, *p)
     def _y_ppf(self, v): d, p = self._my[0], self._my[1]; return d.ppf(v, *p)
     def _z_ppf(self, w): d, p = self._mz[0], self._mz[1]; return d.ppf(w, *p)
+
+    # ── Public marginal helpers ───────────────────────────────────────────────
+    def marginal_cdf_x(self, x):
+        """CDF of the fitted X marginal evaluated at x."""
+        return self._u(x)
+
+    def marginal_cdf_y(self, y):
+        """CDF of the fitted Y marginal evaluated at y."""
+        return self._v(y)
+
+    def marginal_cdf_z(self, z):
+        """CDF of the fitted Z marginal evaluated at z."""
+        return self._w(z)
+
+    def marginal_ppf_x(self, p):
+        """Quantile (inverse CDF) of the fitted X marginal at probability p."""
+        return self._x_ppf(p)
+
+    def marginal_ppf_y(self, p):
+        """Quantile (inverse CDF) of the fitted Y marginal at probability p."""
+        return self._y_ppf(p)
+
+    def marginal_ppf_z(self, p):
+        """Quantile (inverse CDF) of the fitted Z marginal at probability p."""
+        return self._z_ppf(p)
 
     def joint_exceedance(self, x0, y0, z0, scenario="OR"):
         """
@@ -1335,3 +1523,610 @@ class TrivariateCopula:
             results.append((fig, (main, xMarg, yMarg)))
 
         return results
+
+    # ------------------------------------------------------------------
+    def kendall_function(self, t_values=None, n_sim=50_000, random_state=None):
+        """
+        Monte Carlo estimate of the trivariate Kendall distribution
+        K₃(t) = P[C₃(U, V, W) ≤ t].
+
+        Args:
+            t_values:     Grid of t ∈ (0, 1); default 200 points.
+            n_sim:        Monte Carlo pool size.
+            random_state: RNG seed.
+
+        Returns:
+            ``(t_arr, K_arr)`` — evaluation points and K₃(t) values.
+        """
+        rng = np.random.default_rng(random_state)
+        xs, ys, zs = self.sample(n_sim, random_state=rng)
+        c_vals = self._cdf_3d(self._u(xs), self._v(ys), self._w(zs), self._theta)
+        if t_values is None:
+            t_values = np.linspace(0.01, 0.99, 200)
+        t_arr = np.asarray(t_values, float)
+        return t_arr, np.array([np.mean(c_vals <= t) for t in t_arr])
+
+    # ------------------------------------------------------------------
+    def kendall_return_period(self, T, mu=1.0, n_sim=50_000, random_state=None):
+        """
+        Kendall return period for the trivariate copula.
+
+        Inverts K₃(t*) = 1 − μ/T.  The Kendall level t* defines a critical
+        layer C₃(u,v,w) = t* in the unit cube, which can be used to sample
+        a physically diverse design event ensemble via ``design_storm_ensemble``.
+
+        Args:
+            T:            Target return period.
+            mu:           Mean inter-occurrence time (1 for annual maxima).
+            n_sim:        Monte Carlo sample size.
+            random_state: RNG seed.
+
+        Returns:
+            dict with keys ``t_star``, ``K_t``, ``T_K``.
+        """
+        from scipy.interpolate import interp1d
+
+        target_K = np.clip(1.0 - mu / T, 0.001, 0.999)
+        t_arr, K_arr = self.kendall_function(n_sim=n_sim, random_state=random_state)
+        f_inv = interp1d(K_arr, t_arr, kind='linear',
+                         bounds_error=False, fill_value=(t_arr[0], t_arr[-1]))
+        t_star = float(f_inv(target_K))
+        return {'t_star': t_star, 'K_t': float(target_K), 'T_K': T}
+
+    # ------------------------------------------------------------------
+    def design_storm_ensemble(self, T, n_events=50, n_sim=100_000,
+                              mu=1.0, random_state=None, eps_rel=0.05):
+        """
+        Ensemble of trivariate design events on the Kendall critical layer T_K = T.
+
+        Draws *n_sim* samples from the trivariate copula, selects those within
+        an ε-band of the critical Kendall level t*, ranks them by trivariate
+        joint density, and returns the top *n_events*.
+
+        Args:
+            T:            Kendall return period.
+            n_events:     Number of design events to return.
+            n_sim:        Monte Carlo pool size.
+            mu:           Mean inter-occurrence time (1 for annual maxima).
+            random_state: RNG seed.
+            eps_rel:      Relative band half-width around t* (0.05 = ±5 %).
+
+        Returns:
+            pd.DataFrame columns: variable labels, ``'C3_uvw'``, ``'joint_pdf'``,
+            ``'t_star'``; sorted by descending joint density.
+        """
+        rng = np.random.default_rng(random_state)
+        kr = self.kendall_return_period(T, mu=mu,
+                                        n_sim=min(n_sim // 2, 50_000),
+                                        random_state=rng)
+        t_star = kr['t_star']
+        eps = eps_rel * t_star
+
+        xs, ys, zs = self.sample(n_sim, random_state=rng)
+        u = self._u(xs)
+        v = self._v(ys)
+        w = self._w(zs)
+        c_vals = self._cdf_3d(u, v, w, self._theta)
+
+        mask = np.abs(c_vals - t_star) < eps
+        if mask.sum() < max(n_events, 10):
+            eps = np.sort(np.abs(c_vals - t_star))[
+                min(n_events * 5, len(c_vals) - 1)]
+            mask = np.abs(c_vals - t_star) < eps
+
+        xf, yf, zf, cf = xs[mask], ys[mask], zs[mask], c_vals[mask]
+        uf, vf, wf = u[mask], v[mask], w[mask]
+
+        # 3D copula density ∂³C/∂u∂v∂w via 8-term finite differences
+        eps3 = 1e-4
+        uh = np.clip(uf + eps3, 1e-10, 1 - 1e-10)
+        ul = np.clip(uf - eps3, 1e-10, 1 - 1e-10)
+        vh = np.clip(vf + eps3, 1e-10, 1 - 1e-10)
+        vl = np.clip(vf - eps3, 1e-10, 1 - 1e-10)
+        wh = np.clip(wf + eps3, 1e-10, 1 - 1e-10)
+        wl = np.clip(wf - eps3, 1e-10, 1 - 1e-10)
+        c3_uvw = (
+            self._cdf_3d(uh, vh, wh, self._theta) - self._cdf_3d(uh, vh, wl, self._theta)
+          - self._cdf_3d(uh, vl, wh, self._theta) + self._cdf_3d(uh, vl, wl, self._theta)
+          - self._cdf_3d(ul, vh, wh, self._theta) + self._cdf_3d(ul, vh, wl, self._theta)
+          + self._cdf_3d(ul, vl, wh, self._theta) - self._cdf_3d(ul, vl, wl, self._theta)
+        ) / (8 * eps3 ** 3)
+        pdf = np.clip(
+            c3_uvw
+            * self._mx[0].pdf(xf, *self._mx[1])
+            * self._my[0].pdf(yf, *self._my[1])
+            * self._mz[0].pdf(zf, *self._mz[1]),
+            0, None)
+
+        idx = np.argsort(-pdf)[:n_events]
+        return pd.DataFrame({
+            self._labels[0]: xf[idx],
+            self._labels[1]: yf[idx],
+            self._labels[2]: zf[idx],
+            'C3_uvw':    cf[idx],
+            'joint_pdf': pdf[idx],
+            't_star':    t_star,
+        })
+
+
+# ============================================================================
+# VineCopula — d-dimensional flexible vine copula (pyvinecopulib)
+# ============================================================================
+
+def _require_pvc():
+    try:
+        import pyvinecopulib as pv
+        return pv
+    except ImportError as exc:
+        raise ImportError(
+            "pyvinecopulib is required for VineCopula.\n"
+            "Install it with: pip install pyvinecopulib"
+        ) from exc
+
+
+class VineCopula:
+    """
+    Flexible d-dimensional vine copula using pyvinecopulib.
+
+    Implements R-vine pair-copula constructions (PCC) fitted by maximum
+    pseudo-likelihood with automatic structure and family selection.
+
+    Supports:
+
+    * ``fit`` — marginals (scipy AIC) + R-vine structure auto-selection.
+    * ``sample`` — synthetic sampling in physical space.
+    * ``jcdf`` — joint CDF evaluation.
+    * ``kendall_function`` / ``kendall_return_period`` — Kendall return period
+      analysis following Salvadori et al. (2011, 2016).
+    * ``most_probable_event`` — MPDE on the Kendall critical layer.
+    * ``design_storm_ensemble`` — ensemble of design events ranked by joint density
+      (Urrea Méndez et al. 2026, J. Hydrology).
+
+    Parameters
+    ----------
+    family_set : list of str or None
+        Pair-copula families considered during selection.
+        Supported names: ``'gaussian'``, ``'student'``, ``'gumbel'``,
+        ``'clayton'``, ``'frank'``, ``'joe'``, ``'bb1'``, ``'bb8'``.
+        Defaults to ``['gaussian','student','gumbel','clayton','frank','joe','bb1']``.
+    marginal_families : tuple of str
+        Candidates for each univariate marginal (AIC selection).
+
+    References
+    ----------
+    Nagler & Vatter (2023). pyvinecopulib.
+    Urrea Méndez et al. (2026). Multivariate Design Storms Using Vine
+        Copulas and GPR. J. Hydrology.
+    Salvadori et al. (2011). On the return period and design in a
+        multivariate framework. Hydrology & Earth System Sciences.
+    """
+
+    _FAMILY_MAP = None   # populated lazily to avoid import at module load
+
+    def __init__(self, family_set=None,
+                 marginal_families=("gev", "lognorm", "gamma")):
+        self.family_set       = family_set
+        self.marginal_families = marginal_families
+        self._vine            = None
+        self._marginals       = []   # list of (dist, params, name, aic)
+        self._labels          = []
+        self._data            = None
+        self._d               = None
+
+    # ------------------------------------------------------------------
+    @staticmethod
+    def _pv_family_set(pv, names):
+        mapping = {
+            'gaussian': pv.BicopFamily.gaussian,
+            'student':  pv.BicopFamily.student,
+            'gumbel':   pv.BicopFamily.gumbel,
+            'clayton':  pv.BicopFamily.clayton,
+            'frank':    pv.BicopFamily.frank,
+            'joe':      pv.BicopFamily.joe,
+            'bb1':      pv.BicopFamily.bb1,
+            'bb8':      pv.BicopFamily.bb8,
+        }
+        return [mapping[n] for n in names if n in mapping]
+
+    # ------------------------------------------------------------------
+    def fit(self, data, labels=None):
+        """
+        Fit marginals and R-vine structure to observed data.
+
+        Args:
+            data:   array-like (n_obs, d) or pd.DataFrame.
+            labels: list of variable names; defaults to column names or X0…Xd-1.
+
+        Returns:
+            self
+        """
+        pv = _require_pvc()
+
+        if isinstance(data, pd.DataFrame):
+            if labels is None:
+                labels = list(data.columns)
+            data = data.values
+        data = np.asarray(data, float)
+        n, d = data.shape
+        self._d    = d
+        self._data = data
+        self._labels = labels if labels else [f"X{k}" for k in range(d)]
+
+        print(f"Fitting VineCopula  d={d}  n={n}")
+
+        # 1. Marginals
+        pseudo = np.empty((n, d))
+        self._marginals = []
+        for k in range(d):
+            print(f"  Marginal {self._labels[k]}:")
+            mx = _fit_marginal_scipy(data[:, k], self.marginal_families)
+            self._marginals.append(mx)
+            pseudo[:, k] = np.clip(mx[0].cdf(data[:, k], *mx[1]), 1e-6, 1 - 1e-6)
+
+        # 2. Vine structure + pair-copula families
+        if self.family_set is None:
+            fset = self._pv_family_set(
+                pv, ['gaussian', 'student', 'gumbel', 'clayton', 'frank', 'joe', 'bb1'])
+        else:
+            fset = self._pv_family_set(pv, self.family_set)
+
+        controls = pv.FitControlsVinecop(family_set=fset)
+        self._vine = pv.Vinecop.from_data(np.asfortranarray(pseudo), controls=controls)
+        try:
+            summary = repr(self._vine)[:120]
+        except Exception:
+            summary = f"d={d} vine"
+        print(f"  Fitted R-vine: {summary}")
+        return self
+
+    # ------------------------------------------------------------------
+    def _to_uniform(self, data):
+        data = np.asarray(data, float)
+        if data.ndim == 1:
+            data = data.reshape(1, -1)
+        u = np.empty_like(data)
+        for k, mx in enumerate(self._marginals):
+            u[:, k] = np.clip(mx[0].cdf(data[:, k], *mx[1]), 1e-6, 1 - 1e-6)
+        return u
+
+    def _from_uniform(self, u):
+        out = np.empty_like(u)
+        for k, mx in enumerate(self._marginals):
+            out[:, k] = mx[0].ppf(u[:, k], *mx[1])
+        return out
+
+    def _simulate(self, n, rng=None):
+        """Draw n uniform samples from the vine with optional RNG seeding."""
+        if rng is not None:
+            seeds = [int(s) for s in rng.integers(0, 2 ** 31, size=4)]
+            try:
+                return self._vine.simulate(n, seeds=seeds)
+            except TypeError:
+                pass
+        return self._vine.simulate(n)
+
+    # ------------------------------------------------------------------
+    def sample(self, n, random_state=None):
+        """
+        Draw *n* synthetic samples in physical space.
+
+        Returns:
+            np.ndarray of shape ``(n, d)``.
+        """
+        rng = np.random.default_rng(random_state)
+        u = self._simulate(n, rng)
+        return self._from_uniform(u)
+
+    # ------------------------------------------------------------------
+    def jcdf(self, data):
+        """
+        Joint CDF at rows of *data* (physical space).
+
+        Args:
+            data: array (n, d).
+
+        Returns:
+            1-D array of length n.
+        """
+        u = self._to_uniform(np.asarray(data, float))
+        return self._vine.cdf(u)
+
+    # ------------------------------------------------------------------
+    def kendall_function(self, t_values=None, n_sim=20_000, random_state=None):
+        """
+        Monte Carlo estimate of the d-variate Kendall function
+        K_d(t) = P[C(U) ≤ t].
+
+        Note: for large *d*, vine CDF evaluation can be slow; prefer
+        n_sim ≤ 20 000 for d ≥ 5.
+
+        Args:
+            t_values:     Grid of t ∈ (0, 1); default 200 points.
+            n_sim:        Monte Carlo pool size.
+            random_state: RNG seed.
+
+        Returns:
+            ``(t_arr, K_arr)`` — evaluation points and K_d(t) values.
+        """
+        rng = np.random.default_rng(random_state)
+        u = self._simulate(n_sim, rng)
+        c_vals = self._vine.cdf(u)
+        if t_values is None:
+            t_values = np.linspace(0.01, 0.99, 200)
+        t_arr = np.asarray(t_values, float)
+        return t_arr, np.array([np.mean(c_vals <= t) for t in t_arr])
+
+    # ------------------------------------------------------------------
+    def kendall_return_period(self, T, mu=1.0, n_sim=20_000, random_state=None):
+        """
+        Critical Kendall level for return period T.
+
+        K_d(t*) = 1 − μ/T  ⟹  T_K = μ / (1 − K_d(t*))
+
+        Args:
+            T:            Target return period.
+            mu:           Mean inter-occurrence time (1 for annual maxima).
+            n_sim:        Monte Carlo size for K estimation.
+            random_state: RNG seed.
+
+        Returns:
+            dict with keys ``t_star``, ``K_t``, ``T_K``.
+        """
+        from scipy.interpolate import interp1d
+
+        target_K = np.clip(1.0 - mu / T, 0.001, 0.999)
+        t_arr, K_arr = self.kendall_function(n_sim=n_sim, random_state=random_state)
+        f_inv = interp1d(K_arr, t_arr, kind='linear',
+                         bounds_error=False, fill_value=(t_arr[0], t_arr[-1]))
+        t_star = float(f_inv(target_K))
+        return {'t_star': t_star, 'K_t': float(target_K), 'T_K': T}
+
+    # ------------------------------------------------------------------
+    def most_probable_event(self, T, mu=1.0, n_sim=50_000,
+                            random_state=None, eps_rel=0.05):
+        """
+        Most Probable Design Event (MPDE) on the Kendall critical layer T_K = T.
+
+        Returns:
+            1-D array of shape (d,) in physical variable space.
+        """
+        ens = self.design_storm_ensemble(T, n_events=1, n_sim=n_sim,
+                                         mu=mu, random_state=random_state,
+                                         eps_rel=eps_rel)
+        return ens[self._labels].values[0]
+
+    # ------------------------------------------------------------------
+    def design_storm_ensemble(self, T, n_events=50, n_sim=50_000,
+                              mu=1.0, random_state=None, eps_rel=0.05):
+        """
+        Ensemble of d-dimensional design events on the Kendall critical layer.
+
+        Draws *n_sim* events from the vine copula, selects those within an
+        ε-band of the critical Kendall level t*, and ranks them by joint
+        density f(x) = c(F(x)) × Π fk(xk).  The top *n_events* rows cover
+        the critical layer with physical diversity (Urrea Méndez et al. 2026).
+
+        Args:
+            T:            Kendall return period.
+            n_events:     Number of design events to return.
+            n_sim:        Monte Carlo pool size.
+            mu:           Mean inter-occurrence time (1 for annual maxima).
+            random_state: RNG seed.
+            eps_rel:      Relative band half-width around t* (0.05 = ±5 %).
+
+        Returns:
+            pd.DataFrame: one column per variable, plus ``'C_u'``,
+            ``'log_joint_pdf'``, ``'t_star'``; sorted by descending joint density.
+        """
+        rng = np.random.default_rng(random_state)
+
+        kr = self.kendall_return_period(T, mu=mu,
+                                        n_sim=min(n_sim // 2, 20_000),
+                                        random_state=rng)
+        t_star = kr['t_star']
+        eps = eps_rel * t_star
+
+        u_all = self._simulate(n_sim, rng)
+        c_vals = self._vine.cdf(u_all)
+
+        mask = np.abs(c_vals - t_star) < eps
+        if mask.sum() < max(n_events, 10):
+            eps = np.sort(np.abs(c_vals - t_star))[
+                min(n_events * 5, len(c_vals) - 1)]
+            mask = np.abs(c_vals - t_star) < eps
+
+        u_f  = u_all[mask]
+        c_f  = c_vals[mask]
+        x_f  = self._from_uniform(u_f)
+
+        # Joint log-density = log copula density + Σ log marginal densities
+        cop_dens = self._vine.pdf(u_f)
+        log_joint = np.log(np.maximum(cop_dens, 1e-300))
+        for k, mx in enumerate(self._marginals):
+            log_joint += np.log(np.maximum(mx[0].pdf(x_f[:, k], *mx[1]), 1e-300))
+
+        idx = np.argsort(-log_joint)[:n_events]
+        df = pd.DataFrame(x_f[idx], columns=self._labels)
+        df['C_u']           = c_f[idx]
+        df['log_joint_pdf'] = log_joint[idx]
+        df['t_star']        = t_star
+        return df
+
+    # ------------------------------------------------------------------
+    def plot_matrix(self, n_synthetic=2000, figsize=None, random_state=None):
+        """
+        Scatter matrix comparing observed (black) vs synthetic (grey) in
+        physical space.
+
+        Upper triangle: scatter plots.
+        Diagonal: marginal histograms.
+
+        Returns:
+            ``(fig, axes)``
+        """
+        import matplotlib.pyplot as plt
+
+        d = self._d
+        if figsize is None:
+            figsize = (3 * d, 3 * d)
+
+        synth = self.sample(n_synthetic, random_state=random_state) if n_synthetic > 0 else None
+
+        fig, axes = plt.subplots(d, d, figsize=figsize)
+        for i in range(d):
+            for j in range(d):
+                ax = axes[i][j]
+                if i == j:
+                    if self._data is not None:
+                        ax.hist(self._data[:, i], bins=20, color='steelblue',
+                                alpha=0.6, density=True)
+                    ax.set_xlabel(self._labels[i], fontsize=8)
+                elif i < j:
+                    if synth is not None:
+                        ax.scatter(synth[:, j], synth[:, i], s=1, alpha=0.3,
+                                   c='grey', rasterized=True)
+                    if self._data is not None:
+                        ax.scatter(self._data[:, j], self._data[:, i],
+                                   s=15, c='k', zorder=5)
+                else:
+                    ax.axis('off')
+                ax.tick_params(labelsize=7)
+
+        fig.suptitle(f"VineCopula scatter matrix  (d={d})", fontsize=11)
+        fig.tight_layout()
+        return fig, axes
+
+
+# ---------------------------------------------------------------------------
+# GaussianCopulaSampler — scipy-only, parameterised correlation
+# ---------------------------------------------------------------------------
+
+class GaussianCopulaSampler:
+    """Gaussian copula sampler with scipy marginals and a specified correlation.
+
+    Unlike :class:`FloodEventCopula`, which fits the copula from observed data
+    using openturns, this class accepts pre-specified marginal distributions
+    and a correlation matrix, making it suitable for uncertainty-propagation
+    studies where the correlation structure is prescribed (e.g., sensitivity
+    analyses with equi-correlation between roughness classes).
+
+    The sampling algorithm follows the standard Gaussian copula procedure:
+
+    1. Draw :math:`\\mathbf{Z} \\sim \\mathcal{N}(\\mathbf{0}, \\boldsymbol{\\Sigma})`.
+    2. Convert to uniform margins: :math:`U_i = \\Phi(Z_i)`.
+    3. Apply marginal quantile functions: :math:`X_i = F_i^{-1}(U_i)`.
+
+    Parameters
+    ----------
+    marginals : list of scipy.stats frozen distributions
+        One fitted marginal distribution per variable, in order.
+        Must expose ``.ppf(u)`` and ``.cdf(x)``.
+    names : list of str
+        Variable names — used as column labels in the returned DataFrame.
+
+    Examples
+    --------
+    >>> from scipy.stats import lognorm, gamma
+    >>> from pyhydra.climate.spatial_analysis.copulas import GaussianCopulaSampler
+    >>> marginals = [lognorm(s=0.3, scale=0.05), gamma(a=3, scale=0.015)]
+    >>> sampler = GaussianCopulaSampler(marginals, names=['class_A', 'class_B'])
+    >>> df = sampler.sample(1000, rho=0.7, seed=42)
+    >>> df.corr()          # empirical Pearson correlation ≈ 0.7
+    """
+
+    def __init__(self, marginals, names):
+        if len(marginals) != len(names):
+            raise ValueError("marginals and names must have the same length.")
+        self._marginals = list(marginals)
+        self._names     = list(names)
+        self._k         = len(marginals)
+
+    @classmethod
+    def from_data(cls, data: "pd.DataFrame",
+                  families: tuple = ("norm", "lognorm", "gamma")):
+        """Fit marginals from data columns by KS test and return a sampler.
+
+        Args:
+            data: DataFrame; each column is one variable.
+            families: Candidate scipy distribution names for KS selection.
+
+        Returns:
+            Fitted :class:`GaussianCopulaSampler`.
+        """
+        from scipy import stats as _stats
+
+        marginals, names = [], list(data.columns)
+        for col in names:
+            x = data[col].dropna().values
+            best_p, best_dist = -1.0, None
+            for fname in families:
+                dist_cls = getattr(_stats, fname)
+                params   = dist_cls.fit(x)
+                _, p     = _stats.kstest(x, fname, args=params)
+                if p > best_p:
+                    best_p = p
+                    best_dist = dist_cls(*params[:-2],
+                                        loc=params[-2], scale=params[-1])
+            marginals.append(best_dist)
+        return cls(marginals, names)
+
+    def _build_sigma(self, rho_or_matrix):
+        if np.isscalar(rho_or_matrix):
+            rho = float(rho_or_matrix)
+            if not (0.0 <= rho <= 1.0):
+                raise ValueError("Scalar rho must be in [0, 1].")
+            return rho * np.ones((self._k, self._k)) + (1.0 - rho) * np.eye(self._k)
+        sigma = np.asarray(rho_or_matrix, dtype=float)
+        if sigma.shape != (self._k, self._k):
+            raise ValueError(f"Correlation matrix must be ({self._k}, {self._k}).")
+        return sigma
+
+    def sample(self, n: int, rho: "float | np.ndarray" = 0.0,
+               seed: "int | None" = None) -> "pd.DataFrame":
+        """Draw *n* samples from the Gaussian copula.
+
+        Args:
+            n:    Number of samples.
+            rho:  Equi-correlation scalar ∈ [0, 1] **or** full (k×k)
+                  correlation matrix.  Default 0 (independent).
+            seed: Random seed for reproducibility.
+
+        Returns:
+            DataFrame of shape (n, k) with column names from *names*.
+        """
+        from scipy.stats import norm as _norm
+
+        rng   = np.random.default_rng(seed)
+        Sigma = self._build_sigma(rho)
+        Z     = rng.multivariate_normal(np.zeros(self._k), Sigma, size=n)
+        U     = _norm.cdf(Z)
+
+        samples = {}
+        for j, (name, dist) in enumerate(zip(self._names, self._marginals)):
+            x = dist.ppf(U[:, j])
+            x = np.clip(x, 1e-9, None)
+            samples[name] = x
+
+        return pd.DataFrame(samples)
+
+    def cv_nbar(self, weights: "dict | np.ndarray", rho: float,
+                n: int = 20_000, seed: int = 0) -> float:
+        """Estimate CV of the area-weighted mean across variables.
+
+        Args:
+            weights: Dict {name: area_fraction} or 1-D array aligned to *names*.
+            rho:     Equi-correlation coefficient.
+            n:       Number of Monte Carlo draws for estimation.
+            seed:    Random seed.
+
+        Returns:
+            CV in percent.
+        """
+        if isinstance(weights, dict):
+            w = np.array([weights[name] for name in self._names])
+        else:
+            w = np.asarray(weights)
+        w = w / w.sum()
+        df   = self.sample(n, rho=rho, seed=seed)
+        nbar = df.values @ w
+        return 100.0 * nbar.std() / nbar.mean()

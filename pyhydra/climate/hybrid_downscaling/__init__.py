@@ -3,6 +3,7 @@ from pyhydra.climate.hybrid_downscaling import (
     reconstruction,
     interpolation,
     return_period,
+    event_selection,
 )
 from pyhydra.climate.hybrid_downscaling.classification import (
     HydrographClassifier,
@@ -21,12 +22,17 @@ from pyhydra.climate.hybrid_downscaling.return_period import (
     save_return_period_geotiffs,
     DEFAULT_RETURN_PERIODS,
 )
+from pyhydra.climate.hybrid_downscaling.event_selection import (
+    FloodEventSelector,
+    FloodCopulaComparison,
+)
 
 __all__ = [
     "classification",
     "reconstruction",
     "interpolation",
     "return_period",
+    "event_selection",
     # classification
     "HydrographClassifier",
     "find_spatial_arrangement",
@@ -40,4 +46,7 @@ __all__ = [
     "pixel_return_period",
     "save_return_period_geotiffs",
     "DEFAULT_RETURN_PERIODS",
+    # event selection
+    "FloodEventSelector",
+    "FloodCopulaComparison",
 ]

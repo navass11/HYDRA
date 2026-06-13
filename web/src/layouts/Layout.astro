@@ -1,4 +1,7 @@
 ---
+import { ui } from '../i18n/ui';
+import { phraseTranslations } from '../i18n/phrases';
+
 export interface Props {
   title?: string;
   description?: string;
@@ -66,10 +69,11 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
           </button>
         </div>
         <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
-          <a href="/#modulos" class="hover:text-hydra-600 transition-colors" data-i18n="nav.modules">Módulos</a>
-          <a href="/#notebooks" class="hover:text-hydra-600 transition-colors" data-i18n="nav.notebooks">Notebooks</a>
-          <a href="/#herramientas" class="hover:text-hydra-600 transition-colors font-semibold text-hydra-700" data-i18n="nav.tools">Herramientas</a>
-          <a href="/#instalacion" class="hover:text-hydra-600 transition-colors" data-i18n="nav.install">Instalación</a>
+          <a href={`${base}#modulos`} class="hover:text-hydra-600 transition-colors" data-i18n="nav.modules">Módulos</a>
+          <a href={`${base}#notebooks`} class="hover:text-hydra-600 transition-colors" data-i18n="nav.notebooks">Notebooks</a>
+          <a href={`${base}#herramientas`} class="hover:text-hydra-600 transition-colors" data-i18n="nav.tools">Herramientas</a>
+          <a href={`${base}#casos-piloto`} class="hover:text-hydra-600 transition-colors" data-i18n="nav.cases">Casos piloto</a>
+          <a href={`${base}#instalacion`} class="hover:text-hydra-600 transition-colors" data-i18n="nav.install">Instalación</a>
           <div class="flex items-center gap-1 rounded-full border border-slate-200 bg-white/75 p-1 shadow-sm">
             <button
               type="button"
@@ -114,6 +118,15 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
           </a>
         </div>
       </nav>
+      <div class="md:hidden border-t border-slate-200/80 bg-white/90 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-6 py-2 flex gap-4 overflow-x-auto text-xs font-medium text-slate-600 whitespace-nowrap">
+          <a href={`${base}#modulos`} class="hover:text-hydra-600 transition-colors" data-i18n="nav.modules">Módulos</a>
+          <a href={`${base}#notebooks`} class="hover:text-hydra-600 transition-colors" data-i18n="nav.notebooks">Notebooks</a>
+          <a href={`${base}#herramientas`} class="hover:text-hydra-600 transition-colors" data-i18n="nav.tools">Herramientas</a>
+          <a href={`${base}#casos-piloto`} class="hover:text-hydra-600 transition-colors" data-i18n="nav.cases">Casos piloto</a>
+          <a href={`${base}#instalacion`} class="hover:text-hydra-600 transition-colors" data-i18n="nav.install">Instalación</a>
+        </div>
+      </div>
     </header>
 
     <main>
@@ -137,170 +150,8 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     </footer>
 
     <!-- Smooth scroll, theme and language controls -->
-    <script>
-      const translations = {
-        es: {
-          'nav.modules': 'Módulos',
-          'nav.notebooks': 'Notebooks',
-          'nav.tools': 'Herramientas',
-          'nav.install': 'Instalación',
-          'footer.description': 'Librería modular de Python para análisis hidrológico y climático.',
-          'hero.kicker': 'Python · Hidrología · Clima · Riesgo',
-          'hero.description': 'Librería modular para análisis hidrológico, climático y modelización de inundaciones. Integra datos, extremos, generación estocástica y modelos físicos en flujos reproducibles.',
-          'hero.notebooks': 'Ver notebooks',
-          'hero.tools': 'Explorar herramientas',
-          'stats.notebooks': 'Notebooks',
-          'stats.modules': 'Módulos',
-          'stats.sources': 'Fuentes de datos',
-          'modules.title': 'Módulos principales',
-          'modules.description': 'Cuatro bloques conectados para pasar de datos brutos a escenarios, simulaciones y productos de riesgo.',
-          'tools.title': 'Herramientas interactivas',
-          'tools.description': 'Interfaces ligeras para probar funcionalidades de HYDRA sin abrir un notebook.',
-          'tools.open': 'Abrir herramienta',
-          'notebooks.title': 'Notebooks',
-          'notebooks.description': 'notebooks ejecutables. Haz clic para ver el contenido completo con código y resultados.',
-          'filter.all': 'Todos',
-          'filter.climate': 'Clima',
-          'filter.spatial': 'Análisis esp.',
-          'filter.data': 'Datos',
-          'filter.modeling': 'Modelización',
-          'notebooks.run': 'Ejecutar',
-          'install.title': 'Instalación',
-          'install.description': 'Dos opciones para empezar en minutos.',
-        },
-        en: {
-          'nav.modules': 'Modules',
-          'nav.notebooks': 'Notebooks',
-          'nav.tools': 'Tools',
-          'nav.install': 'Install',
-          'footer.description': 'Modular Python library for hydrological and climate analysis.',
-          'hero.kicker': 'Python · Hydrology · Climate · Risk',
-          'hero.description': 'A modular library for hydrological and climate analysis and flood modelling. HYDRA connects data, extremes, stochastic generation and physical models in reproducible workflows.',
-          'hero.notebooks': 'View notebooks',
-          'hero.tools': 'Explore tools',
-          'stats.notebooks': 'Notebooks',
-          'stats.modules': 'Modules',
-          'stats.sources': 'Data sources',
-          'modules.title': 'Main modules',
-          'modules.description': 'Four connected blocks to move from raw data to scenarios, simulations and risk products.',
-          'tools.title': 'Interactive tools',
-          'tools.description': 'Lightweight interfaces to test HYDRA capabilities without opening a notebook.',
-          'tools.open': 'Open tool',
-          'notebooks.title': 'Notebooks',
-          'notebooks.description': 'executable notebooks. Click to open the full content with code and results.',
-          'filter.all': 'All',
-          'filter.climate': 'Climate',
-          'filter.spatial': 'Spatial analysis',
-          'filter.data': 'Data',
-          'filter.modeling': 'Modelling',
-          'notebooks.run': 'Run',
-          'install.title': 'Install',
-          'install.description': 'Two ways to get started in minutes.',
-        },
-      };
-      const phraseTranslations = {
-        '← Volver al inicio': '← Back to home',
-        '← Volver a modulos': '← Back to modules',
-        'Fuentes de datos': 'Data sources',
-        'Análisis climático': 'Climate analysis',
-        'Generación estocástica': 'Stochastic generation',
-        'Modelización': 'Modelling',
-        'Ver modulo →': 'View module →',
-        'Generación Estocástica': 'Stochastic Generation',
-        'Sensibilidad de Manning': 'Manning Sensitivity',
-        'Eventos + GEV bayesiana': 'Events + Bayesian GEV',
-        'Descarga OGIMET': 'OGIMET download',
-        'Cópulas de eventos': 'Event copulas',
-        'Cópulas multivariantes de eventos': 'Multivariate event copulas',
-        'Descarga directa de OGIMET': 'Direct OGIMET download',
-        'Selección de eventos y ajuste GEV bayesiano': 'Event selection and Bayesian GEV fitting',
-        'En que consiste': 'What it does',
-        'Herramientas relacionadas': 'Related tools',
-        'Flujo de trabajo': 'Workflow',
-        'Entradas': 'Inputs',
-        'Salidas': 'Outputs',
-        'Capacidades implementadas': 'Implemented capabilities',
-        'Validacion y control': 'Validation and control',
-        'Piezas de codigo HYDRA': 'HYDRA code pieces',
-        'Figuras de analisis': 'Analysis figures',
-        'Uso industrial': 'Industrial use',
-        'Papel dentro de HYDRA': 'Role inside HYDRA',
-        'Datos': 'Data',
-        'Datos de entrada': 'Input data',
-        'Demo': 'Demo',
-        'Subir CSV': 'Upload CSV',
-        'Variables continuas': 'Continuous variables',
-        'Variables discretas': 'Discrete variables',
-        'Muestras sintéticas': 'Synthetic samples',
-        'Ajustar cópula': 'Fit copula',
-        'Ajustar modelo': 'Fit model',
-        'Analizar sensibilidad': 'Analyse sensitivity',
-        'Variable': 'Variable',
-        'Precipitación': 'Precipitation',
-        'Caudal': 'Discharge',
-        'Cuantil de umbral': 'Threshold quantile',
-        'Umbral manual': 'Manual threshold',
-        'Indicativo OGIMET': 'OGIMET station id',
-        'Buscar estación': 'Search station',
-        'Inicio': 'Start',
-        'Fin': 'End',
-        'Días por bloque': 'Days per block',
-        'Distribución marginal': 'Marginal distribution',
-        'Instalación manual': 'Manual install',
-        'Recomendado — sin configurar dependencias': 'Recommended, no dependency setup',
-        'Python 3.9 o superior requerido': 'Python 3.9 or later required',
-        'Abrir →': 'Open →',
-        'Lectura rápida': 'Quick read',
-        // Module descriptions
-        'Descarga automática de precipitación (GPM, ERA5, AEMET), caudal (GloFAS, GRDC, USGS), cambio climático (CMIP6/ESGF) y texturas de suelo (SoilGrids).': 'Automatic download of precipitation (GPM, ERA5, AEMET), streamflow (GloFAS, GRDC, USGS), climate projections (CMIP6/ESGF) and soil textures (SoilGrids).',
-        'Series temporales, valores extremos, análisis de frecuencia regional, cópulas, interpolación espacial y modelos jerárquicos bayesianos.': 'Time series, extreme values, regional frequency analysis, copulas, spatial interpolation and Bayesian hierarchical models.',
-        'Generación estocástica de series (CoSMoS) y precipitación (NSRP via NEOPRENE), incluyendo modelos multisitio espacio-temporales.': 'Stochastic generation of time series (CoSMoS) and precipitation (NSRP via NEOPRENE), including multi-site space–time models.',
-        'Integración y automatización de modelos hidrológicos (HEC-HMS, SWAT+) e hidráulicos (HEC-RAS, SFINCS).': 'Integration and automation of hydrological (HEC-HMS, SWAT+) and hydraulic (HEC-RAS, SFINCS) models.',
-        // Tool descriptions
-        'Ajusta un modelo estacional CoSMoS a una serie diaria y genera un ensemble sintético reproducible.': 'Fit a seasonal CoSMoS model to a daily series and generate a reproducible synthetic ensemble.',
-        'Explora ensembles hidráulicos y relaciona rugosidad, calados y área inundada mediante correlaciones y regresión.': 'Explore hydraulic ensembles and relate roughness, water depths and flooded area via correlations and regression.',
-        'Selecciona eventos extremos y estima niveles de retorno con una GEV MAP bayesiana y bandas aproximadas.': 'Select extreme events and estimate return levels with a Bayesian MAP GEV and approximate uncertainty bands.',
-        'Genera enlaces SYNOP por ventanas temporales para estaciones OGIMET sin credenciales ni API externa.': 'Generate SYNOP request links for OGIMET stations without credentials or external API.',
-        'Ajusta dependencias multivariantes entre pico, volumen, duración y variables discretas para generar eventos sintéticos.': 'Fit multivariate dependencies between peak, volume, duration and discrete variables to generate synthetic events.',
-        // Tags and category badges
-        'Clima': 'Climate',
-        'Hidráulica': 'Hydraulics',
-        'Extremos': 'Extremes',
-        'Análisis': 'Analysis',
-        'Análisis esp.': 'Spatial analysis',
-        'Modelización': 'Modelling',
-        'Todos': 'All',
-        'Datos': 'Data',
-        // Notebook titles
-        'Corrección de sesgo': 'Bias correction',
-        'Extracción de eventos': 'Event extraction',
-        'Análisis de extremos': 'Extreme value analysis',
-        'Bayes jerárquico': 'Hierarchical Bayes',
-        'Cópulas': 'Copulas',
-        'Interpolación': 'Interpolation',
-        'Frecuencia regional': 'Regional frequency',
-        'Campos espaciales': 'Spatial fields',
-        // Install section
-        'Recomendado — sin configurar dependencias': 'Recommended — no dependency setup',
-        'Python 3.9 o superior requerido': 'Python 3.9 or later required',
-        // API Reference static labels
-        'Índice': 'Index',
-        'Clases': 'Classes',
-        'Funciones': 'Functions',
-        'Parámetros del constructor': 'Constructor parameters',
-        'Métodos': 'Methods',
-        'Ejemplo': 'Example',
-        'Dependencia: ': 'Dependency: ',
-        'Parámetros': 'Parameters',
-        'Parámetro': 'Parameter',
-        'Nombre': 'Name',
-        'Tipo': 'Type',
-        'Defecto': 'Default',
-        'Descripción': 'Description',
-        'Descripción general': 'Overview',
-        '← Volver al módulo': '← Back to module',
-        'Sin documentación disponible todavía para este módulo.': 'No documentation available yet for this module.',
-      };
+    <script define:vars={{ ui, phraseTranslations }}>
+      const translations = ui;
       const originalTextNodes = new WeakMap();
 
       const translateTextNodes = (lang) => {
@@ -331,6 +182,14 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
         document.querySelectorAll('.theme-icon-dark').forEach((icon) => icon.classList.toggle('hidden', theme !== 'dark'));
       };
 
+      const applyDataTranslations = (lang) => {
+        document.querySelectorAll('[data-t-es]').forEach((el) => {
+          const es = el.getAttribute('data-t-es') ?? '';
+          const en = el.getAttribute('data-t-en') ?? '';
+          el.textContent = lang === 'en' ? en : es;
+        });
+      };
+
       const setLanguage = (lang) => {
         const dict = translations[lang] ?? translations.es;
         document.documentElement.lang = lang;
@@ -344,7 +203,9 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
           btn.classList.toggle('is-active', active);
           btn.setAttribute('aria-pressed', String(active));
         });
+        applyDataTranslations(lang);
         translateTextNodes(lang);
+        document.dispatchEvent(new CustomEvent('hydra:lang', { detail: { lang } }));
       };
 
       const observer = new IntersectionObserver(

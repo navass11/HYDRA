@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import notebooksMeta from '../data/notebooks.json';
+import { pilotCases } from '../data/pilot_cases';
 
 const base = import.meta.env.BASE_URL;
 const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
@@ -10,7 +11,7 @@ const modules = [
     // Cloud with precipitation drops — satellite & gauge data pipeline
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 14a4 4 0 0 1 3.9-4H8a6 6 0 0 1 11.6 1.5A3.5 3.5 0 0 1 17 18H5.5A3.5 3.5 0 0 1 4 14Z"/><line x1="8" y1="21" x2="8" y2="19"/><line x1="12" y1="22" x2="12" y2="19.5"/><line x1="16" y1="21" x2="16" y2="19"/></svg>',
     title: 'Fuentes de datos',
-    description: 'Descarga automática de precipitación (GPM, ERA5, AEMET), caudal (GloFAS, GRDC, USGS), cambio climático (CMIP6/ESGF) y texturas de suelo (SoilGrids).',
+    description: 'Descarga automática de precipitación (Meteostat, GPM, ERA5, AEMET), caudal (GloFAS, GRDC, USGS), cambio climático (CMIP6/ESGF) y texturas de suelo (SoilGrids).',
     color: 'text-sky-700 bg-sky-100',
     bg: 'bg-white',
     border: 'border-sky-100',
@@ -74,12 +75,12 @@ const tools = [
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 17L4 17L5 15L6 17L8 16L9 17L11 6L13 17L15 15L16 17L18 16L19 17L22 17"/><line x1="2" y1="11" x2="22" y2="11" stroke-dasharray="3 2" stroke-width="1.2"/><circle cx="11" cy="6" r="2.2" stroke-width="1.5"/></svg>',
   },
   {
-    title: 'Descarga OGIMET',
-    description: 'Genera enlaces SYNOP por ventanas temporales para estaciones OGIMET sin credenciales ni API externa.',
-    href: asset('/tools/ogimet'),
+    title: 'Descarga Meteostat',
+    description: 'Busca estaciones en el mapa, selecciona periodo y descarga datos diarios o mensuales de temperatura, precipitación y viento.',
+    href: asset('/tools/meteostat'),
     tag: 'Datos',
     color: 'text-sky-800 bg-sky-100',
-    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="6" r="1.8"/><circle cx="18" cy="5" r="1.8"/><circle cx="9" cy="14" r="1.8"/><circle cx="19" cy="15" r="1.8"/><line x1="6.5" y1="7.2" x2="7.8" y2="12.3" stroke-width="1.1" stroke-opacity="0.6"/><line x1="17" y1="6.8" x2="18.3" y2="13.2" stroke-width="1.1" stroke-opacity="0.6"/><line x1="11" y1="14" x2="17" y2="15" stroke-width="1.1" stroke-opacity="0.6"/><line x1="6.8" y1="6" x2="16.2" y2="5.2" stroke-width="1.1" stroke-opacity="0.6"/><path d="M12 17L12 21M10 19L12 21L14 19"/></svg>',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 14a4 4 0 0 1 3.9-4H8a6 6 0 0 1 11.6 1.5A3.5 3.5 0 0 1 17 18H5.5A3.5 3.5 0 0 1 4 14Z"/><path d="M8 21L8 19M12 22L12 19.5M16 21L16 19" stroke-width="1.5"/></svg>',
   },
   {
     title: 'Cópulas de eventos',
@@ -89,6 +90,22 @@ const tools = [
     color: 'text-violet-800 bg-violet-100',
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="3" y1="21" x2="3" y2="4" stroke-width="1.2"/><line x1="3" y1="21" x2="22" y2="21" stroke-width="1.2"/><ellipse cx="12.5" cy="13" rx="7" ry="4" transform="rotate(-30 12.5 13)" stroke-width="1.4"/><ellipse cx="12.5" cy="13" rx="3.5" ry="2" transform="rotate(-30 12.5 13)" stroke-width="1"/><circle cx="8" cy="17" r="0.9" fill="currentColor" stroke="none"/><circle cx="11" cy="15" r="0.9" fill="currentColor" stroke="none"/><circle cx="14" cy="11" r="0.9" fill="currentColor" stroke="none"/><circle cx="17" cy="8" r="0.9" fill="currentColor" stroke="none"/><circle cx="6" cy="19" r="0.9" fill="currentColor" stroke="none"/><circle cx="20" cy="6" r="0.9" fill="currentColor" stroke="none"/></svg>',
   },
+  {
+    title: 'Eventos compuestos',
+    description: 'Ajusta una cópula bivariante y obtén curvas de período de retorno conjunto OR para pares de variables hidro-climáticas.',
+    href: asset('/tools/compound'),
+    tag: 'Análisis',
+    color: 'text-purple-800 bg-purple-100',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="3" y1="21" x2="3" y2="4" stroke-width="1.2"/><line x1="3" y1="21" x2="22" y2="21" stroke-width="1.2"/><path d="M5 17 Q8 8 12 8 Q16 8 19 5" stroke-width="1.5" stroke-dasharray="3 2"/><path d="M5 19 Q9 13 13 12 Q17 11 20 8" stroke-width="1.5"/><circle cx="8" cy="16" r="1.8" fill="rgba(139,92,246,0.4)" stroke="rgb(109,40,217)"/><circle cx="12" cy="12" r="1.8" fill="rgba(139,92,246,0.4)" stroke="rgb(109,40,217)"/><circle cx="16" cy="10" r="1.8" fill="rgba(139,92,246,0.4)" stroke="rgb(109,40,217)"/></svg>',
+  },
+  {
+    title: 'Interpolación espacial',
+    description: 'Compara IDW, Kriging Ordinario, RBF y vecino más cercano sobre el mismo dataset. Sube 3 CSV y obtén RMSE de validación cruzada.',
+    href: asset('/tools/interpolation'),
+    tag: 'Espacial',
+    color: 'text-teal-800 bg-teal-100',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="6" r="1.8"/><circle cx="18" cy="5" r="1.8"/><circle cx="9" cy="14" r="1.8"/><circle cx="19" cy="15" r="1.8"/><line x1="6.5" y1="7.2" x2="7.8" y2="12.3" stroke-width="1.1" stroke-opacity="0.6"/><line x1="17" y1="6.8" x2="18.3" y2="13.2" stroke-width="1.1" stroke-opacity="0.6"/><line x1="11" y1="14" x2="17" y2="15" stroke-width="1.1" stroke-opacity="0.6"/><line x1="6.8" y1="6" x2="16.2" y2="5.2" stroke-width="1.1" stroke-opacity="0.6"/><circle cx="12" cy="10" r="2.5" fill="rgba(13,148,136,0.2)" stroke="rgb(13,148,136)" stroke-width="1.5"/></svg>',
+  },
 ];
 
 const catColors: Record<string, string> = {
@@ -96,7 +113,11 @@ const catColors: Record<string, string> = {
   'Análisis esp.': 'bg-violet-100 text-violet-700',
   'Datos':         'bg-blue-100 text-blue-700',
   'Modelización':  'bg-orange-100 text-orange-700',
+  'Caso piloto':   'bg-cyan-100 text-cyan-700',
 };
+
+const pilotNotebooks = notebooksMeta.filter(nb => nb.category === 'Caso piloto');
+const generalNotebooks = notebooksMeta.filter(nb => nb.category !== 'Caso piloto');
 
 const notebookSessionHref = (slug: string) => {
   // slug uses '--' as path separator (e.g. "data_sources--rainfall--OGIMET_download")
@@ -176,7 +197,7 @@ const notebookSessionHref = (slug: string) => {
           </div>
           <h3 class="font-bold text-gray-900 mb-2 text-lg">{m.title}</h3>
           <p class="text-gray-600 text-sm leading-relaxed">{m.description}</p>
-          <span class="inline-flex mt-4 text-sm font-semibold text-hydra-700 group-hover:text-hydra-900">Ver modulo →</span>
+          <span class="inline-flex mt-4 text-sm font-semibold text-hydra-700 group-hover:text-hydra-900"><span data-i18n="modules.view">Ver módulo</span> →</span>
         </a>
       ))}
     </div>
@@ -227,7 +248,41 @@ const notebookSessionHref = (slug: string) => {
         </p>
       </div>
 
-      <!-- filter buttons -->
+      <!-- ── Caso Piloto — subsección destacada ── -->
+      <div class="mb-14 fade-in">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="flex items-center gap-3">
+            <span class="inline-flex items-center gap-2 rounded-full bg-cyan-100 border border-cyan-200 px-4 py-1.5 text-sm font-semibold text-cyan-700">
+              <span class="h-2 w-2 rounded-full bg-cyan-500"></span>
+              Caso Piloto
+            </span>
+            <a href={asset('/cases/los-corrales-buelna')} class="text-sm font-semibold text-hydra-600 hover:text-hydra-800 transition-colors">
+              Ver caso completo →
+            </a>
+          </div>
+          <div class="flex-1 h-px bg-gray-200"></div>
+          <span class="text-sm text-gray-400">{pilotNotebooks.length} notebooks · Besaya</span>
+        </div>
+        <div class="grid sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
+          {pilotNotebooks.map((nb, i) => (
+            <a
+              href={notebookSessionHref(nb.slug)}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="fade-in bg-white border border-cyan-100 rounded-xl p-4 hover:border-cyan-400 hover:shadow-md transition-all group text-center"
+              style={`transition-delay: ${i * 40}ms`}
+            >
+              <span class="text-2xl mb-2 block">{nb.icon}</span>
+              <h4 class="font-semibold text-gray-900 text-xs mb-2 group-hover:text-cyan-700 transition-colors leading-tight">
+                {nb.title}
+              </h4>
+              <span class="text-xs text-gray-400 group-hover:text-cyan-500 transition-colors">▶ <span data-i18n="notebooks.run">Ejecutar</span></span>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <!-- ── Notebooks generales con filtros ── -->
       <div class="flex flex-wrap justify-center gap-3 mb-10 fade-in" id="filter-btns">
         {[
           ['Todos', 'filter.all'],
@@ -247,7 +302,7 @@ const notebookSessionHref = (slug: string) => {
       </div>
 
       <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="notebooks-grid">
-        {notebooksMeta.map((nb, i) => (
+        {generalNotebooks.map((nb, i) => (
           <a
             href={notebookSessionHref(nb.slug)}
             target="_blank"
@@ -272,6 +327,84 @@ const notebookSessionHref = (slug: string) => {
     </div>
   </section>
 
+  <!-- ── CASOS PILOTO ── -->
+  <section id="casos-piloto" class="py-20 bg-gradient-to-br from-blue-950 via-blue-900 to-slate-900 text-white">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="mb-12 fade-in">
+        <span class="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 text-sm font-medium mb-4 backdrop-blur-sm">
+          <span class="h-2 w-2 rounded-full bg-cyan-300"></span>
+          <span data-i18n="cases.kicker">Aplicación real</span>
+        </span>
+        <h2 class="text-4xl font-bold mb-4" data-i18n="cases.title">Casos Piloto</h2>
+        <p class="text-blue-200 text-lg max-w-2xl">
+          <span data-i18n="cases.description">Estudios de caso completos donde se aplica el pipeline HYDRA de extremo a extremo: desde la adquisición de datos hasta los mapas de peligrosidad y riesgo.</span>
+        </p>
+      </div>
+
+      <div class="grid lg:grid-cols-2 gap-8">
+        {pilotCases.map((pc, i) => (
+          <a
+            href={asset(`/cases/${pc.slug}`)}
+            class="fade-in group rounded-2xl border border-white/12 bg-white/[0.06] hover:bg-white/[0.12] p-8 transition-all hover:-translate-y-1 hover:shadow-2xl"
+            style={`transition-delay: ${i * 80}ms`}
+          >
+            <!-- Header -->
+            <div class="flex items-start justify-between mb-6">
+              <div>
+                <div class="flex flex-wrap gap-2 mb-3">
+                  <span class="rounded-full bg-cyan-400/15 border border-cyan-400/30 px-3 py-1 text-xs font-semibold text-cyan-300" data-t-es="Caso Piloto" data-t-en="Pilot case">{pc.tag}</span>
+                  <span class="rounded-full bg-white/10 border border-white/15 px-3 py-1 text-xs text-slate-300">{pc.river}</span>
+                  <span class="rounded-full bg-white/10 border border-white/15 px-3 py-1 text-xs text-slate-300">{pc.region}</span>
+                </div>
+                <h3 class="text-2xl font-extrabold text-white group-hover:text-cyan-200 transition-colors">{pc.title}</h3>
+              </div>
+              <div class="ml-4 flex-shrink-0 w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
+                <svg class="w-6 h-6 text-cyan-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M3 21L7 14L11 12L13 12L17 14L21 21"/>
+                  <path d="M5 12Q12 10 19 12"/>
+                  <path d="M5 9Q12 7 19 9" stroke-dasharray="3 2" stroke-width="1.3"/>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Summary -->
+            <p
+              class="text-slate-300 leading-relaxed mb-6 line-clamp-3"
+              data-t-es={pc.subtitle.es}
+              data-t-en={pc.subtitle.en}
+            >{pc.subtitle.es}</p>
+
+            <!-- Stats chips -->
+            <div class="flex flex-wrap gap-3 mb-6">
+              {pc.stats.map((s) => (
+                <div class="rounded-lg bg-white/8 border border-white/10 px-3 py-2 text-center">
+                  <div class="text-base font-bold text-white">{s.value}</div>
+                  <div class="text-xs text-slate-400" data-t-es={s.label.es} data-t-en={s.label.en}>{s.label.es}</div>
+                </div>
+              ))}
+            </div>
+
+            <!-- Steps pills -->
+            <div class="flex flex-wrap gap-2 mb-6">
+              {pc.steps.map((step) => (
+                <span class="rounded-full bg-white/8 border border-white/10 px-2.5 py-1 text-xs text-slate-300">
+                  {step.number < 10 ? `0${step.number}` : step.number}
+                </span>
+              ))}
+              <span class="rounded-full bg-white/8 border border-white/10 px-2.5 py-1 text-xs text-slate-300">
+                {pc.steps.length} <span data-i18n="cases.notebooks_count">notebooks</span>
+              </span>
+            </div>
+
+            <span class="font-semibold text-cyan-300 group-hover:text-cyan-200 transition-colors">
+              <span data-i18n="cases.view">Ver caso completo</span> →
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
   <!-- ── INSTALACIÓN ── -->
   <section id="instalacion" class="py-24 max-w-7xl mx-auto px-6">
     <div class="text-center mb-16 fade-in">
@@ -284,8 +417,8 @@ const notebookSessionHref = (slug: string) => {
         <div class="flex items-center gap-3 mb-6">
           <span class="text-2xl">🐳</span>
           <div>
-            <h3 class="font-bold text-lg">Docker</h3>
-            <p class="text-gray-400 text-sm">Recomendado — sin configurar dependencias</p>
+            <h3 class="font-bold text-lg" data-i18n="install.docker.title">Docker</h3>
+            <p class="text-gray-400 text-sm" data-i18n="install.docker.subtitle">Recomendado — sin configurar dependencias</p>
           </div>
         </div>
         <div class="space-y-3 font-mono text-sm">
@@ -301,8 +434,8 @@ const notebookSessionHref = (slug: string) => {
           </div>
           <div class="bg-white/5 rounded-lg px-4 py-3 border border-white/10">
             <span class="text-gray-500 select-none"># </span>
-            <span class="text-cyan-400">Abrir → </span>
-            <span class="text-white">http://localhost:8888</span>
+            <span class="text-cyan-400" data-i18n="install.open">Abrir</span>
+            <span class="text-white"> → http://localhost:8888</span>
           </div>
         </div>
       </div>
@@ -311,8 +444,8 @@ const notebookSessionHref = (slug: string) => {
         <div class="flex items-center gap-3 mb-6">
           <span class="text-2xl">🐍</span>
           <div>
-            <h3 class="font-bold text-lg">Instalación manual</h3>
-            <p class="text-gray-400 text-sm">Python 3.9 o superior requerido</p>
+            <h3 class="font-bold text-lg" data-i18n="install.manual.title">Instalación manual</h3>
+            <p class="text-gray-400 text-sm" data-i18n="install.manual.subtitle">Python 3.9 o superior requerido</p>
           </div>
         </div>
         <div class="space-y-3 font-mono text-sm">

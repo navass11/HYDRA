@@ -36,7 +36,23 @@ class GPMDownloader:
 
     def __init__(self):
         import earthaccess
-        self.auth = earthaccess.login()
+        # Try silent login (netrc / env vars) first; fall back to interactive only in a terminal
+        try:
+            self.auth = earthaccess.login(strategy="netrc")
+        except Exception:
+            try:
+                self.auth = earthaccess.login(strategy="environment")
+            except Exception:
+                import sys
+                if sys.stdin.isatty():
+                    self.auth = earthaccess.login()
+                else:
+                    print(
+                        "[GPMDownloader] NASA Earthdata credentials not found.\n"
+                        "  Set EARTHDATA_USERNAME / EARTHDATA_PASSWORD env vars,\n"
+                        "  or add credentials to ~/.netrc (see https://urs.earthdata.nasa.gov/)."
+                    )
+                    self.auth = None
         self.points = None
         self.lat_bounds = None
         self.lon_bounds = None

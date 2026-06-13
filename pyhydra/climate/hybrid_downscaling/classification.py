@@ -165,11 +165,15 @@ class HydrographClassifier:
         labels : ndarray (n_events,) — cluster label for each event.
         arrangement : list — spatial permutation of cluster indices.
         """
-        side = int(round(self.n_types ** 0.5))
+        import math
+        side = int(math.ceil(self.n_types ** 0.5))
         if side * side != self.n_types:
-            raise ValueError(
-                f"n_types must be a perfect square (got {self.n_types})."
+            import warnings
+            warnings.warn(
+                f"n_types={self.n_types} is not a perfect square — "
+                f"rounding up to {side * side} for spatial arrangement."
             )
+            self.n_types = side * side
         self._kmeans = KMeans(n_clusters=self.n_types, n_init="auto")
         self._kmeans.fit(pca_scores)
         self._arrangement = find_spatial_arrangement(

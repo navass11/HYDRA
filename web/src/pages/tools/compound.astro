@@ -1,0 +1,391 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Eventos Compuestos — HYDRA">
+
+  <section class="pt-24 pb-10 bg-gradient-to-br from-slate-950 via-violet-950 to-indigo-900 text-white">
+    <div class="max-w-7xl mx-auto px-6">
+      <a href="/" class="inline-flex items-center gap-2 text-white/65 hover:text-white text-sm mb-6 transition-colors">
+        ← Volver al inicio
+      </a>
+      <h1 class="text-4xl font-extrabold mb-2">Eventos Compuestos</h1>
+      <p class="text-white/76 text-lg max-w-3xl">
+        Ajusta una cópula bivariante a dos variables hidro-climáticas y calcula períodos de retorno conjuntos (OR y AND).
+        Útil para analizar concurrencia de caudal y precipitación, oleaje y nivel del mar, u otras dependencias extremas.
+      </p>
+    </div>
+  </section>
+
+  <div class="max-w-7xl mx-auto px-6 py-10">
+    <div class="grid lg:grid-cols-[320px_1fr] gap-8">
+
+      <!-- ── PANEL DE CONTROL ── -->
+      <aside class="space-y-6">
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
+
+          <!-- Fuente de datos -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-800 mb-2">Fuente de datos</label>
+            <label class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 cursor-pointer mb-2 has-[:checked]:border-violet-500 has-[:checked]:bg-violet-50">
+              <input type="radio" name="datasource" value="demo" checked class="accent-violet-600" />
+              <span class="text-sm font-medium text-gray-700">Demo (Qmax vs Precipitación)</span>
+            </label>
+            <label class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 cursor-pointer has-[:checked]:border-violet-500 has-[:checked]:bg-violet-50">
+              <input type="radio" name="datasource" value="csv" class="accent-violet-600" />
+              <span class="text-sm font-medium text-gray-700">CSV propio</span>
+            </label>
+          </div>
+
+          <!-- CSV upload -->
+          <div id="csv-area" class="hidden space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 mb-1">CSV (dos columnas numéricas)</label>
+              <input id="csv-file" type="file" accept=".csv"
+                class="block w-full text-sm text-gray-500 file:rounded-lg file:border-0 file:bg-violet-50 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-violet-700 hover:file:bg-violet-100" />
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Variable 1</label>
+                <input id="var1" type="text" value="Qmax_m3s" placeholder="col X"
+                  class="w-full rounded-lg border border-gray-200 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Variable 2</label>
+                <input id="var2" type="text" value="Precip_mm" placeholder="col Y"
+                  class="w-full rounded-lg border border-gray-200 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Familia de cópula -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-800 mb-2">Familia de cópula</label>
+            <select id="copula-family"
+              class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400">
+              <option value="gaussian">Gaussiana</option>
+              <option value="gumbel">Gumbel (cola sup.)</option>
+              <option value="clayton">Clayton (cola inf.)</option>
+              <option value="frank">Frank (simétrica)</option>
+            </select>
+          </div>
+
+          <button id="fit-btn"
+            class="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold py-3 rounded-xl transition-colors">
+            Ajustar cópula
+          </button>
+          <div id="error-box" class="hidden bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700"></div>
+        </div>
+
+        <!-- Info -->
+        <div class="bg-violet-50 border border-violet-100 rounded-2xl p-5 text-sm text-violet-900 space-y-2">
+          <p class="font-semibold">Período de retorno conjunto</p>
+          <p>Las curvas de nivel muestran <strong>T<sub>OR</sub></strong>: el número de años esperado hasta un evento que supere X <em>o</em> Y. Usa <code>pyhydra.climate.spatial_analysis.copulas</code> para reproducir el análisis completo.</p>
+        </div>
+      </aside>
+
+      <!-- ── RESULTADOS ── -->
+      <main class="space-y-8">
+        <!-- Placeholder vacío -->
+        <div id="placeholder" class="rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-16 text-center text-gray-400">
+          <svg class="w-12 h-12 mx-auto mb-4 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <ellipse cx="12.5" cy="13" rx="7" ry="4" transform="rotate(-30 12.5 13)"/>
+            <ellipse cx="12.5" cy="13" rx="3.5" ry="2" transform="rotate(-30 12.5 13)"/>
+            <line x1="3" y1="21" x2="3" y2="4" stroke-width="1.2"/>
+            <line x1="3" y1="21" x2="22" y2="21" stroke-width="1.2"/>
+          </svg>
+          <p class="font-medium text-gray-500">Ajusta una cópula para ver las curvas de período de retorno conjunto</p>
+        </div>
+
+        <div id="loading-msg" class="hidden text-center py-16 text-gray-400">
+          <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-violet-300 border-t-violet-600 mb-4"></div>
+          <p class="font-medium">Ajustando cópula…</p>
+        </div>
+
+        <div id="results" class="hidden space-y-8">
+
+          <!-- Stats -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+              <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">N eventos</p>
+              <p id="stat-n" class="text-2xl font-bold text-gray-900">—</p>
+            </div>
+            <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+              <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Cópula</p>
+              <p id="stat-family" class="text-2xl font-bold text-gray-900">—</p>
+            </div>
+            <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+              <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">τ Kendall</p>
+              <p id="stat-tau" class="text-2xl font-bold text-gray-900">—</p>
+            </div>
+            <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+              <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">ρ Spearman</p>
+              <p id="stat-rho" class="text-2xl font-bold text-gray-900">—</p>
+            </div>
+          </div>
+
+          <!-- Diagrama de cópula (canvas) -->
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h3 class="font-semibold text-gray-800 mb-1">Diagrama de dispersión y curvas T<sub>OR</sub></h3>
+            <p id="copula-subtitle" class="text-sm text-gray-400 mb-5">—</p>
+            <div class="overflow-x-auto">
+              <canvas id="copula-canvas" width="660" height="520" class="max-w-full rounded-lg border border-gray-100"></canvas>
+            </div>
+            <div class="mt-4 flex flex-wrap gap-3 text-xs">
+              <span class="text-gray-500">Curvas de nivel (T<sub>OR</sub>):</span>
+              <span class="flex items-center gap-1"><span class="inline-block w-6 h-0.5 bg-sky-400"></span> T=2</span>
+              <span class="flex items-center gap-1"><span class="inline-block w-6 h-0.5 bg-green-500"></span> T=10</span>
+              <span class="flex items-center gap-1"><span class="inline-block w-6 h-0.5 bg-yellow-500"></span> T=50</span>
+              <span class="flex items-center gap-1"><span class="inline-block w-6 h-0.5 bg-orange-500"></span> T=100</span>
+              <span class="flex items-center gap-1"><span class="inline-block w-6 h-0.5 bg-red-600"></span> T=500</span>
+            </div>
+          </div>
+
+          <!-- Estadísticas marginales -->
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h3 class="font-semibold text-gray-800 mb-4">Estadísticas marginales</h3>
+            <table class="w-full text-sm border-collapse">
+              <thead>
+                <tr class="border-b border-gray-100">
+                  <th class="text-left py-2 px-3 text-xs text-gray-500 font-semibold uppercase">Variable</th>
+                  <th class="text-right py-2 px-3 text-xs text-gray-500 font-semibold uppercase">Media</th>
+                  <th class="text-right py-2 px-3 text-xs text-gray-500 font-semibold uppercase">Desv. típica</th>
+                  <th class="text-right py-2 px-3 text-xs text-gray-500 font-semibold uppercase">Mín.</th>
+                  <th class="text-right py-2 px-3 text-xs text-gray-500 font-semibold uppercase">Máx.</th>
+                </tr>
+              </thead>
+              <tbody id="marginals-tbody" class="divide-y divide-gray-50"></tbody>
+            </table>
+          </div>
+
+          <!-- T-OR de los puntos observados (top 20) -->
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h3 class="font-semibold text-gray-800 mb-1">Eventos observados — T<sub>OR</sub></h3>
+            <p class="text-sm text-gray-400 mb-4">Período de retorno conjunto OR estimado para cada evento observado (top 20 por T).</p>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm border-collapse">
+                <thead>
+                  <tr class="border-b border-gray-100">
+                    <th id="col-x" class="text-right py-2 px-3 text-xs text-gray-500 font-semibold uppercase">X</th>
+                    <th id="col-y" class="text-right py-2 px-3 text-xs text-gray-500 font-semibold uppercase">Y</th>
+                    <th class="text-right py-2 px-3 text-xs text-gray-500 font-semibold uppercase">u (F₁)</th>
+                    <th class="text-right py-2 px-3 text-xs text-gray-500 font-semibold uppercase">v (F₂)</th>
+                    <th class="text-right py-2 px-3 text-xs text-gray-500 font-semibold uppercase">T<sub>OR</sub> (años)</th>
+                  </tr>
+                </thead>
+                <tbody id="scatter-tbody" class="divide-y divide-gray-50"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div><!-- /results -->
+      </main>
+    </div>
+  </div>
+</Layout>
+
+<script>
+const dsRadios = document.querySelectorAll<HTMLInputElement>('input[name="datasource"]');
+const csvArea = document.getElementById('csv-area')!;
+const csvFileEl = document.getElementById('csv-file') as HTMLInputElement;
+const var1El = document.getElementById('var1') as HTMLInputElement;
+const var2El = document.getElementById('var2') as HTMLInputElement;
+const familyEl = document.getElementById('copula-family') as HTMLSelectElement;
+const fitBtn = document.getElementById('fit-btn')!;
+const errorBox = document.getElementById('error-box')!;
+const placeholder = document.getElementById('placeholder')!;
+const loadingMsg = document.getElementById('loading-msg')!;
+const resultsEl = document.getElementById('results')!;
+
+dsRadios.forEach(r => r.addEventListener('change', () => {
+  csvArea.classList.toggle('hidden', r.value === 'demo' && r.checked);
+}));
+
+function showError(msg: string) {
+  errorBox.textContent = msg;
+  errorBox.classList.remove('hidden');
+}
+function clearError() {
+  errorBox.textContent = '';
+  errorBox.classList.add('hidden');
+}
+
+const T_COLORS: Record<string, string> = {
+  '2': '#38bdf8',
+  '5': '#4ade80',
+  '10': '#22c55e',
+  '25': '#eab308',
+  '50': '#f59e0b',
+  '100': '#f97316',
+  '200': '#dc2626',
+  '500': '#7c3aed',
+};
+
+function drawCopula(scatter: any[], isocurves: Record<string, any[]>, var1: string, var2: string) {
+  const canvas = document.getElementById('copula-canvas') as HTMLCanvasElement;
+  const ctx = canvas.getContext('2d')!;
+  const W = canvas.width;
+  const H = canvas.height;
+  const PAD = { left: 62, right: 24, top: 24, bottom: 56 };
+  const plotW = W - PAD.left - PAD.right;
+  const plotH = H - PAD.top - PAD.bottom;
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#f8fafc';
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(PAD.left, PAD.top, plotW, plotH);
+
+  // Grid
+  ctx.strokeStyle = '#e2e8f0';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const x = PAD.left + (plotW / 4) * i;
+    const y = PAD.top + (plotH / 4) * i;
+    ctx.beginPath(); ctx.moveTo(x, PAD.top); ctx.lineTo(x, PAD.top + plotH); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(PAD.left + plotW, y); ctx.stroke();
+  }
+
+  // Axis labels
+  ctx.fillStyle = '#64748b';
+  ctx.font = '11px Inter, system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  [0, 0.25, 0.5, 0.75, 1].forEach(v => {
+    const x = PAD.left + v * plotW;
+    const y = PAD.top + (1 - v) * plotH;
+    ctx.fillText(v.toFixed(2), x, PAD.top + plotH + 18);
+    ctx.textAlign = 'right';
+    ctx.fillText(v.toFixed(2), PAD.left - 6, y + 4);
+    ctx.textAlign = 'center';
+  });
+  ctx.font = '12px Inter, system-ui, sans-serif';
+  ctx.fillStyle = '#334155';
+  ctx.fillText(`F₁(${var1})`, PAD.left + plotW / 2, H - 8);
+  ctx.save();
+  ctx.translate(16, PAD.top + plotH / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText(`F₂(${var2})`, 0, 0);
+  ctx.restore();
+
+  // Border
+  ctx.strokeStyle = '#94a3b8';
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(PAD.left, PAD.top, plotW, plotH);
+
+  const toCanvas = (u: number, v: number) => ({
+    cx: PAD.left + u * plotW,
+    cy: PAD.top + (1 - v) * plotH,
+  });
+
+  // Iso-curves
+  const T_SHOW = ['2', '10', '50', '100', '500'];
+  T_SHOW.forEach(T => {
+    const pts = isocurves[T];
+    if (!pts || pts.length === 0) return;
+    ctx.beginPath();
+    pts.forEach((p: any, i: number) => {
+      const { cx, cy } = toCanvas(p.u, p.v);
+      i === 0 ? ctx.moveTo(cx, cy) : ctx.lineTo(cx, cy);
+    });
+    ctx.strokeStyle = T_COLORS[T] ?? '#94a3b8';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Label
+    const mid = pts[Math.floor(pts.length * 0.85)];
+    if (mid) {
+      const { cx, cy } = toCanvas(mid.u, mid.v);
+      ctx.fillStyle = T_COLORS[T] ?? '#94a3b8';
+      ctx.font = 'bold 10px Inter, system-ui, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(`T=${T}`, cx + 4, cy - 4);
+    }
+  });
+
+  // Scatter points
+  scatter.forEach((pt: any) => {
+    const { cx, cy } = toCanvas(pt.u, pt.v);
+    ctx.beginPath();
+    ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(99, 102, 241, 0.45)';
+    ctx.strokeStyle = 'rgba(79, 70, 229, 0.8)';
+    ctx.lineWidth = 1;
+    ctx.fill();
+    ctx.stroke();
+  });
+}
+
+async function fitCopula() {
+  clearError();
+  const demo = (document.querySelector('input[name="datasource"]:checked') as HTMLInputElement)?.value === 'demo';
+  const family = familyEl.value;
+  const formData = new FormData();
+  formData.append('demo', demo ? 'true' : 'false');
+  formData.append('family', family);
+  if (!demo) {
+    const f = csvFileEl.files?.[0];
+    if (!f) { showError('Sube un archivo CSV.'); return; }
+    formData.append('file', f);
+    formData.append('var1', var1El.value.trim());
+    formData.append('var2', var2El.value.trim());
+  }
+
+  placeholder.classList.add('hidden');
+  resultsEl.classList.add('hidden');
+  loadingMsg.classList.remove('hidden');
+  fitBtn.setAttribute('disabled', '');
+
+  try {
+    const res = await fetch('/api/compound/fit', { method: 'POST', body: formData });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail ?? 'Error ajustando cópula');
+
+    const { summary, marginals, scatter, isocurves } = data;
+
+    document.getElementById('stat-n')!.textContent = String(summary.n);
+    document.getElementById('stat-family')!.textContent = family.charAt(0).toUpperCase() + family.slice(1);
+    document.getElementById('stat-tau')!.textContent = summary.kendall_tau.toFixed(3);
+    document.getElementById('stat-rho')!.textContent = summary.spearman_rho.toFixed(3);
+    document.getElementById('copula-subtitle')!.textContent =
+      `Cópula ${family} · θ = ${summary.theta.toFixed(3)} · ${summary.var1} vs ${summary.var2}`;
+
+    // Marginals table
+    const tbody = document.getElementById('marginals-tbody')!;
+    tbody.innerHTML = Object.entries(marginals).map(([name, stats]: any) =>
+      `<tr>
+        <td class="py-2 px-3 font-medium text-gray-700">${name}</td>
+        <td class="py-2 px-3 text-right text-gray-600">${stats.mean.toFixed(2)}</td>
+        <td class="py-2 px-3 text-right text-gray-600">${stats.std.toFixed(2)}</td>
+        <td class="py-2 px-3 text-right text-gray-600">${stats.min.toFixed(2)}</td>
+        <td class="py-2 px-3 text-right text-gray-600">${stats.max.toFixed(2)}</td>
+      </tr>`
+    ).join('');
+
+    // Scatter table (top 20 by T_or)
+    document.getElementById('col-x')!.textContent = summary.var1;
+    document.getElementById('col-y')!.textContent = summary.var2;
+    const sorted = [...scatter].sort((a: any, b: any) => b.T_or - a.T_or).slice(0, 20);
+    document.getElementById('scatter-tbody')!.innerHTML = sorted.map((pt: any) =>
+      `<tr>
+        <td class="py-1.5 px-3 text-right text-gray-700">${pt.x}</td>
+        <td class="py-1.5 px-3 text-right text-gray-700">${pt.y}</td>
+        <td class="py-1.5 px-3 text-right text-gray-500">${pt.u}</td>
+        <td class="py-1.5 px-3 text-right text-gray-500">${pt.v}</td>
+        <td class="py-1.5 px-3 text-right font-semibold ${pt.T_or >= 100 ? 'text-red-600' : pt.T_or >= 10 ? 'text-orange-600' : 'text-gray-700'}">${pt.T_or}</td>
+      </tr>`
+    ).join('');
+
+    drawCopula(scatter, isocurves, summary.var1, summary.var2);
+
+    resultsEl.classList.remove('hidden');
+  } catch (err: any) {
+    showError(err.message ?? 'Error desconocido');
+    placeholder.classList.remove('hidden');
+  } finally {
+    loadingMsg.classList.add('hidden');
+    fitBtn.removeAttribute('disabled');
+  }
+}
+
+fitBtn.addEventListener('click', fitCopula);
+</script>

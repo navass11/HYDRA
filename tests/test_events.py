@@ -49,8 +49,8 @@ class TestExtractDischargeEvents:
 
     def test_volume_consistent_with_mean_duration(self, discharge_series):
         stats, _ = extract_discharge_events(discharge_series, threshold=50)
-        # volume ≈ mean * duration (±1 step rounding)
-        expected = stats["mean"] * stats["duration"]
+        # volume is in m³ (Q [m³/s] × duration [days] × 86400 s/day); ±1 step rounding
+        expected = stats["mean"] * stats["duration"] * 86400
         assert np.allclose(stats["volume"], expected, rtol=0.05)
 
     def test_date_peak_in_index(self, discharge_series):

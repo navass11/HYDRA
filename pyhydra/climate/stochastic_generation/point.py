@@ -219,8 +219,7 @@ def _default_statistics():
 
 
 def _default_weights(statistics_name):
-    # NEOPRENE indexes weights by position (self.w[ii]), so must be a list not a dict.
-    return [1.0] * len(statistics_name)
+    return {stat: 1.0 for stat in statistics_name}
 
 
 def _default_model_bounds():
@@ -263,7 +262,8 @@ def _build_calibration_yaml(temporal_resolution, seasonality, process,
         "Seasonality_user": seasonality_user,  # always required by NEOPRENE HiperParams; null when not user_defined
         "process": process,
         "statistics_name": statistics_name,
-        "weights": weights,
+        # NEOPRENE indexes weights by position; convert dict → ordered list
+        "weights": [weights[s] for s in statistics_name] if isinstance(weights, dict) else weights,
         "number_iterations": n_iterations,
         "number_bees": n_bees,
         "number_initializations": n_initializations,

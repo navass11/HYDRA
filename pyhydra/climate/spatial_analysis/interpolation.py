@@ -521,6 +521,9 @@ class NeopreneGPReconstructor:
         if not self._nsrp_models:
             raise RuntimeError("Call fit() first.")
 
+        if not hasattr(np, 'in1d'):
+            np.in1d = np.isin  # NumPy 2.0 removed np.in1d; NEOPRENE still uses it
+
         for name, model in self._nsrp_models.items():
             result = model.simulate(year_ini=year_ini, year_fin=year_fin)
             daily = getattr(result, "Daily_Simulation", None)
@@ -582,6 +585,7 @@ class NeopreneGPReconstructor:
         base_kernel = RationalQuadratic()
         for i, (_, row) in enumerate(sim_df.iterrows()):
             y = row.values.astype(float)
+            y = np.where(np.isnan(y), 0.0, y)  # NEOPRENE can produce NaN → treat as dry
             gp = GaussianProcessRegressor(
                 kernel=base_kernel,
                 normalize_y=True,

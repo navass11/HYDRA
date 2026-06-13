@@ -46,7 +46,7 @@ def _esgf_request(payload):
     headers = {"Accept": "application/solr+json"}
     for node in ESGF_NODES:
         try:
-            r = requests.get(node, params=payload, headers=headers, timeout=30)
+            r = requests.get(node, params=payload, headers=headers, timeout=(5, 10))
             r.raise_for_status()
             return r.json()["response"]["docs"]
         except requests.RequestException:

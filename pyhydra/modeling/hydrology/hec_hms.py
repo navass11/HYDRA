@@ -11,7 +11,7 @@ Cross-platform support:
 
 Requires:
     - HEC-HMS 4.x installed (Windows or Linux binary).
-    - pydsstools: ``pip install pydsstools``
+    - hecdss: ``pip install hecdss``  (DSS read/write, numpy-version-agnostic)
     - xvfb (Linux only, for headless display): ``apt-get install xvfb``
     - spotpy (calibration only): ``pip install spotpy``
     - rasterio, rasterstats, geopandas (parameter extraction only).
@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import os
 import re
+import struct
 import subprocess
 import warnings
 from datetime import datetime
@@ -36,6 +37,45 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+
+
+# ---------------------------------------------------------------------------
+# Pure-Python DSS v6 initialiser — no pydsstools / Java required
+# ---------------------------------------------------------------------------
+
+def _init_dss6(path: str | Path) -> None:
+    """Create a valid, empty HEC-DSS version-6 file.
+
+    The binary layout is derived from a known-good empty DSS v6 file
+    (Calibracion1.dss, 51 pages × 512 bytes = 26 112 bytes).  Includes
+    block-size configuration fields that allow pathnames up to 127 chars.
+
+    Args:
+        path: Destination file path.  Any existing file is overwritten.
+    """
+    path = Path(path)
+    data = bytearray(26112)
+
+    # Non-zero bytes extracted from a valid empty DSS v6 file
+    _PATCH = [
+        (0, 0x5a), (1, 0x44), (2, 0x53), (3, 0x53),  # magic: ZDSS
+        (12, 0x06),                                     # DSS version 6
+        # Library version (pydsstools 3.x expects "6-YO")
+        (16, 0x36), (17, 0x2d), (18, 0x59), (19, 0x4f),  # "6-YO"
+        # Block-size configuration (controls max pathname length ~127)
+        (57, 0x08), (60, 0x01),
+        (64, 0x20), (68, 0x20), (72, 0x7f),
+        (76, 0xef), (77, 0x08), (80, 0xef), (81, 0x08),
+        (176, 0x64),
+        (180, 0xc8), (184, 0xc8), (188, 0xc8), (192, 0xc8), (196, 0xc8),
+        # Free-space sentinels
+        (508, 0x62), (509, 0xda), (510, 0xff), (511, 0xff),
+        (8708, 0x62), (8709, 0xda), (8710, 0xff), (8711, 0xff),
+        (25600, 0x62), (25601, 0xda), (25602, 0xff), (25603, 0xff),
+    ]
+    for off, b in _PATCH:
+        data[off] = b
+    path.write_bytes(data)
 
 warnings.filterwarnings("ignore")
 
@@ -145,6 +185,44 @@ def generate_gage(
     print(f"✓ {gage_path.name} written ({len(names_stations)} gages).")
 
 
+def _fmt_dss_time(s: str) -> str:
+    """Convert '1 January 2000, 00:00' → '01JAN2000 0000' (DSS date format)."""
+    _MON = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"]
+    dt = datetime.strptime(s.strip(), "%d %B %Y, %H:%M")
+    return f"{dt.day:02d}{_MON[dt.month-1]}{dt.year} {dt.hour:02d}{dt.minute:02d}"
+
+
+def _dss_epart(minutes: int) -> str:
+    """Return DSS E-part string for a given timestep in minutes (e.g. '1HOUR', '30MIN')."""
+    if minutes >= 60 and minutes % 60 == 0:
+        return f"{minutes // 60}HOUR"
+    return f"{minutes}MIN"
+
+
+def _hecdss_interval(epart: str) -> str:
+    """Convert a DSS E-part string to hecdss interval format ('1Hour', '30Min', etc.)."""
+    import re as _re
+    m = _re.fullmatch(r"(\d+)(HOUR|MIN|SEC|DAY|WEEK|MONTH|YEAR)", epart.upper())
+    if not m:
+        return epart
+    n, unit = m.group(1), m.group(2)
+    label = {"HOUR": "Hour", "MIN": "Min", "SEC": "Sec",
+             "DAY": "Day", "WEEK": "Week", "MONTH": "Month", "YEAR": "Year"}[unit]
+    return f"{n}{label}"
+
+
+def _epart_to_timedelta(epart: str):
+    """Return timedelta for a DSS E-part string (e.g. '1HOUR' → timedelta(hours=1))."""
+    import re as _re
+    from datetime import timedelta as _td
+    m = _re.fullmatch(r"(\d+)(HOUR|MIN|SEC|DAY)", epart.upper())
+    if not m:
+        return _td(hours=1)
+    n, unit = int(m.group(1)), m.group(2)
+    return {"HOUR": _td(hours=n), "MIN": _td(minutes=n), "SEC": _td(seconds=n),
+            "DAY": _td(days=n)}[unit]
+
+
 def fill_gage(
     names_stations: list[str],
     path_rain: str,
@@ -156,42 +234,96 @@ def fill_gage(
 ) -> None:
     """Write precipitation time series into the DSS file.
 
-    Requires pydsstools.
+    Uses hecdss (numpy-version-agnostic) to write the time series.
 
     Args:
         names_stations: Station names matching columns in the rainfall CSV.
         path_rain: Path to the CSV with a datetime index and one column per station.
-        time_interval: HEC-HMS time step string.
+        time_interval: HEC-HMS E-part interval string (e.g. '1HOUR', '30MIN').
         path_model: Directory containing the model and DSS file.
         file_dss: Name of the DSS file.
         start_time: Start datetime string (e.g. '1 January 2010, 00:00').
         end_time: End datetime string.
     """
-    from pydsstools.core import TimeSeriesContainer
-    from pydsstools.heclib.dss import HecDss
+    try:
+        from hecdss import HecDss, RegularTimeSeries
+    except ImportError as exc:
+        raise ImportError("fill_gage requires hecdss: pip install hecdss") from exc
 
     rain = pd.read_csv(path_rain, index_col=0, parse_dates=True)
     t0 = datetime.strptime(start_time, "%d %B %Y, %H:%M")
     t1 = datetime.strptime(end_time, "%d %B %Y, %H:%M")
-    dss_path = str(Path(path_model, file_dss))
+    dss_path_str = str(Path(path_model, file_dss))
+    dss_hec_start = _fmt_dss_time(start_time)
+    dss_d_part = dss_hec_start[:9]
+    hecdss_int = _hecdss_interval(time_interval)
+    dt_step = _epart_to_timedelta(time_interval)
 
     for station in names_stations:
-        pathname = f"//{station}/PRECIP-INC/{start_time}/{time_interval}/GAGE/"
-        tsc = TimeSeriesContainer()
-        tsc.pathname = pathname
-        tsc.startDateTime = start_time
         series = rain.loc[t0:t1, station].values
-        tsc.numberValues = len(series)
-        tsc.values = series
-        tsc.units = "MM"
-        tsc.type = "PER-CUM"
-        tsc.interval = 1
-        with HecDss.Open(dss_path, version=6) as fid:
-            fid.deletePathname(pathname)
-            fid.put_ts(tsc)
+        pathname = f"//{station}/PRECIP-INC/{dss_d_part}/{time_interval}/GAGE/"
+        times = [t0 + dt_step * i for i in range(len(series))]
+        rts = RegularTimeSeries.create(
+            values=list(series),
+            times=times,
+            units="MM",
+            data_type="PER-CUM",
+            interval=hecdss_int,
+            path=pathname,
+        )
+        with HecDss(dss_path_str) as f:
+            f.put(rts)
         print(f"  ✓ {station} written to DSS.")
 
     print("✓ DSS file updated with precipitation data.")
+
+
+def fill_gage_series(
+    name_station: str,
+    values,
+    start_time: str,
+    time_interval: int,
+    path_model: str,
+    file_dss: str,
+) -> None:
+    """Write a single precipitation series (numpy array or list) directly to DSS.
+
+    Uses hecdss (numpy-version-agnostic). Creates the DSS file if it does not exist.
+
+    Args:
+        name_station: Gage name used in the DSS pathname.
+        values: Precipitation values in mm (numpy array or list).
+        start_time: Start datetime string (e.g. '1 January 2000, 00:00').
+        time_interval: Time step in minutes (int, e.g. 60 for hourly).
+        path_model: Directory containing the DSS file.
+        file_dss: Name of the DSS file (e.g. 'Project_1.dss').
+    """
+    try:
+        from hecdss import HecDss, RegularTimeSeries
+    except ImportError as exc:
+        raise ImportError("fill_gage_series requires hecdss: pip install hecdss") from exc
+
+    from datetime import timedelta as _td
+
+    t0 = datetime.strptime(start_time, "%d %B %Y, %H:%M")
+    dss_hec_start = _fmt_dss_time(start_time)
+    dss_d_part = dss_hec_start[:9]
+    epart = _dss_epart(time_interval)
+    pathname = f"//{name_station}/PRECIP-INC/{dss_d_part}/{epart}/GAGE/"
+    times = [t0 + _td(minutes=i * time_interval) for i in range(len(values))]
+
+    rts = RegularTimeSeries.create(
+        values=list(values),
+        times=times,
+        units="MM",
+        data_type="PER-CUM",
+        interval=_hecdss_interval(epart),
+        path=pathname,
+    )
+    dss_str = str(Path(path_model) / file_dss)
+    with HecDss(dss_str) as f:
+        f.put(rts)
+    print(f"  ✓ {name_station} written to DSS.")
 
 
 def generate_met(
@@ -538,14 +670,15 @@ def generate_run(
 
     # Create empty .log
     Path(path_model, name_run + ".log").write_text("")
-    # Create empty DSS stub (pydsstools optional — plain touch fallback)
+    # Create a valid empty DSS output file for HEC-HMS to write results into.
+    # hecdss creates DSS v7; pure-Python _init_dss6 creates DSS v6 as fallback.
     dss_path = Path(path_model, name_run + ".dss")
     try:
-        from pydsstools.heclib.dss import HecDss
-        with HecDss.Open(str(dss_path), version=6):
+        from hecdss import HecDss as _HecDss
+        with _HecDss(str(dss_path)):
             pass
-    except (ImportError, ValueError, OSError):
-        dss_path.touch()
+    except (ImportError, OSError):
+        _init_dss6(dss_path)
 
     run_path = Path(path_model, name_model + ".run")
     existing = run_path.read_text().splitlines(keepends=True) if exists_run and run_path.exists() else []
@@ -803,13 +936,13 @@ def generate_flow(
 ) -> pd.DataFrame:
     """Extract a discharge time series from a DSS file and save it as CSV.
 
-    Requires pydsstools.
+    Uses hecdss (numpy-version-agnostic) to read the time series.
 
     Args:
         pathname: DSS pathname (e.g. '//JUNCTION/FLOW/…/RUN:Sim_hist/').
         path_dss: Directory containing the DSS file.
         dss_name: DSS filename.
-        start_date: Start date string.
+        start_date: Start date string (any pandas-parseable format).
         end_date: End date string.
         path_output: Output directory.
         name_file_output: Output CSV base name (without extension).
@@ -817,14 +950,17 @@ def generate_flow(
     Returns:
         DataFrame with a 'flow' column indexed by date.
     """
-    from pydsstools.heclib.dss import HecDss
+    from hecdss import HecDss
 
     dss_path = str(Path(path_dss, dss_name))
-    with HecDss.Open(dss_path) as fid:
-        ts = fid.read_ts(pathname, window=(start_date, end_date))
-    values = pd.DataFrame(ts.values)
-    rng = pd.date_range(start=start_date, end=end_date)
-    q = pd.DataFrame({"flow": values.iloc[:, 0].values}, index=rng)
+    with HecDss(dss_path) as f:
+        ts = f.get(pathname)
+    values = ts.get_values()
+    dates = ts.get_dates()
+    q = pd.DataFrame({"flow": values}, index=pd.DatetimeIndex(dates))
+    t0 = pd.Timestamp(start_date)
+    t1 = pd.Timestamp(end_date)
+    q = q.loc[(q.index >= t0) & (q.index <= t1)]
     os.makedirs(path_output, exist_ok=True)
     q.to_csv(str(Path(path_output, name_file_output + ".csv")))
     print(f"✓ Flow saved → {path_output}{name_file_output}.csv")
@@ -899,7 +1035,7 @@ class HMSModel:
         Returns:
             1-D numpy array of simulated discharge values.
         """
-        from pydsstools.heclib.dss import HecDss
+        from hecdss import HecDss
 
         self._write_params(params)
 
@@ -911,9 +1047,9 @@ class HMSModel:
         )
 
         dss_path = str(Path(self.path_model, self.name_run + ".dss"))
-        with HecDss.Open(dss_path) as fid:
-            ts = fid.read_ts(self.pathname)
-        return np.array(ts.values)
+        with HecDss(dss_path) as f:
+            ts = f.get(self.pathname)
+        return np.array(ts.get_values())
 
     def _write_params(self, params):
         """Override in subclasses to write calibration parameters to .basin."""

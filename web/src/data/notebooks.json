@@ -105,6 +105,13 @@
     "href": "http://localhost/jupyter/lab/tree/data_sources/rainfall/GPM_download.ipynb"
   },
   {
+    "slug": "data_sources--rainfall--Meteostat_download",
+    "title": "Meteostat",
+    "category": "Datos",
+    "icon": "🌤️",
+    "href": "http://localhost/jupyter/lab/tree/data_sources/rainfall/Meteostat_download.ipynb"
+  },
+  {
     "slug": "data_sources--rainfall--OGIMET_download",
     "title": "OGIMET SYNOP",
     "category": "Datos",
@@ -173,5 +180,61 @@
     "category": "Modelización",
     "icon": "🌿",
     "href": "http://localhost/jupyter/lab/tree/modeling/hydrology/SWAT.ipynb"
+  },
+  {
+    "slug": "pilot_cases--los_corrales_buelna--01_data_acquisition",
+    "title": "Besaya 01 · Datos",
+    "category": "Caso piloto",
+    "icon": "①",
+    "href": "http://localhost/jupyter/lab/tree/pilot_cases/los_corrales_buelna/01_data_acquisition.ipynb"
+  },
+  {
+    "slug": "pilot_cases--los_corrales_buelna--02_spatial_interpolation",
+    "title": "Besaya 02 · Interpolación",
+    "category": "Caso piloto",
+    "icon": "②",
+    "href": "http://localhost/jupyter/lab/tree/pilot_cases/los_corrales_buelna/02_spatial_interpolation.ipynb"
+  },
+  {
+    "slug": "pilot_cases--los_corrales_buelna--03_extreme_value_analysis",
+    "title": "Besaya 03 · Extremos",
+    "category": "Caso piloto",
+    "icon": "③",
+    "href": "http://localhost/jupyter/lab/tree/pilot_cases/los_corrales_buelna/03_extreme_value_analysis.ipynb"
+  },
+  {
+    "slug": "pilot_cases--los_corrales_buelna--04_design_storm_hms",
+    "title": "Besaya 04 · HEC-HMS diseño",
+    "category": "Caso piloto",
+    "icon": "④",
+    "href": "http://localhost/jupyter/lab/tree/pilot_cases/los_corrales_buelna/04_design_storm_hms.ipynb"
+  },
+  {
+    "slug": "pilot_cases--los_corrales_buelna--05_continuous_simulation",
+    "title": "Besaya 05 · Simulación continua",
+    "category": "Caso piloto",
+    "icon": "⑤",
+    "href": "http://localhost/jupyter/lab/tree/pilot_cases/los_corrales_buelna/05_continuous_simulation.ipynb"
+  },
+  {
+    "slug": "pilot_cases--los_corrales_buelna--06_hybrid_event_reconstruction",
+    "title": "Besaya 06 · Cópulas",
+    "category": "Caso piloto",
+    "icon": "⑥",
+    "href": "http://localhost/jupyter/lab/tree/pilot_cases/los_corrales_buelna/06_hybrid_event_reconstruction.ipynb"
+  },
+  {
+    "slug": "pilot_cases--los_corrales_buelna--07_hec_ras_hydraulics",
+    "title": "Besaya 07 · Hidráulica 2D",
+    "category": "Caso piloto",
+    "icon": "⑦",
+    "href": "http://localhost/jupyter/lab/tree/pilot_cases/los_corrales_buelna/07_hec_ras_hydraulics.ipynb"
+  },
+  {
+    "slug": "pilot_cases--los_corrales_buelna--08_hybrid_return_periods",
+    "title": "Besaya 08 · Riesgo",
+    "category": "Caso piloto",
+    "icon": "⑧",
+    "href": "http://localhost/jupyter/lab/tree/pilot_cases/los_corrales_buelna/08_hybrid_return_periods.ipynb"
   }
 ]

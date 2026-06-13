@@ -35,6 +35,7 @@ CATEGORIES = {
     "data_sources/rainfall/AEMET_download":       ("Datos",         "🌦️"),
     "data_sources/rainfall/ERA5_download":        ("Datos",         "🌍"),
     "data_sources/rainfall/GPM_download":         ("Datos",         "🛰️"),
+    "data_sources/rainfall/Meteostat_download":   ("Datos",         "🌤️"),
     "data_sources/rainfall/OGIMET_download":      ("Datos",         "📡"),
     "data_sources/rainfall/PERSSIAN_download":    ("Datos",         "🌂"),
     "data_sources/river_discharge/GloFAS_download":("Datos",        "🏞️"),
@@ -48,6 +49,14 @@ CATEGORIES = {
     "modeling/hydraulic/HEC_RAS":                 ("Modelización",  "🌊"),
     "modeling/hydraulic/SFINCS":                  ("Modelización",  "🌀"),
     "climate/spatial_analysis/compound_flooding":                        ("Análisis esp.", "🌊"),
+    "pilot_cases/los_corrales_buelna/01_data_acquisition":               ("Caso piloto", "①"),
+    "pilot_cases/los_corrales_buelna/02_spatial_interpolation":          ("Caso piloto", "②"),
+    "pilot_cases/los_corrales_buelna/03_extreme_value_analysis":         ("Caso piloto", "③"),
+    "pilot_cases/los_corrales_buelna/04_design_storm_hms":               ("Caso piloto", "④"),
+    "pilot_cases/los_corrales_buelna/05_continuous_simulation":          ("Caso piloto", "⑤"),
+    "pilot_cases/los_corrales_buelna/06_hybrid_event_reconstruction":    ("Caso piloto", "⑥"),
+    "pilot_cases/los_corrales_buelna/07_hec_ras_hydraulics":             ("Caso piloto", "⑦"),
+    "pilot_cases/los_corrales_buelna/08_hybrid_return_periods":          ("Caso piloto", "⑧"),
 }
 
 TITLES = {
@@ -63,6 +72,7 @@ TITLES = {
     "data_sources/rainfall/AEMET_download":       "AEMET",
     "data_sources/rainfall/ERA5_download":        "ERA5",
     "data_sources/rainfall/GPM_download":         "GPM / IMERG",
+    "data_sources/rainfall/Meteostat_download":   "Meteostat",
     "data_sources/rainfall/OGIMET_download":      "OGIMET SYNOP",
     "data_sources/rainfall/PERSSIAN_download":    "PERSIANN",
     "data_sources/river_discharge/GloFAS_download":"GloFAS",
@@ -76,6 +86,14 @@ TITLES = {
     "modeling/hydraulic/HEC_RAS":                 "HEC-RAS",
     "modeling/hydraulic/SFINCS":                  "SFINCS",
     "climate/spatial_analysis/compound_flooding":                        "Compound Flooding",
+    "pilot_cases/los_corrales_buelna/01_data_acquisition":               "Besaya 01 · Datos",
+    "pilot_cases/los_corrales_buelna/02_spatial_interpolation":          "Besaya 02 · Interpolación",
+    "pilot_cases/los_corrales_buelna/03_extreme_value_analysis":         "Besaya 03 · Extremos",
+    "pilot_cases/los_corrales_buelna/04_design_storm_hms":               "Besaya 04 · HEC-HMS diseño",
+    "pilot_cases/los_corrales_buelna/05_continuous_simulation":          "Besaya 05 · Simulación continua",
+    "pilot_cases/los_corrales_buelna/06_hybrid_event_reconstruction":    "Besaya 06 · Cópulas",
+    "pilot_cases/los_corrales_buelna/07_hec_ras_hydraulics":             "Besaya 07 · Hidráulica 2D",
+    "pilot_cases/los_corrales_buelna/08_hybrid_return_periods":          "Besaya 08 · Riesgo",
 }
 
 GITHUB_RAW = "https://nbviewer.org/github/navass11/HYDRA/blob/main/notebooks"

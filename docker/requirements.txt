@@ -1,6 +1,8 @@
 # Core scientific stack
 numpy
 pandas
+xlrd
+openpyxl
 xarray
 dask[array]
 scipy
@@ -12,11 +14,18 @@ requests
 beautifulsoup4
 lxml
 
+# Data sources
+meteostat
+cdsapi
+seaborn
+
 # Hydrological / statistical
 openturns
 lmoments3
 NEOPRENE
 pymc
+pyvinecopulib
+pykrige
 
 # Jupyter + interactive widgets
 jupyterlab
@@ -34,7 +43,7 @@ earthaccess
 
 # Hydraulic / hydrological modelling
 hydromt_sfincs>=1.0.0
-pydsstools>=3.0.0
+hecdss
 pySWATPlus
 spotpy
 rasterstats

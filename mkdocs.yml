@@ -1,0 +1,78 @@
+site_name: HYDRA
+site_description: Librería modular de Python para análisis hidrológico y climático
+site_url: https://navass11.github.io/HYDRA
+repo_url: https://github.com/navass11/HYDRA
+repo_name: navass11/HYDRA
+
+theme:
+  name: material
+  language: es
+  palette:
+    - scheme: default
+      primary: teal
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Cambiar a modo oscuro
+    - scheme: slate
+      primary: teal
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Cambiar a modo claro
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.highlight
+    - content.code.copy
+
+plugins:
+  - search
+  - mkdocs-jupyter:
+      execute: false
+      include_source: true
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Inicio: index.md
+  - Instalación: instalacion.md
+  - Notebooks:
+    - Clima:
+      - Corrección de sesgo: notebooks/climate/bias_correction.ipynb
+      - Extracción de eventos: notebooks/climate/event_extraction.ipynb
+      - Análisis de extremos: notebooks/climate/extreme_value_analysis.ipynb
+      - Generación estocástica: notebooks/climate/stochastic_generation.ipynb
+      - Campos espaciales: notebooks/climate/spatial_field_generation.ipynb
+      - Análisis espacial:
+        - Frecuencia regional: notebooks/climate/spatial_analysis/regional_frequency_analysis.ipynb
+        - Cópulas: notebooks/climate/spatial_analysis/copulas.ipynb
+        - Interpolación: notebooks/climate/spatial_analysis/interpolation.ipynb
+        - Bayes jerárquico: notebooks/climate/spatial_analysis/bayes_hierarchical.ipynb
+    - Fuentes de datos:
+      - Precipitación:
+        - AEMET: notebooks/data_sources/rainfall/AEMET_download.ipynb
+        - ERA5: notebooks/data_sources/rainfall/ERA5_download.ipynb
+        - GPM: notebooks/data_sources/rainfall/GPM_download.ipynb
+        - OGIMET: notebooks/data_sources/rainfall/OGIMET_download.ipynb
+        - PERSIANN: notebooks/data_sources/rainfall/PERSSIAN_download.ipynb
+      - Caudal:
+        - GRDC: notebooks/data_sources/river_discharge/GRDC_download.ipynb
+        - GloFAS: notebooks/data_sources/river_discharge/GloFAS_download.ipynb
+        - USGS: notebooks/data_sources/river_discharge/USGS_download.ipynb
+      - Cambio climático:
+        - CDS (Copernicus): notebooks/data_sources/climate_change/CDS_download.ipynb
+        - ESGF: notebooks/data_sources/climate_change/ESGF_download.ipynb
+      - Suelos:
+        - SoilGrids: notebooks/data_sources/soils/SoilGrids_download.ipynb

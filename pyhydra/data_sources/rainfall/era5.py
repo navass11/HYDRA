@@ -104,16 +104,23 @@ def download_era5(
 
             c.retrieve(dataset, request_dict, zip_path)
 
-            with zipfile.ZipFile(zip_path, "r") as zf:
-                zf.extractall(temp_folder)
-            os.remove(zip_path)
+            if zipfile.is_zipfile(zip_path):
+                with zipfile.ZipFile(zip_path, "r") as zf:
+                    zf.extractall(temp_folder)
+                os.remove(zip_path)
 
-            nc_files = glob.glob(os.path.join(temp_folder, "*.nc"))
-            datasets = [xr.open_dataset(f) for f in nc_files]
-            combined_ds = xr.merge(datasets)
-            combined_ds.to_netcdf(combined_path)
-            for ds in datasets:
-                ds.close()
+                nc_files = glob.glob(os.path.join(temp_folder, "*.nc"))
+                datasets = [xr.open_dataset(f) for f in nc_files]
+                try:
+                    combined_ds = xr.merge(datasets)
+                    combined_ds.to_netcdf(combined_path)
+                finally:
+                    for ds in datasets:
+                        ds.close()
+            else:
+                # The current CDS API may return a single NetCDF file directly
+                # even when the request format is "netcdf".
+                shutil.move(zip_path, combined_path)
 
             shutil.rmtree(temp_folder, ignore_errors=True)
             print(f"Saved: {combined_path} (elapsed: {datetime.datetime.now() - start})")

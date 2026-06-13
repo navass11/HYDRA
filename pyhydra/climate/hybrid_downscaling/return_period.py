@@ -68,35 +68,20 @@ def save_return_period_geotiffs(calados, template_tif, output_dir):
     Returns:
         list of Path objects for the written files.
     """
-    try:
-        from osgeo import gdal
-        from osgeo.gdalnumeric import CopyDatasetInfo, BandWriteArray
-    except ImportError as exc:
-        raise ImportError(
-            "save_return_period_geotiffs requires GDAL. "
-            "Install it with: conda install gdal"
-        ) from exc
+    import rasterio
 
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    ref = gdal.Open(str(template_tif), gdal.GA_ReadOnly)
-    driver = gdal.GetDriverByName("GTiff")
-    written = []
+    with rasterio.open(str(template_tif)) as src:
+        profile = src.profile.copy()
+    profile.update(dtype="float32", count=1, nodata=0)
 
+    written = []
     for T, data in calados.items():
         out_path = output_dir / f"Calado_T{T}.tif"
-        ds = driver.Create(
-            str(out_path),
-            ref.RasterXSize, ref.RasterYSize,
-            1, ref.GetRasterBand(1).DataType,
-        )
-        CopyDatasetInfo(ref, ds)
-        band = ds.GetRasterBand(1)
-        band.Fill(0)
-        band.SetNoDataValue(0)
-        BandWriteArray(band, data)
-        ds.FlushCache()
+        with rasterio.open(str(out_path), "w", **profile) as dst:
+            dst.write(data.astype("float32"), 1)
         written.append(out_path)
 
     return written

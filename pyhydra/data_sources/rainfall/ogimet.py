@@ -232,7 +232,7 @@ def OGIMETDownloader(
     """
     Interactive Jupyter widget for selecting and downloading OGIMET station series.
 
-    Requires: ipyleaflet, ipywidgets, ipyfilechooser, beautifulsoup4 (Jupyter environment).
+    Requires: ipyleaflet, ipywidgets, beautifulsoup4 (Jupyter environment).
 
     Args:
         stations_csv: Path to CSV with OGIMET station metadata. If omitted, HYDRA
@@ -245,9 +245,8 @@ def OGIMETDownloader(
     """
     from tqdm.auto import tqdm as _tqdm
     from IPython.display import display
-    from ipyfilechooser import FileChooser
     from ipyleaflet import DrawControl, LayersControl, Map, Marker, MarkerCluster, Popup
-    from ipywidgets import Button, DatePicker, HBox, HTML, IntProgress, Output, VBox
+    from ipywidgets import Button, DatePicker, HBox, HTML, IntProgress, Output, Text, VBox
 
     stations_csv = stations_csv or get_default_ogimet_stations_csv()
     output_folder = Path(output_folder or DEFAULT_OGIMET_OUTPUT_DIR)
@@ -266,7 +265,12 @@ def OGIMETDownloader(
 
     start_picker = DatePicker(description="Start Date", value=pd.Timestamp("2020-01-01"))
     end_picker = DatePicker(description="End Date", value=pd.Timestamp("2020-12-31"))
-    folder_chooser = FileChooser(str(output_folder), title="Select output folder", select_dirs=True)
+    folder_input = Text(
+        value=str(output_folder),
+        description="Save to:",
+        layout={"width": "480px"},
+        style={"description_width": "60px"},
+    )
     cancel_button = Button(description="Cancel Download", button_style="danger")
     cancel_button.on_click(lambda _: cancel_flag.update({"parar": True}))
 
@@ -285,7 +289,7 @@ def OGIMETDownloader(
             btn = Button(description="Download", button_style="info", layout={"width": "auto"})
 
             def download_single(_, row=row):
-                folder = str(Path(folder_chooser.selected or str(output_folder)))
+                folder = folder_input.value.strip() or str(output_folder)
                 base = normalize_filename(row["Nombre"])
                 parts = str(row["WIGOS ID"]).split("-")
                 code = parts[-1].strip() if len(parts) >= 4 and parts[-1].strip().isdigit() else None
@@ -366,7 +370,7 @@ def OGIMETDownloader(
         if not selected:
             selection_label.value = "<i>Draw a rectangle on the map to select stations first.</i>"
             return
-        folder = str(Path(folder_chooser.selected or str(output_folder)))
+        folder = folder_input.value.strip() or str(output_folder)
         cancel_flag["parar"] = False
         selected_df = stations_df[stations_df["Nombre"].isin(selected)]
 
@@ -422,7 +426,7 @@ def OGIMETDownloader(
         download_thread.start()
 
     download_area_btn.on_click(start_download)
-    display(VBox([m, HBox([start_picker, end_picker]), folder_chooser,
+    display(VBox([m, HBox([start_picker, end_picker]), folder_input,
                   HBox([download_area_btn, selection_label]), output]))
 
 

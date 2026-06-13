@@ -22,7 +22,7 @@ const functions = items.filter((i) => i.kind === 'function');
   <!-- Header -->
   <section class={`pt-24 pb-14 bg-gradient-to-br ${module.color} text-white`}>
     <div class="max-w-7xl mx-auto px-6">
-      <a href={`/modules/${module.slug}`} class="inline-flex items-center gap-2 text-white/65 hover:text-white text-sm mb-6 transition-colors">
+      <a href={`/modules/${module.slug}`} class="inline-flex items-center gap-2 text-white/65 hover:text-white text-sm mb-6 transition-colors" data-i18n="back.module">
         ← Volver al módulo
       </a>
       <span class="inline-flex rounded-full bg-white/12 border border-white/20 px-3 py-1 text-sm text-white/78 mb-5">{module.tag}</span>
@@ -35,11 +35,11 @@ const functions = items.filter((i) => i.kind === 'function');
   <div class="border-b border-gray-200 bg-white sticky top-0 z-10">
     <div class="max-w-7xl mx-auto px-6 flex gap-1">
       <a href={`/modules/${module.slug}`}
-         class="px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-900 border-b-2 border-transparent hover:border-gray-300 transition-colors">
+         class="px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-900 border-b-2 border-transparent hover:border-gray-300 transition-colors" data-i18n="module.tab.overview">
         Descripción general
       </a>
       <a href={`/modules/${module.slug}/reference`}
-         class="px-4 py-3 text-sm font-medium text-gray-900 border-b-2 border-hydra-600 transition-colors">
+         class="px-4 py-3 text-sm font-medium text-gray-900 border-b-2 border-hydra-600 transition-colors" data-i18n="module.tab.api">
         API Reference
       </a>
     </div>
@@ -258,17 +258,3 @@ const functions = items.filter((i) => i.kind === 'function');
     )}
   </main>
 </Layout>
-
-<script>
-  const applyApiLang = (lang: string) => {
-    document.querySelectorAll<HTMLElement>('[data-t-es]').forEach((el) => {
-      el.textContent = lang === 'en' ? (el.dataset.tEn ?? '') : (el.dataset.tEs ?? '');
-    });
-  };
-
-  applyApiLang(document.documentElement.lang || 'es');
-
-  new MutationObserver(() => {
-    applyApiLang(document.documentElement.lang || 'es');
-  }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
-</script>

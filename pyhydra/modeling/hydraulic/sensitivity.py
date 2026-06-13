@@ -33,6 +33,54 @@ import pandas as pd
 
 # ── Monte Carlo generation ────────────────────────────────────────────────────
 
+def generate_manning_combinations_correlated(
+    manning_dist_csv: str,
+    n_samples: int = 1000,
+    rho: float = 0.0,
+    seed: int | None = None,
+) -> pd.DataFrame:
+    """Gaussian-copula correlated Manning n sampler.
+
+    Fits the same marginal distributions as :func:`generate_manning_combinations`
+    and samples from a Gaussian copula with an equi-correlation matrix using
+    :class:`pyhydra.climate.spatial_analysis.copulas.GaussianCopulaSampler`.
+    ``rho=0`` recovers independent sampling; ``rho=1`` places all classes at
+    the same quantile simultaneously.
+
+    Args:
+        manning_dist_csv: Same CSV as :func:`generate_manning_combinations`.
+        n_samples: Number of combined samples to return.
+        rho: Pearson correlation between all class pairs in the Gaussian copula.
+             Must be in [0, 1].
+        seed: Random seed for reproducibility.
+
+    Returns:
+        DataFrame of shape (n_samples, n_land_use_types), same format as
+        :func:`generate_manning_combinations`.
+    """
+    from scipy import stats
+    from pyhydra.climate.spatial_analysis.copulas import GaussianCopulaSampler
+
+    df = pd.read_csv(manning_dist_csv, index_col=0)
+
+    class_names: list[str] = []
+    frozen_dists: list = []
+
+    for _, row in df.iterrows():
+        if str(row["N"]) == "-999":
+            continue
+        values = np.array([float(v) for v in str(row["N"]).split(",")])
+        dist_name, params = _best_distribution(values)
+        dist_cls = getattr(stats, dist_name)
+        frozen_dists.append(
+            dist_cls(*params[:-2], loc=params[-2], scale=params[-1])
+        )
+        class_names.append(row["Descripción"])
+
+    sampler = GaussianCopulaSampler(frozen_dists, class_names)
+    return sampler.sample(n_samples, rho=rho, seed=seed)
+
+
 def generate_manning_combinations(
     manning_dist_csv: str,
     n_samples: int = 1000,

@@ -16,6 +16,7 @@ router = APIRouter()
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 NOTEBOOK_TEMPLATES_DIR = Path(os.environ.get("HYDRA_NOTEBOOK_TEMPLATES", REPO_ROOT / "notebooks"))
+JUPYTER_SESSIONS_PATH = os.environ.get("HYDRA_JUPYTER_SESSIONS_PATH", "data/jupyter_sessions").strip("/")
 COOKIE_NAME = "hydra_jupyter_session"
 SESSION_RE = re.compile(r"^[a-zA-Z0-9_-]{12,80}$")
 
@@ -25,12 +26,17 @@ SESSION_RE = re.compile(r"^[a-zA-Z0-9_-]{12,80}$")
 JUPYTER_INTERNAL_URL = os.environ.get("JUPYTER_INTERNAL_URL", "http://127.0.0.1:8888").rstrip("/")
 
 _SKIP_NAMES = {".ipynb_checkpoints", "__pycache__", "build", "dist"}
-# Strips accidental session-prefixed paths like "<32-hex>/notebooks/path.ipynb"
-_SESSION_PREFIX_RE = re.compile(r"^[0-9a-f]{32}/notebooks/")
+# Strips accidental session-prefixed paths such as:
+#   data/jupyter_sessions/<id>/notebooks/path.ipynb
+#   <id>/notebooks/path.ipynb   (legacy)
+_SESSION_PREFIX_RE = re.compile(
+    r"^(?:data/jupyter_sessions/)?[0-9a-f]{32}/notebooks/"
+)
 
 
 def _safe_relative_notebook(path: str) -> Path:
     path = _SESSION_PREFIX_RE.sub("", path)
+    path = path.removeprefix("notebooks/")
     relative = Path(path)
     if relative.is_absolute() or ".." in relative.parts or not str(relative).endswith(".ipynb"):
         raise HTTPException(status_code=400, detail="Invalid notebook path")
@@ -60,7 +66,20 @@ def _contents_url(path: str) -> str:
     return f"{JUPYTER_INTERNAL_URL}/jupyter/api/contents/{path}"
 
 
+def _session_root(session_id: str) -> str:
+    if not JUPYTER_SESSIONS_PATH:
+        return session_id
+    return f"{JUPYTER_SESSIONS_PATH}/{session_id}"
+
+
 async def _jupyter_mkdir(client: httpx.AsyncClient, path: str) -> None:
+    if not path:
+        return
+
+    existing = await client.get(_contents_url(path))
+    if existing.status_code == 200:
+        return
+
     resp = await client.put(_contents_url(path), json={"type": "directory"})
     if resp.status_code not in (200, 201):
         raise HTTPException(
@@ -96,7 +115,7 @@ async def _jupyter_upload_file(client: httpx.AsyncClient, dest_path: str, src: P
 
 
 async def _session_exists(client: httpx.AsyncClient, session_id: str) -> bool:
-    resp = await client.get(_contents_url(f"{session_id}/ready.txt"))
+    resp = await client.get(_contents_url(f"{_session_root(session_id)}/ready.txt"))
     return resp.status_code == 200
 
 
@@ -109,11 +128,13 @@ async def _prepare_session(client: httpx.AsyncClient, session_id: str) -> None:
     if await _session_exists(client, session_id):
         return
 
-    notebooks_base = f"{session_id}/notebooks"
+    session_root = _session_root(session_id)
+    notebooks_base = f"{session_root}/notebooks"
 
-    await _jupyter_mkdir(client, session_id)
+    await _jupyter_mkdir(client, JUPYTER_SESSIONS_PATH)
+    await _jupyter_mkdir(client, session_root)
     await _jupyter_mkdir(client, notebooks_base)
-    await _jupyter_mkdir(client, f"{session_id}/data")
+    await _jupyter_mkdir(client, f"{session_root}/data")
 
     created_dirs: set[str] = {notebooks_base}
 
@@ -141,7 +162,7 @@ async def _prepare_session(client: httpx.AsyncClient, session_id: str) -> None:
             await _jupyter_upload_file(client, dest, src)
 
     resp = await client.put(
-        _contents_url(f"{session_id}/ready.txt"),
+        _contents_url(f"{session_root}/ready.txt"),
         json={"type": "file", "format": "base64", "content": ""},
     )
     if resp.status_code not in (200, 201):
@@ -154,11 +175,13 @@ async def _bootstrap_session(client: httpx.AsyncClient, session_id: str, relativ
     notebook so the redirect target exists immediately.  The full tree is
     copied by _fill_session_background after the response is returned.
     """
-    notebooks_base = f"{session_id}/notebooks"
+    session_root = _session_root(session_id)
+    notebooks_base = f"{session_root}/notebooks"
 
-    await _jupyter_mkdir(client, session_id)
+    await _jupyter_mkdir(client, JUPYTER_SESSIONS_PATH)
+    await _jupyter_mkdir(client, session_root)
     await _jupyter_mkdir(client, notebooks_base)
-    await _jupyter_mkdir(client, f"{session_id}/data")
+    await _jupyter_mkdir(client, f"{session_root}/data")
 
     # Create subdirectory chain for the requested notebook.
     parts = relative.parts[:-1]
@@ -204,7 +227,7 @@ async def open_notebook_session(
             await _bootstrap_session(client, session_id, relative)
             background_tasks.add_task(_fill_session_background, session_id)
 
-    target = f"/jupyter/lab/tree/{session_id}/notebooks/{relative.as_posix()}"
+    target = f"/jupyter/lab/tree/{_session_root(session_id)}/notebooks/{relative.as_posix()}"
     response = RedirectResponse(url=target, status_code=303)
     response.set_cookie(
         COOKIE_NAME,

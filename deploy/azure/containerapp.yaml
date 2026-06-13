@@ -6,7 +6,8 @@
 #   <AZURE_FILES_STORAGE_NAME>
 #
 # The Azure Files share must be registered in the Container Apps environment
-# with the storage name used below.
+# with the storage names used below. Use a read-only storage for shared data
+# and a separate read-write storage for user Jupyter sessions.
 type: Microsoft.App/containerApps
 apiVersion: "2024-03-01"
 name: hydra-web
@@ -50,9 +51,13 @@ properties:
             value: /app
           - name: JUPYTER_INTERNAL_URL
             value: http://127.0.0.1:8888
+          - name: HYDRA_JUPYTER_SESSIONS_PATH
+            value: ""
         volumeMounts:
           - volumeName: hydra-data
             mountPath: /workspace/data
+          - volumeName: hydra-sessions
+            mountPath: /workspace/sessions
         resources:
           cpu: 0.5
           memory: 1Gi
@@ -66,9 +71,15 @@ properties:
             value: /jupyter/
           - name: JUPYTER_TOKEN
             value: ""
+          - name: JUPYTER_WORKDIR
+            value: /workspace/sessions
+          - name: HYDRA_JUPYTER_SESSIONS_PATH
+            value: ""
         volumeMounts:
           - volumeName: hydra-data
             mountPath: /workspace/data
+          - volumeName: hydra-sessions
+            mountPath: /workspace/sessions
         resources:
           cpu: 1.0
           memory: 2Gi
@@ -76,4 +87,7 @@ properties:
     volumes:
       - name: hydra-data
         storageType: AzureFile
-        storageName: <AZURE_FILES_STORAGE_NAME>
+        storageName: <AZURE_FILES_DATA_READONLY_STORAGE_NAME>
+      - name: hydra-sessions
+        storageType: AzureFile
+        storageName: <AZURE_FILES_SESSIONS_READWRITE_STORAGE_NAME>
