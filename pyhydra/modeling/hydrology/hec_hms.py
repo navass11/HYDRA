@@ -853,6 +853,7 @@ def read_dss6_timeseries(
     pathname_prefix: str,
     n_months: int = 6,
     units: str = "CFS",
+    latest: bool = True,
 ) -> pd.DataFrame:
     """Read a regular-interval time series from a HEC-DSS 6 binary file.
 
@@ -876,6 +877,10 @@ def read_dss6_timeseries(
     units:
         Expected unit string in the block header (default ``"CFS"``).
         Returned series values keep these units.
+    latest:
+        If ``True`` (default), read the latest matching monthly blocks. HEC-HMS
+        appends repeated computations to DSS files, so calibration workflows
+        normally need the last blocks rather than the first historical blocks.
 
     Returns
     -------
@@ -929,7 +934,7 @@ def read_dss6_timeseries(
         pos += 1
 
     positions.sort()
-    positions = positions[:n_months]
+    positions = positions[-n_months:] if latest else positions[:n_months]
 
     def _read_block(bs: int) -> tuple[np.ndarray, list]:
         """Return (flow_values, datetime_list) for one monthly block."""
