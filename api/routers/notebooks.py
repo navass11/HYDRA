@@ -101,6 +101,53 @@ async def _jupyter_upload_notebook(client: httpx.AsyncClient, dest_path: str, sr
         )
 
 
+async def _jupyter_get_notebook(client: httpx.AsyncClient, dest_path: str) -> dict | None:
+    resp = await client.get(_contents_url(dest_path))
+    if resp.status_code == 404:
+        return None
+    if resp.status_code != 200:
+        raise HTTPException(
+            status_code=502,
+            detail=f"Jupyter read failed for '{dest_path}': {resp.status_code} {resp.text[:200]}",
+        )
+    payload = resp.json()
+    content = payload.get("content")
+    return content if isinstance(content, dict) else None
+
+
+def _notebook_source_text(nb: dict) -> str:
+    chunks: list[str] = []
+    for cell in nb.get("cells", []):
+        source = cell.get("source", "")
+        chunks.append("".join(source) if isinstance(source, list) else str(source))
+    return "\n".join(chunks)
+
+
+async def _refresh_requested_notebook_if_stale(
+    client: httpx.AsyncClient,
+    session_id: str,
+    relative: Path,
+) -> None:
+    """Refresh known stale session notebooks without wiping user sessions."""
+    dest = f"{_session_root(session_id)}/notebooks/{relative.as_posix()}"
+    current = await _jupyter_get_notebook(client, dest)
+    if current is None:
+        await _bootstrap_session(client, session_id, relative)
+        return
+
+    # Migration for the HMS notebook fixed after sessions already existed:
+    # old copies write into /workspace/data/hms/Tifton, now read-only in Azure.
+    if relative.as_posix() == "modeling/hydrology/HEC_HMS.ipynb":
+        current_text = _notebook_source_text(current)
+        template = json.loads((NOTEBOOK_TEMPLATES_DIR / relative).read_bytes())
+        template_text = _notebook_source_text(template)
+        if (
+            "PATH_MODEL    = '/workspace/data/hms/Tifton/'" in current_text
+            and "SOURCE_MODEL = Path('/workspace/data/hms/Tifton')" in template_text
+        ):
+            await _jupyter_upload_notebook(client, dest, NOTEBOOK_TEMPLATES_DIR / relative)
+
+
 async def _jupyter_upload_file(client: httpx.AsyncClient, dest_path: str, src: Path) -> None:
     encoded = base64.b64encode(src.read_bytes()).decode()
     resp = await client.put(
@@ -220,7 +267,7 @@ async def open_notebook_session(
     async with httpx.AsyncClient(timeout=30.0) as client:
         if await _session_exists(client, session_id):
             # Session already fully populated — redirect immediately.
-            pass
+            await _refresh_requested_notebook_if_stale(client, session_id, relative)
         else:
             # Upload just the requested notebook so the redirect target exists,
             # then finish copying the rest after the response is sent.

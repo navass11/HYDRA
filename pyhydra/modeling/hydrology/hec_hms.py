@@ -28,7 +28,9 @@ Workflow overview:
 from __future__ import annotations
 
 import os
+import inspect
 import re
+import shutil
 import struct
 import subprocess
 import warnings
@@ -78,6 +80,43 @@ def _init_dss6(path: str | Path) -> None:
     path.write_bytes(data)
 
 warnings.filterwarnings("ignore")
+
+
+def _ensure_writable_hms_model(path_model: str | Path) -> str:
+    """Return a writable HMS project directory for generated files.
+
+    Azure/Jupyter mounts shared datasets below /workspace/data as read-only.
+    Older notebooks may still pass those shared paths to generate_* helpers.
+    In that case, mirror the project into the user's runtime directory and
+    update the caller notebook's PATH_MODEL global so subsequent cells follow.
+    """
+    original = Path(path_model)
+    try:
+        resolved = original.resolve()
+    except OSError:
+        resolved = original
+
+    workspace_data = Path("/workspace/data")
+    try:
+        rel = resolved.relative_to(workspace_data)
+    except ValueError:
+        return str(original)
+
+    runtime_root = Path(os.environ.get("HYDRA_RUNTIME_DIR", Path.cwd() / ".hydra_runtime"))
+    target = runtime_root / rel
+
+    if not target.exists():
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(resolved, target)
+
+    writable = str(target) + os.sep
+
+    frame = inspect.currentframe()
+    caller = frame.f_back.f_back if frame and frame.f_back and frame.f_back.f_back else None
+    if caller is not None and caller.f_globals.get("PATH_MODEL") == str(path_model):
+        caller.f_globals["PATH_MODEL"] = writable
+
+    return writable
 
 # ── Read helpers ──────────────────────────────────────────────────────────────
 
@@ -141,6 +180,8 @@ def generate_gage(
         file_dss: Name of the DSS file storing precipitation data.
         exists_gage: If True, append to the existing .gage file.
     """
+    path_model = _ensure_writable_hms_model(path_model)
+
     def _gage_block(station: str) -> list[str]:
         return [
             f"Gage: {station}\n",
@@ -245,6 +286,8 @@ def fill_gage(
         start_time: Start datetime string (e.g. '1 January 2010, 00:00').
         end_time: End datetime string.
     """
+    path_model = _ensure_writable_hms_model(path_model)
+
     try:
         from hecdss import HecDss, RegularTimeSeries
     except ImportError as exc:
@@ -298,6 +341,8 @@ def fill_gage_series(
         path_model: Directory containing the DSS file.
         file_dss: Name of the DSS file (e.g. 'Project_1.dss').
     """
+    path_model = _ensure_writable_hms_model(path_model)
+
     try:
         from hecdss import HecDss, RegularTimeSeries
     except ImportError as exc:
@@ -348,6 +393,8 @@ def generate_met(
                   and 'Factor_1'…'Factor_12' (crop coefficient). Required when
                   evapotranspiration=True.
     """
+    path_model = _ensure_writable_hms_model(path_model)
+
     lines: list[str] = [
         f"Meteorology: {name_met.replace('_', ' ')}\n",
         "     Last Modified Date: 13 November 2020\n",
@@ -428,6 +475,8 @@ def generate_met_freq_storm(
         basin_area_km2: Drainage area in km² (used for depth-area reduction;
             0 disables reduction but HEC-HMS still requires the field).
     """
+    path_model = _ensure_writable_hms_model(path_model)
+
     import math
 
     # Convert basin area km² → sq miles (HEC-HMS Storm Size field unit)
@@ -548,6 +597,8 @@ def generate_hms(
         names_basin: Basin names.
         names_control: Control names.
     """
+    path_model = _ensure_writable_hms_model(path_model)
+
     lines: list[str] = [
         f"Project: {name_model}\n",
         f"     Description: {name_model}\n",
@@ -604,6 +655,8 @@ def generate_control(
         end_time: End date string.
         time_interval: Simulation time step in minutes (e.g. '60' for hourly).
     """
+    path_model = _ensure_writable_hms_model(path_model)
+
     # Strip any trailing time portion (e.g. ', 00:00') — HEC-HMS date field is date-only
     def _date_only(s: str) -> str:
         return s.split(",")[0].strip()
@@ -653,6 +706,8 @@ def generate_run(
         name_control: Control name.
         exists_run: If True, append to the existing .run file.
     """
+    path_model = _ensure_writable_hms_model(path_model)
+
     run_block = [
         f"Run: {name_run.replace('_', ' ')}\n",
         "     Default Description: Yes\n",
@@ -694,6 +749,8 @@ def generate_py(path_model: str, name_model: str, names_run: list[str]) -> None:
         name_model: Project name.
         names_run: List of run names to execute.
     """
+    path_model = _ensure_writable_hms_model(path_model)
+
     scripts_dir = Path(path_model, "scripts")
     scripts_dir.mkdir(exist_ok=True)
     hms_path = str(Path(path_model, name_model + ".hms"))
@@ -756,6 +813,7 @@ def run_hms_script(
         raises on failure.
     """
     import platform
+    path_model = _ensure_writable_hms_model(path_model)
     generate_py(path_model, name_model, names_run)
     script_path = str(Path(path_model, "scripts", "compute_current.py"))
 
