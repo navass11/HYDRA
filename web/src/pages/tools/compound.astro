@@ -1,8 +1,10 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
 ---
 
 <Layout title="Eventos Compuestos — HYDRA">
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js" is:inline></script>
 
   <section class="pt-24 pb-10 bg-gradient-to-br from-slate-950 via-violet-950 to-indigo-900 text-white">
     <div class="max-w-7xl mx-auto px-6">
@@ -11,25 +13,23 @@ import Layout from '../../layouts/Layout.astro';
       </a>
       <h1 class="text-4xl font-extrabold mb-2">Eventos Compuestos</h1>
       <p class="text-white/76 text-lg max-w-3xl">
-        Ajusta una cópula bivariante a dos variables hidro-climáticas y calcula períodos de retorno conjuntos (OR y AND).
-        Útil para analizar concurrencia de caudal y precipitación, oleaje y nivel del mar, u otras dependencias extremas.
+        Ajusta una cópula bivariante, calcula períodos de retorno conjuntos AND y OR, y localiza el Evento de Diseño de Máxima Probabilidad (MPDE) sobre cada isoline.
       </p>
     </div>
   </section>
 
-  <div class="max-w-7xl mx-auto px-6 py-10">
+  <div class="max-w-7xl mx-auto px-6 py-10" id="app" data-api-url={apiUrl}>
     <div class="grid lg:grid-cols-[320px_1fr] gap-8">
 
       <!-- ── PANEL DE CONTROL ── -->
       <aside class="space-y-6">
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
 
-          <!-- Fuente de datos -->
           <div>
             <label class="block text-sm font-semibold text-gray-800 mb-2">Fuente de datos</label>
             <label class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 cursor-pointer mb-2 has-[:checked]:border-violet-500 has-[:checked]:bg-violet-50">
               <input type="radio" name="datasource" value="demo" checked class="accent-violet-600" />
-              <span class="text-sm font-medium text-gray-700">Demo (Qmax vs Precipitación)</span>
+              <span class="text-sm font-medium text-gray-700">Demo (Qmax vs Nivel del mar, n=120)</span>
             </label>
             <label class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 cursor-pointer has-[:checked]:border-violet-500 has-[:checked]:bg-violet-50">
               <input type="radio" name="datasource" value="csv" class="accent-violet-600" />
@@ -37,69 +37,75 @@ import Layout from '../../layouts/Layout.astro';
             </label>
           </div>
 
-          <!-- CSV upload -->
           <div id="csv-area" class="hidden space-y-3">
             <div>
-              <label class="block text-xs font-semibold text-gray-700 mb-1">CSV (dos columnas numéricas)</label>
+              <label class="block text-xs font-semibold text-gray-700 mb-1">CSV (al menos dos columnas numéricas)</label>
               <input id="csv-file" type="file" accept=".csv"
                 class="block w-full text-sm text-gray-500 file:rounded-lg file:border-0 file:bg-violet-50 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-violet-700 hover:file:bg-violet-100" />
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Variable 1</label>
-                <input id="var1" type="text" value="Qmax_m3s" placeholder="col X"
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Variable X</label>
+                <input id="var1" type="text" value="Qmax_m3s"
                   class="w-full rounded-lg border border-gray-200 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
               </div>
               <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Variable 2</label>
-                <input id="var2" type="text" value="Precip_mm" placeholder="col Y"
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Variable Y</label>
+                <input id="var2" type="text" value="SL_m"
                   class="w-full rounded-lg border border-gray-200 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
               </div>
             </div>
           </div>
 
-          <!-- Familia de cópula -->
           <div>
             <label class="block text-sm font-semibold text-gray-800 mb-2">Familia de cópula</label>
             <select id="copula-family"
-              class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400">
-              <option value="gaussian">Gaussiana</option>
-              <option value="gumbel">Gumbel (cola sup.)</option>
-              <option value="clayton">Clayton (cola inf.)</option>
+              class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white">
+              <option value="gumbel">Gumbel (cola superior)</option>
+              <option value="clayton">Clayton (cola inferior)</option>
               <option value="frank">Frank (simétrica)</option>
             </select>
           </div>
 
+          <div>
+            <label class="block text-sm font-semibold text-gray-800 mb-2">Períodos de retorno</label>
+            <input id="t-list" value="2,10,50,100,500"
+              class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+            <p class="text-xs text-gray-400 mt-1">Separados por comas, en años.</p>
+          </div>
+
           <button id="fit-btn"
-            class="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold py-3 rounded-xl transition-colors">
-            Ajustar cópula
+            class="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2">
+            <span id="fit-label">Ajustar cópula</span>
+            <svg id="fit-arrow" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+            </svg>
+            <svg id="fit-spinner" class="hidden w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 0 0 12h4z"/>
+            </svg>
           </button>
           <div id="error-box" class="hidden bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700"></div>
         </div>
 
-        <!-- Info -->
         <div class="bg-violet-50 border border-violet-100 rounded-2xl p-5 text-sm text-violet-900 space-y-2">
-          <p class="font-semibold">Período de retorno conjunto</p>
-          <p>Las curvas de nivel muestran <strong>T<sub>OR</sub></strong>: el número de años esperado hasta un evento que supere X <em>o</em> Y. Usa <code>pyhydra.climate.spatial_analysis.copulas</code> para reproducir el análisis completo.</p>
+          <p class="font-semibold">Interpretación</p>
+          <p><strong>OR</strong> (azul): evento extremo si X <em>o</em> Y superan el umbral.</p>
+          <p><strong>AND</strong> (rojo): evento extremo si X <em>y</em> Y superan el umbral simultáneamente.</p>
+          <p><strong>MaxProb ×</strong>: Evento de Diseño de Máxima Probabilidad (MPDE) — el punto de mayor densidad conjunta sobre cada isoline.</p>
         </div>
       </aside>
 
       <!-- ── RESULTADOS ── -->
       <main class="space-y-8">
-        <!-- Placeholder vacío -->
+
         <div id="placeholder" class="rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-16 text-center text-gray-400">
-          <svg class="w-12 h-12 mx-auto mb-4 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <svg class="w-14 h-14 mx-auto mb-4 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">
             <ellipse cx="12.5" cy="13" rx="7" ry="4" transform="rotate(-30 12.5 13)"/>
             <ellipse cx="12.5" cy="13" rx="3.5" ry="2" transform="rotate(-30 12.5 13)"/>
-            <line x1="3" y1="21" x2="3" y2="4" stroke-width="1.2"/>
-            <line x1="3" y1="21" x2="22" y2="21" stroke-width="1.2"/>
+            <line x1="3" y1="21" x2="3" y2="4" stroke-width="1.2"/><line x1="3" y1="21" x2="22" y2="21" stroke-width="1.2"/>
           </svg>
-          <p class="font-medium text-gray-500">Ajusta una cópula para ver las curvas de período de retorno conjunto</p>
-        </div>
-
-        <div id="loading-msg" class="hidden text-center py-16 text-gray-400">
-          <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-violet-300 border-t-violet-600 mb-4"></div>
-          <p class="font-medium">Ajustando cópula…</p>
+          <p class="font-medium text-gray-500">Configura los parámetros y haz clic en "Ajustar cópula"</p>
         </div>
 
         <div id="results" class="hidden space-y-8">
@@ -111,8 +117,8 @@ import Layout from '../../layouts/Layout.astro';
               <p id="stat-n" class="text-2xl font-bold text-gray-900">—</p>
             </div>
             <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
-              <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Cópula</p>
-              <p id="stat-family" class="text-2xl font-bold text-gray-900">—</p>
+              <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Cópula · marginal</p>
+              <p id="stat-family" class="text-xl font-bold text-gray-900">—</p>
             </div>
             <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
               <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">τ Kendall</p>
@@ -124,266 +130,303 @@ import Layout from '../../layouts/Layout.astro';
             </div>
           </div>
 
-          <!-- Diagrama de cópula (canvas) -->
+          <!-- ── DIAGRAMA CONJUNTO ── -->
           <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-            <h3 class="font-semibold text-gray-800 mb-1">Diagrama de dispersión y curvas T<sub>OR</sub></h3>
-            <p id="copula-subtitle" class="text-sm text-gray-400 mb-5">—</p>
-            <div class="overflow-x-auto">
-              <canvas id="copula-canvas" width="660" height="520" class="max-w-full rounded-lg border border-gray-100"></canvas>
-            </div>
-            <div class="mt-4 flex flex-wrap gap-3 text-xs">
-              <span class="text-gray-500">Curvas de nivel (T<sub>OR</sub>):</span>
-              <span class="flex items-center gap-1"><span class="inline-block w-6 h-0.5 bg-sky-400"></span> T=2</span>
-              <span class="flex items-center gap-1"><span class="inline-block w-6 h-0.5 bg-green-500"></span> T=10</span>
-              <span class="flex items-center gap-1"><span class="inline-block w-6 h-0.5 bg-yellow-500"></span> T=50</span>
-              <span class="flex items-center gap-1"><span class="inline-block w-6 h-0.5 bg-orange-500"></span> T=100</span>
-              <span class="flex items-center gap-1"><span class="inline-block w-6 h-0.5 bg-red-600"></span> T=500</span>
-            </div>
+            <h3 class="font-semibold text-gray-800 mb-1">Diagrama de período de retorno conjunto</h3>
+            <p class="text-sm text-gray-400 mb-4">
+              Isolíneas AND (rojo) y OR (azul) con puntos de máxima probabilidad (×). PDFs marginales paramétricas en los bordes.
+            </p>
+            <div id="chart-joint" class="h-[600px]"></div>
           </div>
 
-          <!-- Estadísticas marginales -->
+          <!-- Cuantiles marginales por período de retorno -->
           <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-            <h3 class="font-semibold text-gray-800 mb-4">Estadísticas marginales</h3>
-            <table class="w-full text-sm border-collapse">
-              <thead>
-                <tr class="border-b border-gray-100">
-                  <th class="text-left py-2 px-3 text-xs text-gray-500 font-semibold uppercase">Variable</th>
-                  <th class="text-right py-2 px-3 text-xs text-gray-500 font-semibold uppercase">Media</th>
-                  <th class="text-right py-2 px-3 text-xs text-gray-500 font-semibold uppercase">Desv. típica</th>
-                  <th class="text-right py-2 px-3 text-xs text-gray-500 font-semibold uppercase">Mín.</th>
-                  <th class="text-right py-2 px-3 text-xs text-gray-500 font-semibold uppercase">Máx.</th>
-                </tr>
-              </thead>
-              <tbody id="marginals-tbody" class="divide-y divide-gray-50"></tbody>
-            </table>
-          </div>
-
-          <!-- T-OR de los puntos observados (top 20) -->
-          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-            <h3 class="font-semibold text-gray-800 mb-1">Eventos observados — T<sub>OR</sub></h3>
-            <p class="text-sm text-gray-400 mb-4">Período de retorno conjunto OR estimado para cada evento observado (top 20 por T).</p>
+            <h3 class="font-semibold text-gray-800 mb-1">Cuantiles marginales univariantes</h3>
+            <p class="text-sm text-gray-400 mb-4">Valores de diseño para cada variable individualmente (distribución marginal ajustada).</p>
             <div class="overflow-x-auto">
               <table class="w-full text-sm border-collapse">
-                <thead>
-                  <tr class="border-b border-gray-100">
-                    <th id="col-x" class="text-right py-2 px-3 text-xs text-gray-500 font-semibold uppercase">X</th>
-                    <th id="col-y" class="text-right py-2 px-3 text-xs text-gray-500 font-semibold uppercase">Y</th>
-                    <th class="text-right py-2 px-3 text-xs text-gray-500 font-semibold uppercase">u (F₁)</th>
-                    <th class="text-right py-2 px-3 text-xs text-gray-500 font-semibold uppercase">v (F₂)</th>
-                    <th class="text-right py-2 px-3 text-xs text-gray-500 font-semibold uppercase">T<sub>OR</sub> (años)</th>
+                <thead class="text-xs text-gray-500 uppercase tracking-wide border-b border-gray-100">
+                  <tr>
+                    <th class="py-2 px-3 text-left">T (años)</th>
+                    <th id="col-x-quant" class="py-2 px-3 text-right">X</th>
+                    <th id="col-y-quant" class="py-2 px-3 text-right">Y</th>
                   </tr>
                 </thead>
-                <tbody id="scatter-tbody" class="divide-y divide-gray-50"></tbody>
+                <tbody id="quantiles-tbody" class="divide-y divide-gray-50"></tbody>
               </table>
             </div>
           </div>
 
-        </div><!-- /results -->
+          <!-- T_OR y T_AND para los eventos observados -->
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h3 class="font-semibold text-gray-800 mb-1">Eventos observados — períodos de retorno conjuntos</h3>
+            <p class="text-sm text-gray-400 mb-4">Los 25 eventos más severos por T<sub>OR</sub>.</p>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm border-collapse">
+                <thead class="text-xs text-gray-500 uppercase tracking-wide border-b border-gray-100">
+                  <tr>
+                    <th id="col-x" class="py-2 px-3 text-right">X</th>
+                    <th id="col-y" class="py-2 px-3 text-right">Y</th>
+                    <th class="py-2 px-3 text-right">u = F(X)</th>
+                    <th class="py-2 px-3 text-right">v = F(Y)</th>
+                    <th class="py-2 px-3 text-right">T<sub>OR</sub> (a)</th>
+                    <th class="py-2 px-3 text-right">T<sub>AND</sub> (a)</th>
+                  </tr>
+                </thead>
+                <tbody id="obs-tbody" class="divide-y divide-gray-50"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
       </main>
     </div>
   </div>
 </Layout>
 
 <script>
+declare const Plotly: any;
+
+const appEl   = document.getElementById('app')!;
+const apiUrl  = appEl.dataset.apiUrl!;
 const dsRadios = document.querySelectorAll<HTMLInputElement>('input[name="datasource"]');
-const csvArea = document.getElementById('csv-area')!;
+const csvArea  = document.getElementById('csv-area')!;
 const csvFileEl = document.getElementById('csv-file') as HTMLInputElement;
-const var1El = document.getElementById('var1') as HTMLInputElement;
-const var2El = document.getElementById('var2') as HTMLInputElement;
+const var1El   = document.getElementById('var1') as HTMLInputElement;
+const var2El   = document.getElementById('var2') as HTMLInputElement;
 const familyEl = document.getElementById('copula-family') as HTMLSelectElement;
-const fitBtn = document.getElementById('fit-btn')!;
+const tListEl  = document.getElementById('t-list') as HTMLInputElement;
+const fitBtn   = document.getElementById('fit-btn')!;
+const fitLabel = document.getElementById('fit-label')!;
+const fitArrow = document.getElementById('fit-arrow')!;
+const fitSpinner = document.getElementById('fit-spinner')!;
 const errorBox = document.getElementById('error-box')!;
 const placeholder = document.getElementById('placeholder')!;
-const loadingMsg = document.getElementById('loading-msg')!;
-const resultsEl = document.getElementById('results')!;
+const resultsEl   = document.getElementById('results')!;
 
 dsRadios.forEach(r => r.addEventListener('change', () => {
   csvArea.classList.toggle('hidden', r.value === 'demo' && r.checked);
 }));
 
-function showError(msg: string) {
-  errorBox.textContent = msg;
-  errorBox.classList.remove('hidden');
+function showError(msg: string) { errorBox.textContent = msg; errorBox.classList.remove('hidden'); }
+function clearError() { errorBox.textContent = ''; errorBox.classList.add('hidden'); }
+function setRunning(v: boolean) {
+  (fitBtn as HTMLButtonElement).disabled = v;
+  fitLabel.textContent = v ? 'Ajustando…' : 'Ajustar cópula';
+  fitArrow.classList.toggle('hidden', v);
+  fitSpinner.classList.toggle('hidden', !v);
 }
-function clearError() {
-  errorBox.textContent = '';
-  errorBox.classList.add('hidden');
-}
 
-const T_COLORS: Record<string, string> = {
-  '2': '#38bdf8',
-  '5': '#4ade80',
-  '10': '#22c55e',
-  '25': '#eab308',
-  '50': '#f59e0b',
-  '100': '#f97316',
-  '200': '#dc2626',
-  '500': '#7c3aed',
-};
+// ── Joint plot rendering (same as copulas.astro) ─────────────────────────────
+const T_COLORS_OR  = ['#1d4ed8','#2563eb','#3b82f6','#60a5fa','#93c5fd'];
+const T_COLORS_AND = ['#991b1b','#dc2626','#ef4444','#f87171','#fca5a5'];
+const OLIVE = '#78716c';
 
-function drawCopula(scatter: any[], isocurves: Record<string, any[]>, var1: string, var2: string) {
-  const canvas = document.getElementById('copula-canvas') as HTMLCanvasElement;
-  const ctx = canvas.getContext('2d')!;
-  const W = canvas.width;
-  const H = canvas.height;
-  const PAD = { left: 62, right: 24, top: 24, bottom: 56 };
-  const plotW = W - PAD.left - PAD.right;
-  const plotH = H - PAD.top - PAD.bottom;
+function renderJointPlot(d: any) {
+  const T_vals: number[] = Object.keys(d.isolines_or).map(Number).sort((a,b)=>a-b);
+  const traces: any[] = [];
+  const ext = d.extent;
 
-  ctx.clearRect(0, 0, W, H);
-  ctx.fillStyle = '#f8fafc';
-  ctx.fillRect(0, 0, W, H);
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(PAD.left, PAD.top, plotW, plotH);
-
-  // Grid
-  ctx.strokeStyle = '#e2e8f0';
-  ctx.lineWidth = 1;
-  for (let i = 0; i <= 4; i++) {
-    const x = PAD.left + (plotW / 4) * i;
-    const y = PAD.top + (plotH / 4) * i;
-    ctx.beginPath(); ctx.moveTo(x, PAD.top); ctx.lineTo(x, PAD.top + plotH); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(PAD.left + plotW, y); ctx.stroke();
-  }
-
-  // Axis labels
-  ctx.fillStyle = '#64748b';
-  ctx.font = '11px Inter, system-ui, sans-serif';
-  ctx.textAlign = 'center';
-  [0, 0.25, 0.5, 0.75, 1].forEach(v => {
-    const x = PAD.left + v * plotW;
-    const y = PAD.top + (1 - v) * plotH;
-    ctx.fillText(v.toFixed(2), x, PAD.top + plotH + 18);
-    ctx.textAlign = 'right';
-    ctx.fillText(v.toFixed(2), PAD.left - 6, y + 4);
-    ctx.textAlign = 'center';
+  traces.push({
+    x: d.synthetic.x, y: d.synthetic.y,
+    mode: 'markers', type: 'scatter', name: 'Simulados',
+    marker: { color: '#94a3b8', size: 3, opacity: 0.35 },
+    xaxis: 'x', yaxis: 'y', showlegend: true,
   });
-  ctx.font = '12px Inter, system-ui, sans-serif';
-  ctx.fillStyle = '#334155';
-  ctx.fillText(`F₁(${var1})`, PAD.left + plotW / 2, H - 8);
-  ctx.save();
-  ctx.translate(16, PAD.top + plotH / 2);
-  ctx.rotate(-Math.PI / 2);
-  ctx.fillText(`F₂(${var2})`, 0, 0);
-  ctx.restore();
-
-  // Border
-  ctx.strokeStyle = '#94a3b8';
-  ctx.lineWidth = 1.5;
-  ctx.strokeRect(PAD.left, PAD.top, plotW, plotH);
-
-  const toCanvas = (u: number, v: number) => ({
-    cx: PAD.left + u * plotW,
-    cy: PAD.top + (1 - v) * plotH,
+  traces.push({
+    x: d.observed.x, y: d.observed.y,
+    mode: 'markers', type: 'scatter', name: 'Observados',
+    marker: { color: '#0f172a', size: 8, opacity: 0.9, line: { color: '#fff', width: 0.5 } },
+    xaxis: 'x', yaxis: 'y', showlegend: true,
   });
 
-  // Iso-curves
-  const T_SHOW = ['2', '10', '50', '100', '500'];
-  T_SHOW.forEach(T => {
-    const pts = isocurves[T];
-    if (!pts || pts.length === 0) return;
-    ctx.beginPath();
-    pts.forEach((p: any, i: number) => {
-      const { cx, cy } = toCanvas(p.u, p.v);
-      i === 0 ? ctx.moveTo(cx, cy) : ctx.lineTo(cx, cy);
+  // OR isolines (blue)
+  T_vals.forEach((T, i) => {
+    const iso = d.isolines_or[String(T)];
+    if (!iso) return;
+    traces.push({
+      x: iso.x, y: iso.y, mode: 'lines', type: 'scatter',
+      name: i === 0 ? 'OR' : `OR T${T}`,
+      showlegend: i === 0, legendgroup: 'or',
+      line: { color: T_COLORS_OR[i % T_COLORS_OR.length], width: 2.2 },
+      xaxis: 'x', yaxis: 'y',
+      hovertemplate: `OR  T=${T} a<br>${d.x_var}: %{x:.1f}<br>${d.y_var}: %{y:.3f}<extra></extra>`,
     });
-    ctx.strokeStyle = T_COLORS[T] ?? '#94a3b8';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    // Label
-    const mid = pts[Math.floor(pts.length * 0.85)];
-    if (mid) {
-      const { cx, cy } = toCanvas(mid.u, mid.v);
-      ctx.fillStyle = T_COLORS[T] ?? '#94a3b8';
-      ctx.font = 'bold 10px Inter, system-ui, sans-serif';
-      ctx.textAlign = 'left';
-      ctx.fillText(`T=${T}`, cx + 4, cy - 4);
-    }
+    const mid = Math.floor((iso.x.length) * 0.55);
+    if (iso.x[mid] != null) traces.push({
+      x: [iso.x[mid]], y: [iso.y[mid]],
+      mode: 'text', type: 'scatter', showlegend: false,
+      text: [`T${T}`], textfont: { color: T_COLORS_OR[i % T_COLORS_OR.length], size: 10, family: 'Inter' },
+      xaxis: 'x', yaxis: 'y',
+    });
   });
 
-  // Scatter points
-  scatter.forEach((pt: any) => {
-    const { cx, cy } = toCanvas(pt.u, pt.v);
-    ctx.beginPath();
-    ctx.arc(cx, cy, 4, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(99, 102, 241, 0.45)';
-    ctx.strokeStyle = 'rgba(79, 70, 229, 0.8)';
-    ctx.lineWidth = 1;
-    ctx.fill();
-    ctx.stroke();
+  // AND isolines (red)
+  T_vals.forEach((T, i) => {
+    const iso = d.isolines_and[String(T)];
+    if (!iso) return;
+    traces.push({
+      x: iso.x, y: iso.y, mode: 'lines', type: 'scatter',
+      name: i === 0 ? 'AND' : `AND T${T}`,
+      showlegend: i === 0, legendgroup: 'and',
+      line: { color: T_COLORS_AND[i % T_COLORS_AND.length], width: 2.2 },
+      xaxis: 'x', yaxis: 'y',
+      hovertemplate: `AND  T=${T} a<br>${d.x_var}: %{x:.1f}<br>${d.y_var}: %{y:.3f}<extra></extra>`,
+    });
   });
+
+  // MaxProb OR
+  const mpOrX: number[] = [], mpOrY: number[] = [], mpOrT: string[] = [];
+  T_vals.forEach(T => { const mp = d.maxprob_or[String(T)]; if (mp) { mpOrX.push(mp.x); mpOrY.push(mp.y); mpOrT.push(`T${T}`); } });
+  if (mpOrX.length) traces.push({
+    x: mpOrX, y: mpOrY, text: mpOrT,
+    mode: 'markers+text', type: 'scatter', name: 'MaxProb OR',
+    textposition: 'top center', textfont: { color: '#1d4ed8', size: 10 },
+    marker: { symbol: 'x', color: '#1d4ed8', size: 14, line: { width: 2.5 } },
+    xaxis: 'x', yaxis: 'y', showlegend: true,
+  });
+
+  // MaxProb AND
+  const mpAndX: number[] = [], mpAndY: number[] = [], mpAndT: string[] = [];
+  T_vals.forEach(T => { const mp = d.maxprob_and[String(T)]; if (mp) { mpAndX.push(mp.x); mpAndY.push(mp.y); mpAndT.push(`T${T}`); } });
+  if (mpAndX.length) traces.push({
+    x: mpAndX, y: mpAndY, text: mpAndT,
+    mode: 'markers+text', type: 'scatter', name: 'MaxProb AND',
+    textposition: 'top center', textfont: { color: '#991b1b', size: 10 },
+    marker: { symbol: 'x', color: '#991b1b', size: 14, line: { width: 2.5 } },
+    xaxis: 'x', yaxis: 'y', showlegend: true,
+  });
+
+  // Marginal T lines on main
+  T_vals.forEach(T => {
+    const qx = d.marginal_x.quantiles[String(T)];
+    const qy = d.marginal_y.quantiles[String(T)];
+    if (qx != null) traces.push({ x: [qx,qx], y: [ext[2],ext[3]], mode:'lines', type:'scatter', showlegend:false,
+      line:{color:'#c084fc',width:0.8,dash:'dot'}, xaxis:'x', yaxis:'y', hoverinfo:'skip' });
+    if (qy != null) traces.push({ x: [ext[0],ext[1]], y: [qy,qy], mode:'lines', type:'scatter', showlegend:false,
+      line:{color:'#c084fc',width:0.8,dash:'dot'}, xaxis:'x', yaxis:'y', hoverinfo:'skip' });
+  });
+
+  // Bottom marginal PDF (x, inverted y = grows upward)
+  traces.push({
+    x: d.marginal_x.vals, y: d.marginal_x.pdf,
+    fill: 'tozeroy', mode: 'lines', type: 'scatter', name: `PDF ${d.x_var}`,
+    line: { color: OLIVE, width: 1.5 }, fillcolor: 'rgba(101,90,49,0.2)',
+    xaxis: 'x2', yaxis: 'y2', showlegend: true,
+    hovertemplate: `${d.x_var}: %{x:.2f}<br>PDF: %{y:.5f}<extra></extra>`,
+  });
+  T_vals.forEach(T => {
+    const qx = d.marginal_x.quantiles[String(T)];
+    if (qx == null) return;
+    const yMax = Math.max(...d.marginal_x.pdf);
+    traces.push({ x:[qx,qx], y:[0,yMax*0.65], mode:'lines+text', type:'scatter', showlegend:false,
+      text:['',`T${T}`], textposition:'top center', textfont:{color:OLIVE,size:9},
+      line:{color:OLIVE,width:1,dash:'dot'}, xaxis:'x2', yaxis:'y2' });
+  });
+
+  // Left marginal PDF (y, inverted x = grows rightward)
+  traces.push({
+    x: d.marginal_y.pdf, y: d.marginal_y.vals,
+    fill: 'tozerox', mode: 'lines', type: 'scatter', name: `PDF ${d.y_var}`,
+    line: { color: OLIVE, width: 1.5 }, fillcolor: 'rgba(101,90,49,0.2)',
+    xaxis: 'x3', yaxis: 'y3', showlegend: true,
+    hovertemplate: `PDF: %{x:.5f}<br>${d.y_var}: %{y:.3f}<extra></extra>`,
+  });
+  T_vals.forEach(T => {
+    const qy = d.marginal_y.quantiles[String(T)];
+    if (qy == null) return;
+    const xMax = Math.max(...d.marginal_y.pdf);
+    traces.push({ x:[0,xMax*0.65], y:[qy,qy], mode:'lines+text', type:'scatter', showlegend:false,
+      text:[`T${T}`,''], textposition:'middle left', textfont:{color:OLIVE,size:9},
+      line:{color:OLIVE,width:1,dash:'dot'}, xaxis:'x3', yaxis:'y3' });
+  });
+
+  Plotly.newPlot('chart-joint', traces, {
+    paper_bgcolor: 'white', plot_bgcolor: '#f8fafc',
+    font: { family: 'Inter, system-ui, sans-serif', size: 11 },
+    margin: { t: 10, r: 170, b: 10, l: 10 },
+    xaxis:  { domain:[0.20,1], range:[ext[0],ext[1]], title:d.x_var, gridcolor:'#e2e8f0', zeroline:false },
+    yaxis:  { domain:[0.22,1], range:[ext[2],ext[3]], title:d.y_var, gridcolor:'#e2e8f0', zeroline:false },
+    xaxis2: { domain:[0.20,1], range:[ext[0],ext[1]], anchor:'y2', showgrid:false, showticklabels:false },
+    yaxis2: { domain:[0,0.20], autorange:'reversed', anchor:'x2', showgrid:false, title:'PDF' },
+    xaxis3: { domain:[0,0.18], autorange:'reversed', anchor:'y3', showgrid:false, title:'PDF' },
+    yaxis3: { domain:[0.22,1], range:[ext[2],ext[3]], anchor:'x3', showgrid:false, showticklabels:false },
+    legend: { x:1.01, y:0.85, xanchor:'left', bgcolor:'rgba(255,255,255,0.92)', bordercolor:'#e2e8f0', borderwidth:1 },
+    showlegend: true,
+  }, { responsive:true, displayModeBar:false });
 }
 
 async function fitCopula() {
   clearError();
+  setRunning(true);
   const demo = (document.querySelector('input[name="datasource"]:checked') as HTMLInputElement)?.value === 'demo';
-  const family = familyEl.value;
-  const formData = new FormData();
-  formData.append('demo', demo ? 'true' : 'false');
-  formData.append('family', family);
+
+  const fd = new FormData();
+  fd.append('demo', demo ? 'true' : 'false');
+  fd.append('demo_type', 'compound');
+  fd.append('x_var', demo ? 'Qmax_m3s' : var1El.value.trim());
+  fd.append('y_var', demo ? 'SL_m'     : var2El.value.trim());
+  fd.append('family', familyEl.value);
+  fd.append('t_list', tListEl.value);
+  fd.append('n_synthetic', '2500');
   if (!demo) {
     const f = csvFileEl.files?.[0];
-    if (!f) { showError('Sube un archivo CSV.'); return; }
-    formData.append('file', f);
-    formData.append('var1', var1El.value.trim());
-    formData.append('var2', var2El.value.trim());
+    if (!f) { showError('Sube un archivo CSV.'); setRunning(false); return; }
+    fd.append('file', f);
   }
 
   placeholder.classList.add('hidden');
   resultsEl.classList.add('hidden');
-  loadingMsg.classList.remove('hidden');
-  fitBtn.setAttribute('disabled', '');
 
   try {
-    const res = await fetch('/api/compound/fit', { method: 'POST', body: formData });
+    const res = await fetch(`${apiUrl}/api/copulas/joint-plot`, { method:'POST', body:fd });
     const data = await res.json();
     if (!res.ok) throw new Error(data.detail ?? 'Error ajustando cópula');
 
-    const { summary, marginals, scatter, isocurves } = data;
+    // Stats
+    document.getElementById('stat-n')!.textContent = String(data.n_obs);
+    document.getElementById('stat-family')!.textContent =
+      `${data.family} · ${data.marginal_x_family ?? ''}`;
+    document.getElementById('stat-tau')!.textContent = String(data.kendall_tau);
+    document.getElementById('stat-rho')!.textContent = String(data.spearman_rho);
 
-    document.getElementById('stat-n')!.textContent = String(summary.n);
-    document.getElementById('stat-family')!.textContent = family.charAt(0).toUpperCase() + family.slice(1);
-    document.getElementById('stat-tau')!.textContent = summary.kendall_tau.toFixed(3);
-    document.getElementById('stat-rho')!.textContent = summary.spearman_rho.toFixed(3);
-    document.getElementById('copula-subtitle')!.textContent =
-      `Cópula ${family} · θ = ${summary.theta.toFixed(3)} · ${summary.var1} vs ${summary.var2}`;
+    // Column headers
+    document.getElementById('col-x')!.textContent = data.x_var;
+    document.getElementById('col-y')!.textContent = data.y_var;
+    document.getElementById('col-x-quant')!.textContent = data.x_var;
+    document.getElementById('col-y-quant')!.textContent = data.y_var;
 
-    // Marginals table
-    const tbody = document.getElementById('marginals-tbody')!;
-    tbody.innerHTML = Object.entries(marginals).map(([name, stats]: any) =>
-      `<tr>
-        <td class="py-2 px-3 font-medium text-gray-700">${name}</td>
-        <td class="py-2 px-3 text-right text-gray-600">${stats.mean.toFixed(2)}</td>
-        <td class="py-2 px-3 text-right text-gray-600">${stats.std.toFixed(2)}</td>
-        <td class="py-2 px-3 text-right text-gray-600">${stats.min.toFixed(2)}</td>
-        <td class="py-2 px-3 text-right text-gray-600">${stats.max.toFixed(2)}</td>
-      </tr>`
-    ).join('');
+    // Quantiles table
+    const T_vals = Object.keys(data.marginal_x.quantiles).map(Number).sort((a,b)=>a-b);
+    document.getElementById('quantiles-tbody')!.innerHTML = T_vals.map(T => {
+      const qx = data.marginal_x.quantiles[String(T)];
+      const qy = data.marginal_y.quantiles[String(T)];
+      return `<tr>
+        <td class="py-1.5 px-3 font-semibold text-violet-700">T=${T}</td>
+        <td class="py-1.5 px-3 text-right text-gray-700">${qx != null ? Number(qx).toFixed(2) : '—'}</td>
+        <td class="py-1.5 px-3 text-right text-gray-700">${qy != null ? Number(qy).toFixed(3) : '—'}</td>
+      </tr>`;
+    }).join('');
 
-    // Scatter table (top 20 by T_or)
-    document.getElementById('col-x')!.textContent = summary.var1;
-    document.getElementById('col-y')!.textContent = summary.var2;
-    const sorted = [...scatter].sort((a: any, b: any) => b.T_or - a.T_or).slice(0, 20);
-    document.getElementById('scatter-tbody')!.innerHTML = sorted.map((pt: any) =>
-      `<tr>
-        <td class="py-1.5 px-3 text-right text-gray-700">${pt.x}</td>
-        <td class="py-1.5 px-3 text-right text-gray-700">${pt.y}</td>
-        <td class="py-1.5 px-3 text-right text-gray-500">${pt.u}</td>
-        <td class="py-1.5 px-3 text-right text-gray-500">${pt.v}</td>
-        <td class="py-1.5 px-3 text-right font-semibold ${pt.T_or >= 100 ? 'text-red-600' : pt.T_or >= 10 ? 'text-orange-600' : 'text-gray-700'}">${pt.T_or}</td>
-      </tr>`
-    ).join('');
-
-    drawCopula(scatter, isocurves, summary.var1, summary.var2);
+    // Observed events table (top 25 by T_OR)
+    const top25 = [...(data.observed_rp ?? [])].sort((a:any,b:any) => b.T_or - a.T_or).slice(0,25);
+    document.getElementById('obs-tbody')!.innerHTML = top25.map((pt:any) => `<tr>
+      <td class="py-1.5 px-3 text-right text-gray-700">${pt.x}</td>
+      <td class="py-1.5 px-3 text-right text-gray-700">${pt.y}</td>
+      <td class="py-1.5 px-3 text-right text-gray-500">${pt.u}</td>
+      <td class="py-1.5 px-3 text-right text-gray-500">${pt.v}</td>
+      <td class="py-1.5 px-3 text-right font-semibold ${pt.T_or>=100?'text-red-600':pt.T_or>=10?'text-orange-500':'text-gray-700'}">${pt.T_or}</td>
+      <td class="py-1.5 px-3 text-right text-gray-600">${pt.T_and}</td>
+    </tr>`).join('');
 
     resultsEl.classList.remove('hidden');
+    requestAnimationFrame(() => renderJointPlot(data));
+
   } catch (err: any) {
     showError(err.message ?? 'Error desconocido');
     placeholder.classList.remove('hidden');
   } finally {
-    loadingMsg.classList.add('hidden');
-    fitBtn.removeAttribute('disabled');
+    setRunning(false);
   }
 }
 

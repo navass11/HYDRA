@@ -120,6 +120,57 @@ download_aemet_daily_data(
     end_date_str="2023-12-31T00:00:00UTC",
 )`,
       },
+      {
+        kind: 'class',
+        name: 'AEMETDownloader',
+        module: 'pyhydra.data_sources.rainfall.aemet',
+        description: {
+          es: 'Widget interactivo (ipywidgets) para descargar series pluviométricas de la API REST de AEMET OpenData. Permite seleccionar estaciones de un shapefile, definir el rango temporal y lanzar la descarga directamente desde un notebook.',
+          en: 'Interactive ipywidgets widget for downloading rainfall series from the AEMET OpenData REST API. Allows selecting stations from a shapefile, defining the time range, and launching the download directly from a notebook.',
+        },
+        params: [
+          { name: 'netcdf_folder', type: 'str', description: { es: 'Carpeta donde se guardarán los NetCDF descargados.', en: 'Folder where downloaded NetCDF files will be saved.' } },
+          { name: 'stations_shapefile', type: 'str | None', default: 'None', description: { es: 'Shapefile con las estaciones AEMET. Si None, usa la red completa.', en: 'Shapefile with AEMET stations. If None, uses the full network.' } },
+        ],
+        returns: { es: 'ipywidgets.VBox — widget interactivo para Jupyter.', en: 'ipywidgets.VBox — interactive widget for Jupyter.' },
+        example: `from pyhydra.data_sources.rainfall.aemet import AEMETDownloader
+widget = AEMETDownloader(netcdf_folder='./aemet_data/', stations_shapefile='estaciones.shp')
+widget  # Displays the interactive widget in Jupyter`,
+      },
+      {
+        kind: 'class',
+        name: 'AemetCSVLoader',
+        module: 'pyhydra.data_sources.rainfall.aemet',
+        description: {
+          es: 'Carga y valida la calidad de series pluviométricas a partir de los CSV exportados por el portal web de AEMET. Aplica controles de calidad estándar: rangos físicos, valores sospechosos y detección de rachas de ceros.',
+          en: 'Loads and validates the quality of rainfall series from CSV files exported by the AEMET web portal. Applies standard quality controls: physical ranges, suspicious values and zero-run detection.',
+        },
+        methods: [
+          {
+            name: 'load_station_data',
+            description: { es: 'Carga metadatos de la estación desde un CSV AEMET.', en: 'Loads station metadata from an AEMET CSV.' },
+            params: [{ name: 'csv_path', type: 'str', description: { es: 'Ruta al archivo CSV.', en: 'Path to the CSV file.' } }],
+            returns: { es: 'dict con nombre, coordenadas y altitud de la estación.', en: 'dict with name, coordinates and altitude of the station.' },
+          },
+          {
+            name: 'load_series_data',
+            description: { es: 'Carga la serie temporal de precipitación del CSV.', en: 'Loads the precipitation time series from the CSV.' },
+            params: [{ name: 'csv_path', type: 'str', description: { es: 'Ruta al archivo CSV.', en: 'Path to the CSV file.' } }],
+            returns: { es: 'pd.Series indexada por fecha con precipitación diaria en mm.', en: 'pd.Series indexed by date with daily precipitation in mm.' },
+          },
+          {
+            name: 'analyze_series_quality',
+            description: { es: 'Evalúa la calidad de una serie: período, datos faltantes, rachas de ceros y valores atípicos.', en: 'Evaluates series quality: period, missing data, zero runs and outliers.' },
+            params: [{ name: 'series', type: 'pd.Series', description: { es: 'Serie de precipitación diaria.', en: 'Daily precipitation series.' } }],
+            returns: { es: 'dict con métricas de calidad: missing_pct, zero_runs, outliers, etc.', en: 'dict with quality metrics: missing_pct, zero_runs, outliers, etc.' },
+          },
+        ],
+        example: `from pyhydra.data_sources.rainfall.aemet import AemetCSVLoader
+loader = AemetCSVLoader()
+meta = loader.load_station_data('aemet_2868.csv')
+precip = loader.load_series_data('aemet_2868.csv')
+quality = loader.analyze_series_quality(precip)`,
+      },
       // ── ERA5 ─────────────────────────────────────────────────────────────────
       {
         kind: 'function',
@@ -366,6 +417,22 @@ df = download_usgs(["09380000", "09163500"], "2010-01-01", "2020-12-31")`,
       },
       {
         kind: 'function',
+        name: 'get_usgs_site_info',
+        module: 'pyhydra.data_sources.river_discharge.usgs',
+        description: {
+          es: 'Obtiene metadatos de una estación USGS: nombre, coordenadas, área de cuenca y altitud.',
+          en: 'Retrieves metadata for a USGS station: name, coordinates, catchment area and altitude.',
+        },
+        params: [
+          { name: 'site_no', type: 'str', description: { es: "Número de estación USGS (ej. '08279500').", en: "USGS station number (e.g. '08279500')." } },
+        ],
+        returns: { es: "pd.DataFrame con columnas site_no, station_nm, dec_lat_va, dec_long_va, drain_area_va, drain_area_km2.", en: "pd.DataFrame with columns site_no, station_nm, dec_lat_va, dec_long_va, drain_area_va, drain_area_km2." },
+        example: `from pyhydra.data_sources.river_discharge.usgs import get_usgs_site_info
+info = get_usgs_site_info("08279500")  # Rio Grande at Embudo, NM
+print(info.T)`,
+      },
+      {
+        kind: 'function',
         name: 'search_usgs_sites',
         module: 'pyhydra.data_sources.river_discharge.usgs',
         description: { es: 'Encuentra estaciones USGS de caudal dentro de un bounding box.', en: 'Finds USGS streamflow stations within a bounding box.' },
@@ -588,6 +655,42 @@ stats, bounds = extract_precipitation_events_pot(
         ],
         returns: { es: "pd.DataFrame con una fila por evento y columnas '<nombre>_max', '<nombre>_mean', '<nombre>_total' por estación.", en: "pd.DataFrame with one row per event and columns '<name>_max', '<name>_mean', '<name>_total' per station." },
       },
+      {
+        kind: 'function',
+        name: 'extract_precipitation_events',
+        module: 'pyhydra.climate.time_series.events',
+        description: {
+          es: 'Extrae manchas húmedas (wet spells) de una serie de precipitación. Pasos de tiempo consecutivos con precipitación superior a threshold forman un evento. Los huecos secos más cortos que min_gap se fusionan. Eventos más cortos que min_duration se descartan.',
+          en: 'Extracts wet spells from a precipitation series. Consecutive time steps with precipitation above threshold form an event. Dry gaps shorter than min_gap are bridged. Events shorter than min_duration are discarded.',
+        },
+        params: [
+          { name: 'series', type: 'pd.Series', description: { es: 'Serie de precipitación con DatetimeIndex.', en: 'Precipitation series with DatetimeIndex.' } },
+          { name: 'threshold', type: 'float', default: '0.0', description: { es: 'Precipitación mínima para considerar un paso húmedo (mm).', en: 'Minimum precipitation to consider a step wet (mm).' } },
+          { name: 'min_duration', type: 'int', default: '1', description: { es: 'Duración mínima del evento en pasos de tiempo.', en: 'Minimum event length in time steps.' } },
+          { name: 'min_gap', type: 'int', default: '1', description: { es: 'Días secos entre dos períodos húmedos que se fusionan en un evento.', en: 'Dry steps between two wet periods that are bridged into one event.' } },
+        ],
+        returns: { es: 'Tupla (stats, bounds). stats: DataFrame con [peak, total, duration, mean_intensity, date_start]. bounds: DataFrame con [start, end].', en: 'Tuple (stats, bounds). stats: DataFrame with [peak, total, duration, mean_intensity, date_start]. bounds: DataFrame with [start, end].' },
+        example: `from pyhydra.climate.time_series.events import extract_precipitation_events
+stats, bounds = extract_precipitation_events(precip, threshold=1.0, min_duration=2)`,
+      },
+      {
+        kind: 'function',
+        name: 'extract_precipitation_events_nday',
+        module: 'pyhydra.climate.time_series.events',
+        description: {
+          es: 'Extrae eventos basados en la acumulación N-días rodante. Identifica ventanas donde la suma N-días supera un umbral, agrupa ventanas solapadas y retiene el máximo de cada cluster. Útil para cuencas donde la acumulación multidía es el desencadenante de inundación.',
+          en: 'Extracts events based on N-day rolling accumulation. Identifies windows where the N-day sum exceeds a threshold, clusters overlapping windows and retains the maximum of each cluster. Useful for catchments where multi-day accumulation drives flooding.',
+        },
+        params: [
+          { name: 'series', type: 'pd.Series', description: { es: 'Serie de precipitación diaria con DatetimeIndex.', en: 'Daily precipitation series with DatetimeIndex.' } },
+          { name: 'n_days', type: 'int', default: '3', description: { es: 'Ventana de acumulación en días.', en: 'Accumulation window in days.' } },
+          { name: 'threshold', type: 'float | None', default: 'None', description: { es: 'Acumulación mínima N-días (mm). Por defecto percentil 90 de la suma rodante.', en: 'Minimum N-day total (mm). Defaults to the 90th percentile of the rolling sum.' } },
+          { name: 'min_sep', type: 'int | None', default: 'None', description: { es: 'Separación mínima en días entre picos retenidos. Por defecto n_days.', en: 'Minimum days between retained event peaks. Default: n_days.' } },
+        ],
+        returns: { es: 'Tupla (stats, bounds). stats: DataFrame con [peak_nday, total, duration, date_peak]. bounds: DataFrame con [start, end].', en: 'Tuple (stats, bounds). stats: DataFrame with [peak_nday, total, duration, date_peak]. bounds: DataFrame with [start, end].' },
+        example: `from pyhydra.climate.time_series.events import extract_precipitation_events_nday
+stats, bounds = extract_precipitation_events_nday(precip, n_days=3, threshold=80.0)`,
+      },
       // ── Análisis de extremos ──────────────────────────────────────────────────
       {
         kind: 'function',
@@ -652,6 +755,178 @@ maximos_anuales = extract_block_maxima(caudal_diario, freq='YE')`,
         example: `from pyhydra.climate.time_series.extremes import extract_block_maxima, fit_gev
 am = extract_block_maxima(caudal)
 params = fit_gev(am, method='mle')  # {'mu': 450, 'sigma': 120, 'xi': 0.08}`,
+      },
+      {
+        kind: 'function',
+        name: 'fit_gpd',
+        module: 'pyhydra.climate.time_series.extremes',
+        description: {
+          es: 'Ajusta una GPD a excedencias sobre un umbral. Extrae picos independientes con extract_pot y ajusta la distribución de Pareto Generalizada por MLE o L-momentos. Devuelve escala, forma, umbral, número de excedencias y tasa anual λ.',
+          en: 'Fits a GPD to exceedances above a threshold. Extracts independent peaks with extract_pot and fits the Generalised Pareto Distribution by MLE or L-moments. Returns scale, shape, threshold, number of exceedances and annual rate λ.',
+        },
+        params: [
+          { name: 'series', type: 'pd.Series | ndarray', description: { es: 'Serie temporal completa (no pre-extraída).', en: 'Full time series (not pre-extracted exceedances).' } },
+          { name: 'threshold', type: 'float', description: { es: 'Umbral de excedencia.', en: 'Exceedance threshold.' } },
+          { name: 'method', type: 'str', default: '"mle"', description: { es: "'mle' o 'lmom'.", en: "'mle' or 'lmom'." } },
+          { name: 'min_gap', type: 'int', default: '7', description: { es: 'Pasos mínimos entre picos independientes.', en: 'Minimum steps between independent peaks.' } },
+          { name: 'xi_bounds', type: 'tuple', default: '(-0.5, 1.0)', description: { es: 'Límites del parámetro de forma para MLE.', en: 'Shape parameter bounds for MLE.' } },
+        ],
+        returns: { es: "dict con claves: scale, shape (xi), threshold, n_exceed, lambda_rate (picos/año).", en: "dict with keys: scale, shape (xi), threshold, n_exceed, lambda_rate (peaks/year)." },
+        example: `from pyhydra.climate.time_series.extremes import fit_gpd, return_level_gpd
+params = fit_gpd(caudal, threshold=500, method='mle')
+q100 = return_level_gpd(params, T=100)`,
+      },
+      {
+        kind: 'function',
+        name: 'return_level_gev',
+        module: 'pyhydra.climate.time_series.extremes',
+        description: {
+          es: 'Calcula el nivel de retorno GEV para un período de retorno T (años).',
+          en: 'Computes the GEV return level for return period T (years).',
+        },
+        params: [
+          { name: 'params', type: 'dict', description: { es: 'Salida de fit_gev() — claves: mu, sigma, xi.', en: 'Output of fit_gev() — keys: mu, sigma, xi.' } },
+          { name: 'T', type: 'float', description: { es: 'Período de retorno en años.', en: 'Return period in years.' } },
+        ],
+        returns: { es: 'float — nivel de retorno para T años.', en: 'float — T-year return level.' },
+      },
+      {
+        kind: 'function',
+        name: 'return_level_gpd',
+        module: 'pyhydra.climate.time_series.extremes',
+        description: {
+          es: 'Calcula el nivel de retorno GPD para un período de retorno T (años) usando el modelo de proceso de Poisson: x_T = u + (σ/ξ) × ((λ·T)^ξ − 1).',
+          en: 'Computes the GPD return level for return period T (years) using the Poisson process model: x_T = u + (σ/ξ) × ((λ·T)^ξ − 1).',
+        },
+        params: [
+          { name: 'params', type: 'dict', description: { es: 'Salida de fit_gpd() — claves: scale, shape, threshold, lambda_rate.', en: 'Output of fit_gpd() — keys: scale, shape, threshold, lambda_rate.' } },
+          { name: 'T', type: 'float', description: { es: 'Período de retorno en años.', en: 'Return period in years.' } },
+        ],
+        returns: { es: 'float — nivel de retorno para T años.', en: 'float — T-year return level.' },
+      },
+      {
+        kind: 'function',
+        name: 'return_levels',
+        module: 'pyhydra.climate.time_series.extremes',
+        description: {
+          es: 'Calcula niveles de retorno para múltiples períodos T a partir de parámetros GEV o GPD ajustados.',
+          en: 'Computes return levels for multiple return periods T from fitted GEV or GPD parameters.',
+        },
+        params: [
+          { name: 'params', type: 'dict', description: { es: 'Salida de fit_gev() o fit_gpd().', en: 'Output of fit_gev() or fit_gpd().' } },
+          { name: 'T_values', type: 'list[float]', description: { es: 'Lista de períodos de retorno.', en: 'List of return periods.' } },
+          { name: 'dist', type: 'str', default: '"gev"', description: { es: "'gev' o 'gpd'.", en: "'gev' or 'gpd'." } },
+        ],
+        returns: { es: 'pd.Series indexada por período de retorno.', en: 'pd.Series indexed by return period.' },
+        example: `from pyhydra.climate.time_series.extremes import fit_gev, return_levels
+params = fit_gev(annual_max)
+rl = return_levels(params, [10, 50, 100, 500])`,
+      },
+      {
+        kind: 'function',
+        name: 'return_level_ci',
+        module: 'pyhydra.climate.time_series.extremes',
+        description: {
+          es: 'Intervalo de confianza bootstrap para un nivel de retorno. Remuestrea los datos con reemplazamiento y ajusta la distribución en cada réplica para construir la banda de incertidumbre.',
+          en: 'Bootstrap confidence interval for a return level. Resamples the data with replacement and fits the distribution in each replicate to build the uncertainty band.',
+        },
+        params: [
+          { name: 'data', type: 'array-like', description: { es: 'Máximos por bloque (GEV) o serie completa (GPD).', en: 'Block maxima (GEV) or full series (GPD).' } },
+          { name: 'T', type: 'float', description: { es: 'Período de retorno.', en: 'Return period.' } },
+          { name: 'dist', type: 'str', default: '"gev"', description: { es: "'gev' o 'gpd'.", en: "'gev' or 'gpd'." } },
+          { name: 'method', type: 'str', default: '"mle"', description: { es: "'mle' o 'lmom'.", en: "'mle' or 'lmom'." } },
+          { name: 'n_bootstrap', type: 'int', default: '500', description: { es: 'Réplicas bootstrap.', en: 'Bootstrap replicates.' } },
+          { name: 'ci', type: 'float', default: '0.95', description: { es: 'Cobertura del intervalo.', en: 'Interval coverage.' } },
+          { name: 'threshold', type: 'float | None', default: 'None', description: { es: 'Requerido cuando dist=gpd.', en: 'Required when dist=gpd.' } },
+        ],
+        returns: { es: 'Tupla (estimación_puntual, lower, upper).', en: 'Tuple (point_estimate, lower, upper).' },
+      },
+      {
+        kind: 'function',
+        name: 'fit_gev_map',
+        module: 'pyhydra.climate.time_series.extremes',
+        description: {
+          es: 'Estimación MAP (Maximum A Posteriori) de la GEV. Usa prior log-Normal en sigma y priors normales en mu y xi. No requiere MCMC: rápido y estable con priors débilmente informativos. Alternativa a fit_gev_mcmc para series largas.',
+          en: 'Maximum A Posteriori (MAP) GEV estimation. Uses a log-Normal prior on sigma and Normal priors on mu and xi. No MCMC required — fast and stable with weakly informative priors. Alternative to fit_gev_mcmc for long records.',
+        },
+        params: [
+          { name: 'data', type: 'array-like', description: { es: 'Máximos por bloque.', en: 'Block maxima.' } },
+          { name: 'mu_prior_mean', type: 'float | None', default: 'None', description: { es: 'Media del prior para mu. Por defecto media muestral.', en: 'Prior mean for mu. Defaults to sample mean.' } },
+          { name: 'sigma_prior_scale', type: 'float', default: '0.5', description: { es: 'Desviación típica en escala log del prior de sigma.', en: 'Log-scale prior std for sigma.' } },
+          { name: 'xi_prior_std', type: 'float', default: '0.3', description: { es: 'Desviación típica del prior de xi (centrado en 0).', en: 'Prior std for xi (centred at 0).' } },
+        ],
+        returns: { es: 'dict con claves mu, sigma, xi, map_logpost.', en: 'dict with keys mu, sigma, xi, map_logpost.' },
+      },
+      {
+        kind: 'function',
+        name: 'fit_gev_fisher',
+        module: 'pyhydra.climate.time_series.extremes',
+        description: {
+          es: 'Incertidumbre de la GEV mediante la matriz de información de Fisher (covarianza asintótica). Mucho más rápido que MCMC. Válido cuando la serie es suficientemente larga (regla empírica: n ≥ 20). Muestrea de la distribución normal multivariante centrada en el MLE.',
+          en: 'GEV uncertainty via Fisher information matrix (asymptotic covariance). Much faster than MCMC — valid when the record is long enough (rule of thumb: n ≥ 20). Samples from the multivariate normal centred at the MLE.',
+        },
+        params: [
+          { name: 'data', type: 'array-like', description: { es: 'Máximos por bloque.', en: 'Block maxima.' } },
+          { name: 'n_samples', type: 'int', default: '1000', description: { es: 'Muestras de parámetros a generar.', en: 'Parameter samples to draw.' } },
+        ],
+        returns: { es: 'pd.DataFrame con columnas mu, sigma, xi — una fila por muestra.', en: 'pd.DataFrame with columns mu, sigma, xi — one row per sample.' },
+        example: `from pyhydra.climate.time_series.extremes import fit_gev_fisher, return_level_gev
+samples = fit_gev_fisher(annual_max, n_samples=2000)
+rl_samples = samples.apply(lambda r: return_level_gev(r.to_dict(), 100), axis=1)
+print(rl_samples.quantile([0.025, 0.5, 0.975]))`,
+      },
+      {
+        kind: 'function',
+        name: 'fit_gev_mcmc',
+        module: 'pyhydra.climate.time_series.extremes',
+        description: {
+          es: 'Ajuste GEV bayesiano completo por MCMC para una única estación. Usa PyMC (NUTS) si está disponible; si no, PyStan 3 con código Stan incluido. Parametrización no centrada para mejor mezcla de cadenas.',
+          en: 'Full Bayesian GEV fit by MCMC for a single station. Uses PyMC (NUTS) if available, otherwise PyStan 3 with bundled Stan code. Non-centred parameterisation for better chain mixing.',
+        },
+        params: [
+          { name: 'data', type: 'array-like', description: { es: 'Máximos por bloque.', en: 'Block maxima.' } },
+          { name: 'n_samples', type: 'int', default: '2000', description: { es: 'Muestras por cadena tras calentamiento.', en: 'Samples per chain after warm-up.' } },
+          { name: 'n_chains', type: 'int', default: '4', description: { es: 'Cadenas MCMC.', en: 'MCMC chains.' } },
+          { name: 'adapt_delta', type: 'float', default: '0.95', description: { es: 'Target acceptance rate NUTS.', en: 'NUTS target acceptance rate.' } },
+        ],
+        returns: { es: 'pd.DataFrame con columnas mu, sigma, xi — muestras del posterior.', en: 'pd.DataFrame with columns mu, sigma, xi — posterior samples.' },
+        note: { es: 'Requiere PyMC o PyStan 3. Para análisis multi-estación usar HierarchicalGEV.', en: 'Requires PyMC or PyStan 3. For multi-station analysis use HierarchicalGEV.' },
+      },
+      {
+        kind: 'function',
+        name: 'plot_return_levels',
+        module: 'pyhydra.climate.time_series.extremes',
+        description: {
+          es: 'Curva de nivel de retorno con banda de confianza bootstrap. Muestra datos empíricos, ajuste GEV/GPD y banda de incertidumbre al nivel especificado.',
+          en: 'Return level plot with bootstrap confidence band. Shows empirical data, GEV/GPD fit and uncertainty band at the specified coverage level.',
+        },
+        params: [
+          { name: 'data', type: 'array-like', description: { es: 'Máximos por bloque o serie para POT.', en: 'Block maxima or full series for POT.' } },
+          { name: 'params', type: 'dict', description: { es: 'Parámetros ajustados — salida de fit_gev() o fit_gpd().', en: 'Fitted parameters — output of fit_gev() or fit_gpd().' } },
+          { name: 'dist', type: 'str', default: '"gev"', description: { es: "'gev' o 'gpd'.", en: "'gev' or 'gpd'." } },
+          { name: 'T_range', type: 'tuple', default: '(1.5, 1000)', description: { es: 'Rango de períodos de retorno en el eje X.', en: 'Return period range on the X axis.' } },
+          { name: 'n_bootstrap', type: 'int', default: '200', description: { es: 'Réplicas para la banda de incertidumbre.', en: 'Replicates for the uncertainty band.' } },
+          { name: 'ci', type: 'float', default: '0.95', description: { es: 'Cobertura de la banda de confianza.', en: 'Confidence band coverage.' } },
+        ],
+        returns: { es: 'matplotlib Axes.', en: 'matplotlib Axes.' },
+      },
+      {
+        kind: 'function',
+        name: 'plot_diagnostic',
+        module: 'pyhydra.climate.time_series.extremes',
+        description: {
+          es: 'Panel diagnóstico 2×2: curva de nivel de retorno, densidad, Q-Q y P-P. Permite evaluar visualmente la calidad del ajuste GEV o GPD.',
+          en: '2×2 diagnostic panel: return level curve, density, Q-Q and P-P plots. Allows visual assessment of GEV or GPD fit quality.',
+        },
+        params: [
+          { name: 'data', type: 'array-like', description: { es: 'Máximos por bloque.', en: 'Block maxima.' } },
+          { name: 'params', type: 'dict', description: { es: 'Salida de fit_gev() o fit_gpd().', en: 'Output of fit_gev() or fit_gpd().' } },
+          { name: 'dist', type: 'str', default: '"gev"', description: { es: "'gev' o 'gpd'.", en: "'gev' or 'gpd'." } },
+        ],
+        returns: { es: 'matplotlib Figure.', en: 'matplotlib Figure.' },
+        example: `from pyhydra.climate.time_series.extremes import fit_gev, plot_diagnostic
+params = fit_gev(annual_max, method='mle')
+fig = plot_diagnostic(annual_max, params, dist='gev')`,
       },
       // ── RFA ──────────────────────────────────────────────────────────────────
       {
@@ -863,6 +1138,92 @@ grid_values = idw.predict(rejilla_df)`,
           { name: 'predict', signature: 'predict(grid_data, feature_cols) → tuple[ndarray, ndarray]', description: { es: 'Predice.', en: 'Predicts.' }, returns: { es: '(media, desviación_estándar).', en: '(mean, standard_deviation).' } },
         ],
       },
+      {
+        kind: 'class',
+        name: 'NeopreneGPReconstructor',
+        module: 'pyhydra.climate.spatial_analysis.interpolation',
+        description: {
+          es: 'Combina el modelo de lluvia NSRP (NEOPRENE) con un Proceso Gaussiano para reconstruir y simular precipitación en estaciones o rejillas espaciales. Calibra un generador estocástico por estación y usa un GP para la covariación espacial entre estaciones, permitiendo generar campos sintéticos coherentes espacialmente.',
+          en: 'Combines the NSRP rainfall model (NEOPRENE) with a Gaussian Process to reconstruct and simulate precipitation at stations or spatial grids. Calibrates a stochastic generator per station and uses a GP for the spatial covariation between stations, enabling spatially coherent synthetic field generation.',
+        },
+        params: [
+          { name: 'gp_covariates', type: 'list[str] | None', default: 'None', description: { es: "Covariables espaciales para el GP (ej. ['lon', 'lat', 'elev']). Si None, usa solo coordenadas.", en: "Spatial covariates for the GP (e.g. ['lon', 'lat', 'elev']). If None, uses coordinates only." } },
+          { name: 'temporal_resolution', type: 'str', default: '"d"', description: { es: "Resolución temporal: 'd' (diaria) o 'h' (horaria).", en: "Temporal resolution: 'd' (daily) or 'h' (hourly)." } },
+          { name: 'seasonality', type: 'str', default: '"monthly"', description: { es: "'monthly' o 'seasonal' — agrupa parámetros NSRP por mes o por estación.", en: "'monthly' or 'seasonal' — groups NSRP parameters by month or by season." } },
+          { name: 'n_restarts_optimizer', type: 'int', default: '3', description: { es: 'Reinicios del optimizador GP para evitar óptimos locales.', en: 'GP optimizer restarts to avoid local optima.' } },
+        ],
+        methods: [
+          {
+            name: 'fit',
+            description: { es: 'Calibra el generador NSRP para cada estación y el GP espacial.', en: 'Calibrates the NSRP generator per station and the spatial GP.' },
+            params: [
+              { name: 'station_obs', type: 'dict[str, pd.Series]', description: { es: 'Dict {station_id: series_diaria}.', en: 'Dict {station_id: daily_series}.' } },
+              { name: 'verbose', type: 'bool', default: 'False', description: { es: 'Imprime progreso.', en: 'Print progress.' } },
+            ],
+          },
+          {
+            name: 'simulate_stations',
+            description: { es: 'Genera series sintéticas para las estaciones calibradas.', en: 'Generates synthetic series for the calibrated stations.' },
+            params: [
+              { name: 'year_ini', type: 'int', description: { es: 'Año de inicio de la simulación.', en: 'Simulation start year.' } },
+              { name: 'year_fin', type: 'int', description: { es: 'Año de fin.', en: 'End year.' } },
+            ],
+            returns: { es: 'dict {station_id: pd.Series}.', en: 'dict {station_id: pd.Series}.' },
+          },
+          {
+            name: 'simulate_spatial',
+            description: { es: 'Genera campos de precipitación en puntos de rejilla interpolando el GP.', en: 'Generates precipitation fields at grid points by interpolating the GP.' },
+            params: [
+              { name: 'station_meta', type: 'pd.DataFrame', description: { es: 'Metadatos de estaciones con columnas lat, lon, [elev].', en: 'Station metadata with columns lat, lon, [elev].' } },
+              { name: 'grid_meta', type: 'pd.DataFrame', description: { es: 'Puntos de rejilla destino con columnas lat, lon, [elev].', en: 'Target grid points with columns lat, lon, [elev].' } },
+              { name: 'year_ini', type: 'int', description: { es: 'Año de inicio.', en: 'Start year.' } },
+              { name: 'year_fin', type: 'int', description: { es: 'Año de fin.', en: 'End year.' } },
+            ],
+            returns: { es: 'xr.Dataset con precipitación diaria por punto de rejilla.', en: 'xr.Dataset with daily precipitation per grid point.' },
+          },
+        ],
+        example: `from pyhydra.climate.spatial_analysis.interpolation import NeopreneGPReconstructor
+rec = NeopreneGPReconstructor(gp_covariates=['lon', 'lat', 'elev'], seasonality='monthly')
+rec.fit(station_obs)
+synth_stations = rec.simulate_stations(2030, 2070)`,
+      },
+      {
+        kind: 'class',
+        name: 'CopulaCDFEmulator',
+        module: 'pyhydra.climate.spatial_analysis.interpolation',
+        description: {
+          es: 'Sustituto de proceso gaussiano (emulador) para la CDF de cópulas multidimensionales costosas de evaluar. Entrena sobre millones de muestras Monte Carlo de la cópula original y luego predice P(X≤x) en milisegundos. Útil cuando la CDF de la cópula se necesita millones de veces (ej. nivel de retorno multivariante en rejilla).',
+          en: 'Gaussian process surrogate (emulator) for expensive multivariate copula CDFs. Trains on millions of Monte Carlo samples from the original copula and then predicts P(X≤x) in milliseconds. Useful when the copula CDF is needed millions of times (e.g. multivariate return level on a grid).',
+        },
+        params: [
+          { name: 'n_mc_samples', type: 'int', default: '1_000_000', description: { es: 'Muestras Monte Carlo para entrenar el emulador.', en: 'Monte Carlo samples to train the emulator.' } },
+          { name: 'batch_size', type: 'int', default: '50_000', description: { es: 'Tamaño de lote para predicción vectorizada.', en: 'Batch size for vectorised prediction.' } },
+        ],
+        methods: [
+          {
+            name: 'fit',
+            description: { es: 'Genera muestras de la cópula y entrena el GP emulador.', en: 'Generates samples from the copula and trains the GP emulator.' },
+            params: [
+              { name: 'copula_model', type: 'object', description: { es: 'Cópula con método sample(n) y jcdf(x) — ej. VineCopula.', en: 'Copula with sample(n) and jcdf(x) methods — e.g. VineCopula.' } },
+              { name: 'n_dims', type: 'int', description: { es: 'Número de dimensiones de la cópula.', en: 'Number of copula dimensions.' } },
+            ],
+          },
+          {
+            name: 'predict',
+            description: { es: 'Evalúa la CDF emulada en puntos de consulta.', en: 'Evaluates the emulated CDF at query points.' },
+            params: [{ name: 'query_points', type: 'ndarray', description: { es: 'Array shape (N, d) con valores entre 0 y 1.', en: 'Array shape (N, d) with values between 0 and 1.' } }],
+            returns: { es: 'ndarray shape (N,) con probabilidades acumuladas estimadas.', en: 'ndarray shape (N,) with estimated cumulative probabilities.' },
+          },
+        ],
+        note: { es: 'Requiere openturns para el entrenamiento del GP. La predicción solo requiere numpy.', en: 'Requires openturns for GP training. Prediction only requires numpy.' },
+        example: `from pyhydra.climate.spatial_analysis.interpolation import CopulaCDFEmulator
+from pyhydra.climate.spatial_analysis.copulas import VineCopula
+vine = VineCopula()
+vine.fit(data)
+emu = CopulaCDFEmulator(n_mc_samples=500_000)
+emu.fit(vine, n_dims=3)
+probs = emu.predict(query_grid)`,
+      },
       // ── Cópulas ───────────────────────────────────────────────────────────────
       {
         kind: 'class',
@@ -957,6 +1318,80 @@ contours = cop.conditional_contours(z_quantile=0.9, T_list=[50, 100, 500])`,
 cop = FloodEventCopula(['Qmax', 'Qmed', 'Duracion'], ['shape_type'])
 cop.fit(eventos_clasificados_df)
 sinteticos = cop.sample(5000)`,
+      },
+      {
+        kind: 'class',
+        name: 'VineCopula',
+        module: 'pyhydra.climate.spatial_analysis.copulas',
+        description: {
+          es: 'Cópula vine d-dimensional (pair-copula construction) basada en pyvinecopulib. Soporta familias paramétricas (Gaussian, t, Clayton, Gumbel, Frank, Joe) y selección automática de estructura. Permite calcular la CDF conjunta, el período de retorno de Kendall y generar tormentas de diseño multivariantes.',
+          en: 'd-dimensional vine copula (pair-copula construction) based on pyvinecopulib. Supports parametric families (Gaussian, t, Clayton, Gumbel, Frank, Joe) and automatic structure selection. Enables computing the joint CDF, Kendall return period and generating multivariate design storms.',
+        },
+        params: [
+          { name: 'family_set', type: 'list[str] | None', default: 'None', description: { es: "Familias candidatas. None = todas. Ej: ['gaussian', 'gumbel'].", en: "Candidate families. None = all. E.g. ['gaussian', 'gumbel']." } },
+          { name: 'marginal_families', type: 'tuple[str]', default: '("gev", "lognorm", "gamma")', description: { es: 'Familias candidatas para las marginales univariantes.', en: 'Candidate families for univariate marginals.' } },
+        ],
+        methods: [
+          {
+            name: 'fit',
+            description: { es: 'Ajusta marginales (por AIC) y estructura vine.', en: 'Fits marginals (by AIC) and vine structure.' },
+            params: [
+              { name: 'data', type: 'pd.DataFrame | ndarray', description: { es: 'Observaciones shape (n, d).', en: 'Observations shape (n, d).' } },
+              { name: 'labels', type: 'list[str] | None', default: 'None', description: { es: 'Nombres de las variables.', en: 'Variable names.' } },
+            ],
+          },
+          { name: 'sample', description: { es: 'Genera muestras en el espacio original.', en: 'Generates samples in the original space.' }, params: [{ name: 'n_samples', type: 'int', description: { es: 'Número de muestras.', en: 'Number of samples.' } }, { name: 'seed', type: 'int | None', default: 'None', description: { es: 'Semilla aleatoria.', en: 'Random seed.' } }], returns: { es: 'pd.DataFrame.', en: 'pd.DataFrame.' } },
+          { name: 'jcdf', description: { es: 'Evalúa la CDF conjunta en un punto.', en: 'Evaluates the joint CDF at a point.' }, params: [{ name: 'x', type: 'array-like', description: { es: 'Punto en espacio original, shape (d,).', en: 'Point in original space, shape (d,).' } }], returns: { es: 'float — P(X₁≤x₁, …, Xd≤xd).', en: 'float — P(X₁≤x₁, …, Xd≤xd).' } },
+          { name: 'kendall_return_period', description: { es: 'Período de retorno de Kendall para un punto.', en: "Kendall's return period for a point." }, params: [{ name: 'x', type: 'array-like', description: { es: 'Punto en espacio original.', en: 'Point in original space.' } }], returns: { es: 'float — T en años.', en: 'float — T in years.' } },
+          { name: 'most_probable_event', description: { es: 'Evento de diseño más probable para T años.', en: 'Most probable design event for T years.' }, params: [{ name: 'T', type: 'float', description: { es: 'Período de retorno.', en: 'Return period.' } }, { name: 'n_pts', type: 'int', default: '5000', description: { es: 'Puntos de búsqueda Monte Carlo.', en: 'Monte Carlo search points.' } }], returns: { es: 'ndarray — vector de diseño.', en: 'ndarray — design vector.' } },
+          { name: 'design_storm_ensemble', description: { es: 'Ensemble de eventos para T años.', en: 'Ensemble of events for T years.' }, params: [{ name: 'T', type: 'float', description: { es: 'Período de retorno.', en: 'Return period.' } }, { name: 'n_ensemble', type: 'int', default: '100', description: { es: 'Tamaño del ensemble.', en: 'Ensemble size.' } }], returns: { es: 'pd.DataFrame con n_ensemble filas.', en: 'pd.DataFrame with n_ensemble rows.' } },
+        ],
+        example: `from pyhydra.climate.spatial_analysis.copulas import VineCopula
+vine = VineCopula(family_set=['gumbel', 'frank', 'gaussian'])
+vine.fit(station_df[['P1', 'P2', 'P3']])
+synth = vine.sample(10000)
+T_kendall = vine.kendall_return_period([80, 60, 45])`,
+      },
+      {
+        kind: 'class',
+        name: 'GaussianCopulaSampler',
+        module: 'pyhydra.climate.spatial_analysis.copulas',
+        description: {
+          es: 'Cópula gaussiana con marginales pre-especificadas. A diferencia de FloodEventCopula (que usa openturns), acepta objetos scipy.stats como marginales — útil cuando los parámetros ya están ajustados externamente.',
+          en: 'Gaussian copula with pre-specified marginals. Unlike FloodEventCopula (which uses openturns), accepts scipy.stats objects as marginals — useful when parameters are already fitted externally.',
+        },
+        params: [
+          { name: 'marginals', type: 'list[rv_continuous]', description: { es: 'Lista de distribuciones scipy.stats con parámetros fijados.', en: 'List of scipy.stats distributions with fixed parameters.' } },
+          { name: 'names', type: 'list[str]', description: { es: 'Nombres de las variables.', en: 'Variable names.' } },
+        ],
+        methods: [
+          {
+            name: 'sample',
+            description: { es: 'Genera muestras correlacionadas de las marginales.', en: 'Generates correlated samples from the marginals.' },
+            params: [
+              { name: 'n_samples', type: 'int', description: { es: 'Número de muestras.', en: 'Number of samples.' } },
+              { name: 'rho', type: 'ndarray', description: { es: 'Matriz de correlación (d×d).', en: 'Correlation matrix (d×d).' } },
+              { name: 'seed', type: 'int | None', default: 'None', description: { es: 'Semilla aleatoria.', en: 'Random seed.' } },
+            ],
+            returns: { es: 'pd.DataFrame con columnas según names.', en: 'pd.DataFrame with columns per names.' },
+          },
+          {
+            name: 'from_data',
+            description: { es: 'Método de clase: ajusta marginales y estima la matriz de correlación de la cópula a partir de datos.', en: 'Class method: fits marginals and estimates the copula correlation matrix from data.' },
+            params: [
+              { name: 'data', type: 'pd.DataFrame', description: { es: 'Observaciones.', en: 'Observations.' } },
+              { name: 'families', type: 'list[str]', description: { es: "Familias candidatas para cada marginal, ej. ['gev', 'lognorm'].", en: "Candidate families per marginal, e.g. ['gev', 'lognorm']." } },
+            ],
+            returns: { es: 'GaussianCopulaSampler ajustado.', en: 'Fitted GaussianCopulaSampler.' },
+          },
+        ],
+        example: `from scipy.stats import lognorm, gamma
+from pyhydra.climate.spatial_analysis.copulas import GaussianCopulaSampler
+marginals = [lognorm(s=0.8, scale=50), gamma(a=2.5, scale=10)]
+sampler = GaussianCopulaSampler(marginals, names=['Qmax', 'Dur'])
+import numpy as np
+rho = np.array([[1.0, 0.65], [0.65, 1.0]])
+samples = sampler.sample(5000, rho)`,
       },
       // ── Corrección de sesgo ───────────────────────────────────────────────────
       {
@@ -1117,6 +1552,60 @@ classified = clf.fit()`,
         example: `from pyhydra.climate.hybrid_downscaling.reconstruction import HydrographReconstructor
 rec = HydrographReconstructor(Q, synthetic_df, classified_df, n_types=4, n_representatives=400, output_dir='./hidrogramas')
 centroids, subset = rec.run()`,
+      },
+      {
+        kind: 'class',
+        name: 'FloodEventSelector',
+        module: 'pyhydra.climate.hybrid_downscaling.event_selection',
+        description: {
+          es: 'Pipeline completo de selección de eventos de inundación: extrae picos de caudal independientes, clasifica por forma del hidrograma, ajusta marginales, calibra una cópula multivariante y genera un catálogo sintético. Núcleo del flujo de trabajo de downscaling hidrológico.',
+          en: 'Complete flood event selection pipeline: extracts independent discharge peaks, classifies by hydrograph shape, fits marginals, calibrates a multivariate copula and generates a synthetic catalogue. Core of the hydrological downscaling workflow.',
+        },
+        params: [
+          { name: 'discharge', type: 'pd.Series', description: { es: 'Serie de caudal diario (m³/s).', en: 'Daily discharge series (m³/s).' } },
+          { name: 'threshold', type: 'float', description: { es: 'Umbral para extracción de eventos (m³/s).', en: 'Event extraction threshold (m³/s).' } },
+          { name: 'threshold2', type: 'float | None', default: 'None', description: { es: 'Segundo umbral para clasificación de tipos.', en: 'Second threshold for type classification.' } },
+          { name: 'n_types', type: 'int', default: '25', description: { es: 'Tipos de hidrograma a clasificar.', en: 'Hydrograph types to classify.' } },
+          { name: 'n_synthetic', type: 'int', default: '5000', description: { es: 'Tamaño del catálogo sintético.', en: 'Synthetic catalogue size.' } },
+          { name: 'plot', type: 'bool', default: 'False', description: { es: 'Genera figuras diagnóstico.', en: 'Generate diagnostic figures.' } },
+          { name: 'output_dir', type: 'str | None', default: 'None', description: { es: 'Directorio para guardar figuras y CSV.', en: 'Directory to save figures and CSVs.' } },
+        ],
+        methods: [
+          { name: 'extract_events', description: { es: 'Extrae picos POT independientes.', en: 'Extracts independent POT peaks.' }, returns: { es: 'pd.DataFrame con eventos.', en: 'pd.DataFrame with events.' } },
+          { name: 'classify_events', description: { es: 'Clasifica eventos por forma (K-Means en características del hidrograma).', en: 'Classifies events by shape (K-Means on hydrograph features).' } },
+          { name: 'fit_marginals', description: { es: 'Ajusta distribuciones marginales por tipo de evento.', en: 'Fits marginal distributions per event type.' } },
+          { name: 'fit_copula', description: { es: 'Calibra la cópula multivariante sobre los eventos reales.', en: 'Calibrates the multivariate copula on real events.' } },
+          { name: 'generate_synthetic', description: { es: 'Muestrea el catálogo sintético de la cópula.', en: 'Samples the synthetic catalogue from the copula.' }, params: [{ name: 'seed', type: 'int | None', default: 'None', description: { es: 'Semilla aleatoria.', en: 'Random seed.' } }], returns: { es: 'pd.DataFrame con catálogo sintético.', en: 'pd.DataFrame with synthetic catalogue.' } },
+          { name: 'run', description: { es: 'Ejecuta el pipeline completo de forma secuencial.', en: 'Runs the full pipeline sequentially.' }, params: [{ name: 'seed', type: 'int | None', default: 'None', description: { es: 'Semilla aleatoria.', en: 'Random seed.' } }], returns: { es: 'pd.DataFrame — catálogo sintético.', en: 'pd.DataFrame — synthetic catalogue.' } },
+          { name: 'summary', description: { es: 'Imprime resumen de los eventos extraídos y el ajuste.', en: 'Prints summary of extracted events and fit.' } },
+        ],
+        example: `from pyhydra.climate.hybrid_downscaling.event_selection import FloodEventSelector
+sel = FloodEventSelector(
+    discharge=Q, threshold=200, n_types=25, n_synthetic=5000,
+    plot=True, output_dir='./output'
+)
+synthetic_df = sel.run(seed=42)`,
+      },
+      {
+        kind: 'class',
+        name: 'FloodCopulaComparison',
+        module: 'pyhydra.climate.hybrid_downscaling.event_selection',
+        description: {
+          es: 'Compara cuatro familias de cópulas bivariantes (Gaussiana, Gumbel, Clayton, Frank) para un conjunto de eventos de inundación. Ayuda a seleccionar la familia más adecuada antes de construir la cópula multivariante.',
+          en: 'Compares four bivariate copula families (Gaussian, Gumbel, Clayton, Frank) for a set of flood events. Helps select the most appropriate family before building the multivariate copula.',
+        },
+        methods: [
+          { name: 'fit', description: { es: 'Ajusta las cuatro cópulas al DataFrame de eventos.', en: 'Fits all four copulas to the events DataFrame.' }, params: [{ name: 'events_df', type: 'pd.DataFrame', description: { es: 'DataFrame con columnas de características del evento.', en: 'DataFrame with event feature columns.' } }] },
+          { name: 'summary_table', description: { es: 'Devuelve tabla con AIC, BIC y τ de Kendall para cada familia.', en: 'Returns table with AIC, BIC and Kendall τ for each family.' }, returns: { es: 'pd.DataFrame.', en: 'pd.DataFrame.' } },
+          { name: 'best_family', description: { es: 'Devuelve el nombre de la familia con menor AIC.', en: 'Returns the name of the family with lowest AIC.' }, returns: { es: 'str.', en: 'str.' } },
+          { name: 'plot_comparison', description: { es: 'Figura 2×2 con scatter de probabilidades uniformes para cada familia.', en: '2×2 figure with uniform probability scatter for each family.' }, returns: { es: 'matplotlib Figure.', en: 'matplotlib Figure.' } },
+        ],
+        example: `from pyhydra.climate.hybrid_downscaling.event_selection import FloodCopulaComparison
+comp = FloodCopulaComparison()
+comp.fit(events_df[['Qmax', 'Vol']])
+print(comp.summary_table())
+print("Best:", comp.best_family())
+comp.plot_comparison()`,
       },
       {
         kind: 'class',
@@ -1579,6 +2068,61 @@ campo = model.simulate(n_steps=365)   # shape (365, 100)`,
           { name: 'new_flow_number', type: 'int', description: { es: 'Número del nuevo archivo de flujo.', en: 'New flow file number.' } },
         ],
         returns: { es: 'None.', en: 'None.' },
+      },
+      {
+        kind: 'function',
+        name: 'modify_project_file',
+        module: 'pyhydra.modeling.hydraulic.hec_ras',
+        description: {
+          es: 'Establece el plan activo en el archivo de proyecto HEC-RAS (.prj). Necesario antes de lanzar una ejecución automática cuando se alternan planes.',
+          en: 'Sets the active plan in the HEC-RAS project file (.prj). Required before launching an automated run when cycling through plans.',
+        },
+        params: [
+          { name: 'path_project', type: 'str', description: { es: 'Directorio del proyecto.', en: 'Project directory.' } },
+          { name: 'name_project', type: 'str', description: { es: 'Nombre del proyecto.', en: 'Project name.' } },
+          { name: 'plan_number', type: 'int', description: { es: 'Número del plan original.', en: 'Original plan number.' } },
+          { name: 'rainfall_plan_name', type: 'int', description: { es: 'Número del nuevo plan a activar.', en: 'New plan number to activate.' } },
+        ],
+        returns: { es: 'None. Modifica el archivo .prj en disco.', en: 'None. Modifies the .prj file on disk.' },
+      },
+      {
+        kind: 'function',
+        name: 'create_flow_series',
+        module: 'pyhydra.modeling.hydraulic.hec_ras',
+        description: {
+          es: 'Suaviza una serie de caudal con un máximo rodante. Útil para preparar series de condición de contorno en HEC-RAS donde los picos abruptos generan inestabilidades numéricas.',
+          en: 'Smooths a discharge series with a rolling maximum. Useful for preparing HEC-RAS boundary condition series where abrupt spikes cause numerical instabilities.',
+        },
+        params: [
+          { name: 'df', type: 'pd.DataFrame', description: { es: 'DataFrame con la serie de caudal.', en: 'DataFrame containing the discharge series.' } },
+          { name: 'col', type: 'str', description: { es: 'Nombre de la columna a procesar.', en: 'Column name to process.' } },
+          { name: 'window', type: 'int', default: '5', description: { es: 'Tamaño de ventana del máximo rodante.', en: 'Rolling maximum window size.' } },
+        ],
+        returns: { es: 'pd.Series con la serie suavizada.', en: 'pd.Series with the smoothed series.' },
+        example: `from pyhydra.modeling.hydraulic.hec_ras import create_flow_series
+Q_smooth = create_flow_series(df_sim, col='Q_outlet', window=5)`,
+      },
+      {
+        kind: 'function',
+        name: 'run_hec_ras',
+        module: 'pyhydra.modeling.hydraulic.hec_ras',
+        description: {
+          es: 'Abre y ejecuta HEC-RAS mediante la interfaz COM rascontrol (solo Windows). Abre el proyecto, lanza el cálculo, espera la finalización y cierra el proceso.',
+          en: 'Opens and runs HEC-RAS via the rascontrol COM interface (Windows only). Opens the project, launches computation, waits for completion and closes the process.',
+        },
+        params: [
+          { name: 'path_project', type: 'str', description: { es: 'Directorio del proyecto.', en: 'Project directory.' } },
+          { name: 'name_project', type: 'str', description: { es: 'Nombre del proyecto (sin extensión).', en: 'Project name (without extension).' } },
+          { name: 'ras_version', type: 'int', default: '641', description: { es: "Código entero de versión (ej. 641 = v6.4.1).", en: "Integer version code (e.g. 641 = v6.4.1)." } },
+        ],
+        returns: { es: 'None. Lanza RuntimeError si rascontrol no puede conectarse o la simulación falla.', en: 'None. Raises RuntimeError if rascontrol cannot connect or the simulation fails.' },
+        note: { es: 'Solo Windows. Requiere HEC-RAS 6.x y rascontrol instalado (pip install rascontrol).', en: 'Windows only. Requires HEC-RAS 6.x and rascontrol installed (pip install rascontrol).' },
+        example: `from pyhydra.modeling.hydraulic.hec_ras import (
+    modify_project_file, modify_plan_file, run_hec_ras
+)
+for i, plan in enumerate(plans):
+    modify_project_file(proj_dir, 'modelo', plan_number=1, rainfall_plan_name=i+1)
+    run_hec_ras(proj_dir, 'modelo', ras_version=641)`,
       },
       // ── SFINCS ────────────────────────────────────────────────────────────────
       {
