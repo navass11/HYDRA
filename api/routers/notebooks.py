@@ -148,10 +148,15 @@ async def _refresh_requested_notebook_if_stale(
             "Calibration performance summary",
             "Reference performance (LREW 74006",
             "Cal (Jan-Apr 1970)",
+            "CN_mult",
+            "Ia_mult",
+            "spotpy_setup_cn",
+            "RUN:CAL",
         ]
         template_is_current = (
             "SOURCE_MODEL = Path('/workspace/data/hms/Tifton')" in template_text
             and "No calibrated parameter set is reported." in template_text
+            and "CalibratableHMSModel" in template_text
         )
         if template_is_current and any(marker in current_text for marker in stale_markers):
             await _jupyter_upload_notebook(client, dest, NOTEBOOK_TEMPLATES_DIR / relative)
