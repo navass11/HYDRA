@@ -792,6 +792,7 @@ def run_hms_script(
     names_run: list[str],
     hms_dir: str | None = None,
     timeout: int = 3600,
+    strict_logs: bool = True,
 ) -> int:
     """Execute HEC-HMS via a generated Jython script — cross-platform.
 
@@ -807,6 +808,9 @@ def run_hms_script(
                  ``HEC_HMS_DIR`` environment variable, then the Docker default
                  ``/workspace/data/hms/HEC-HMS-4.13``.
         timeout: Maximum execution time in seconds.
+        strict_logs: If True, inspect each run log and treat HEC-HMS internal
+                     errors/aborted runs as failures. The Linux wrapper may
+                     return 0 even when a simulation is aborted.
 
     Returns:
         Process return code (0 = success). On Windows always returns 0 or
@@ -839,13 +843,46 @@ def run_hms_script(
     cmd = ["xvfb-run", "--auto-servernum", hms_sh, "-script", script_path]
     print(f"  Running: {' '.join(cmd)}")
     result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
-    if result.returncode == 0:
-        print(f"✓ HEC-HMS runs completed (Linux xvfb): {names_run}")
-    else:
+    if result.returncode != 0:
         print(f"✗ HEC-HMS failed (returncode={result.returncode}).")
         print(result.stdout[-1000:])
         print(result.stderr[-1000:])
-    return result.returncode
+        return result.returncode
+
+    failed_logs: list[Path] = []
+    if strict_logs:
+        run_text = Path(path_model, name_model + ".run").read_text(errors="replace")
+        for run in names_run:
+            log_name = None
+            block_match = re.search(
+                rf"^Run:\s+{re.escape(run)}\s*$.*?^End:\s*$",
+                run_text,
+                flags=re.MULTILINE | re.DOTALL,
+            )
+            if block_match:
+                log_match = re.search(r"^\s+Log File:\s*(.+?)\s*$", block_match.group(0), flags=re.MULTILINE)
+                if log_match:
+                    log_name = log_match.group(1)
+            if log_name is None:
+                log_name = run.replace(" ", "_") + ".log"
+            log_path = Path(path_model, log_name)
+            if not log_path.exists():
+                failed_logs.append(log_path)
+                continue
+            log = log_path.read_text(errors="replace")
+            if re.search(r"\bERROR\b|Aborted run|aborted run", log):
+                failed_logs.append(log_path)
+
+    if failed_logs:
+        print("✗ HEC-HMS reported errors in run logs:")
+        for log_path in failed_logs:
+            print(f"  - {log_path}")
+            if log_path.exists():
+                print(log_path.read_text(errors="replace")[-1200:])
+        return 2
+
+    print(f"✓ HEC-HMS runs completed (Linux xvfb): {names_run}")
+    return 0
 
 
 def read_dss6_timeseries(
