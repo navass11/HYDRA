@@ -34,6 +34,7 @@ import shutil
 import struct
 import subprocess
 import warnings
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 
@@ -1025,6 +1026,65 @@ def read_dss6_timeseries(
     return df
 
 
+def read_hms_dss_timeseries(
+    dss_path: str,
+    pathname_prefix: str,
+    run_name: str | None = None,
+    n_months: int = 6,
+    latest: bool = True,
+) -> pd.DataFrame:
+    """Read HMS output time series from DSS7 or DSS6.
+
+    HEC-HMS 4.x usually writes DSS7 output files. Historical sample files may
+    still be DSS6. This helper tries ``hecdss`` first and falls back to the
+    bundled pure-Python DSS6 reader.
+
+    Args:
+        dss_path: Path to the DSS file.
+        pathname_prefix: Prefix such as ``"//74006/FLOW"`` or
+            ``"//Station I/FLOW"``.
+        run_name: Optional HMS run name used to select matching F-part
+            pathnames (``RUN:<run_name>``).
+        n_months: Number of DSS6 blocks to read in fallback mode.
+        latest: Read latest matching DSS6 blocks in fallback mode.
+
+    Returns:
+        DataFrame with ``datetime`` and ``value`` columns. Values are in the DSS
+        units stored by HMS; most HMS flow outputs are CFS for English projects.
+    """
+    prefix_key = (pathname_prefix.rstrip("/") + "/").upper()
+    run_key = f"/RUN:{run_name}/".upper() if run_name else None
+
+    try:
+        from hecdss import HecDss as _HecDss
+
+        with _HecDss(str(dss_path)) as dss:
+            catalog = dss.get_catalog()
+            paths = []
+            for path in catalog.uncondensed_paths:
+                path_upper = path.upper()
+                if not path_upper.startswith(prefix_key):
+                    continue
+                if run_key and run_key not in path_upper:
+                    continue
+                paths.append(path)
+            if paths:
+                ts = dss.get(sorted(paths)[-1])
+                return pd.DataFrame({
+                    "datetime": pd.to_datetime(ts.get_dates()),
+                    "value": np.asarray(ts.get_values(), dtype=float),
+                })
+    except Exception:
+        pass
+
+    return read_dss6_timeseries(
+        dss_path,
+        pathname_prefix,
+        n_months=n_months,
+        latest=latest,
+    )
+
+
 def generate_flow(
     pathname: str,
     path_dss: str,
@@ -1154,6 +1214,242 @@ class HMSModel:
     def _write_params(self, params):
         """Override in subclasses to write calibration parameters to .basin."""
         pass
+
+
+@dataclass(frozen=True)
+class HMSCalibrationParameter:
+    """Definition of one scalar HEC-HMS calibration parameter.
+
+    Attributes:
+        name: Public calibration parameter name, e.g. ``"tc_mult"``.
+        keyword: HEC-HMS ``.basin`` keyword to update.
+        lower: Lower multiplier bound for SCE-UA.
+        upper: Upper multiplier bound for SCE-UA.
+        baseline: Optional absolute baseline value. If omitted, the value is
+            read from the target ``.basin`` file.
+    """
+
+    name: str
+    keyword: str
+    lower: float
+    upper: float
+    baseline: float | None = None
+
+
+def _read_hms_basin_keyword_value(
+    basin_path: str | Path,
+    subbasin: str,
+    keyword: str,
+) -> float:
+    text = Path(basin_path).read_text()
+    pattern = rf"Subbasin:\s+{re.escape(str(subbasin))}.*?^\s+{re.escape(keyword)}:\s*([\d.\-]+)"
+    match = re.search(pattern, text, flags=re.MULTILINE | re.DOTALL)
+    if not match:
+        raise ValueError(f"Keyword {keyword!r} not found for subbasin {subbasin!r}")
+    return float(match.group(1))
+
+
+class TextBasinHMSCalibrationModel(HMSModel):
+    """Calibratable HEC-HMS model backed by text ``.basin`` edits.
+
+    This class implements the common HMS calibration loop used by HYDRA:
+    write candidate basin parameters, execute HMS, read the latest output DSS
+    flow series, and return a daily simulated hydrograph.
+
+    It is intentionally conservative: parameters are multiplicative factors
+    around the original basin values, and known HMS physical constraints are
+    enforced before writing.
+    """
+
+    def __init__(
+        self,
+        *args,
+        subbasin: str,
+        parameters: list[HMSCalibrationParameter],
+        output_pathname_prefix: str,
+        flow_unit_factor: float = 0.028316846592,
+        **kwargs,
+    ):
+        super().__init__(*args, **kwargs)
+        self.subbasin = str(subbasin)
+        self.parameters = parameters
+        self.output_pathname_prefix = output_pathname_prefix
+        self.flow_unit_factor = flow_unit_factor
+        self.basin_path = Path(self.path_model) / f"{self.name_basin}.basin"
+        self.baseline = {
+            p.name: p.baseline
+            if p.baseline is not None
+            else _read_hms_basin_keyword_value(self.basin_path, self.subbasin, p.keyword)
+            for p in self.parameters
+        }
+
+    @property
+    def parameter_bounds(self) -> list[tuple[str, float, float]]:
+        return [(p.name, p.lower, p.upper) for p in self.parameters]
+
+    def run_hms(self, *params) -> pd.Series:
+        self._write_params(params)
+        ret = run_hms_script(
+            self.path_model,
+            self.name_model,
+            [self.name_run],
+            hms_dir=self.hms_dir,
+            strict_logs=True,
+        )
+        if ret != 0:
+            raise RuntimeError(f"HEC-HMS failed or aborted internally; return code {ret}")
+
+        dss_path = self._find_output_dss()
+        df = read_hms_dss_timeseries(
+            str(dss_path),
+            self.output_pathname_prefix,
+            run_name=self.name_run,
+            latest=True,
+        )
+        if df.empty or "value" not in df.columns:
+            raise RuntimeError(f"No HMS output values found in {dss_path} for {self.output_pathname_prefix}")
+
+        return pd.Series(
+            df["value"].to_numpy(dtype=float) * self.flow_unit_factor,
+            index=pd.to_datetime(df["datetime"]),
+            name="sim_m3s",
+        ).sort_index().resample("D").mean().dropna()
+
+    def _find_output_dss(self) -> Path:
+        candidates = [
+            Path(self.path_model, self.name_run.replace(" ", "_") + ".dss"),
+            Path(self.path_model, self.name_run + ".dss"),
+            Path(self.path_model, self.name_model + ".dss"),
+        ]
+        dss_path = next((p for p in candidates if p.exists()), None)
+        if dss_path is None:
+            raise FileNotFoundError(f"No HMS output DSS found in {self.path_model}")
+        return dss_path
+
+    def _write_params(self, params):
+        if len(params) != len(self.parameters):
+            raise ValueError(f"Expected {len(self.parameters)} HMS parameters, received {len(params)}")
+
+        values = {
+            p.name: self.baseline[p.name] * float(value)
+            for p, value in zip(self.parameters, params)
+        }
+        self._apply_hms_constraints(values)
+        df = pd.DataFrame([values], index=[self.subbasin])
+        update_basin_file(
+            str(self.basin_path),
+            df,
+            {p.name: p.keyword for p in self.parameters},
+        )
+
+    @staticmethod
+    def _apply_hms_constraints(values: dict[str, float]) -> None:
+        """Apply simple physical constraints known to abort HEC-HMS runs."""
+        storage_keys = ["soil_storage", "soil_storage_mult"]
+        tension_keys = ["soil_tension", "soil_tension_mult"]
+        storage_key = next((k for k in storage_keys if k in values), None)
+        tension_key = next((k for k in tension_keys if k in values), None)
+        if storage_key and tension_key:
+            values[tension_key] = max(0.001, min(values[tension_key], 0.95 * values[storage_key]))
+
+
+def _align_hms_series(simulation, evaluation) -> tuple[np.ndarray, np.ndarray]:
+    if isinstance(simulation, pd.Series) and isinstance(evaluation, pd.Series):
+        idx = simulation.dropna().index.intersection(evaluation.dropna().index)
+        if len(idx):
+            return simulation.loc[idx].to_numpy(dtype=float), evaluation.loc[idx].to_numpy(dtype=float)
+    sim = np.asarray(simulation, dtype=float)
+    obs = np.asarray(evaluation, dtype=float)
+    n = min(len(sim), len(obs))
+    return sim[:n], obs[:n]
+
+
+def validate_hms_parameter_sensitivity(
+    model: TextBasinHMSCalibrationModel,
+    baseline: np.ndarray | None = None,
+    perturbed: np.ndarray | None = None,
+    min_delta: float = 1e-5,
+) -> dict[str, float]:
+    """Run baseline and perturbed HMS simulations and confirm parameters matter."""
+    if baseline is None:
+        baseline = np.ones(len(model.parameters), dtype=float)
+    if perturbed is None:
+        perturbed = np.array(
+            [p.lower if i % 2 == 0 else p.upper for i, p in enumerate(model.parameters)],
+            dtype=float,
+        )
+    q0 = model.run_hms(*baseline)
+    q1 = model.run_hms(*perturbed)
+    idx = q0.index.intersection(q1.index)
+    if len(idx) == 0:
+        raise RuntimeError("HMS sensitivity validation failed: runs do not overlap.")
+    max_delta = float(np.nanmax(np.abs(q0.loc[idx].values - q1.loc[idx].values)))
+    if not np.isfinite(max_delta) or max_delta < min_delta:
+        raise RuntimeError("HMS parameter edits did not change the hydrograph; calibration stopped.")
+    return {
+        "baseline_peak": float(q0.loc[idx].max()),
+        "perturbed_peak": float(q1.loc[idx].max()),
+        "max_delta": max_delta,
+    }
+
+
+def calibrate_hms_sceua(
+    model: TextBasinHMSCalibrationModel,
+    observed: pd.Series,
+    dbname: str,
+    n_evals: int = 120,
+    objective: str = "nse",
+    ngs: int | None = None,
+):
+    """Calibrate a HEC-HMS model with SPOTPY SCE-UA.
+
+    Args:
+        model: Calibratable HMS model.
+        observed: Observed discharge series, preferably daily with a
+            ``DatetimeIndex`` and units matching ``model.run_hms`` output.
+        dbname: SPOTPY database path without ``.csv``.
+        n_evals: Number of SCE-UA evaluations.
+        objective: ``"nse"`` (minimize ``-NSE``), ``"pbias_abs"``, or ``"rmse"``.
+        ngs: Number of SCE-UA complexes. Defaults to ``n_parameters + 1``.
+
+    Returns:
+        The SPOTPY sampler after completion.
+    """
+    try:
+        import spotpy
+    except ImportError as exc:
+        raise ImportError("calibrate_hms_sceua requires spotpy") from exc
+
+    class _Setup:
+        def __init__(self):
+            self.observed = observed.dropna()
+            self.params = [
+                spotpy.parameter.Uniform(name, lower, upper)
+                for name, lower, upper in model.parameter_bounds
+            ]
+
+        def parameters(self):
+            return spotpy.parameter.generate(self.params)
+
+        def simulation(self, vector):
+            return model.run_hms(*vector)
+
+        def evaluation(self):
+            return self.observed
+
+        def objectivefunction(self, simulation, evaluation):
+            sim, obs = _align_hms_series(simulation, evaluation)
+            if len(sim) == 0:
+                return np.inf
+            if objective == "nse":
+                return -spotpy.objectivefunctions.nashsutcliffe(obs, sim)
+            if objective == "pbias_abs":
+                return abs(spotpy.objectivefunctions.pbias(obs, sim))
+            return spotpy.objectivefunctions.rmse(obs, sim)
+
+    sampler = spotpy.algorithms.sceua(_Setup(), dbname=dbname, dbformat="csv")
+    sampler.sample(n_evals, ngs=ngs or len(model.parameters) + 1)
+    return sampler
 
 
 # ── Basin parameter extraction ────────────────────────────────────────────────
