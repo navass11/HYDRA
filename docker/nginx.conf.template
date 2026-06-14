@@ -34,9 +34,16 @@ server {
     }
 
     # Astro static site.
+    # Hashed assets (_astro/*.js, _astro/*.css) — immutable, 1 year.
+    location /_astro/ {
+        root       /usr/share/nginx/html;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+
+    # HTML pages — always revalidate so a new deploy is picked up immediately.
     location / {
         root       /usr/share/nginx/html;
         try_files  $uri $uri/ $uri.html /index.html;
-        add_header Cache-Control "public, max-age=3600";
+        add_header Cache-Control "no-cache";
     }
 }
