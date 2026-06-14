@@ -136,15 +136,24 @@ async def _refresh_requested_notebook_if_stale(
         return
 
     # Migration for the HMS notebook fixed after sessions already existed:
-    # old copies write into /workspace/data/hms/Tifton, now read-only in Azure.
+    # old copies write into /workspace/data/hms/Tifton, now read-only in Azure,
+    # or report hard-coded calibration metrics that were later removed.
     if relative.as_posix() == "modeling/hydrology/HEC_HMS.ipynb":
         current_text = _notebook_source_text(current)
         template = json.loads((NOTEBOOK_TEMPLATES_DIR / relative).read_bytes())
         template_text = _notebook_source_text(template)
-        if (
-            "PATH_MODEL    = '/workspace/data/hms/Tifton/'" in current_text
-            and "SOURCE_MODEL = Path('/workspace/data/hms/Tifton')" in template_text
-        ):
+        stale_markers = [
+            "PATH_MODEL    = '/workspace/data/hms/Tifton/'",
+            "Evaluate final calibrated parameter set",
+            "Calibration performance summary",
+            "Reference performance (LREW 74006",
+            "Cal (Jan-Apr 1970)",
+        ]
+        template_is_current = (
+            "SOURCE_MODEL = Path('/workspace/data/hms/Tifton')" in template_text
+            and "No calibrated parameter set is reported." in template_text
+        )
+        if template_is_current and any(marker in current_text for marker in stale_markers):
             await _jupyter_upload_notebook(client, dest, NOTEBOOK_TEMPLATES_DIR / relative)
 
 
