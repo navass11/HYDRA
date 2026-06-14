@@ -215,6 +215,36 @@ async def compare_interpolation(
             except Exception:
                 loocv[m] = None
 
+    # ── Regular grid for spatial map ─────────────────────────────────────────
+    PAD = 0.08
+    lat_min, lat_max = src_coords[:, 0].min() - PAD, src_coords[:, 0].max() + PAD
+    lon_min, lon_max = src_coords[:, 1].min() - PAD, src_coords[:, 1].max() + PAD
+    N = 45
+    grid_lats = np.linspace(lat_min, lat_max, N)
+    grid_lons = np.linspace(lon_min, lon_max, N)
+    glon, glat = np.meshgrid(grid_lons, grid_lats)
+    grid_coords = np.column_stack([glat.ravel(), glon.ravel()])
+
+    grid_values: dict[str, list[float | None]] = {}
+    for m in requested_methods:
+        try:
+            if m == "idw":
+                gv = _idw(src_coords, src_vals, grid_coords, idw_power)
+            elif m == "nearest":
+                gv = _nearest(src_coords, src_vals, grid_coords)
+            elif m == "rbf_linear":
+                gv = _rbf(src_coords, src_vals, grid_coords, "linear")
+            elif m == "rbf_thin_plate":
+                gv = _rbf(src_coords, src_vals, grid_coords, "thin_plate_spline")
+            elif m == "kriging_ordinary":
+                gv = _kriging_ordinary(src_coords, src_vals, grid_coords)
+            else:
+                grid_values[m] = [None] * (N * N)
+                continue
+            grid_values[m] = [round(float(v), 4) if np.isfinite(v) else None for v in gv]
+        except Exception:
+            grid_values[m] = [None] * (N * N)
+
     tgt_lat = tgt_coords[:, 0].tolist()
     tgt_lon = tgt_coords[:, 1].tolist()
     target_rows = [
@@ -242,4 +272,10 @@ async def compare_interpolation(
         },
         "stations": station_rows,
         "targets": target_rows,
+        "grid": {
+            "lats": [round(float(v), 5) for v in grid_lats.tolist()],
+            "lons": [round(float(v), 5) for v in grid_lons.tolist()],
+            "n": N,
+            "values": grid_values,
+        },
     }

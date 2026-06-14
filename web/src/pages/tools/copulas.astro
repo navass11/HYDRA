@@ -85,21 +85,24 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
         </div>
 
         <div id="results" class="hidden space-y-8">
+          <!-- Stats -->
           <div id="stats-row" class="grid grid-cols-2 lg:grid-cols-4 gap-4"></div>
 
-          <div class="grid lg:grid-cols-2 gap-8">
-            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-              <h3 class="font-semibold text-gray-800 mb-1">Observado vs sintético</h3>
-              <p class="text-sm text-gray-400 mb-4">Relación entre las dos primeras variables continuas.</p>
-              <div id="chart-scatter-main" class="h-80"></div>
-            </div>
-            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-              <h3 class="font-semibold text-gray-800 mb-1">Dependencia secundaria</h3>
-              <p class="text-sm text-gray-400 mb-4">Relación entre la segunda y tercera variable continua.</p>
-              <div id="chart-scatter-secondary" class="h-80"></div>
-            </div>
+          <!-- Scatter de todos los pares de variables continuas -->
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h3 class="font-semibold text-gray-800 mb-1">Observado vs sintético — dispersión por pares</h3>
+            <p class="text-sm text-gray-400 mb-4">Todos los pares de variables continuas: puntos observados (verde oscuro) sobre nube sintética (violeta).</p>
+            <div id="charts-pairs" class="grid gap-6"></div>
           </div>
 
+          <!-- Distribuciones marginales -->
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h3 class="font-semibold text-gray-800 mb-1">Distribuciones marginales</h3>
+            <p class="text-sm text-gray-400 mb-4">Histograma normalizado observado vs densidad sintética para cada variable continua.</p>
+            <div id="charts-marginals" class="grid gap-6"></div>
+          </div>
+
+          <!-- Matrices de correlación -->
           <div class="grid lg:grid-cols-2 gap-8">
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
               <h3 class="font-semibold text-gray-800 mb-1">Correlación observada</h3>
@@ -111,6 +114,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
             </div>
           </div>
 
+          <!-- Tabla de eventos sintéticos -->
           <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
             <h3 class="font-semibold text-gray-800 mb-4">Primeros eventos sintéticos</h3>
             <div class="overflow-auto max-h-72">
@@ -166,39 +170,26 @@ function setSource(demo: boolean) {
 
 function setRunning(running: boolean) {
   isRunning = running;
-  runBtn.disabled = running;
+  (runBtn as HTMLButtonElement).disabled = running;
   runLabel.textContent = running ? 'Ajustando...' : 'Ajustar cópula';
   runArrow.classList.toggle('hidden', running);
   runSpinner.classList.toggle('hidden', !running);
 }
 
-function showError(msg: string) {
-  errorBox.textContent = msg;
-  errorBox.classList.remove('hidden');
-}
-
-function clearError() {
-  errorBox.classList.add('hidden');
-  errorBox.textContent = '';
-}
+function showError(msg: string) { errorBox.textContent = msg; errorBox.classList.remove('hidden'); }
+function clearError() { errorBox.classList.add('hidden'); errorBox.textContent = ''; }
 
 btnDemo.addEventListener('click', () => setSource(true));
 btnUpload.addEventListener('click', () => fileInput.click());
 fileInput.addEventListener('change', () => {
-  if (fileInput.files?.[0]) {
-    setSource(false);
-    fileNameEl.textContent = fileInput.files[0].name;
-  }
+  if (fileInput.files?.[0]) { setSource(false); fileNameEl.textContent = fileInput.files[0].name; }
 });
 sampleInput.addEventListener('input', () => { sampleVal.textContent = sampleInput.value; });
 
 runBtn.addEventListener('click', async () => {
   if (isRunning) return;
   clearError();
-  if (!useDemo && !fileInput.files?.[0]) {
-    showError('Selecciona un CSV o vuelve a usar los datos demo.');
-    return;
-  }
+  if (!useDemo && !fileInput.files?.[0]) { showError('Selecciona un CSV o vuelve a usar los datos demo.'); return; }
   setRunning(true);
 
   const fd = new FormData();
@@ -210,10 +201,7 @@ runBtn.addEventListener('click', async () => {
 
   try {
     const res = await fetch(`${apiUrl}/api/copulas/fit-sample`, { method: 'POST', body: fd });
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.detail ?? 'Error en el servidor');
-    }
+    if (!res.ok) { const err = await res.json(); throw new Error(err.detail ?? 'Error en el servidor'); }
     renderResults(await res.json());
   } catch (err: any) {
     showError(err.message ?? 'Error desconocido');
@@ -230,64 +218,119 @@ function statCard(label: string, value: string, unit = '') {
   </div>`;
 }
 
-function unpack(rows: any[], key: string) {
-  return rows.map((row) => Number(row[key])).filter((value) => Number.isFinite(value));
+function unpack(rows: any[], key: string): number[] {
+  return rows.map(r => Number(r[key])).filter(Number.isFinite);
 }
 
 function corrMatrix(payload: any, vars: string[]) {
-  return vars.map((row) => vars.map((col) => payload?.[row]?.[col] ?? null));
+  return vars.map(row => vars.map(col => payload?.[row]?.[col] ?? null));
+}
+
+// Simple KDE using Gaussian kernel for marginal density
+function kde(data: number[], xVals: number[], bandwidth?: number): number[] {
+  const n = data.length;
+  const h = bandwidth ?? (1.06 * Math.sqrt(data.reduce((a, v) => a + (v - data.reduce((s, x) => s + x, 0) / n) ** 2, 0) / n) * Math.pow(n, -0.2));
+  return xVals.map(x => {
+    const sum = data.reduce((acc, xi) => acc + Math.exp(-0.5 * ((x - xi) / h) ** 2), 0);
+    return sum / (n * h * Math.sqrt(2 * Math.PI));
+  });
+}
+
+function renderPairScatters(observed: any[], synthetic: any[], cont: string[]) {
+  const container = document.getElementById('charts-pairs')!;
+  const pairs: [string, string][] = [];
+  for (let i = 0; i < cont.length; i++)
+    for (let j = i + 1; j < cont.length; j++)
+      pairs.push([cont[i], cont[j]]);
+
+  // Responsive grid: 1 col if 1 pair, 2 cols if 2–4 pairs, 3 cols if more
+  const cols = pairs.length === 1 ? 1 : pairs.length <= 4 ? 2 : 3;
+  container.className = `grid gap-6 grid-cols-${cols}`;
+
+  container.innerHTML = pairs.map(([x, y]) =>
+    `<div id="pair-${x}-${y}" class="h-72"></div>`
+  ).join('');
+
+  pairs.forEach(([x, y]) => {
+    Plotly.newPlot(`pair-${x}-${y}`, [
+      {
+        x: unpack(synthetic, x), y: unpack(synthetic, y),
+        mode: 'markers', type: 'scatter', name: 'Sintético',
+        marker: { color: '#7c3aed', size: 4, opacity: 0.25 },
+      },
+      {
+        x: unpack(observed, x), y: unpack(observed, y),
+        mode: 'markers', type: 'scatter', name: 'Observado',
+        marker: { color: '#0f766e', size: 9, opacity: 0.85, line: { color: '#fff', width: 1 } },
+      },
+    ], {
+      ...layoutBase,
+      xaxis: { title: x, gridcolor: '#f1f5f9' },
+      yaxis: { title: y, gridcolor: '#f1f5f9' },
+      legend: { orientation: 'h', y: -0.28, x: 0 },
+    }, { responsive: true, displayModeBar: false });
+  });
+}
+
+function renderMarginals(observed: any[], synthetic: any[], cont: string[]) {
+  const container = document.getElementById('charts-marginals')!;
+  const cols = cont.length <= 2 ? cont.length : 3;
+  container.className = `grid gap-6 grid-cols-${cols}`;
+  container.innerHTML = cont.map(v => `<div id="marg-${v}" class="h-64"></div>`).join('');
+
+  cont.forEach(v => {
+    const obs = unpack(observed, v).sort((a, b) => a - b);
+    const syn = unpack(synthetic, v);
+    if (!obs.length || !syn.length) return;
+
+    const xMin = Math.min(...obs, ...syn);
+    const xMax = Math.max(...obs, ...syn);
+    const xs = Array.from({ length: 120 }, (_, i) => xMin + (i / 119) * (xMax - xMin));
+    const dens = kde(syn, xs);
+
+    Plotly.newPlot(`marg-${v}`, [
+      {
+        x: obs, type: 'histogram', name: 'Observado',
+        histnorm: 'probability density',
+        marker: { color: 'rgba(15,118,110,0.55)', line: { color: '#0f766e', width: 1 } },
+        nbinsx: Math.min(20, Math.max(8, Math.floor(obs.length / 4))),
+      },
+      {
+        x: xs, y: dens, type: 'scatter', mode: 'lines', name: 'Sintético (KDE)',
+        line: { color: '#7c3aed', width: 2.5 },
+      },
+    ], {
+      ...layoutBase,
+      margin: { t: 10, r: 16, b: 48, l: 54 },
+      xaxis: { title: v, gridcolor: '#f1f5f9' },
+      yaxis: { title: 'Densidad', gridcolor: '#f1f5f9' },
+      legend: { orientation: 'h', y: -0.32, x: 0 },
+      bargap: 0.05,
+    }, { responsive: true, displayModeBar: false });
+  });
 }
 
 function renderHeatmap(target: string, corr: any, vars: string[]) {
   Plotly.newPlot(target, [{
-    z: corrMatrix(corr, vars),
-    x: vars,
-    y: vars,
-    type: 'heatmap',
-    zmin: -1,
-    zmax: 1,
-    colorscale: 'RdBu',
-    reversescale: true,
+    z: corrMatrix(corr, vars), x: vars, y: vars,
+    type: 'heatmap', zmin: -1, zmax: 1,
+    colorscale: 'RdBu', reversescale: true,
     hovertemplate: '%{y} vs %{x}: %{z:.2f}<extra></extra>',
+    text: corrMatrix(corr, vars).map(row => row.map(v => v != null ? v.toFixed(2) : '')),
+    texttemplate: '%{text}',
   }], {
     ...layoutBase,
     margin: { t: 10, r: 20, b: 60, l: 70 },
   }, { responsive: true, displayModeBar: false });
 }
 
-function renderScatter(target: string, observed: any[], synthetic: any[], x: string, y: string) {
-  Plotly.newPlot(target, [
-    {
-      x: unpack(observed, x),
-      y: unpack(observed, y),
-      mode: 'markers',
-      type: 'scatter',
-      name: 'Observado',
-      marker: { color: '#0f766e', size: 8, opacity: 0.78 },
-    },
-    {
-      x: unpack(synthetic, x),
-      y: unpack(synthetic, y),
-      mode: 'markers',
-      type: 'scatter',
-      name: 'Sintético',
-      marker: { color: '#7c3aed', size: 5, opacity: 0.35 },
-    },
-  ], {
-    ...layoutBase,
-    xaxis: { title: x },
-    yaxis: { title: y },
-    legend: { orientation: 'h', y: -0.25 },
-  }, { responsive: true, displayModeBar: false });
-}
-
 function renderTable(rows: any[], vars: string[]) {
   const head = document.getElementById('synthetic-head')!;
   const body = document.getElementById('synthetic-body')!;
-  head.innerHTML = `<tr>${vars.map((v) => `<th class="py-2 pr-4">${v}</th>`).join('')}</tr>`;
-  body.innerHTML = rows.slice(0, 40).map((row) => `
-    <tr>${vars.map((v) => `<td class="py-2 pr-4 text-gray-700">${Number(row[v]).toFixed(3)}</td>`).join('')}</tr>
-  `).join('');
+  head.innerHTML = `<tr>${vars.map(v => `<th class="py-2 pr-4 text-gray-500 font-semibold">${v}</th>`).join('')}</tr>`;
+  body.innerHTML = rows.slice(0, 40).map(row =>
+    `<tr>${vars.map(v => `<td class="py-2 pr-4 text-gray-700">${Number(row[v]).toFixed(3)}</td>`).join('')}</tr>`
+  ).join('');
 }
 
 function renderResults(data: any) {
@@ -295,19 +338,19 @@ function renderResults(data: any) {
   resultsEl.classList.remove('hidden');
 
   const summary = data.summary;
-  const cont = summary.continuous_vars;
-  const disc = summary.discrete_vars;
+  const cont: string[] = summary.continuous_vars;
+  const disc: string[] = summary.discrete_vars;
   const vars = [...cont, ...disc];
 
   document.getElementById('stats-row')!.innerHTML = [
     statCard('Eventos observados', String(summary.n_observed), summary.source),
     statCard('Eventos sintéticos', String(summary.n_synthetic), 'muestras'),
     statCard(cont[0], String(summary[`${cont[0]}_syn_mean`]), 'media sintética'),
-    statCard('Variables', String(vars.length), `${cont.length} continuas`),
+    statCard('Variables', String(vars.length), `${cont.length} continuas + ${disc.length} discreta(s)`),
   ].join('');
 
-  renderScatter('chart-scatter-main', data.observed, data.synthetic, cont[0], cont[1] ?? cont[0]);
-  renderScatter('chart-scatter-secondary', data.observed, data.synthetic, cont[1] ?? cont[0], cont[2] ?? cont[0]);
+  renderPairScatters(data.observed, data.synthetic, cont);
+  renderMarginals(data.observed, data.synthetic, cont);
   renderHeatmap('chart-corr-observed', data.observed_corr, vars);
   renderHeatmap('chart-corr-synthetic', data.synthetic_corr, vars);
   renderTable(data.synthetic, vars);

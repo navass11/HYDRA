@@ -3,6 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 ---
 
 <Layout title="Interpolación Espacial — HYDRA">
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js" is:inline></script>
 
   <section class="pt-24 pb-10 bg-gradient-to-br from-slate-950 via-teal-950 to-emerald-900 text-white">
     <div class="max-w-7xl mx-auto px-6">
@@ -12,7 +13,7 @@ import Layout from '../../layouts/Layout.astro';
       <h1 class="text-4xl font-extrabold mb-2">Interpolación Espacial</h1>
       <p class="text-white/76 text-lg max-w-3xl">
         Compara IDW, Kriging Ordinario, RBF y Vecino más cercano sobre el mismo conjunto de estaciones.
-        Sube tres CSV (coordenadas, valores, puntos objetivo) y obtén resultados y RMSE de validación cruzada por método.
+        Sube tres CSV (coordenadas, valores, puntos objetivo) y obtén el mapa interpolado y RMSE de validación cruzada.
       </p>
     </div>
   </section>
@@ -70,7 +71,7 @@ import Layout from '../../layouts/Layout.astro';
               </div>
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-700 mb-1">Col variable (CSV valores, vacío = primera numérica)</label>
+              <label class="block text-xs font-semibold text-gray-700 mb-1">Col variable (vacío = primera numérica)</label>
               <input id="value-col" type="text" value="" placeholder="ej. precip_mm"
                 class="w-full rounded-lg border border-gray-200 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400" />
             </div>
@@ -163,6 +164,23 @@ import Layout from '../../layouts/Layout.astro';
             </div>
           </div>
 
+          <!-- ── MAPA ESPACIAL ── -->
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+              <div>
+                <h3 class="font-semibold text-gray-800">Mapa espacial interpolado</h3>
+                <p class="text-sm text-gray-400 mt-0.5">Campo interpolado sobre malla regular 45×45. Puntos = estaciones observadas.</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <label class="text-sm font-medium text-gray-600">Método:</label>
+                <select id="map-method-select"
+                  class="rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 bg-white">
+                </select>
+              </div>
+            </div>
+            <div id="chart-map" class="h-96"></div>
+          </div>
+
           <!-- RMSE comparativo -->
           <div id="rmse-panel" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
             <h3 class="font-semibold text-gray-800 mb-1">RMSE por método (LOOCV)</h3>
@@ -202,6 +220,8 @@ import Layout from '../../layouts/Layout.astro';
 </Layout>
 
 <script>
+declare const Plotly: any;
+
 const dsRadios = document.querySelectorAll<HTMLInputElement>('input[name="datasource"]');
 const csvArea = document.getElementById('csv-area')!;
 const csvStations = document.getElementById('csv-stations') as HTMLInputElement;
@@ -218,6 +238,7 @@ const errorBox = document.getElementById('error-box')!;
 const placeholder = document.getElementById('placeholder')!;
 const loadingMsg = document.getElementById('loading-msg')!;
 const resultsEl = document.getElementById('results')!;
+const mapMethodSelect = document.getElementById('map-method-select') as HTMLSelectElement;
 
 dsRadios.forEach(r => r.addEventListener('change', () => {
   csvArea.classList.toggle('hidden', r.value === 'demo' && r.checked);
@@ -242,6 +263,65 @@ const METHOD_LABELS: Record<string, string> = {
   nearest: 'Vecino más cercano',
 };
 const METHOD_COLORS: string[] = ['#0d9488', '#6366f1', '#f59e0b', '#ef4444', '#8b5cf6'];
+
+let _gridData: any = null;
+let _stationsData: any[] = [];
+let _variable = '';
+
+function renderMap(method: string) {
+  if (!_gridData || !_gridData.values[method]) return;
+
+  const { lats, lons, n, values } = _gridData;
+  const flat = values[method] as (number | null)[];
+
+  // Reshape flat → 2D (rows=lat, cols=lon)
+  const z: (number | null)[][] = [];
+  for (let r = 0; r < n; r++) {
+    z.push(flat.slice(r * n, (r + 1) * n));
+  }
+
+  const heatmap = {
+    type: 'heatmap',
+    x: lons,
+    y: lats,
+    z,
+    colorscale: 'YlGnBu',
+    showscale: true,
+    colorbar: { title: { text: _variable, side: 'right' }, thickness: 14, len: 0.9 },
+    hovertemplate: 'lon: %{x:.3f}<br>lat: %{y:.3f}<br>%{z:.2f}<extra></extra>',
+  };
+
+  const scatter = {
+    type: 'scatter',
+    mode: 'markers+text',
+    x: _stationsData.map(s => s.lon),
+    y: _stationsData.map(s => s.lat),
+    text: _stationsData.map(s => String(s.observed)),
+    textposition: 'top center',
+    textfont: { size: 10, color: '#1e293b' },
+    marker: {
+      color: _stationsData.map(s => s.observed),
+      colorscale: 'YlGnBu',
+      size: 12,
+      line: { color: '#1e293b', width: 1.5 },
+      showscale: false,
+    },
+    name: 'Estaciones',
+    hovertemplate: 'lon: %{x:.3f}<br>lat: %{y:.3f}<br>obs: %{text}<extra>Estación</extra>',
+  };
+
+  Plotly.newPlot('chart-map', [heatmap, scatter], {
+    paper_bgcolor: 'transparent',
+    plot_bgcolor: '#f8fafc',
+    margin: { t: 10, r: 20, b: 50, l: 60 },
+    font: { family: 'Inter, system-ui, sans-serif', size: 11 },
+    xaxis: { title: 'Longitud', gridcolor: '#e2e8f0' },
+    yaxis: { title: 'Latitud', gridcolor: '#e2e8f0', scaleanchor: 'x', scaleratio: 1 },
+    legend: { x: 0.01, y: 0.99, bgcolor: 'rgba(255,255,255,0.85)', bordercolor: '#e2e8f0', borderwidth: 1 },
+  }, { responsive: true, displayModeBar: false });
+}
+
+mapMethodSelect.addEventListener('change', () => renderMap(mapMethodSelect.value));
 
 function renderRmseBars(loocv: Record<string, number | null>, methods: string[]) {
   const validEntries = methods
@@ -296,20 +376,38 @@ async function runInterpolation() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.detail ?? 'Error en la interpolación');
 
-    const { summary, stations, targets } = data;
+    const { summary, stations, targets, grid } = data;
 
     document.getElementById('stat-stations')!.textContent = String(summary.n_stations);
     document.getElementById('stat-targets')!.textContent = String(summary.n_targets);
     document.getElementById('stat-variable')!.textContent = summary.variable;
 
+    // Populate method selector for map
+    _gridData = grid;
+    _stationsData = stations;
+    _variable = summary.variable;
+    mapMethodSelect.innerHTML = summary.methods
+      .map((m: string) => `<option value="${m}">${METHOD_LABELS[m] ?? m}</option>`)
+      .join('');
+
     const hasSomeLoocv = Object.values(summary.loocv_rmse ?? {}).some(v => v != null);
     const rmsePanel = document.getElementById('rmse-panel')!;
     if (hasSomeLoocv) {
       renderRmseBars(summary.loocv_rmse, summary.methods);
+      // Pre-select method with best RMSE
+      const best = Object.entries(summary.loocv_rmse as Record<string, number | null>)
+        .filter(([, v]) => v != null)
+        .sort(([, a], [, b]) => (a as number) - (b as number))[0]?.[0];
+      if (best && summary.methods.includes(best)) mapMethodSelect.value = best;
       rmsePanel.classList.remove('hidden');
     } else {
       rmsePanel.classList.add('hidden');
     }
+
+    resultsEl.classList.remove('hidden');
+
+    // Render map after DOM is visible
+    requestAnimationFrame(() => renderMap(mapMethodSelect.value));
 
     // Targets table
     const thead = document.getElementById('targets-thead')!;
@@ -329,7 +427,6 @@ async function runInterpolation() {
       </tr>`
     ).join('');
 
-    resultsEl.classList.remove('hidden');
   } catch (err: any) {
     showError(err.message ?? 'Error desconocido');
     placeholder.classList.remove('hidden');
