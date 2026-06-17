@@ -4,237 +4,237 @@
     "title": "Corrección de sesgo",
     "category": "Clima",
     "icon": "⚖️",
-    "href": "http://localhost/jupyter/lab/tree/climate/bias_correction.ipynb"
+    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/climate/bias_correction.ipynb"
   },
   {
     "slug": "climate--event_extraction",
     "title": "Extracción de eventos",
     "category": "Clima",
     "icon": "🌊",
-    "href": "http://localhost/jupyter/lab/tree/climate/event_extraction.ipynb"
+    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/climate/event_extraction.ipynb"
   },
   {
     "slug": "climate--extreme_value_analysis",
     "title": "Análisis de extremos",
     "category": "Clima",
     "icon": "📈",
-    "href": "http://localhost/jupyter/lab/tree/climate/extreme_value_analysis.ipynb"
+    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/climate/extreme_value_analysis.ipynb"
   },
   {
     "slug": "climate--spatial_analysis--bayes_hierarchical",
     "title": "Bayes jerárquico",
     "category": "Análisis esp.",
     "icon": "🧮",
-    "href": "http://localhost/jupyter/lab/tree/climate/spatial_analysis/bayes_hierarchical.ipynb"
+    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/climate/spatial_analysis/bayes_hierarchical.ipynb"
   },
   {
     "slug": "climate--spatial_analysis--compound_flooding",
     "title": "Compound Flooding",
     "category": "Análisis esp.",
     "icon": "🌊",
-    "href": "http://localhost/jupyter/lab/tree/climate/spatial_analysis/compound_flooding.ipynb"
+    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/climate/spatial_analysis/compound_flooding.ipynb"
   },
   {
     "slug": "climate--spatial_analysis--copulas",
     "title": "Cópulas",
     "category": "Análisis esp.",
     "icon": "🔗",
-    "href": "http://localhost/jupyter/lab/tree/climate/spatial_analysis/copulas.ipynb"
+    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/climate/spatial_analysis/copulas.ipynb"
   },
   {
     "slug": "climate--spatial_analysis--interpolation",
     "title": "Interpolación",
     "category": "Análisis esp.",
     "icon": "📍",
-    "href": "http://localhost/jupyter/lab/tree/climate/spatial_analysis/interpolation.ipynb"
+    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/climate/spatial_analysis/interpolation.ipynb"
   },
   {
     "slug": "climate--spatial_analysis--regional_frequency_analysis",
     "title": "Frecuencia regional",
     "category": "Análisis esp.",
     "icon": "📉",
-    "href": "http://localhost/jupyter/lab/tree/climate/spatial_analysis/regional_frequency_analysis.ipynb"
+    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/climate/spatial_analysis/regional_frequency_analysis.ipynb"
   },
   {
     "slug": "climate--spatial_field_generation",
     "title": "Campos espaciales",
     "category": "Clima",
     "icon": "🗺️",
-    "href": "http://localhost/jupyter/lab/tree/climate/spatial_field_generation.ipynb"
+    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/climate/spatial_field_generation.ipynb"
   },
   {
     "slug": "climate--stochastic_generation",
     "title": "Generación estocástica",
     "category": "Clima",
     "icon": "🎲",
-    "href": "http://localhost/jupyter/lab/tree/climate/stochastic_generation.ipynb"
+    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/climate/stochastic_generation.ipynb"
   },
   {
     "slug": "data_sources--climate_change--CDS_download",
     "title": "CDS / Copernicus",
     "category": "Datos",
     "icon": "☁️",
-    "href": "http://localhost/jupyter/lab/tree/data_sources/climate_change/CDS_download.ipynb"
+    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/data_sources/climate_change/CDS_download.ipynb"
   },
   {
     "slug": "data_sources--climate_change--ESGF_download",
     "title": "ESGF / CMIP6",
     "category": "Datos",
     "icon": "🌡️",
-    "href": "http://localhost/jupyter/lab/tree/data_sources/climate_change/ESGF_download.ipynb"
+    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/data_sources/climate_change/ESGF_download.ipynb"
   },
   {
     "slug": "data_sources--rainfall--AEMET_download",
     "title": "AEMET",
     "category": "Datos",
     "icon": "🌦️",
-    "href": "http://localhost/jupyter/lab/tree/data_sources/rainfall/AEMET_download.ipynb"
+    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/data_sources/rainfall/AEMET_download.ipynb"
   },
   {
     "slug": "data_sources--rainfall--ERA5_download",
     "title": "ERA5",
     "category": "Datos",
     "icon": "🌍",
-    "href": "http://localhost/jupyter/lab/tree/data_sources/rainfall/ERA5_download.ipynb"
+    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/data_sources/rainfall/ERA5_download.ipynb"
   },
   {
     "slug": "data_sources--rainfall--GPM_download",
     "title": "GPM / IMERG",
     "category": "Datos",
     "icon": "🛰️",
-    "href": "http://localhost/jupyter/lab/tree/data_sources/rainfall/GPM_download.ipynb"
+    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/data_sources/rainfall/GPM_download.ipynb"
   },
   {
     "slug": "data_sources--rainfall--Meteostat_download",
     "title": "Meteostat",
     "category": "Datos",
     "icon": "🌤️",
-    "href": "http://localhost/jupyter/lab/tree/data_sources/rainfall/Meteostat_download.ipynb"
+    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/data_sources/rainfall/Meteostat_download.ipynb"
   },
   {
     "slug": "data_sources--rainfall--OGIMET_download",
     "title": "OGIMET SYNOP",
     "category": "Datos",
     "icon": "📡",
-    "href": "http://localhost/jupyter/lab/tree/data_sources/rainfall/OGIMET_download.ipynb"
+    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/data_sources/rainfall/OGIMET_download.ipynb"
   },
   {
     "slug": "data_sources--rainfall--PERSSIAN_download",
     "title": "PERSIANN",
     "category": "Datos",
     "icon": "🌂",
-    "href": "http://localhost/jupyter/lab/tree/data_sources/rainfall/PERSSIAN_download.ipynb"
+    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/data_sources/rainfall/PERSSIAN_download.ipynb"
   },
   {
     "slug": "data_sources--river_discharge--GRDC_download",
     "title": "GRDC",
     "category": "Datos",
     "icon": "🌊",
-    "href": "http://localhost/jupyter/lab/tree/data_sources/river_discharge/GRDC_download.ipynb"
+    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/data_sources/river_discharge/GRDC_download.ipynb"
   },
   {
     "slug": "data_sources--river_discharge--GloFAS_download",
     "title": "GloFAS",
     "category": "Datos",
     "icon": "🏞️",
-    "href": "http://localhost/jupyter/lab/tree/data_sources/river_discharge/GloFAS_download.ipynb"
+    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/data_sources/river_discharge/GloFAS_download.ipynb"
   },
   {
     "slug": "data_sources--river_discharge--USGS_download",
     "title": "USGS",
     "category": "Datos",
     "icon": "💧",
-    "href": "http://localhost/jupyter/lab/tree/data_sources/river_discharge/USGS_download.ipynb"
+    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/data_sources/river_discharge/USGS_download.ipynb"
   },
   {
     "slug": "data_sources--soils--SoilGrids_download",
     "title": "SoilGrids",
     "category": "Datos",
     "icon": "🪨",
-    "href": "http://localhost/jupyter/lab/tree/data_sources/soils/SoilGrids_download.ipynb"
+    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/data_sources/soils/SoilGrids_download.ipynb"
   },
   {
     "slug": "modeling--hydraulic--HEC_RAS",
     "title": "HEC-RAS",
     "category": "Modelización",
     "icon": "🌊",
-    "href": "http://localhost/jupyter/lab/tree/modeling/hydraulic/HEC_RAS.ipynb"
+    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/modeling/hydraulic/HEC_RAS.ipynb"
   },
   {
     "slug": "modeling--hydraulic--SFINCS",
     "title": "SFINCS",
     "category": "Modelización",
     "icon": "🌀",
-    "href": "http://localhost/jupyter/lab/tree/modeling/hydraulic/SFINCS.ipynb"
+    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/modeling/hydraulic/SFINCS.ipynb"
   },
   {
     "slug": "modeling--hydrology--HEC_HMS",
     "title": "HEC-HMS",
     "category": "Modelización",
     "icon": "🏔️",
-    "href": "http://localhost/jupyter/lab/tree/modeling/hydrology/HEC_HMS.ipynb"
+    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/modeling/hydrology/HEC_HMS.ipynb"
   },
   {
     "slug": "modeling--hydrology--SWAT",
     "title": "SWAT+",
     "category": "Modelización",
     "icon": "🌿",
-    "href": "http://localhost/jupyter/lab/tree/modeling/hydrology/SWAT.ipynb"
+    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/modeling/hydrology/SWAT.ipynb"
   },
   {
     "slug": "pilot_cases--los_corrales_buelna--01_data_acquisition",
     "title": "Besaya 01 · Datos",
     "category": "Caso piloto",
     "icon": "①",
-    "href": "http://localhost/jupyter/lab/tree/pilot_cases/los_corrales_buelna/01_data_acquisition.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/pilot_cases/los_corrales_buelna/01_data_acquisition.ipynb"
   },
   {
     "slug": "pilot_cases--los_corrales_buelna--02_spatial_interpolation",
     "title": "Besaya 02 · Interpolación",
     "category": "Caso piloto",
     "icon": "②",
-    "href": "http://localhost/jupyter/lab/tree/pilot_cases/los_corrales_buelna/02_spatial_interpolation.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/pilot_cases/los_corrales_buelna/02_spatial_interpolation.ipynb"
   },
   {
     "slug": "pilot_cases--los_corrales_buelna--03_extreme_value_analysis",
     "title": "Besaya 03 · Extremos",
     "category": "Caso piloto",
     "icon": "③",
-    "href": "http://localhost/jupyter/lab/tree/pilot_cases/los_corrales_buelna/03_extreme_value_analysis.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/pilot_cases/los_corrales_buelna/03_extreme_value_analysis.ipynb"
   },
   {
     "slug": "pilot_cases--los_corrales_buelna--04_design_storm_hms",
     "title": "Besaya 04 · HEC-HMS diseño",
     "category": "Caso piloto",
     "icon": "④",
-    "href": "http://localhost/jupyter/lab/tree/pilot_cases/los_corrales_buelna/04_design_storm_hms.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/pilot_cases/los_corrales_buelna/04_design_storm_hms.ipynb"
   },
   {
     "slug": "pilot_cases--los_corrales_buelna--05_continuous_simulation",
     "title": "Besaya 05 · Simulación continua",
     "category": "Caso piloto",
     "icon": "⑤",
-    "href": "http://localhost/jupyter/lab/tree/pilot_cases/los_corrales_buelna/05_continuous_simulation.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/pilot_cases/los_corrales_buelna/05_continuous_simulation.ipynb"
   },
   {
     "slug": "pilot_cases--los_corrales_buelna--06_hybrid_event_reconstruction",
     "title": "Besaya 06 · Cópulas",
     "category": "Caso piloto",
     "icon": "⑥",
-    "href": "http://localhost/jupyter/lab/tree/pilot_cases/los_corrales_buelna/06_hybrid_event_reconstruction.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/pilot_cases/los_corrales_buelna/06_hybrid_event_reconstruction.ipynb"
   },
   {
     "slug": "pilot_cases--los_corrales_buelna--07_hec_ras_hydraulics",
     "title": "Besaya 07 · Hidráulica 2D",
     "category": "Caso piloto",
     "icon": "⑦",
-    "href": "http://localhost/jupyter/lab/tree/pilot_cases/los_corrales_buelna/07_hec_ras_hydraulics.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/pilot_cases/los_corrales_buelna/07_hec_ras_hydraulics.ipynb"
   },
   {
     "slug": "pilot_cases--los_corrales_buelna--08_hybrid_return_periods",
     "title": "Besaya 08 · Riesgo",
     "category": "Caso piloto",
     "icon": "⑧",
-    "href": "http://localhost/jupyter/lab/tree/pilot_cases/los_corrales_buelna/08_hybrid_return_periods.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/pilot_cases/los_corrales_buelna/08_hybrid_return_periods.ipynb"
   }
 ]
