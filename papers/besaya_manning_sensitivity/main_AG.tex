@@ -625,9 +625,9 @@ The authors declare that they have no known competing financial interests or per
 \smallskip
 \begin{tabular}{@{}p{4.5cm}p{9cm}@{}}
 Name:                  & \texttt{pyhydra} \\
-Developer:             & Salvador Navas, HidraLab \\
+Developer:             & Salvador Navas \\
 Contact:               & \texttt{salvador.navas@hidralab.com} \\
-Year first available:  & 2024 \\
+Year first available:  & 2025 \\
 Version used:          & 0.1.0 (commit \texttt{9f33b9e}) \\
 Hardware required:     & Standard workstation ($\geq$8\,GB RAM) \\
 Software required:     & Python $\geq$3.9; NumPy, pandas, scipy, rioxarray,
@@ -644,11 +644,16 @@ Persistent archive:    & A Zenodo archive of version 0.1.0 is available for
 
 \smallskip
 \begin{sloppypar}
-Key functions used in this study:
+Key functions used in this study.
+\textit{Model automation} (\texttt{pyhydra.modeling.hydraulic}):
+\texttt{setup\_sfincs\_model} and \texttt{run\_sfincs} for the \sfincs{}
+ensemble; \texttt{modify\_plan\_file}, \texttt{modify\_unsteady\_file} and
+\texttt{run\_hec\_ras} for the \hecras{} ensemble.
+\textit{Sensitivity analysis} (\texttt{pyhydra.modeling.hydraulic.sensitivity}):
 \texttt{generate\_manning\_combinations} (independent Monte Carlo sampler);
-\texttt{generate\_manning\_combinations\_correlated}
-(\texttt{pyhydra.climate.spatial\_analysis.copulas.GaussianCopulaSampler},
-used for the inter-class correlation analysis in Section~\ref{sec:res_robustness});
+\texttt{generate\_manning\_combinations\_correlated} (Gaussian-copula sampler,
+uses \texttt{pyhydra.climate.spatial\_analysis.copulas.GaussianCopulaSampler}
+internally, applied in Section~\ref{sec:res_robustness});
 \texttt{load\_flood\_ensemble};
 \texttt{spatial\_stats};
 \texttt{manning\_flood\_regression};
@@ -668,7 +673,7 @@ also included in the archive under \texttt{simulations/HEC-RAS/} and
 \smallskip
 \begin{tabular}{@{}p{4.5cm}p{9cm}@{}}
 Name:                  & Besaya River Manning--flood ensemble statistics \\
-Developer:             & Salvador Navas, HidraLab \\
+Developer:             & Salvador Navas \\
 Contact:               & \texttt{salvador.navas@hidralab.com} \\
 Form of repository:    & Zenodo (online database) \\
 Contents:              & Manning roughness coefficients, combination matrices,
