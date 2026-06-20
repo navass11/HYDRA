@@ -188,24 +188,24 @@ export const pilotCases: PilotCase[] = [
     color: 'from-blue-900 via-blue-800 to-slate-900',
     tag: 'Caso Piloto',
     summary: {
-      es: 'Los Corrales de Buelna es el caso piloto que dio origen a buena parte de HYDRA: un estudio real del riesgo de inundación del río Besaya desarrollado como Trabajo Fin de Máster (2017) y publicado después en la Revista de Obras Públicas. El flujo reproduce la cadena completa del trabajo original: datos observados, control topográfico LIDAR, interpolación espacial de precipitación, simulación hidrológica, reconstrucción sintética de avenidas, hidráulica 2D y mapas finales de peligrosidad, vulnerabilidad y riesgo. El municipio se asienta en el fondo de valle del Besaya, con una cuenca corta y de fuerte desnivel que responde muy rápido a la precipitación; más del 13% de la población y cerca del 20% de la superficie municipal pueden quedar afectados.',
-      en: 'Los Corrales de Buelna is the pilot case that seeded much of HYDRA: a real flood-risk study of the Besaya River developed as a Master\'s Thesis — TFM (2017) — and later published in Revista de Obras Públicas. The workflow reproduces the full chain of the original work: observed data, LIDAR topographic control, spatial rainfall interpolation, hydrological simulation, synthetic flood-event reconstruction, 2D hydraulics, and final hazard, vulnerability and risk maps. The town sits on the Besaya valley floor, in a short and steep catchment that responds rapidly to rainfall; more than 13% of the population and nearly 20% of the municipal area can be affected.',
+      es: 'Los Corrales de Buelna es el caso piloto que dio origen a HYDRA: un estudio real publicado en la Revista de Obras Públicas (ROP 3598, mayo 2018) y galardonado con el Premio de Mejor Calidad y Contenido en el 1.er Concurso Nacional de Proyectos Fin de Máster de Ingeniería de Caminos. El municipio se asienta en el fondo del valle del Besaya — cuenca corta y de fuerte desnivel que responde en horas a la precipitación — y ha sufrido inundaciones históricas recurrentes ligadas a los desbordamientos del río. La metodología propuesta abandona el paradigma habitual de los hietogramas de diseño: genera una colección extensa de eventos sintéticos de crecida mediante técnicas geoestadísticas, simulación hidrológica continua y regresión probabilística con cópulas, y aplica la estadística de extremos directamente sobre los calados y velocidades obtenidos de la simulación hidráulica 2D, no sobre la precipitación. Esto permite mapas de peligrosidad, vulnerabilidad y riesgo más fieles a la realidad histórica.',
+      en: 'Los Corrales de Buelna is the pilot case that seeded HYDRA: a real study published in the Revista de Obras Públicas (ROP 3598, May 2018) and awarded the Best Quality and Content Prize at the 1st National Competition of Masters Theses in Civil Engineering. The town sits on the Besaya valley floor — a short, steep catchment that responds to rainfall within hours — and has suffered recurring historical floods from the river. The proposed methodology abandons the conventional design-hyetogram paradigm: it generates a large collection of synthetic flood events through geostatistical techniques, continuous hydrological simulation and probabilistic regression with copulas, then applies extreme-value statistics directly to the water depths and velocities from 2D hydraulic simulation rather than to rainfall. This produces hazard, vulnerability and risk maps that more faithfully match historical observations.',
     },
     challenge: {
-      es: 'El problema no es solo calcular un caudal de diseño. La baja densidad de pluviómetros sobre la cuenca y la longitud limitada de las series observadas dificultan construir hietogramas representativos para eventos raros. Con la metodología habitual, las series cortas pueden subestimar los caudales pico en un 50-60%, lo que desplaza los mapas de inundación hacia el lado de la inseguridad. Además, la canalización urbana del tramo medio evita desbordamientos locales pero traslada el problema aguas abajo, donde el cauce se vuelve meandriforme, pierde velocidad y deposita sedimentos.',
-      en: 'The problem is not merely estimating a design discharge. Sparse rain-gauge coverage and limited observed record length make it difficult to build representative hyetographs for rare events. With the conventional workflow, short records can underestimate peak flows by 50-60%, shifting flood maps toward the unsafe side. In addition, the urban channelisation of the middle reach prevents local overtopping but transfers the problem downstream, where the river becomes meandering, loses velocity and deposits sediment.',
+      es: 'La metodología habitual calcula la magnitud de una inundación tomando como datos de partida los hietogramas de diseño asociados a distintos períodos de retorno, obtenidos a partir de la estadística de extremos de la precipitación, asumiendo una respuesta homogénea en toda la cuenca. El problema surge al no incluir variables que afectan a la respuesta: el grado de saturación del suelo, la distribución espacial de la lluvia o la forma del hidrograma resultante. En el Besaya, la escasa densidad de pluviómetros hace que el modelo hidrológico reduzca sistemáticamente los caudales punta entre un 50 y un 60 % respecto a los observados en el aforo. Si se añade que las series cortas no capturan las dinámicas de crecida más extremas, el resultado es un espacio de eventos posibles muy incompleto que empuja los mapas de inundación hacia el lado de la inseguridad.',
+      en: 'The conventional method estimates flood magnitude from design hyetographs associated with return periods derived from extreme-value statistics of rainfall, assuming a homogeneous catchment response. The problem arises from excluding key variables: soil moisture, spatial rainfall distribution and the resulting hydrograph shape. In the Besaya, sparse rain-gauge coverage causes the hydrological model to systematically reduce peak flows by 50–60 % compared with gauged observations. Combined with short records that miss the most extreme flood dynamics, the result is a very incomplete event space that pushes flood maps toward the unsafe side.',
     },
     approach: {
-      es: 'HYDRA organiza el caso en ocho notebooks reproducibles. La idea central procede del artículo de partida: no estimar la inundación solo desde hietogramas de diseño, sino reconstruir muchas dinámicas de avenida y aplicar la estadística de extremos sobre el calado y la velocidad resultantes. A partir de 42 años de caudales diarios se separan 209 eventos, se clasifican formas de hidrograma con PCA y K-Means, se generan 4973 eventos sintéticos con Cópulas Gaussianas, se seleccionan 400 escenarios representativos con MaxDiss y se simulan hidráulicamente los casos necesarios para reconstruir el espacio completo de inundaciones. La validación se apoya en la ortofoto histórica de 1946, cuya llanura fluvial coincide con la mancha generada para T10.',
-      en: 'HYDRA organises the case into eight reproducible notebooks. The core idea comes from the starting article: do not estimate flooding only from design hyetographs, but reconstruct many flood-event dynamics and apply extreme-value statistics to the resulting water depth and velocity. From 42 years of daily discharge, 209 events are separated, hydrograph shapes are classified with PCA and K-Means, 4973 synthetic events are generated with Gaussian Copulas, 400 representative scenarios are selected with MaxDiss, and the necessary hydraulic cases are simulated to reconstruct the full flood space. Validation uses the 1946 historical orthophoto, whose floodplain matches the generated T10 extent.',
+      es: 'La metodología parte de la mejora de la información pluviométrica mediante técnicas geoestadísticas (KO, UK, IDW) que generan series distribuidas por subcuencas; IDW resulta el mejor método dado que en esta cuenca no existe correlación entre altitud y precipitación. Con esas series se calibra HEC-HMS (SMA + Clark + Muskingum) sobre los aforos de Torrelavega y Las Caldas, logrando NSE > 0.8. La simulación continua de 42 años genera la serie de caudales diarios de la que se extraen los eventos de inundación (separados por umbral de desbordamiento) y se caracterizan por cuatro parámetros: Qmax, Qmed, duración T y tipo de hidrograma según su forma. PCA reduce la dimensionalidad; K-Means clasifica los hidrogramas en tipos representativos; las Cópulas Gaussianas (Ben Alaya et al., 2014) generan sintéticamente miles de eventos preservando la correlación entre parámetros; MaxDiss selecciona el subconjunto más representativo del espacio de variación. Los hidrogramas se reconstruyen con polinomios de grado 2 que preservan Qmax y Qmed. La simulación 2D con Iber sobre una malla RTIN del LIDAR de 0.5 pts/m² produce calados y velocidades para los eventos seleccionados. Finalmente, KNN (k = 6, óptimo determinado por minimización del error acumulado) reconstruye los resultados para el resto de eventos y la CDF empírica píxel a píxel entrega calados y velocidades asociados a cada período de retorno, sobre los que se calculan los índices HR, AV y riesgo según la metodología MAGRAMA 2013.',
+      en: 'The methodology starts by improving rainfall information through geostatistical techniques (OK, UK, IDW) that generate distributed subcatchment series; IDW performs best because no elevation-precipitation correlation exists in this basin. Those series feed an HEC-HMS calibration (SMA + Clark + Muskingum) against the Torrelavega and Las Caldas gauges, achieving NSE > 0.8. A 42-year continuous simulation yields the daily flow series from which flood events are extracted (separated by an overbank threshold) and characterised by four parameters: Qmax, Qmed, duration T and hydrograph shape type. PCA reduces dimensionality; K-Means classifies hydrographs into representative types; Gaussian Copulas (Ben Alaya et al., 2014) synthetically generate thousands of events preserving parameter correlations; MaxDiss selects the most representative subset of the event space. Hydrographs are reconstructed with degree-2 polynomials preserving Qmax and Qmed. 2D simulation with Iber on a RTIN mesh from 0.5 pts/m² LIDAR data produces depth and velocity for the selected events. Finally, KNN (k = 6, optimal value minimising accumulated error) reconstructs results for the remaining events and a pixel-wise empirical CDF delivers depth and velocity associated with each return period, from which HR, AV and risk indices are computed per the MAGRAMA 2013 methodology.',
     },
     steps: [
       {
         number: 1,
         title: { es: 'Adquisición de datos', en: 'Data acquisition' },
         description: {
-          es: 'Carga de 13 estaciones pluviométricas del Gobierno de Cantabria y datos foronómicos diarios en el período Oct 1970 – Oct 2012. Control de calidad: clipping de outliers, validación de fechas, consenso temporal. Exportación de rain_daily.csv, flow_daily.csv y stations_meta.csv.',
-          en: 'Loading 13 rainfall stations from Cantabria Government and daily flow gauge data for Oct 1970 – Oct 2012. Quality control: outlier clipping, date validation, temporal consensus. Export of rain_daily.csv, flow_daily.csv and stations_meta.csv.',
+          es: 'Carga de 13 estaciones pluviométricas diarias del Gobierno de Cantabria y datos foronómicos de Torrelavega y Las Caldas (Oct 1970 – Oct 2012). Comparativa de modelos digitales del terreno: MDT 25 m del IGN (LIDAR) frente a la Base Topográfica Armonizada (BTA) de la Consejería de Cantabria; las diferencias se concentran en zonas de arboleda espesa y láminas de agua. Control de calidad de los datos LIDAR 0.5 pts/m²: densidad de puntos y clasificación.',
+          en: 'Loading 13 daily rainfall stations from Cantabria Government and flow gauge data at Torrelavega and Las Caldas (Oct 1970 – Oct 2012). Digital elevation model comparison: IGN 25 m DTM (LIDAR) vs. Cantabria BTA; differences concentrate in dense woodland and water surfaces. Quality control of 0.5 pts/m² LIDAR data: point density and classification.',
         },
         notebookPath: 'pilot_cases/los_corrales_buelna/01_data_acquisition.ipynb',
         tags: ['Datos'],
@@ -213,10 +213,10 @@ export const pilotCases: PilotCase[] = [
       },
       {
         number: 2,
-        title: { es: 'Interpolación espacial', en: 'Spatial interpolation' },
+        title: { es: 'Interpolación geoestadística', en: 'Geostatistical interpolation' },
         description: {
-          es: 'Comparativa de tres métodos geoestadísticos: Kriging Ordinario, Kriging Universal e IDW. Validación cruzada para seleccionar el método con menor RMSE. Generación de campos de precipitación diaria distribuidos sobre las subcuencas del Besaya.',
-          en: 'Comparison of three geostatistical methods: Ordinary Kriging, Universal Kriging and IDW. Cross-validation to select the method with lowest RMSE. Generation of daily distributed precipitation fields over the Besaya subbasins.',
+          es: 'Comparativa de Kriging Ordinario (KO), Universal-Kriging (UK) e IDW sobre la red de pluviómetros del Besaya. Validación cruzada representada en diagramas de Taylor (correlación, desviación típica y RMSE). IDW produce el mejor ajuste: en esta cuenca no existe correlación entre altitud y precipitación, lo que invalida la ventaja de UK. Las series interpoladas se distribuyen sobre las 9 subcuencas del Besaya como forzamiento del modelo hidrológico.',
+          en: 'Comparison of Ordinary Kriging (OK), Universal Kriging (UK) and IDW over the Besaya rain-gauge network. Cross-validation represented in Taylor diagrams (correlation, standard deviation and RMSE). IDW gives the best fit: no elevation-precipitation correlation exists in this catchment, which negates UK\'s advantage. The interpolated series are distributed over 9 Besaya subbasins as hydrological model forcing.',
         },
         notebookPath: 'pilot_cases/los_corrales_buelna/02_spatial_interpolation.ipynb',
         tags: ['Análisis esp.'],
@@ -224,10 +224,10 @@ export const pilotCases: PilotCase[] = [
       },
       {
         number: 3,
-        title: { es: 'Análisis de valores extremos', en: 'Extreme value analysis' },
+        title: { es: 'Análisis de extremos de caudal', en: 'Streamflow extreme value analysis' },
         description: {
-          es: 'Ajuste de distribuciones GEV y GPD a la serie de caudales en las estaciones de aforo de Torrelavega y Las Caldas. Estimación de cuantiles para períodos de retorno T10, T100 y T500. Análisis de precipitaciones extremas para la obtención de hietogramas de cálculo.',
-          en: 'GEV and GPD distribution fitting to flow series at Torrelavega and Las Caldas gauging stations. Quantile estimation for T10, T100 and T500 return periods. Extreme precipitation analysis to generate design hyetograms.',
+          es: 'Ajuste de distribuciones GEV y GPD a las series de caudales observados en los aforos de Torrelavega y Las Caldas mediante MLE y L-momentos. Estimación de cuantiles de caudal para T10, T100 y T500 con bandas de incertidumbre. Estos cuantiles sirven para contextualizar la capacidad de la simulación continua y como referencia de comparación con la metodología habitual de tormenta de diseño.',
+          en: 'GEV and GPD fitting to observed flow series at Torrelavega and Las Caldas gauges via MLE and L-moments. Streamflow quantile estimation for T10, T100 and T500 with uncertainty bands. These quantiles contextualise the continuous simulation capacity and serve as a reference to compare with the conventional design-storm approach.',
         },
         notebookPath: 'pilot_cases/los_corrales_buelna/03_extreme_value_analysis.ipynb',
         tags: ['Clima'],
@@ -235,10 +235,10 @@ export const pilotCases: PilotCase[] = [
       },
       {
         number: 4,
-        title: { es: 'Tormenta de diseño + HEC-HMS', en: 'Design storm + HEC-HMS' },
+        title: { es: 'Calibración HEC-HMS', en: 'HEC-HMS calibration' },
         description: {
-          es: 'Hietogramas de diseño asociados a T10, T100 y T500. Modelo hidrológico HEC-HMS con método SMA de infiltración y transformación unitaria. Calibración en Torrelavega y Las Caldas (Oct 1970 – Oct 2000) y validación (Oct 2000 – Oct 2012). Nash-Sutcliffe > 0.8 a escala diaria.',
-          en: 'Design hyetograms for T10, T100 and T500. HEC-HMS hydrological model with SMA infiltration and unit hydrograph transformation. Calibration at Torrelavega and Las Caldas (Oct 1970 – Oct 2000) and validation (Oct 2000 – Oct 2012). Nash-Sutcliffe > 0.8 at daily scale.',
+          es: 'Modelo hidrológico HEC-HMS con SMA (Soil Moisture Accounting) para la infiltración —tres capas: suelo, agua subterránea 1 y 2—, Clark para la transformación lluvia-caudal y Muskingum para el tránsito en cauce. Calibración sobre las series de caudal diario en Torrelavega y Las Caldas (Oct 1970 – Oct 2000) y validación (Oct 2000 – Oct 2012) con Nash-Sutcliffe > 0.8. La escasa densidad de pluviómetros causa una reducción sistemática del 50–60 % en los caudales punta respecto a los observados.',
+          en: 'HEC-HMS hydrological model with SMA (Soil Moisture Accounting) for infiltration — three layers: soil, groundwater 1 and 2 —, Clark for rainfall-runoff transformation and Muskingum for channel routing. Calibration on daily flow series at Torrelavega and Las Caldas (Oct 1970 – Oct 2000) and validation (Oct 2000 – Oct 2012) with Nash-Sutcliffe > 0.8. Sparse rain-gauge coverage causes a systematic 50–60 % reduction in peak flows compared with observations.',
         },
         notebookPath: 'pilot_cases/los_corrales_buelna/04_design_storm_hms.ipynb',
         tags: ['Modelización'],
@@ -246,10 +246,10 @@ export const pilotCases: PilotCase[] = [
       },
       {
         number: 5,
-        title: { es: 'Simulación continua', en: 'Continuous simulation' },
+        title: { es: 'Simulación continua y separación de eventos', en: 'Continuous simulation & event separation' },
         description: {
-          es: 'Simulación hidrológica continua de 42 años con HEC-HMS para obtener la serie temporal de caudales sintéticos. Separación de la serie en eventos de inundación estableciendo un umbral de caudal. Cada evento queda caracterizado por cuatro parámetros: Q_max, Q_med, duración T y tipo de hidrograma.',
-          en: '42-year continuous HEC-HMS hydrological simulation to obtain the synthetic flow time series. Event separation by flow threshold. Each event is characterised by four parameters: Q_max, Q_med, duration T and hydrograph type.',
+          es: 'Simulación hidrológica continua de 42 años (Oct 1970 – Oct 2012) con HEC-HMS y las series IDW para obtener la serie de caudal diario en Los Corrales. Separación en eventos de inundación mediante un umbral de desbordamiento: inicio en la inflexión de la pendiente creciente que supera el umbral; fin en la primera curva de recesión que lo cruza. Cada evento queda caracterizado por cuatro parámetros: Qmax, Qmed, duración T y tipo de hidrograma según su forma.',
+          en: 'Continuous 42-year (Oct 1970 – Oct 2012) HEC-HMS simulation with IDW series to obtain the daily flow series at Los Corrales. Event separation via an overbank threshold: onset at the rising-limb inflection that exceeds the threshold; end at the first recession curve that crosses it back. Each event is characterised by four parameters: Qmax, Qmed, duration T and hydrograph shape type.',
         },
         notebookPath: 'pilot_cases/los_corrales_buelna/05_continuous_simulation.ipynb',
         tags: ['Modelización'],
@@ -257,10 +257,10 @@ export const pilotCases: PilotCase[] = [
       },
       {
         number: 6,
-        title: { es: 'Reconstrucción híbrida (cópulas)', en: 'Hybrid event reconstruction (copulas)' },
+        title: { es: 'Síntesis híbrida de hidrogramas', en: 'Hybrid hydrograph synthesis' },
         description: {
-          es: 'Clasificación de hidrogramas según su forma mediante PCA y K-Means. Generación de eventos sintéticos mediante regresión probabilística con Cópulas Gaussianas (Ben Alaya et al., 2014). Selección de eventos representativos por algoritmo de máxima disimilitud (MaxDiss). Reconstrucción de hidrogramas con polinomios de grado 2.',
-          en: 'Hydrograph shape classification via PCA and K-Means. Synthetic event generation via probabilistic regression with Gaussian Copulas (Ben Alaya et al., 2014). Representative event selection by Maximum Dissimilarity Algorithm (MaxDiss). Hydrograph reconstruction with 2nd-degree polynomials.',
+          es: 'PCA reduce la dimensionalidad de la forma del hidrograma; K-Means clasifica los eventos en tipos representativos. Regresión probabilística con Cópulas Gaussianas (Ben Alaya et al., 2014) genera miles de eventos sintéticos preservando la correlación entre Qmax, Qmed, T y tipo. MaxDiss (Máxima Disimilitud) selecciona el subconjunto más representativo que cubre todo el espacio de variación. Cada hidrograma sintético se reconstruye con un polinomio de grado 2 Q*(Q) que preserva Qmax y Qmed: Q*ᵢ = a·(Qᵢ)² + b·Qᵢ.',
+          en: 'PCA reduces hydrograph shape dimensionality; K-Means classifies events into representative types. Probabilistic regression with Gaussian Copulas (Ben Alaya et al., 2014) generates thousands of synthetic events preserving the correlation among Qmax, Qmed, T and type. MaxDiss (Maximum Dissimilarity) selects the most representative subset covering the full variation space. Each synthetic hydrograph is reconstructed with a degree-2 polynomial Q*(Q) preserving Qmax and Qmed: Q*ᵢ = a·(Qᵢ)² + b·Qᵢ.',
         },
         notebookPath: 'pilot_cases/los_corrales_buelna/06_hybrid_event_reconstruction.ipynb',
         tags: ['Análisis esp.', 'Clima'],
@@ -268,10 +268,10 @@ export const pilotCases: PilotCase[] = [
       },
       {
         number: 7,
-        title: { es: 'Hidráulica 2D (Iber / HEC-RAS)', en: '2D hydraulics (Iber / HEC-RAS)' },
+        title: { es: 'Simulación hidráulica 2D', en: '2D hydraulic simulation' },
         description: {
-          es: 'Modelización hidráulica bidimensional de flujo turbulento en lámina libre. Malla de cálculo generada con RTIN sobre MDT LIDAR (0.5 pts/m²). Asignación de coeficientes de rugosidad de Manning por usos del suelo. Mapas de calado y velocidad para los eventos sintéticos seleccionados.',
-          en: '2D turbulent free-surface hydraulic modelling. Computational mesh generated with RTIN on LIDAR DTM (0.5 pts/m²). Manning roughness coefficient assignment by land use. Depth and velocity maps for selected synthetic events.',
+          es: 'Simulación bidimensional de flujo turbulento en lámina libre en régimen no permanente con Iber (artículo original) y HEC-RAS 2D (notebook HYDRA). Malla RTIN generada sobre el LIDAR de 0.5 pts/m² con tolerancia altimétrica de 0.5 m y lado máximo de 8 m. Los hidrogramas reconstruidos de los eventos seleccionados por MaxDiss se introducen en los elementos perimetrales de la malla. Salida: series de calado y velocidad por evento para toda la zona de estudio.',
+          en: 'Two-dimensional turbulent free-surface flow simulation in unsteady regime with Iber (original article) and HEC-RAS 2D (HYDRA notebook). RTIN mesh generated from 0.5 pts/m² LIDAR with 0.5 m altimetric tolerance and 8 m maximum side. The reconstructed hydrographs of MaxDiss-selected events are introduced at the perimeter elements of the mesh. Output: depth and velocity time series per event for the entire study area.',
         },
         notebookPath: 'pilot_cases/los_corrales_buelna/07_hec_ras_hydraulics.ipynb',
         tags: ['Modelización'],
@@ -281,8 +281,8 @@ export const pilotCases: PilotCase[] = [
         number: 8,
         title: { es: 'Períodos de retorno y mapas de riesgo', en: 'Return periods & risk maps' },
         description: {
-          es: 'Reconstrucción de manchas de inundación para eventos no simulados mediante interpolación KNN. Estadística de extremos píxel a píxel con CDF empírica para obtener calado y velocidad por período de retorno. Mapas de peligrosidad (índice HR), vulnerabilidad (AV) y riesgo según metodología MAGRAMA 2013 para T10, T100 y T500.',
-          en: 'Flood spot reconstruction for non-simulated events via KNN interpolation. Pixel-wise extreme statistics with empirical CDF to obtain depth and velocity by return period. Hazard (HR index), vulnerability (AV) and risk maps per MAGRAMA 2013 methodology for T10, T100 and T500.',
+          es: 'Reconstrucción de calados y velocidades para eventos no simulados mediante KNN con k = 6 vecinos (valor óptimo determinado minimizando el error acumulado sobre las 10 últimas de las 150 primeras simulaciones). CDF empírica píxel a píxel: Prob(X ≤ xᵢ) = i/(N+1); período de retorno T a partir de i ≈ N(1 − 1/λT). Mapas de peligrosidad (índice HR), vulnerabilidad (AV) y riesgo según MAGRAMA 2013 para T10, T100 y T500. La mancha T10 coincide geométricamente con la llanura fluvial histórica del Besaya documentada en la ortofoto de 1946.',
+          en: 'Depth and velocity reconstruction for non-simulated events via KNN with k = 6 neighbours (optimal value determined by minimising accumulated error over the last 10 of the first 150 simulations). Pixel-wise empirical CDF: Prob(X ≤ xᵢ) = i/(N+1); return period T from i ≈ N(1 − 1/λT). Hazard (HR index), vulnerability (AV) and risk maps per MAGRAMA 2013 for T10, T100 and T500. The T10 flood extent matches geometrically the historical Besaya floodplain documented in the 1946 orthophoto.',
         },
         notebookPath: 'pilot_cases/los_corrales_buelna/08_hybrid_return_periods.ipynb',
         tags: ['Análisis esp.', 'Modelización'],
@@ -291,34 +291,34 @@ export const pilotCases: PilotCase[] = [
     ],
     stats: [
       { value: '13', label: { es: 'Estaciones pluviométricas', en: 'Rain gauges' } },
-      { value: '42', label: { es: 'Años de datos (1970–2012)', en: 'Years of data (1970–2012)' } },
-      { value: 'T10·T100·T500', label: { es: 'Períodos de retorno', en: 'Return periods' } },
+      { value: '42 años', label: { es: 'Simulación continua (1970–2012)', en: 'Continuous simulation (1970–2012)' } },
+      { value: 'k=6 KNN', label: { es: 'Vecinos óptimos (mín. error)', en: 'Optimal neighbours (min. error)' } },
       { value: '>13%', label: { es: 'Población en zona inundable', en: 'Population in floodplain' } },
     ],
     keyFindings: [
       {
-        es: 'La metodología híbrida genera manchas de inundación más extensas que la metodología habitual para el mismo período de retorno, permaneciendo del lado de la seguridad.',
-        en: 'The hybrid methodology generates larger flood spots than the traditional approach for the same return period, remaining on the conservative side.',
+        es: 'La estadística de extremos se aplica sobre calados y velocidades de inundación —no sobre la precipitación ni el caudal punta— logrando mapas de peligrosidad más fieles a la dinámica real del río.',
+        en: 'Extreme-value statistics are applied to flood depths and velocities — not to rainfall or peak discharge — producing hazard maps that more faithfully reflect the actual river dynamics.',
       },
       {
-        es: 'La mancha de inundación para T10 coincide con la llanura histórica del río Besaya documentada en la ortofoto de 1946, lo que valida de forma independiente la metodología.',
-        en: 'The T10 flood spot coincides with the historical Besaya floodplain documented in the 1946 orthophoto, providing independent validation of the methodology.',
+        es: 'La escasa densidad de pluviómetros reduce sistemáticamente los caudales punta del modelo HEC-HMS entre un 50 y un 60 % respecto a los observados; la generación sintética de eventos mediante Cópulas Gaussianas es imprescindible para cubrir ese rango de caudales máximos.',
+        en: 'Sparse rain-gauge coverage systematically reduces HEC-HMS peak flows by 50–60 % relative to observations; synthetic event generation via Gaussian Copulas is essential to cover that peak-flow range.',
       },
       {
-        es: 'La metodología desplaza el foco estadístico: el período de retorno se calcula sobre calados y velocidades de inundación, no únicamente sobre lluvia o caudal de entrada.',
-        en: 'The methodology shifts the statistical focus: the return period is computed on flood depths and velocities, not only on rainfall or input discharge.',
+        es: 'La mancha de inundación para T10 coincide geométricamente con la llanura fluvial histórica documentada en la ortofoto de 1946, validando de forma independiente que los eventos generados son físicamente plausibles.',
+        en: 'The T10 flood extent matches geometrically the historical floodplain documented in the 1946 orthophoto, independently validating that the generated events are physically plausible.',
       },
       {
-        es: 'Las series cortas y la baja densidad de pluviómetros pueden subestimar los caudales pico en un 50–60%. La generación de eventos sintéticos mediante cópulas cubre el abanico de dinámicas que la metodología habitual no alcanza.',
-        en: 'Short records and sparse rain-gauge coverage can underestimate peak flows by 50–60%. Synthetic event generation via copulas covers the range of dynamics that the conventional workflow misses.',
+        es: 'La metodología híbrida genera manchas de inundación más extensas que la metodología habitual de tormenta de diseño para el mismo período de retorno, permaneciendo del lado de la seguridad.',
+        en: 'The hybrid methodology produces larger flood extents than the conventional design-storm approach for the same return period, remaining on the safe side.',
       },
       {
-        es: 'La canalización urbana del tramo medio evita desbordamientos locales pero traslada el problema aguas abajo al reducir la velocidad del flujo y depositar sedimentos.',
-        en: 'The urban channelling of the middle reach prevents local overflows but transfers the problem downstream by reducing flow velocity and depositing sediments.',
+        es: 'El algoritmo KNN con k = 6 vecinos (óptimo determinado por minimización del error acumulado) permite reconstruir las manchas de inundación del espacio completo de eventos sin necesidad de simulación hidráulica individualizada.',
+        en: 'The KNN algorithm with k = 6 neighbours (optimal value determined by minimising accumulated error) reconstructs flood extents for the full event space without individual hydraulic simulation.',
       },
       {
-        es: 'Una inundación para cualquier período de retorno estudiado puede afectar a más del 13% de la población y al 20% de la superficie del municipio, con al menos 1 fallecido potencial.',
-        en: 'A flood for any studied return period can affect more than 13% of the population and 20% of the town\'s surface area, with at least 1 potential fatality.',
+        es: 'Una inundación para cualquier período de retorno estudiado puede afectar a más del 13 % de la población y al 20 % de la superficie del municipio; la canalización del tramo medio traslada el problema aguas abajo sin eliminarlo.',
+        en: 'A flood for any studied return period can affect more than 13 % of the population and 20 % of the municipal area; the channelisation of the middle reach transfers the problem downstream without eliminating it.',
       },
     ],
     references: [
@@ -417,24 +417,24 @@ export const pilotCases: PilotCase[] = [
     color: 'from-orange-900 via-red-900 to-slate-900',
     tag: 'Caso Piloto',
     summary: {
-      es: 'La DANA del 29 de octubre de 2024 desencadenó el episodio de lluvia más extremo registrado en España en los últimos 50 años, acumulando más de 900 mm en ocho horas en el municipio de Chiva. Las cuencas del Barranc del Poyo y del Magro respondieron en minutos con caudales punta de diseño milenario, causando más de 220 víctimas mortales y miles de millones de euros en daños. Este caso piloto aplica HYDRA para caracterizar el episodio observado: exploración y control de calidad de los registros disponibles, ajuste de distribuciones de valores extremos y estimación del período de retorno del evento.',
-      en: 'The 29 October 2024 DANA triggered the most extreme rainfall episode recorded in Spain in the last 50 years, accumulating more than 900 mm in eight hours at the municipality of Chiva. The Barranc del Poyo and Magro catchments responded in minutes with millennial-design peak flows, causing more than 220 fatalities and billions of euros in damage. This pilot case applies HYDRA to characterise the observed episode: exploration and quality control of available records, extreme-value distribution fitting and return-period estimation of the event.',
+      es: 'La DANA del 29 de octubre de 2024 desencadenó el episodio de precipitación más extremo registrado en la Comunitat Valenciana: la estación de Turís (8337X) acumuló 710,8 mm en 24 horas — récord nacional — y Carlet (V103) registró 265,1 mm simultáneamente. Este caso piloto es la implementación en HYDRA del trabajo publicado en las VIII Jornadas de Ingeniería del Agua (JIA 2025, Zaragoza): "Comparación de métodos de ajuste para la distribución de precipitaciones extremas: Análisis del evento de octubre 2024 en Valencia" (del Jesus, Navas y Urrea, IHCantabria, 2025). El objetivo central es evaluar cómo se comportan tres métodos de ajuste de la GEV — MLE, L-momentos e inferencia bayesiana — frente a la inclusión o exclusión del evento extremo, a tres escalas espaciales: análisis individual en las dos estaciones más afectadas, análisis regional de frecuencia local (RFA local, 9 estaciones próximas) y análisis regional de frecuencia global (RFA global, red amplia de la Comunitat Valenciana).',
+      en: 'The 29 October 2024 DANA triggered the most extreme precipitation episode ever recorded in the Valencian Community: the Turís station (8337X) accumulated 710.8 mm in 24 hours — a national record — while Carlet (V103) simultaneously recorded 265.1 mm. This pilot case is the HYDRA implementation of the work published at the VIII Jornadas de Ingeniería del Agua (JIA 2025, Zaragoza): "Comparison of Fitting Methods for Extreme Precipitation Distributions: Analysis of the October 2024 Event in Valencia" (del Jesus, Navas and Urrea, IHCantabria, 2025). The central objective is to evaluate how three GEV fitting methods — MLE, L-moments and Bayesian inference — behave under the inclusion or exclusion of the extreme event, at three spatial scales: individual analysis at the two most affected stations, local regional frequency analysis (local RFA, 9 nearby stations) and global regional frequency analysis (global RFA, wide Valencian Community network).',
     },
     challenge: {
-      es: 'La caracterización estadística de eventos tan extremos es metodológicamente compleja: las series de datos disponibles son cortas en comparación con el período de retorno estimado, los pluviómetros horarios fallaron durante el episodio por saturación o daños materiales, y la rapidez del evento (menos de 8 horas) excede la resolución temporal de la mayoría de los registros históricos. Ello obliga a combinar múltiples fuentes (AEMET, CHJ, Meteostat, radar) y a ser muy cuidadoso con la selección del umbral de exceso para el ajuste GPD.',
-      en: 'The statistical characterisation of such extreme events is methodologically complex: available data series are short relative to the estimated return period, hourly rain gauges failed during the episode due to saturation or material damage, and the event\'s rapidity (under 8 hours) exceeds the temporal resolution of most historical records. This requires combining multiple sources (AEMET, CHJ, Meteostat, radar) and being very careful with the excess threshold selection for GPD fitting.',
+      es: 'La caracterización estadística de 710,8 mm/24h en Turís enfrenta un problema estructural: sin incluir el evento en la serie, los métodos clásicos estiman períodos de retorno inverosímilmente altos — más de 31.000 años con L-momentos y 11.453 años con MLE —, creando una falsa sensación de seguridad. Al incluirlo, los mismos métodos clásicos colapsan hacia períodos de retorno de 66–91 años en Turís, un salto de tres órdenes de magnitud que los hace poco fiables como herramienta de toma de decisiones. La inferencia bayesiana, al representar explícitamente la incertidumbre paramétrica, proporciona respuestas más estables (3.069 años sin evento, 66 años con evento) aunque igualmente sensibles al escenario. La escala de agregación espacial complica adicionalmente el análisis: el RFA global suaviza tanto el efecto del evento que puede subestimar el riesgo local extremo.',
+      en: 'The statistical characterisation of 710.8 mm/24h at Turís faces a structural problem: without including the event in the series, classical methods estimate implausibly high return periods — over 31,000 years with L-moments and 11,453 years with MLE — creating a false sense of security. When it is included, the same classical methods collapse to return periods of 66–91 years at Turís, a three-order-of-magnitude jump that makes them unreliable as decision-making tools. Bayesian inference, by explicitly representing parameter uncertainty, provides more stable answers (3,069 years without event, 66 years with event) though equally sensitive to the scenario. The spatial aggregation scale further complicates the analysis: the global RFA smooths the event effect so much that it can underestimate extreme local risk.',
     },
     approach: {
-      es: 'El caso se organiza en dos notebooks. El primero explora y depura los registros disponibles: series pluviométricas de estaciones AEMET y CHJ, caudales aforados en el Barranc del Poyo y el Turia, e imágenes de radar del MeteoSat. El segundo aplica el pipeline de análisis de extremos de HYDRA (GEV y GPD por MLE, L-momentos y MAP bayesiano) para estimar el período de retorno del episodio y construir bandas de incertidumbre.',
-      en: 'The case is organised in two notebooks. The first explores and cleans available records: rainfall series from AEMET and CHJ stations, gauged flows at the Barranc del Poyo and Turia, and MeteoSat radar images. The second applies the HYDRA extreme-value analysis pipeline (GEV and GPD via MLE, L-moments and Bayesian MAP) to estimate the episode\'s return period and build uncertainty bands.',
+      es: 'Los notebooks implementan la metodología del artículo JIA 2025. El primer notebook construye la base de datos: 9 estaciones seleccionadas de las redes AEMET (30 disponibles), SIAR (41) y AVAMET (153) distribuidas entre la costa y el interior de la Comunitat Valenciana, mapa de localización, análisis de cobertura temporal y extracción de series de máximos anuales (AMS) por año hidrológico. El segundo notebook aplica tres métodos de ajuste GEV — MLE (máxima verosimilitud), L-momentos (robusto frente a atípicos) e inferencia bayesiana (HMC vía Stan, 4 cadenas × 1000 muestras, priores débiles: μ∼N(0,10⁴), σ∼Cauchy(0,5), ξ∼N(0.25)) — bajo dos escenarios paralelos: sin el evento de 2024 y con él. Los cuantiles regionales (RFA) se obtienen estandarizando las series por Z-score, ajustando la GEV a la muestra conjunta regional y reescalando a escala local mediante z_T,i = y_T · s_i + x̄_i.',
+      en: 'The notebooks implement the JIA 2025 article methodology. The first notebook builds the database: 9 selected stations from the AEMET (30 available), SIAR (41) and AVAMET (153) networks distributed between the coast and inland Valencian Community, location map, temporal coverage analysis and annual maximum series (AMS) extraction by hydrological year. The second notebook applies three GEV fitting methods — MLE (maximum likelihood), L-moments (robust to outliers) and Bayesian inference (HMC via Stan, 4 chains × 1000 samples, weak priors: μ∼N(0,10⁴), σ∼Cauchy(0,5), ξ∼N(0.25)) — under two parallel scenarios: without the 2024 event and with it. Regional quantiles (RFA) are obtained by Z-score standardising the series, fitting the GEV to the joint regional sample and back-scaling to local scale via z_T,i = y_T · s_i + x̄_i.',
     },
     steps: [
       {
         number: 1,
-        title: { es: 'Exploración de datos', en: 'Data exploration' },
+        title: { es: 'Datos y contexto histórico', en: 'Data & historical context' },
         description: {
-          es: 'Carga de registros pluviométricos horarios y diarios de estaciones AEMET y CHJ para la cuenca del Turia y zonas afectadas. Control de calidad, detección de outliers y lagunas, visualización espacial de isoyetas del episodio y exportación de series limpias para el análisis de extremos.',
-          en: 'Loading hourly and daily rainfall records from AEMET and CHJ stations for the Turia catchment and affected areas. Quality control, outlier and gap detection, spatial isohyet visualisation of the episode, and export of clean series for extreme-value analysis.',
+          es: 'Carga de series diarias de 9 estaciones AEMET, SIAR y AVAMET. Mapa de localización con la red local (entorno de Turís y Carlet) y referencia a la red global de la Comunitat Valenciana. Análisis de cobertura temporal: longitud efectiva, porcentaje de lagunas, límite fiable de extrapolación (≈N/2 años). Extracción de máximos anuales (AMS) por año hidrológico. Visualización del evento DANA en el contexto de la serie histórica de Turís y Carlet — el valor de 2024 es un outlier extremo que supera entre 5 y 7 veces el máximo previo.',
+          en: 'Loading daily series from 9 AEMET, SIAR and AVAMET stations. Location map with the local network (Turís and Carlet area) and reference to the global Valencian Community network. Temporal coverage analysis: effective record length, gap percentage, reliable extrapolation limit (≈N/2 years). Annual maximum series (AMS) extraction by hydrological year. Visualisation of the DANA event in the historical context of Turís and Carlet — the 2024 value is an extreme outlier exceeding the previous maximum by a factor of 5 to 7.',
         },
         notebookPath: 'pilot_cases/valencia_dana/01_data_exploration.ipynb',
         tags: ['Datos'],
@@ -442,10 +442,10 @@ export const pilotCases: PilotCase[] = [
       },
       {
         number: 2,
-        title: { es: 'Análisis de valores extremos', en: 'Extreme value analysis' },
+        title: { es: 'Ajuste GEV y análisis regional', en: 'GEV fitting & regional analysis' },
         description: {
-          es: 'Ajuste de distribuciones GEV y GPD a las series de precipitación máxima anual y sobre umbral (POT). Estimación del período de retorno del evento del 29/10/2024 con intervalos de confianza bootstrap y MAP bayesiano. Comparación con los valores publicados por AEMET y con los mapas de peligrosidad del SNCZI.',
-          en: 'GEV and GPD fitting to annual maximum and POT precipitation series. Return-period estimation for the 29/10/2024 event with bootstrap confidence intervals and Bayesian MAP. Comparison with values published by AEMET and with SNCZI hazard maps.',
+          es: 'Análisis individual en Turís (8337X) y Carlet (V103) con tres métodos — MLE, L-momentos y bayesiano (HMC/Stan) — y dos escenarios: sin evento 2024 (SD) y con evento (CD). Tabla de cuantiles T10/T100/T500 y distribución de probabilidad del período de retorno del valor observado. Análisis regional de frecuencia (RFA) a escala local (9 estaciones) y global (red amplia): estandarización Z-score, ajuste GEV conjunto y retransformación a escala local. Comparación de estimaciones entre métodos y escalas para evaluar robustez y prudencia de cada enfoque.',
+          en: 'Individual analysis at Turís (8337X) and Carlet (V103) with three methods — MLE, L-moments and Bayesian (HMC/Stan) — and two scenarios: without 2024 event (SD) and with it (CD). Return-level table T10/T100/T500 and return-period probability distribution for the observed value. Regional frequency analysis (RFA) at local scale (9 stations) and global scale (wide network): Z-score standardisation, joint GEV fitting and back-transformation to local scale. Comparison of estimates across methods and scales to evaluate robustness and conservatism of each approach.',
         },
         notebookPath: 'pilot_cases/valencia_dana/02_extreme_value_analysis.ipynb',
         tags: ['Clima'],
@@ -453,37 +453,71 @@ export const pilotCases: PilotCase[] = [
       },
     ],
     stats: [
-      { value: '>900 mm', label: { es: 'Precipitación en 8 h (Chiva)', en: 'Rainfall in 8 h (Chiva)' } },
-      { value: '>220', label: { es: 'Víctimas mortales', en: 'Fatalities' } },
-      { value: 'T>500', label: { es: 'Período de retorno est.', en: 'Est. return period' } },
-      { value: '29/10/2024', label: { es: 'Fecha del evento', en: 'Event date' } },
+      { value: '710,8 mm/día', label: { es: 'Récord en Turís 8337X (29/10/2024)', en: 'Record at Turís 8337X (29/10/2024)' } },
+      { value: '66–91 años', label: { es: 'T retorno con evento (análisis indiv.)', en: 'Return period with event (indiv. analysis)' } },
+      { value: '>31.000 años', label: { es: 'T retorno sin evento (L-mom, Turís)', en: 'Return period without event (L-mom, Turís)' } },
+      { value: '3 métodos × 2', label: { es: 'MLE · L-mom · Bayes — SD vs CD', en: 'MLE · L-mom · Bayes — SD vs CD' } },
     ],
     keyFindings: [
       {
-        es: 'La precipitación acumulada en 8 horas en Chiva (>900 mm) supera el período de retorno de 500 años para acumulaciones diarias en la mayoría de las distribuciones ajustadas.',
-        en: 'The 8-hour accumulated precipitation at Chiva (>900 mm) exceeds the 500-year return period for daily accumulations in most fitted distributions.',
+        es: 'Sin incluir el evento en la serie, los métodos clásicos estiman períodos de retorno de 11.453 años (MLE) y 31.345 años (L-momentos) para los 710,8 mm de Turís — valores inverosímiles que crean una falsa sensación de seguridad y conducen a infraestimar el riesgo real.',
+        en: 'Without including the event in the series, classical methods estimate return periods of 11,453 years (MLE) and 31,345 years (L-moments) for the 710.8 mm at Turís — implausible values that create a false sense of security and lead to underestimating real risk.',
       },
       {
-        es: 'La rapidez del episodio (tiempo de concentración < 2 h en el Barranc del Poyo) expone la insuficiencia de los datos diarios para caracterizar eventos convectivos mediterráneos.',
-        en: 'The episode\'s rapidity (concentration time < 2 h in the Barranc del Poyo) exposes the inadequacy of daily data for characterising Mediterranean convective events.',
+        es: 'Al incluir el evento, los mismos métodos clásicos colapsan a 66–91 años en Turís y 70–95 años en Carlet: un salto de tres órdenes de magnitud que evidencia su alta sensibilidad al escenario y los hace poco fiables como herramienta estable de toma de decisiones.',
+        en: 'When the event is included, the same classical methods collapse to 66–91 years at Turís and 70–95 years at Carlet: a three-order-of-magnitude jump that reveals their high sensitivity to the scenario and makes them unreliable as stable decision-making tools.',
       },
       {
-        es: 'La combinación de fuentes (AEMET, CHJ, radar) es imprescindible: varios pluviómetros horarios fallaron durante el pico de intensidad, dejando lagunas en el registro.',
-        en: 'Combining sources (AEMET, CHJ, radar) is essential: several hourly rain gauges failed during the intensity peak, leaving gaps in the record.',
+        es: 'La inferencia bayesiana ofrece la respuesta más estable y coherente entre escenarios: 3.069 años sin evento vs 66 años con evento en Turís (análisis individual), evitando los saltos bruscos de MLE y L-momentos. Su superioridad se acentúa a altos períodos de retorno, donde la incertidumbre paramétrica domina.',
+        en: 'Bayesian inference provides the most stable and coherent response between scenarios: 3,069 years without event vs 66 years with event at Turís (individual analysis), avoiding the abrupt jumps of MLE and L-moments. Its superiority is accentuated at high return periods, where parameter uncertainty dominates.',
+      },
+      {
+        es: 'El RFA local (9 estaciones próximas) mejora la robustez respecto al análisis individual: T retorno con evento = 34–41 años en Turís, con menor dispersión entre métodos. Ofrece el mejor equilibrio entre sensibilidad al evento extremo y estabilidad estadística.',
+        en: 'Local RFA (9 nearby stations) improves robustness over individual analysis: return period with event = 34–41 years at Turís, with lower dispersion between methods. It offers the best balance between sensitivity to the extreme event and statistical stability.',
+      },
+      {
+        es: 'El RFA global suaviza excesivamente los efectos del evento: sin incluirlo, el período de retorno es infinito en ambas estaciones; con él, desciende a 13–19 años en Turís y 7–9 años en Carlet — valores que pueden subestimar el riesgo extremo local si el evento no se incorpora explícitamente.',
+        en: 'The global RFA over-smooths the event\'s effects: without including it, the return period is infinite at both stations; with it, it drops to 13–19 years at Turís and 7–9 years at Carlet — values that may underestimate extreme local risk if the event is not explicitly incorporated.',
+      },
+      {
+        es: 'La inclusión del evento de 2024 es determinante para obtener estimaciones realistas: para T500 en Turís, el nivel bayesiano individual pasa de 417,6 mm (sin evento) a 3.004,1 mm (con evento), y el RFA local de 313,7 mm a 1.415,6 mm — diferencias con implicaciones directas en el dimensionamiento de infraestructuras.',
+        en: 'Including the 2024 event is essential for realistic estimates: for T500 at Turís, the individual Bayesian level goes from 417.6 mm (without event) to 3,004.1 mm (with event), and the local RFA from 313.7 mm to 1,415.6 mm — differences with direct implications for infrastructure design.',
       },
     ],
     references: [
       {
         title: {
-          es: 'Informe preliminar AEMET sobre la DANA',
-          en: 'AEMET preliminary report on the DANA',
+          es: 'del Jesus, Navas y Urrea (2025) — JIA 2025',
+          en: 'del Jesus, Navas and Urrea (2025) — JIA 2025',
         },
         description: {
-          es: 'Análisis meteorológico oficial del episodio con registros pluviométricos, evolución sinóptica y comparación con valores históricos.',
-          en: 'Official meteorological analysis of the episode with rainfall records, synoptic evolution and comparison with historical values.',
+          es: 'Comparación de métodos de ajuste para la distribución de precipitaciones extremas: Análisis del evento de octubre 2024 en Valencia. VIII Jornadas de Ingeniería del Agua, Zaragoza, 22-23 oct. 2025. IHCantabria — Universidad de Cantabria.',
+          en: 'Comparison of Fitting Methods for Extreme Precipitation Distributions: Analysis of the October 2024 Event in Valencia. VIII Jornadas de Ingeniería del Agua, Zaragoza, 22-23 Oct. 2025. IHCantabria — Universidad de Cantabria.',
+        },
+        href: 'https://github.com/navass11/HYDRA/blob/main/Comunicacion_Lluvias_Valencia_V1.pdf',
+        cta: { es: 'Ver artículo', en: 'View paper' },
+      },
+      {
+        title: {
+          es: 'Informe AEMET — DANA octubre 2024',
+          en: 'AEMET report — October 2024 DANA',
+        },
+        description: {
+          es: 'Análisis meteorológico oficial del episodio: registros pluviométricos, evolución sinóptica de la DANA y comparación con valores históricos en la Comunitat Valenciana.',
+          en: 'Official meteorological analysis of the episode: rainfall records, synoptic evolution of the DANA and comparison with historical values in the Valencian Community.',
         },
         href: 'https://www.aemet.es/es/noticias/2024/11/dana_octubre_2024',
         cta: { es: 'Ver en AEMET', en: 'View at AEMET' },
+      },
+      {
+        title: {
+          es: 'Coles, Pericchi y Sisson (2003)',
+          en: 'Coles, Pericchi and Sisson (2003)',
+        },
+        description: {
+          es: 'A fully probabilistic approach to extreme rainfall modeling. Journal of Hydrology, 273(1), 35-50. Referencia metodológica central del análisis bayesiano: muestra que eventos históricos considerados "sorprendentes" no lo son cuando se incorpora la incertidumbre adecuadamente.',
+          en: 'A fully probabilistic approach to extreme rainfall modeling. Journal of Hydrology, 273(1), 35-50. Central methodological reference for the Bayesian analysis: shows that historically "surprising" events are not when uncertainty is properly incorporated.',
+        },
       },
     ],
     figures: [
