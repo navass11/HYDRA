@@ -37,92 +37,134 @@ export type PilotCase = {
 
 const workflowSvg = `
 <svg viewBox="0 0 760 400" role="img" aria-label="Flujo metodológico Los Corrales de Buelna" xmlns="http://www.w3.org/2000/svg">
-  <rect width="760" height="400" rx="8" fill="#f8fafc"/>
-  <text x="28" y="34" font-family="Inter, system-ui" font-size="15" font-weight="800" fill="#0f172a">Pipeline: Los Corrales de Buelna — Río Besaya</text>
+  <rect width="760" height="400" rx="8" fill="#0f172a"/>
+  <text x="28" y="34" font-family="Inter, system-ui" font-size="15" font-weight="800" fill="#f1f5f9">Pipeline: Los Corrales de Buelna — Río Besaya (ROP 3598, 2018)</text>
 
   <!-- Row 1: steps 1-4 -->
-  <rect x="24" y="56" width="158" height="76" rx="8" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
-  <text x="32" y="76" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#1d4ed8">01</text>
-  <text x="32" y="94" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#1e40af">Adquisición</text>
-  <text x="32" y="110" font-family="Inter, system-ui" font-size="10" fill="#475569">13 estaciones · 42 años</text>
-  <text x="32" y="124" font-family="Inter, system-ui" font-size="9" fill="#94a3b8">Datos</text>
+  <rect x="24" y="56" width="158" height="76" rx="8" fill="#0c1f40" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="32" y="76" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#60a5fa">01</text>
+  <text x="32" y="94" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#93c5fd">Adquisición</text>
+  <text x="32" y="110" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">13 pluvióm. · aforos Besaya</text>
+  <text x="32" y="124" font-family="Inter, system-ui" font-size="9" fill="#64748b">LIDAR 0.5 pts/m² · BTA 25m</text>
 
-  <path d="M182 94 L196 94" stroke="#94a3b8" stroke-width="1.8" fill="none" marker-end="url(#arr)"/>
+  <path d="M182 94 L196 94" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr)"/>
 
-  <rect x="196" y="56" width="158" height="76" rx="8" fill="#f5f3ff" stroke="#ddd6fe" stroke-width="1.5"/>
-  <text x="204" y="76" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#6d28d9">02</text>
-  <text x="204" y="94" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#5b21b6">Interpolación</text>
-  <text x="204" y="110" font-family="Inter, system-ui" font-size="10" fill="#475569">Kriging · UK · IDW</text>
-  <text x="204" y="124" font-family="Inter, system-ui" font-size="9" fill="#94a3b8">Análisis esp.</text>
+  <rect x="196" y="56" width="158" height="76" rx="8" fill="#1a0c3e" stroke="#7c3aed" stroke-width="1.5"/>
+  <text x="204" y="76" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#a78bfa">02</text>
+  <text x="204" y="94" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#c4b5fd">Interpolación geoest.</text>
+  <text x="204" y="110" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">KO · UK · IDW → Taylor</text>
+  <text x="204" y="124" font-family="Inter, system-ui" font-size="9" fill="#64748b">IDW seleccionado · 9 subcuencas</text>
 
-  <path d="M354 94 L368 94" stroke="#94a3b8" stroke-width="1.8" fill="none" marker-end="url(#arr)"/>
+  <path d="M354 94 L368 94" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr)"/>
 
-  <rect x="368" y="56" width="158" height="76" rx="8" fill="#eef2ff" stroke="#c7d2fe" stroke-width="1.5"/>
-  <text x="376" y="76" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#3730a3">03</text>
-  <text x="376" y="94" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#312e81">Extremos GEV</text>
-  <text x="376" y="110" font-family="Inter, system-ui" font-size="10" fill="#475569">T10 · T100 · T500</text>
-  <text x="376" y="124" font-family="Inter, system-ui" font-size="9" fill="#94a3b8">Clima</text>
+  <rect x="368" y="56" width="158" height="76" rx="8" fill="#0e1545" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="376" y="76" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#818cf8">03</text>
+  <text x="376" y="94" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#a5b4fc">Extremos de caudal</text>
+  <text x="376" y="110" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">GEV · GPD sobre aforos</text>
+  <text x="376" y="124" font-family="Inter, system-ui" font-size="9" fill="#64748b">T10 · T100 · T500</text>
 
-  <path d="M526 94 L540 94" stroke="#94a3b8" stroke-width="1.8" fill="none" marker-end="url(#arr)"/>
+  <path d="M526 94 L540 94" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr)"/>
 
-  <rect x="540" y="56" width="196" height="76" rx="8" fill="#fffbeb" stroke="#fde68a" stroke-width="1.5"/>
-  <text x="548" y="76" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#92400e">04</text>
-  <text x="548" y="94" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#78350f">HEC-HMS diseño</text>
-  <text x="548" y="110" font-family="Inter, system-ui" font-size="10" fill="#475569">Calibración NSE &gt; 0.8</text>
-  <text x="548" y="124" font-family="Inter, system-ui" font-size="9" fill="#94a3b8">Modelización</text>
+  <rect x="540" y="56" width="196" height="76" rx="8" fill="#291500" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="548" y="76" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#fbbf24">04</text>
+  <text x="548" y="94" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#fcd34d">HEC-HMS calibrado</text>
+  <text x="548" y="110" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">SMA + Clark + Muskingum</text>
+  <text x="548" y="124" font-family="Inter, system-ui" font-size="9" fill="#64748b">NSE &gt; 0.8 · Torrelavega + Las Caldas</text>
 
   <!-- vertical connector 4→5 -->
-  <path d="M638 132 L638 188" stroke="#94a3b8" stroke-width="1.8" fill="none" marker-end="url(#arr)"/>
+  <path d="M638 132 L638 188" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr)"/>
 
   <!-- Row 2: steps 8←7←6←5 -->
-  <rect x="540" y="188" width="196" height="76" rx="8" fill="#fffbeb" stroke="#fde68a" stroke-width="1.5"/>
-  <text x="548" y="208" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#92400e">05</text>
-  <text x="548" y="226" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#78350f">Simulación continua</text>
-  <text x="548" y="242" font-family="Inter, system-ui" font-size="10" fill="#475569">42 a · separación eventos</text>
-  <text x="548" y="256" font-family="Inter, system-ui" font-size="9" fill="#94a3b8">Modelización</text>
+  <rect x="540" y="188" width="196" height="76" rx="8" fill="#291500" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="548" y="208" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#fbbf24">05</text>
+  <text x="548" y="226" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#fcd34d">Separación de eventos</text>
+  <text x="548" y="242" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">Umbral → Qmax · Qmed · T · Tipo</text>
+  <text x="548" y="256" font-family="Inter, system-ui" font-size="9" fill="#64748b">Serie continua 1970–2012</text>
 
-  <path d="M540 226 L526 226" stroke="#94a3b8" stroke-width="1.8" fill="none" marker-end="url(#arr-l)"/>
+  <path d="M540 226 L526 226" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr-l)"/>
 
-  <rect x="368" y="188" width="158" height="76" rx="8" fill="#fdf4ff" stroke="#e9d5ff" stroke-width="1.5"/>
-  <text x="376" y="208" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#7e22ce">06</text>
-  <text x="376" y="226" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#6b21a8">Cópulas Gausianas</text>
-  <text x="376" y="242" font-family="Inter, system-ui" font-size="10" fill="#475569">PCA · K-Means · MaxDiss</text>
-  <text x="376" y="256" font-family="Inter, system-ui" font-size="9" fill="#94a3b8">Análisis esp.</text>
+  <rect x="368" y="188" width="158" height="76" rx="8" fill="#200840" stroke="#a855f7" stroke-width="1.5"/>
+  <text x="376" y="208" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#c084fc">06</text>
+  <text x="376" y="226" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#d8b4fe">Síntesis híbrida</text>
+  <text x="376" y="242" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">PCA+K-Means+Cóp. Gauss.+MaxDiss</text>
+  <text x="376" y="256" font-family="Inter, system-ui" font-size="9" fill="#64748b">Reconstrucción polinomios grado 2</text>
 
-  <path d="M368 226 L354 226" stroke="#94a3b8" stroke-width="1.8" fill="none" marker-end="url(#arr-l)"/>
+  <path d="M368 226 L354 226" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr-l)"/>
 
-  <rect x="196" y="188" width="158" height="76" rx="8" fill="#fff7ed" stroke="#fed7aa" stroke-width="1.5"/>
-  <text x="204" y="208" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#9a3412">07</text>
-  <text x="204" y="226" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#7c2d12">Hidráulica 2D (Iber)</text>
-  <text x="204" y="242" font-family="Inter, system-ui" font-size="10" fill="#475569">LIDAR 0.5 pts/m²</text>
-  <text x="204" y="256" font-family="Inter, system-ui" font-size="9" fill="#94a3b8">Modelización</text>
+  <rect x="196" y="188" width="158" height="76" rx="8" fill="#251000" stroke="#f97316" stroke-width="1.5"/>
+  <text x="204" y="208" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#fb923c">07</text>
+  <text x="204" y="226" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#fdba74">Iber / HEC-RAS 2D</text>
+  <text x="204" y="242" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">RTIN · LIDAR 0.5 pts/m²</text>
+  <text x="204" y="256" font-family="Inter, system-ui" font-size="9" fill="#64748b">Malla ≤ 8 m · flujo no permanente</text>
 
-  <path d="M196 226 L182 226" stroke="#94a3b8" stroke-width="1.8" fill="none" marker-end="url(#arr-l)"/>
+  <path d="M196 226 L182 226" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr-l)"/>
 
-  <rect x="24" y="188" width="158" height="76" rx="8" fill="#fff1f2" stroke="#fecdd3" stroke-width="1.5"/>
-  <text x="32" y="208" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#be123c">08</text>
-  <text x="32" y="226" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#9f1239">Mapas de riesgo</text>
-  <text x="32" y="242" font-family="Inter, system-ui" font-size="10" fill="#475569">Peligrosidad · Vulnerabilidad</text>
-  <text x="32" y="256" font-family="Inter, system-ui" font-size="9" fill="#94a3b8">T10 · T100 · T500</text>
+  <rect x="24" y="188" width="158" height="76" rx="8" fill="#20040e" stroke="#f43f5e" stroke-width="1.5"/>
+  <text x="32" y="208" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#fb7185">08</text>
+  <text x="32" y="226" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#fda4af">Riesgo de inundación</text>
+  <text x="32" y="242" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">KNN k=6 · CDF empírica píxel a píxel</text>
+  <text x="32" y="256" font-family="Inter, system-ui" font-size="9" fill="#64748b">HR · AV · T10 · T100 · T500</text>
 
   <!-- Results bar -->
-  <rect x="24" y="292" width="712" height="88" rx="10" fill="white" stroke="#e2e8f0" stroke-width="1.5"/>
-  <text x="380" y="316" font-family="Inter, system-ui" font-size="12" font-weight="700" fill="#475569" text-anchor="middle">RESULTADOS PRINCIPALES</text>
-  <text x="122" y="346" font-family="Inter, system-ui" font-size="26" font-weight="800" fill="#1d4ed8" text-anchor="middle">13</text>
-  <text x="122" y="364" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">estaciones pluvio.</text>
-  <text x="302" y="346" font-family="Inter, system-ui" font-size="26" font-weight="800" fill="#7c3aed" text-anchor="middle">42 a</text>
-  <text x="302" y="364" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">años de datos</text>
-  <text x="482" y="346" font-family="Inter, system-ui" font-size="26" font-weight="800" fill="#be123c" text-anchor="middle">&gt;13%</text>
-  <text x="482" y="364" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">población en riesgo</text>
-  <text x="652" y="346" font-family="Inter, system-ui" font-size="26" font-weight="800" fill="#0d9488" text-anchor="middle">1946</text>
-  <text x="652" y="364" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">validación ortofoto</text>
+  <rect x="24" y="292" width="712" height="88" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="380" y="316" font-family="Inter, system-ui" font-size="12" font-weight="700" fill="#94a3b8" text-anchor="middle">RESULTADOS PRINCIPALES</text>
+  <text x="122" y="346" font-family="Inter, system-ui" font-size="26" font-weight="800" fill="#60a5fa" text-anchor="middle">50–60%</text>
+  <text x="122" y="364" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">reducción caudal punta HEC-HMS</text>
+  <text x="302" y="346" font-family="Inter, system-ui" font-size="26" font-weight="800" fill="#a78bfa" text-anchor="middle">k=6</text>
+  <text x="302" y="364" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">vecinos KNN óptimo</text>
+  <text x="482" y="346" font-family="Inter, system-ui" font-size="26" font-weight="800" fill="#fb7185" text-anchor="middle">&gt;13%</text>
+  <text x="482" y="364" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">población en zona inundable</text>
+  <text x="652" y="346" font-family="Inter, system-ui" font-size="26" font-weight="800" fill="#34d399" text-anchor="middle">1946</text>
+  <text x="652" y="364" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">validación mancha T10 vs ortofoto</text>
 
   <defs>
     <marker id="arr" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L7,3 z" fill="#94a3b8"/>
+      <path d="M0,0 L0,6 L7,3 z" fill="#475569"/>
     </marker>
     <marker id="arr-l" markerWidth="7" markerHeight="7" refX="1" refY="3" orient="auto">
-      <path d="M7,0 L7,6 L0,3 z" fill="#94a3b8"/>
+      <path d="M7,0 L7,6 L0,3 z" fill="#475569"/>
+    </marker>
+  </defs>
+</svg>`;
+
+// ─── SVG figures — Valencia DANA ────────────────────────────────────────────
+
+const danaSvg = `
+<svg viewBox="0 0 760 280" role="img" aria-label="Flujo metodológico Valencia DANA 2024" xmlns="http://www.w3.org/2000/svg">
+  <rect width="760" height="280" rx="8" fill="#0f172a"/>
+  <text x="28" y="34" font-family="Inter, system-ui" font-size="15" font-weight="800" fill="#f1f5f9">Pipeline: Valencia DANA — 29 octubre 2024</text>
+
+  <!-- Step 01 -->
+  <rect x="24" y="56" width="330" height="88" rx="8" fill="#251000" stroke="#f97316" stroke-width="1.5"/>
+  <text x="36" y="80" font-family="Inter, system-ui" font-size="22" font-weight="800" fill="#fb923c">01</text>
+  <text x="36" y="100" font-family="Inter, system-ui" font-size="12" font-weight="700" fill="#fdba74">Exploración de datos</text>
+  <text x="36" y="118" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">Registros pluviométricos · Control de calidad</text>
+  <text x="36" y="134" font-family="Inter, system-ui" font-size="9" fill="#64748b">Fuentes: AEMET · CHJ · Meteostat</text>
+
+  <path d="M354 100 L380 100" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr2)"/>
+
+  <!-- Step 02 -->
+  <rect x="380" y="56" width="356" height="88" rx="8" fill="#200840" stroke="#a855f7" stroke-width="1.5"/>
+  <text x="392" y="80" font-family="Inter, system-ui" font-size="22" font-weight="800" fill="#c084fc">02</text>
+  <text x="392" y="100" font-family="Inter, system-ui" font-size="12" font-weight="700" fill="#d8b4fe">Análisis de extremos</text>
+  <text x="392" y="118" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">GEV / GPD · Período de retorno del evento</text>
+  <text x="392" y="134" font-family="Inter, system-ui" font-size="9" fill="#64748b">Comparación con registros históricos</text>
+
+  <!-- Results bar -->
+  <rect x="24" y="172" width="712" height="88" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="380" y="196" font-family="Inter, system-ui" font-size="12" font-weight="700" fill="#94a3b8" text-anchor="middle">DATOS DEL EPISODIO DANA — 29/10/2024</text>
+  <text x="122" y="232" font-family="Inter, system-ui" font-size="26" font-weight="800" fill="#fb923c" text-anchor="middle">&gt;900</text>
+  <text x="122" y="250" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">mm en 8 horas (Chiva)</text>
+  <text x="322" y="232" font-family="Inter, system-ui" font-size="26" font-weight="800" fill="#c084fc" text-anchor="middle">&gt;220</text>
+  <text x="322" y="250" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">víctimas mortales</text>
+  <text x="522" y="232" font-family="Inter, system-ui" font-size="26" font-weight="800" fill="#60a5fa" text-anchor="middle">T&gt;500</text>
+  <text x="522" y="250" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">período de retorno est.</text>
+  <text x="682" y="232" font-family="Inter, system-ui" font-size="26" font-weight="800" fill="#34d399" text-anchor="middle">10+</text>
+  <text x="682" y="250" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">cuencas afectadas</text>
+
+  <defs>
+    <marker id="arr2" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L7,3 z" fill="#475569"/>
     </marker>
   </defs>
 </svg>`;
@@ -356,6 +398,105 @@ export const pilotCases: PilotCase[] = [
           en: 'Integrated pipeline: from acquisition of 13 rainfall stations to hazard, vulnerability and risk maps for T10, T100 and T500. The hybrid reconstruction via Gaussian Copulas (step 6) is the key differentiator from the traditional methodology.',
         },
         svg: workflowSvg,
+      },
+    ],
+  },
+  {
+    slug: 'valencia-dana',
+    title: 'Valencia DANA 2024',
+    subtitle: {
+      es: 'Análisis del episodio de precipitación extrema del 29 de octubre de 2024 en la provincia de Valencia',
+      en: 'Analysis of the extreme precipitation episode of 29 October 2024 in the Valencia province',
+    },
+    location: {
+      es: 'Provincia de Valencia, Comunitat Valenciana, España',
+      en: 'Valencia Province, Valencian Community, Spain',
+    },
+    river: 'Barranc del Poyo · Turia',
+    region: 'Valencia',
+    color: 'from-orange-900 via-red-900 to-slate-900',
+    tag: 'Caso Piloto',
+    summary: {
+      es: 'La DANA del 29 de octubre de 2024 desencadenó el episodio de lluvia más extremo registrado en España en los últimos 50 años, acumulando más de 900 mm en ocho horas en el municipio de Chiva. Las cuencas del Barranc del Poyo y del Magro respondieron en minutos con caudales punta de diseño milenario, causando más de 220 víctimas mortales y miles de millones de euros en daños. Este caso piloto aplica HYDRA para caracterizar el episodio observado: exploración y control de calidad de los registros disponibles, ajuste de distribuciones de valores extremos y estimación del período de retorno del evento.',
+      en: 'The 29 October 2024 DANA triggered the most extreme rainfall episode recorded in Spain in the last 50 years, accumulating more than 900 mm in eight hours at the municipality of Chiva. The Barranc del Poyo and Magro catchments responded in minutes with millennial-design peak flows, causing more than 220 fatalities and billions of euros in damage. This pilot case applies HYDRA to characterise the observed episode: exploration and quality control of available records, extreme-value distribution fitting and return-period estimation of the event.',
+    },
+    challenge: {
+      es: 'La caracterización estadística de eventos tan extremos es metodológicamente compleja: las series de datos disponibles son cortas en comparación con el período de retorno estimado, los pluviómetros horarios fallaron durante el episodio por saturación o daños materiales, y la rapidez del evento (menos de 8 horas) excede la resolución temporal de la mayoría de los registros históricos. Ello obliga a combinar múltiples fuentes (AEMET, CHJ, Meteostat, radar) y a ser muy cuidadoso con la selección del umbral de exceso para el ajuste GPD.',
+      en: 'The statistical characterisation of such extreme events is methodologically complex: available data series are short relative to the estimated return period, hourly rain gauges failed during the episode due to saturation or material damage, and the event\'s rapidity (under 8 hours) exceeds the temporal resolution of most historical records. This requires combining multiple sources (AEMET, CHJ, Meteostat, radar) and being very careful with the excess threshold selection for GPD fitting.',
+    },
+    approach: {
+      es: 'El caso se organiza en dos notebooks. El primero explora y depura los registros disponibles: series pluviométricas de estaciones AEMET y CHJ, caudales aforados en el Barranc del Poyo y el Turia, e imágenes de radar del MeteoSat. El segundo aplica el pipeline de análisis de extremos de HYDRA (GEV y GPD por MLE, L-momentos y MAP bayesiano) para estimar el período de retorno del episodio y construir bandas de incertidumbre.',
+      en: 'The case is organised in two notebooks. The first explores and cleans available records: rainfall series from AEMET and CHJ stations, gauged flows at the Barranc del Poyo and Turia, and MeteoSat radar images. The second applies the HYDRA extreme-value analysis pipeline (GEV and GPD via MLE, L-moments and Bayesian MAP) to estimate the episode\'s return period and build uncertainty bands.',
+    },
+    steps: [
+      {
+        number: 1,
+        title: { es: 'Exploración de datos', en: 'Data exploration' },
+        description: {
+          es: 'Carga de registros pluviométricos horarios y diarios de estaciones AEMET y CHJ para la cuenca del Turia y zonas afectadas. Control de calidad, detección de outliers y lagunas, visualización espacial de isoyetas del episodio y exportación de series limpias para el análisis de extremos.',
+          en: 'Loading hourly and daily rainfall records from AEMET and CHJ stations for the Turia catchment and affected areas. Quality control, outlier and gap detection, spatial isohyet visualisation of the episode, and export of clean series for extreme-value analysis.',
+        },
+        notebookPath: 'pilot_cases/valencia_dana/01_data_exploration.ipynb',
+        tags: ['Datos'],
+        tagColor: 'bg-orange-100 text-orange-700',
+      },
+      {
+        number: 2,
+        title: { es: 'Análisis de valores extremos', en: 'Extreme value analysis' },
+        description: {
+          es: 'Ajuste de distribuciones GEV y GPD a las series de precipitación máxima anual y sobre umbral (POT). Estimación del período de retorno del evento del 29/10/2024 con intervalos de confianza bootstrap y MAP bayesiano. Comparación con los valores publicados por AEMET y con los mapas de peligrosidad del SNCZI.',
+          en: 'GEV and GPD fitting to annual maximum and POT precipitation series. Return-period estimation for the 29/10/2024 event with bootstrap confidence intervals and Bayesian MAP. Comparison with values published by AEMET and with SNCZI hazard maps.',
+        },
+        notebookPath: 'pilot_cases/valencia_dana/02_extreme_value_analysis.ipynb',
+        tags: ['Clima'],
+        tagColor: 'bg-red-100 text-red-700',
+      },
+    ],
+    stats: [
+      { value: '>900 mm', label: { es: 'Precipitación en 8 h (Chiva)', en: 'Rainfall in 8 h (Chiva)' } },
+      { value: '>220', label: { es: 'Víctimas mortales', en: 'Fatalities' } },
+      { value: 'T>500', label: { es: 'Período de retorno est.', en: 'Est. return period' } },
+      { value: '29/10/2024', label: { es: 'Fecha del evento', en: 'Event date' } },
+    ],
+    keyFindings: [
+      {
+        es: 'La precipitación acumulada en 8 horas en Chiva (>900 mm) supera el período de retorno de 500 años para acumulaciones diarias en la mayoría de las distribuciones ajustadas.',
+        en: 'The 8-hour accumulated precipitation at Chiva (>900 mm) exceeds the 500-year return period for daily accumulations in most fitted distributions.',
+      },
+      {
+        es: 'La rapidez del episodio (tiempo de concentración < 2 h en el Barranc del Poyo) expone la insuficiencia de los datos diarios para caracterizar eventos convectivos mediterráneos.',
+        en: 'The episode\'s rapidity (concentration time < 2 h in the Barranc del Poyo) exposes the inadequacy of daily data for characterising Mediterranean convective events.',
+      },
+      {
+        es: 'La combinación de fuentes (AEMET, CHJ, radar) es imprescindible: varios pluviómetros horarios fallaron durante el pico de intensidad, dejando lagunas en el registro.',
+        en: 'Combining sources (AEMET, CHJ, radar) is essential: several hourly rain gauges failed during the intensity peak, leaving gaps in the record.',
+      },
+    ],
+    references: [
+      {
+        title: {
+          es: 'Informe preliminar AEMET sobre la DANA',
+          en: 'AEMET preliminary report on the DANA',
+        },
+        description: {
+          es: 'Análisis meteorológico oficial del episodio con registros pluviométricos, evolución sinóptica y comparación con valores históricos.',
+          en: 'Official meteorological analysis of the episode with rainfall records, synoptic evolution and comparison with historical values.',
+        },
+        href: 'https://www.aemet.es/es/noticias/2024/11/dana_octubre_2024',
+        cta: { es: 'Ver en AEMET', en: 'View at AEMET' },
+      },
+    ],
+    figures: [
+      {
+        title: {
+          es: 'Pipeline Valencia DANA — 2 pasos',
+          en: 'Valencia DANA pipeline — 2 steps',
+        },
+        caption: {
+          es: 'Flujo de trabajo para el episodio DANA: exploración y control de calidad de los registros disponibles (paso 1) y análisis de valores extremos para estimar el período de retorno del evento (paso 2).',
+          en: 'Workflow for the DANA episode: exploration and quality control of available records (step 1) and extreme-value analysis to estimate the event return period (step 2).',
+        },
+        svg: danaSvg,
       },
     ],
   },

@@ -254,22 +254,24 @@ const notebookSessionHref = (slug: string) => {
           <div class="flex items-center gap-3">
             <span class="inline-flex items-center gap-2 rounded-full bg-cyan-100 border border-cyan-200 px-4 py-1.5 text-sm font-semibold text-cyan-700">
               <span class="h-2 w-2 rounded-full bg-cyan-500"></span>
-              Caso Piloto
+              <span data-t-es="Casos Piloto" data-t-en="Pilot Cases">Casos Piloto</span>
             </span>
-            <a href={asset('/cases/los-corrales-buelna')} class="text-sm font-semibold text-hydra-600 hover:text-hydra-800 transition-colors">
-              Ver caso completo →
+            <a href="#casos-piloto" class="text-sm font-semibold text-hydra-600 hover:text-hydra-800 transition-colors"
+               data-t-es="Ver casos piloto →" data-t-en="View pilot cases →">
+              Ver casos piloto →
             </a>
           </div>
           <div class="flex-1 h-px bg-gray-200"></div>
-          <span class="text-sm text-gray-400">{pilotNotebooks.length} notebooks · Besaya</span>
+          <span class="text-sm text-gray-400">{pilotNotebooks.length} notebooks · {pilotCases.length} <span data-i18n="cases.notebooks_count">casos</span></span>
         </div>
-        <div class="grid sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 xl:grid-cols-10 gap-3">
           {pilotNotebooks.map((nb, i) => (
             <a
               href={notebookSessionHref(nb.slug)}
               target="_blank"
               rel="noopener noreferrer"
               class="fade-in bg-white border border-cyan-100 rounded-xl p-4 hover:border-cyan-400 hover:shadow-md transition-all group text-center"
+              title={nb.description?.es}
               style={`transition-delay: ${i * 40}ms`}
             >
               <span class="text-2xl mb-2 block">{nb.icon}</span>
@@ -307,7 +309,7 @@ const notebookSessionHref = (slug: string) => {
             href={notebookSessionHref(nb.slug)}
             target="_blank"
             rel="noopener noreferrer"
-            class="notebook-card fade-in bg-white border border-gray-100 rounded-xl p-5 hover:border-hydra-300 hover:shadow-md transition-all group"
+            class="notebook-card fade-in bg-white border border-gray-100 rounded-xl p-5 hover:border-hydra-300 hover:shadow-md transition-all group flex flex-col"
             data-cat={nb.category}
             style={`transition-delay: ${i * 30}ms`}
           >
@@ -315,7 +317,14 @@ const notebookSessionHref = (slug: string) => {
             <h4 class="font-semibold text-gray-900 text-sm mb-2 group-hover:text-hydra-700 transition-colors">
               {nb.title}
             </h4>
-            <div class="flex items-center justify-between mt-2">
+            {nb.description && (
+              <p
+                class="text-xs text-gray-500 leading-relaxed line-clamp-3 mb-3 flex-1"
+                data-t-es={nb.description.es}
+                data-t-en={nb.description.en}
+              >{nb.description.es}</p>
+            )}
+            <div class="flex items-center justify-between mt-auto pt-2">
               <span class={`text-xs font-medium px-2.5 py-1 rounded-full ${catColors[nb.category] ?? 'bg-gray-100 text-gray-600'}`}>
                 {nb.category}
               </span>

@@ -372,5 +372,27 @@
       "es": "Interpolación KNN reconstruye manchas de inundación. CDF empírica píxel a píxel. Mapas de peligrosidad, vulnerabilidad y riesgo T10/T100/T500.",
       "en": "KNN interpolation reconstructs flood extents. Pixel-wise empirical CDF. Hazard, vulnerability and risk maps T10/T100/T500."
     }
+  },
+  {
+    "slug": "pilot_cases--valencia_dana--01_data_exploration",
+    "title": "Valencia 01 · Datos DANA",
+    "category": "Caso piloto",
+    "icon": "①",
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/pilot_cases/valencia_dana/01_data_exploration.ipynb",
+    "description": {
+      "es": "Carga y exploración de registros pluviométricos y de caudal del episodio DANA de octubre 2024 en Valencia. Control de calidad y visualización de la señal de lluvia.",
+      "en": "Load and explore rainfall and streamflow records from the October 2024 Valencia DANA event. Quality control and visualisation of the rainfall signal."
+    }
+  },
+  {
+    "slug": "pilot_cases--valencia_dana--02_extreme_value_analysis",
+    "title": "Valencia 02 · Extremos DANA",
+    "category": "Caso piloto",
+    "icon": "②",
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/pilot_cases/valencia_dana/02_extreme_value_analysis.ipynb",
+    "description": {
+      "es": "Ajuste GEV/GPD a las series de precipitación del episodio DANA. Estimación del período de retorno del evento del 29/10/2024 y comparación con registros históricos.",
+      "en": "GEV/GPD fitting to DANA precipitation series. Return-period estimation for the 29/10/2024 event and comparison with historical records."
+    }
   }
 ]
