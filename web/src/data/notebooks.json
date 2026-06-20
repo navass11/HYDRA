@@ -4,237 +4,373 @@
     "title": "Corrección de sesgo",
     "category": "Clima",
     "icon": "⚖️",
-    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/climate/bias_correction.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/climate/bias_correction.ipynb",
+    "description": {
+      "es": "Aplica métodos de corrección de sesgo cuantílica (Delta, QM, QDM, SDM) a proyecciones CMIP6, comparando distribuciones observadas y corregidas.",
+      "en": "Applies quantile bias-correction methods (Delta, QM, QDM, SDM) to CMIP6 projections, comparing observed and corrected distributions."
+    }
   },
   {
     "slug": "climate--event_extraction",
     "title": "Extracción de eventos",
     "category": "Clima",
     "icon": "🌊",
-    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/climate/event_extraction.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/climate/event_extraction.ipynb",
+    "description": {
+      "es": "Extrae eventos de crecida y precipitación mediante POT con declustering, spell y ventanas n-días sobre series diarias.",
+      "en": "Extracts flood and precipitation events via POT with declustering, spell and n-day windows from daily series."
+    }
   },
   {
     "slug": "climate--extreme_value_analysis",
     "title": "Análisis de extremos",
     "category": "Clima",
     "icon": "📈",
-    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/climate/extreme_value_analysis.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/climate/extreme_value_analysis.ipynb",
+    "description": {
+      "es": "Ajusta distribuciones GEV y GPD por MLE, L-momentos y MAP bayesiano; calcula niveles de retorno con bandas de incertidumbre y diagnósticos QQ/PP.",
+      "en": "Fits GEV and GPD distributions via MLE, L-moments and Bayesian MAP; computes return levels with uncertainty bands and QQ/PP diagnostics."
+    }
   },
   {
     "slug": "climate--spatial_analysis--bayes_hierarchical",
     "title": "Bayes jerárquico",
     "category": "Análisis esp.",
     "icon": "🧮",
-    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/climate/spatial_analysis/bayes_hierarchical.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/climate/spatial_analysis/bayes_hierarchical.ipynb",
+    "description": {
+      "es": "Estima distribuciones GEV con un modelo jerárquico bayesiano multi-estación usando PyMC, compartiendo información entre sitios.",
+      "en": "Estimates GEV distributions with a multi-site Bayesian hierarchical model using PyMC, sharing information across sites."
+    }
   },
   {
     "slug": "climate--spatial_analysis--compound_flooding",
-    "title": "Compound Flooding",
+    "title": "Inundación compuesta",
     "category": "Análisis esp.",
     "icon": "🌊",
-    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/climate/spatial_analysis/compound_flooding.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/climate/spatial_analysis/compound_flooding.ipynb",
+    "description": {
+      "es": "Analiza la dependencia entre caudal y nivel del mar con cópulas bivariantes para calcular períodos de retorno conjuntos de inundación costera.",
+      "en": "Analyses the dependence between discharge and sea level with bivariate copulas to compute joint return periods for coastal compound flooding."
+    }
   },
   {
     "slug": "climate--spatial_analysis--copulas",
     "title": "Cópulas",
     "category": "Análisis esp.",
     "icon": "🔗",
-    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/climate/spatial_analysis/copulas.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/climate/spatial_analysis/copulas.ipynb",
+    "description": {
+      "es": "Ajusta cópulas Archimedanas y Gaussianas multivariantes entre parámetros de hidrograma para generar eventos sintéticos correlacionados.",
+      "en": "Fits Archimedean and multivariate Gaussian copulas between hydrograph parameters to generate correlated synthetic events."
+    }
   },
   {
     "slug": "climate--spatial_analysis--interpolation",
     "title": "Interpolación",
     "category": "Análisis esp.",
     "icon": "📍",
-    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/climate/spatial_analysis/interpolation.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/climate/spatial_analysis/interpolation.ipynb",
+    "description": {
+      "es": "Compara IDW, Kriging Ordinario, Kriging Universal y Proceso Gaussiano para reconstruir campos espaciales de precipitación con validación cruzada.",
+      "en": "Compares IDW, Ordinary Kriging, Universal Kriging and Gaussian Process to reconstruct spatial precipitation fields with cross-validation."
+    }
   },
   {
     "slug": "climate--spatial_analysis--regional_frequency_analysis",
     "title": "Frecuencia regional",
     "category": "Análisis esp.",
     "icon": "📉",
-    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/climate/spatial_analysis/regional_frequency_analysis.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/climate/spatial_analysis/regional_frequency_analysis.ipynb",
+    "description": {
+      "es": "Aplica el método del índice de avenida para calcular niveles de retorno locales combinando información de múltiples estaciones en una región homogénea.",
+      "en": "Applies the index-flood method to compute local return levels by pooling information from multiple stations in a homogeneous region."
+    }
   },
   {
     "slug": "climate--spatial_field_generation",
     "title": "Campos espaciales",
     "category": "Clima",
     "icon": "🗺️",
-    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/climate/spatial_field_generation.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/climate/spatial_field_generation.ipynb",
+    "description": {
+      "es": "Genera campos espacio-temporales aleatorios con CoSMoS VAR(p), preservando marginales, autocorrelación y dependencia espacial entre estaciones.",
+      "en": "Generates spatio-temporal random fields with CoSMoS VAR(p), preserving marginals, autocorrelation and spatial dependence across stations."
+    }
   },
   {
     "slug": "climate--stochastic_generation",
     "title": "Generación estocástica",
     "category": "Clima",
     "icon": "🎲",
-    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/climate/stochastic_generation.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/climate/stochastic_generation.ipynb",
+    "description": {
+      "es": "Ajusta un modelo estacional CoSMoS a una serie diaria y genera un ensemble sintético reproducible preservando estacionalidad y autocorrelación.",
+      "en": "Fits a seasonal CoSMoS model to a daily series and generates a reproducible synthetic ensemble preserving seasonality and autocorrelation."
+    }
   },
   {
     "slug": "data_sources--climate_change--CDS_download",
     "title": "CDS / Copernicus",
     "category": "Datos",
     "icon": "☁️",
-    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/data_sources/climate_change/CDS_download.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/data_sources/climate_change/CDS_download.ipynb",
+    "description": {
+      "es": "Descarga proyecciones CMIP6 desde Copernicus CDS filtrando por modelo, experimento (SSP) y variable, con recorte espacial a bounding box.",
+      "en": "Downloads CMIP6 projections from Copernicus CDS filtering by model, experiment (SSP) and variable, with spatial clipping to a bounding box."
+    }
   },
   {
     "slug": "data_sources--climate_change--ESGF_download",
     "title": "ESGF / CMIP6",
     "category": "Datos",
     "icon": "🌡️",
-    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/data_sources/climate_change/ESGF_download.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/data_sources/climate_change/ESGF_download.ipynb",
+    "description": {
+      "es": "Busca y descarga datos CMIP6 en la red federada ESGF (LLNL, DKRZ, CEDA) mediante OPeNDAP o HTTP con reintentos automáticos.",
+      "en": "Searches and downloads CMIP6 data from the federated ESGF network (LLNL, DKRZ, CEDA) via OPeNDAP or HTTP with automatic retries."
+    }
   },
   {
     "slug": "data_sources--rainfall--AEMET_download",
     "title": "AEMET",
     "category": "Datos",
     "icon": "🌦️",
-    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/data_sources/rainfall/AEMET_download.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/data_sources/rainfall/AEMET_download.ipynb",
+    "description": {
+      "es": "Descarga series diarias de estaciones AEMET por bounding box con chunks de 15 días, control de rate limit y exportación a NetCDF.",
+      "en": "Downloads daily series from AEMET stations by bounding box in 15-day chunks, with rate-limit control and NetCDF export."
+    }
   },
   {
     "slug": "data_sources--rainfall--ERA5_download",
     "title": "ERA5",
     "category": "Datos",
     "icon": "🌍",
-    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/data_sources/rainfall/ERA5_download.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/data_sources/rainfall/ERA5_download.ipynb",
+    "description": {
+      "es": "Descarga reanálisis ERA5 (precipitación, temperatura, viento) desde Copernicus CDS en modo multihilo con recorte espacial.",
+      "en": "Downloads ERA5 reanalysis (precipitation, temperature, wind) from Copernicus CDS in multi-threaded mode with spatial clipping."
+    }
   },
   {
     "slug": "data_sources--rainfall--GPM_download",
     "title": "GPM / IMERG",
     "category": "Datos",
     "icon": "🛰️",
-    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/data_sources/rainfall/GPM_download.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/data_sources/rainfall/GPM_download.ipynb",
+    "description": {
+      "es": "Descarga precipitación GPM IMERG (NASA Earthdata) en resolución semi-horaria o diaria para un dominio geográfico definido.",
+      "en": "Downloads GPM IMERG precipitation (NASA Earthdata) at half-hourly or daily resolution for a defined geographic domain."
+    }
   },
   {
     "slug": "data_sources--rainfall--Meteostat_download",
     "title": "Meteostat",
     "category": "Datos",
     "icon": "🌤️",
-    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/data_sources/rainfall/Meteostat_download.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/data_sources/rainfall/Meteostat_download.ipynb",
+    "description": {
+      "es": "Busca estaciones meteorológicas por coordenadas y radio, y descarga series diarias o mensuales de temperatura, precipitación y viento.",
+      "en": "Searches weather stations by coordinates and radius, and downloads daily or monthly temperature, precipitation and wind series."
+    }
   },
   {
     "slug": "data_sources--rainfall--OGIMET_download",
     "title": "OGIMET SYNOP",
     "category": "Datos",
     "icon": "📡",
-    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/data_sources/rainfall/OGIMET_download.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/data_sources/rainfall/OGIMET_download.ipynb",
+    "description": {
+      "es": "Descarga observaciones SYNOP horarias desde OGIMET con el widget interactivo, seleccionando estaciones en el mapa y fechas por bloques.",
+      "en": "Downloads hourly SYNOP observations from OGIMET with the interactive widget, selecting stations on the map and dates in blocks."
+    }
   },
   {
     "slug": "data_sources--rainfall--PERSSIAN_download",
     "title": "PERSIANN",
     "category": "Datos",
     "icon": "🌂",
-    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/data_sources/rainfall/PERSSIAN_download.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/data_sources/rainfall/PERSSIAN_download.ipynb",
+    "description": {
+      "es": "Descarga precipitación PERSIANN-CCS (UCI FTP) en paralelo para ventanas temporales extensas, con recorte a la región de estudio.",
+      "en": "Downloads PERSIANN-CCS precipitation (UCI FTP) in parallel for extended time windows, clipped to the study region."
+    }
   },
   {
     "slug": "data_sources--river_discharge--GRDC_download",
     "title": "GRDC",
     "category": "Datos",
     "icon": "🌊",
-    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/data_sources/river_discharge/GRDC_download.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/data_sources/river_discharge/GRDC_download.ipynb",
+    "description": {
+      "es": "Lee y diagnostica archivos de caudal diario o mensual GRDC, gestionando valores centinela (-999) y exportando series limpias.",
+      "en": "Reads and diagnoses daily or monthly GRDC streamflow files, handling sentinel values (−999) and exporting clean series."
+    }
   },
   {
     "slug": "data_sources--river_discharge--GloFAS_download",
     "title": "GloFAS",
     "category": "Datos",
     "icon": "🏞️",
-    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/data_sources/river_discharge/GloFAS_download.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/data_sources/river_discharge/GloFAS_download.ipynb",
+    "description": {
+      "es": "Descarga el reanálisis y las reproyecciones de caudal GloFAS desde Copernicus EWDS con extracción puntual de NetCDF.",
+      "en": "Downloads GloFAS reanalysis and re-forecasts from Copernicus EWDS with point extraction from NetCDF."
+    }
   },
   {
     "slug": "data_sources--river_discharge--USGS_download",
     "title": "USGS",
     "category": "Datos",
     "icon": "💧",
-    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/data_sources/river_discharge/USGS_download.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/data_sources/river_discharge/USGS_download.ipynb",
+    "description": {
+      "es": "Busca estaciones USGS NWIS por bounding box y descarga caudales diarios con conversión automática de ft³/s a m³/s.",
+      "en": "Searches USGS NWIS stations by bounding box and downloads daily streamflows with automatic ft³/s to m³/s conversion."
+    }
   },
   {
     "slug": "data_sources--soils--SoilGrids_download",
     "title": "SoilGrids",
     "category": "Datos",
     "icon": "🪨",
-    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/data_sources/soils/SoilGrids_download.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/data_sources/soils/SoilGrids_download.ipynb",
+    "description": {
+      "es": "Descarga 21 GeoTIFFs de texturas SoilGrids 2017 (arena, limo, arcilla en 7 profundidades) para preparar inputs de modelos hidrológicos.",
+      "en": "Downloads 21 SoilGrids 2017 texture GeoTIFFs (sand, silt, clay at 7 depths) to prepare inputs for hydrological models."
+    }
   },
   {
     "slug": "modeling--hydraulic--HEC_RAS",
     "title": "HEC-RAS",
     "category": "Modelización",
     "icon": "🌊",
-    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/modeling/hydraulic/HEC_RAS.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/modeling/hydraulic/HEC_RAS.ipynb",
+    "description": {
+      "es": "Automatiza la modificación de archivos de flujo no estacionario y plan de HEC-RAS para ejecutar series de escenarios climáticos en lote.",
+      "en": "Automates modification of HEC-RAS unsteady-flow and plan files to run batches of climate scenarios."
+    }
   },
   {
     "slug": "modeling--hydraulic--SFINCS",
     "title": "SFINCS",
     "category": "Modelización",
     "icon": "🌀",
-    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/modeling/hydraulic/SFINCS.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/modeling/hydraulic/SFINCS.ipynb",
+    "description": {
+      "es": "Configura y ejecuta modelos SFINCS desde DEM: malla, condiciones de contorno de caudal y profundidad normal de Manning, y análisis de resultados.",
+      "en": "Sets up and runs SFINCS models from a DEM: mesh, flow and normal-depth Manning boundary conditions, and result analysis."
+    }
   },
   {
     "slug": "modeling--hydrology--HEC_HMS",
     "title": "HEC-HMS",
     "category": "Modelización",
     "icon": "🏔️",
-    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/modeling/hydrology/HEC_HMS.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/modeling/hydrology/HEC_HMS.ipynb",
+    "description": {
+      "es": "Construye y ejecuta proyectos HEC-HMS desde Python: archivos .gage, .met, .control y .run, calibración y lectura de hidrogramas DSS.",
+      "en": "Builds and runs HEC-HMS projects from Python: .gage, .met, .control and .run files, calibration and DSS hydrograph reading."
+    }
   },
   {
     "slug": "modeling--hydrology--SWAT",
     "title": "SWAT+",
     "category": "Modelización",
     "icon": "🌿",
-    "href": "https://github.com/navass11/pyhydra/blob/main/notebooks/modeling/hydrology/SWAT.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/modeling/hydrology/SWAT.ipynb",
+    "description": {
+      "es": "Escribe archivos de precipitación y temperatura multi-estación para SWAT+, modifica file.cio y ejecuta el modelo en lote.",
+      "en": "Writes multi-station precipitation and temperature files for SWAT+, modifies file.cio and runs the model in batch."
+    }
   },
   {
     "slug": "pilot_cases--los_corrales_buelna--01_data_acquisition",
     "title": "Besaya 01 · Datos",
     "category": "Caso piloto",
     "icon": "①",
-    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/pilot_cases/los_corrales_buelna/01_data_acquisition.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/pilot_cases/los_corrales_buelna/01_data_acquisition.ipynb",
+    "description": {
+      "es": "Carga 13 estaciones pluviométricas de Cantabria y caudal diario (1970–2012). Control de calidad, exportación de series limpias.",
+      "en": "Loads 13 Cantabria rain gauges and daily streamflow (1970–2012). Quality control and export of clean series."
+    }
   },
   {
     "slug": "pilot_cases--los_corrales_buelna--02_spatial_interpolation",
     "title": "Besaya 02 · Interpolación",
     "category": "Caso piloto",
     "icon": "②",
-    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/pilot_cases/los_corrales_buelna/02_spatial_interpolation.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/pilot_cases/los_corrales_buelna/02_spatial_interpolation.ipynb",
+    "description": {
+      "es": "Compara Kriging Ordinario, Universal e IDW sobre las estaciones del Besaya. Genera campos de precipitación diaria distribuidos.",
+      "en": "Compares Ordinary Kriging, Universal Kriging and IDW on Besaya stations. Generates distributed daily precipitation fields."
+    }
   },
   {
     "slug": "pilot_cases--los_corrales_buelna--03_extreme_value_analysis",
     "title": "Besaya 03 · Extremos",
     "category": "Caso piloto",
     "icon": "③",
-    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/pilot_cases/los_corrales_buelna/03_extreme_value_analysis.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/pilot_cases/los_corrales_buelna/03_extreme_value_analysis.ipynb",
+    "description": {
+      "es": "Ajusta GEV y GPD a los caudales de Torrelavega y Las Caldas. Cuantiles T10, T100 y T500 con intervalos de incertidumbre.",
+      "en": "Fits GEV and GPD to streamflows at Torrelavega and Las Caldas. T10, T100 and T500 quantiles with uncertainty intervals."
+    }
   },
   {
     "slug": "pilot_cases--los_corrales_buelna--04_design_storm_hms",
     "title": "Besaya 04 · HEC-HMS diseño",
     "category": "Caso piloto",
     "icon": "④",
-    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/pilot_cases/los_corrales_buelna/04_design_storm_hms.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/pilot_cases/los_corrales_buelna/04_design_storm_hms.ipynb",
+    "description": {
+      "es": "Hietogramas de diseño T10/T100/T500 y modelo HEC-HMS con SMA + Clark. Calibración y validación Nash-Sutcliffe > 0.8.",
+      "en": "Design hyetograms T10/T100/T500 and HEC-HMS model with SMA + Clark. Calibration and validation Nash-Sutcliffe > 0.8."
+    }
   },
   {
     "slug": "pilot_cases--los_corrales_buelna--05_continuous_simulation",
     "title": "Besaya 05 · Simulación continua",
     "category": "Caso piloto",
     "icon": "⑤",
-    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/pilot_cases/los_corrales_buelna/05_continuous_simulation.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/pilot_cases/los_corrales_buelna/05_continuous_simulation.ipynb",
+    "description": {
+      "es": "Simulación HEC-HMS continua de 42 años. Separación de 209 eventos por umbral de caudal y caracterización de hidrogramas.",
+      "en": "42-year continuous HEC-HMS simulation. Separation of 209 events by flow threshold and hydrograph characterisation."
+    }
   },
   {
     "slug": "pilot_cases--los_corrales_buelna--06_hybrid_event_reconstruction",
     "title": "Besaya 06 · Cópulas",
     "category": "Caso piloto",
     "icon": "⑥",
-    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/pilot_cases/los_corrales_buelna/06_hybrid_event_reconstruction.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/pilot_cases/los_corrales_buelna/06_hybrid_event_reconstruction.ipynb",
+    "description": {
+      "es": "PCA + K-Means clasifica hidrogramas. Cópulas Gaussianas generan 4973 eventos sintéticos. MaxDiss selecciona 400 representativos.",
+      "en": "PCA + K-Means classifies hydrographs. Gaussian Copulas generate 4973 synthetic events. MaxDiss selects 400 representatives."
+    }
   },
   {
     "slug": "pilot_cases--los_corrales_buelna--07_hec_ras_hydraulics",
     "title": "Besaya 07 · Hidráulica 2D",
     "category": "Caso piloto",
     "icon": "⑦",
-    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/pilot_cases/los_corrales_buelna/07_hec_ras_hydraulics.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/pilot_cases/los_corrales_buelna/07_hec_ras_hydraulics.ipynb",
+    "description": {
+      "es": "Modelización 2D con malla RTIN sobre MDT LIDAR 0.5 pts/m². Mapas de calado y velocidad para los escenarios sintéticos seleccionados.",
+      "en": "2D modelling with RTIN mesh on LIDAR DTM 0.5 pts/m². Depth and velocity maps for the selected synthetic scenarios."
+    }
   },
   {
     "slug": "pilot_cases--los_corrales_buelna--08_hybrid_return_periods",
     "title": "Besaya 08 · Riesgo",
     "category": "Caso piloto",
     "icon": "⑧",
-    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/pilot_cases/los_corrales_buelna/08_hybrid_return_periods.ipynb"
+    "href": "https://github.com/navass11/HYDRA/blob/main/notebooks/pilot_cases/los_corrales_buelna/08_hybrid_return_periods.ipynb",
+    "description": {
+      "es": "Interpolación KNN reconstruye manchas de inundación. CDF empírica píxel a píxel. Mapas de peligrosidad, vulnerabilidad y riesgo T10/T100/T500.",
+      "en": "KNN interpolation reconstructs flood extents. Pixel-wise empirical CDF. Hazard, vulnerability and risk maps T10/T100/T500."
+    }
   }
 ]

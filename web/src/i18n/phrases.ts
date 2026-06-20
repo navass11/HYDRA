@@ -243,8 +243,6 @@ export const phraseTranslations: Record<string, string> = {
   'Demo HEC-RAS': 'HEC-RAS demo',
   'Demo SFINCS': 'SFINCS demo',
   'Listo para simular': 'Ready to simulate',
-  'Listo para ajustar': 'Ready to fit',
-  'Listo para ajustar cópula': 'Ready to fit copula',
   '¿Cómo funciona?': 'How does it work?',
   'Ajusta una distribución marginal por mes': 'Fits a marginal distribution per month',
   'Ajusta una función de autocorrelación (Weibull)': 'Fits an autocorrelation function (Weibull)',
@@ -253,4 +251,82 @@ export const phraseTranslations: Record<string, string> = {
   'Ejecutar simulación': 'Run simulation',
   'Configura los parámetros en el panel izquierdo y pulsa Ejecutar simulación. Puedes usar los datos de demo o subir tu propia serie en CSV.':
     'Configure the parameters in the left panel and click Run simulation. You can use demo data or upload your own CSV series.',
+
+  // ── Homepage tool cards (missing) ────────────────────────────────────────────
+  'Descarga Meteostat': 'Meteostat download',
+  'Busca estaciones en el mapa, selecciona periodo y descarga datos diarios o mensuales de temperatura, precipitación y viento.':
+    'Search stations on the map, select a period and download daily or monthly temperature, precipitation and wind data.',
+  'Eventos compuestos': 'Compound events',
+  'Ajusta una cópula bivariante y obtén curvas de período de retorno conjunto OR para pares de variables hidro-climáticas.':
+    'Fit a bivariate copula and obtain joint OR return-period curves for pairs of hydro-climatic variables.',
+  'Interpolación espacial': 'Spatial interpolation',
+  'Compara IDW, Kriging Ordinario, RBF y vecino más cercano sobre el mismo dataset. Sube 3 CSV y obtén RMSE de validación cruzada.':
+    'Compare IDW, Ordinary Kriging, RBF and nearest neighbour on the same dataset. Upload 3 CSVs and obtain cross-validation RMSE.',
+  'Espacial': 'Spatial',
+
+  // ── meteostat.astro ───────────────────────────────────────────────────────────
+  'Buscar en el mapa': 'Search on map',
+  'Estación seleccionada': 'Selected station',
+  'Haz clic en una estación del mapa': 'Click on a station on the map',
+  'Frecuencia': 'Frequency',
+  'Diaria': 'Daily',
+  'Mensual': 'Monthly',
+  'Cargar datos': 'Load data',
+  'Descargar CSV': 'Download CSV',
+  'Red de estaciones Meteostat': 'Meteostat station network',
+  'Introduce coordenadas y radio para cargar estaciones.': 'Enter coordinates and radius to load stations.',
+  'Vista previa (primeras 500 filas)': 'Preview (first 500 rows)',
+  'Registros': 'Records',
+  'Integración HYDRA': 'HYDRA integration',
+  'Busca estaciones meteorológicas en el mapa, selecciona periodo y variable, y descarga datos diarios o mensuales en CSV.':
+    'Search weather stations on the map, select a period and variable, and download daily or monthly data as CSV.',
+
+  // ── compound.astro ─────────────────────────────────────────────────────────────
+  'Eventos Compuestos': 'Compound Events',
+  'Ajusta una cópula bivariante, calcula períodos de retorno conjuntos AND y OR, y localiza el Evento de Diseño de Máxima Probabilidad (MPDE) sobre cada isoline.':
+    'Fit a bivariate copula, compute joint AND and OR return periods, and locate the Most Probable Design Event (MPDE) on each isoline.',
+  'Fuente de datos': 'Data source',
+  'CSV propio': 'Custom CSV',
+  'Gumbel (cola superior)': 'Gumbel (upper tail)',
+  'Clayton (cola inferior)': 'Clayton (lower tail)',
+  'Frank (simétrica)': 'Frank (symmetric)',
+  'Separados por comas, en años.': 'Separated by commas, in years.',
+  'Configura los parámetros y haz clic en "Ajustar cópula"':
+    'Configure the parameters and click "Fit copula"',
+  'Interpretación': 'Interpretation',
+  'Diagrama de período de retorno conjunto': 'Joint return period diagram',
+  'Isolíneas AND (rojo) y OR (azul) con puntos de máxima probabilidad (×). PDFs marginales paramétricas en los bordes.':
+    'AND (red) and OR (blue) isolines with maximum-probability points (×). Parametric marginal PDFs on the edges.',
+  'Cuantiles marginales univariantes': 'Univariate marginal quantiles',
+  'Valores de diseño para cada variable individualmente (distribución marginal ajustada).':
+    'Design values for each variable individually (fitted marginal distribution).',
+  'Eventos observados — períodos de retorno conjuntos': 'Observed events — joint return periods',
+  'Los 25 eventos más severos por T_OR.': 'The 25 most severe events by T_OR.',
+  'Ajustando…': 'Fitting…',
+
+  // ── interpolation.astro ───────────────────────────────────────────────────────
+  'Interpolación Espacial': 'Spatial Interpolation',
+  'Compara IDW, Kriging Ordinario, RBF y Vecino más cercano sobre el mismo conjunto de estaciones.\n        Sube tres CSV (coordenadas, valores, puntos objetivo) y obtén el mapa interpolado y RMSE de validación cruzada.':
+    'Compare IDW, Ordinary Kriging, RBF and Nearest neighbour on the same station set.\n        Upload three CSVs (coordinates, values, target points) and obtain the interpolated map and cross-validation RMSE.',
+  'Métodos': 'Methods',
+  'IDW (Ponderación distancia inversa)': 'IDW (Inverse distance weighting)',
+  'Kriging Ordinario': 'Ordinary Kriging',
+  'RBF Thin-plate spline': 'RBF Thin-plate spline',
+  'RBF Lineal': 'RBF Linear',
+  'Vecino más cercano': 'Nearest neighbour',
+  'Potencia IDW': 'IDW power',
+  'Calcular RMSE (LOOCV)': 'Compute RMSE (LOOCV)',
+  'Interpolar': 'Interpolate',
+  'Formato CSV esperado': 'Expected CSV format',
+  'Estaciones': 'Stations',
+  'Puntos objetivo': 'Target points',
+  'Interpolando…': 'Interpolating…',
+  'Configura los parámetros y haz clic en "Interpolar"': 'Configure the parameters and click "Interpolate"',
+  'Demo (lluvia, 8 estaciones Cantabria)': 'Demo (rainfall, 8 Cantabria stations)',
+  'CSV propio (3 archivos)': 'Custom CSV (3 files)',
+  'Col longitud': 'Longitude col',
+  'Col latitud': 'Latitude col',
+  'Col variable (vacío = primera numérica)': 'Variable col (blank = first numeric)',
+  'El LOOCV deja fuera cada estación y predice su valor para calcular el RMSE sin datos de test independientes.':
+    'LOOCV leaves each station out and predicts its value to compute RMSE without independent test data.',
 };

@@ -1,5 +1,7 @@
 Organización_HYDRA_MdJ.pdf
 update_pi.py
+papers/besaya_manning_sensitivity/zenodo_upload/simulations/
+papers/besaya_manning_sensitivity/zenodo_upload/models/
 pyhydra/__pycache__/*
 tests/__pycache__/*
 pyhydra/data_sources/rainfall/__pycache__/*
@@ -134,3 +136,22 @@ meteostat_daily_*.csv
 
 # Notebook-derived data files (not raw data)
 notebooks/data_sources/climate_change/opendap_links_final.csv
+build/temp.macosx-11.0-arm64-cpython-312/Users/salvadornavasfernandez/Library/Caches/httpstan/4.13.0/models/hwz47u3z/model_hwz47u3z.o
+build/temp.macosx-11.1-arm64-cpython-312/Users/salvadornavasfernandez/Library/Caches/httpstan/4.13.0/models/77iesxsx/model_77iesxsx.o
+build/temp.macosx-11.1-arm64-cpython-312/Users/salvadornavasfernandez/Library/Caches/httpstan/4.13.0/models/bu4m6nqo/model_bu4m6nqo.o
+build/temp.macosx-11.1-arm64-cpython-312/Users/salvadornavasfernandez/Library/Caches/httpstan/4.13.0/models/dupkeyzu/model_dupkeyzu.o
+build/temp.macosx-11.1-arm64-cpython-312/Users/salvadornavasfernandez/Library/Caches/httpstan/4.13.0/models/gezx2dvk/model_gezx2dvk.o
+build/temp.macosx-11.1-arm64-cpython-312/Users/salvadornavasfernandez/Library/Caches/httpstan/4.13.0/models/i2j6azis/model_i2j6azis.o
+build/temp.macosx-11.1-arm64-cpython-312/Users/salvadornavasfernandez/Library/Caches/httpstan/4.13.0/models/qirzvylc/model_qirzvylc.o
+build/temp.macosx-11.1-arm64-cpython-312/Users/salvadornavasfernandez/Library/Caches/httpstan/4.13.0/models/w3m3ba6w/model_w3m3ba6w.o
+notebooks/climate/spatial_analysis/build/temp.macosx-11.1-arm64-cpython-312/Users/salvadornavasfernandez/Library/Caches/httpstan/4.13.0/models/seaarni7/model_seaarni7.o
+
+# IDEs
+.vscode/
+
+# Project-wide build & cache
+build/
+notebooks/climate/spatial_analysis/build/
+
+# Runtime directories
+**/.hydra_runtime/
