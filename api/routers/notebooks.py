@@ -162,16 +162,19 @@ async def _refresh_requested_notebook_if_stale(
             await _jupyter_upload_notebook(client, dest, NOTEBOOK_TEMPLATES_DIR / relative)
 
     # Migration for Notebook 08 after Azure data was mounted read-only:
-    # old session copies tried to save generated PNG/CSV outputs under
-    # /workspace/data/pilot_cases/.../processed/cc_scenarios.
+    # old session copies tried to save generated outputs and temporary flood-map
+    # simulations under /workspace/data/pilot_cases/.../processed.
     if relative.as_posix() == "pilot_cases/los_corrales_buelna/08_hybrid_return_periods.ipynb":
         current_text = _notebook_source_text(current)
         template = json.loads((NOTEBOOK_TEMPLATES_DIR / relative).read_bytes())
         template_text = _notebook_source_text(template)
-        if (
-            "SHARED_OUT_DIR = PROC_DIR / 'cc_scenarios'" in template_text
-            and "SHARED_OUT_DIR = PROC_DIR / 'cc_scenarios'" not in current_text
-        ):
+        current_markers = [
+            "SHARED_OUT_DIR = PROC_DIR / 'cc_scenarios'",
+            "SIMUL_DIR     = OUT_DIR / 'flood_maps' / 'simulations'",
+        ]
+        template_is_current = all(marker in template_text for marker in current_markers)
+        session_is_stale = any(marker not in current_text for marker in current_markers)
+        if template_is_current and session_is_stale:
             await _jupyter_upload_notebook(client, dest, NOTEBOOK_TEMPLATES_DIR / relative)
 
 
