@@ -6,9 +6,10 @@
 #   <AZURE_FILES_STORAGE_NAME>
 #
 # The Azure Files shares must be registered in the Container Apps environment
-# with the storage names used below. The shared data mount is read-write because
-# several notebooks write intermediate results under /workspace/data/processed.
-# User Jupyter session notebooks still live on a separate read-write share.
+# with the storage names used below. Shared input data is mounted read-only so
+# users cannot modify the original datasets from notebooks. User Jupyter
+# sessions live on a separate read-write share, and notebook outputs should be
+# written inside the session workspace or a dedicated outputs share.
 type: Microsoft.App/containerApps
 apiVersion: "2024-03-01"
 name: hydra-web
@@ -88,7 +89,7 @@ properties:
     volumes:
       - name: hydra-data
         storageType: AzureFile
-        storageName: <AZURE_FILES_DATA_READWRITE_STORAGE_NAME>
+        storageName: <AZURE_FILES_DATA_READONLY_STORAGE_NAME>
       - name: hydra-sessions
         storageType: AzureFile
         storageName: <AZURE_FILES_SESSIONS_READWRITE_STORAGE_NAME>
