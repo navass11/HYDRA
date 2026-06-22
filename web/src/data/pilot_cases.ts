@@ -36,7 +36,16 @@ export type PilotCase = {
 // ─── SVG figures ────────────────────────────────────────────────────────────
 
 const workflowSvg = `
-<svg viewBox="0 0 760 400" role="img" aria-label="Flujo metodológico Los Corrales de Buelna" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 760 400" width="100%" role="img" aria-label="Flujo metodológico Los Corrales de Buelna" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr-bc" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L7,3 z" fill="#475569"/>
+    </marker>
+    <marker id="arr-l-bc" markerWidth="7" markerHeight="7" refX="1" refY="3" orient="auto">
+      <path d="M7,0 L7,6 L0,3 z" fill="#475569"/>
+    </marker>
+  </defs>
+
   <rect width="760" height="400" rx="8" fill="#0f172a"/>
   <text x="28" y="34" font-family="Inter, system-ui" font-size="15" font-weight="800" fill="#f1f5f9">Pipeline: Los Corrales de Buelna — Río Besaya (ROP 3598, 2018)</text>
 
@@ -47,7 +56,7 @@ const workflowSvg = `
   <text x="32" y="110" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">13 pluvióm. · aforos Besaya</text>
   <text x="32" y="124" font-family="Inter, system-ui" font-size="9" fill="#64748b">LIDAR 0.5 pts/m² · BTA 25m</text>
 
-  <path d="M182 94 L196 94" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr)"/>
+  <path d="M182 94 L196 94" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr-bc)"/>
 
   <rect x="196" y="56" width="158" height="76" rx="8" fill="#1a0c3e" stroke="#7c3aed" stroke-width="1.5"/>
   <text x="204" y="76" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#a78bfa">02</text>
@@ -55,7 +64,7 @@ const workflowSvg = `
   <text x="204" y="110" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">KO · UK · IDW → Taylor</text>
   <text x="204" y="124" font-family="Inter, system-ui" font-size="9" fill="#64748b">IDW seleccionado · 9 subcuencas</text>
 
-  <path d="M354 94 L368 94" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr)"/>
+  <path d="M354 94 L368 94" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr-bc)"/>
 
   <rect x="368" y="56" width="158" height="76" rx="8" fill="#0e1545" stroke="#6366f1" stroke-width="1.5"/>
   <text x="376" y="76" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#818cf8">03</text>
@@ -63,7 +72,7 @@ const workflowSvg = `
   <text x="376" y="110" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">GEV · GPD sobre aforos</text>
   <text x="376" y="124" font-family="Inter, system-ui" font-size="9" fill="#64748b">T10 · T100 · T500</text>
 
-  <path d="M526 94 L540 94" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr)"/>
+  <path d="M526 94 L540 94" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr-bc)"/>
 
   <rect x="540" y="56" width="196" height="76" rx="8" fill="#291500" stroke="#f59e0b" stroke-width="1.5"/>
   <text x="548" y="76" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#fbbf24">04</text>
@@ -72,7 +81,7 @@ const workflowSvg = `
   <text x="548" y="124" font-family="Inter, system-ui" font-size="9" fill="#64748b">NSE &gt; 0.8 · Torrelavega + Las Caldas</text>
 
   <!-- vertical connector 4→5 -->
-  <path d="M638 132 L638 188" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr)"/>
+  <path d="M638 132 L638 188" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr-bc)"/>
 
   <!-- Row 2: steps 8←7←6←5 -->
   <rect x="540" y="188" width="196" height="76" rx="8" fill="#291500" stroke="#f59e0b" stroke-width="1.5"/>
@@ -81,7 +90,7 @@ const workflowSvg = `
   <text x="548" y="242" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">Umbral → Qmax · Qmed · T · Tipo</text>
   <text x="548" y="256" font-family="Inter, system-ui" font-size="9" fill="#64748b">Serie continua 1970–2012</text>
 
-  <path d="M540 226 L526 226" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr-l)"/>
+  <path d="M540 226 L526 226" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr-l-bc)"/>
 
   <rect x="368" y="188" width="158" height="76" rx="8" fill="#200840" stroke="#a855f7" stroke-width="1.5"/>
   <text x="376" y="208" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#c084fc">06</text>
@@ -89,7 +98,7 @@ const workflowSvg = `
   <text x="376" y="242" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">PCA+K-Means+Cóp. Gauss.+MaxDiss</text>
   <text x="376" y="256" font-family="Inter, system-ui" font-size="9" fill="#64748b">Reconstrucción polinomios grado 2</text>
 
-  <path d="M368 226 L354 226" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr-l)"/>
+  <path d="M368 226 L354 226" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr-l-bc)"/>
 
   <rect x="196" y="188" width="158" height="76" rx="8" fill="#251000" stroke="#f97316" stroke-width="1.5"/>
   <text x="204" y="208" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#fb923c">07</text>
@@ -97,7 +106,7 @@ const workflowSvg = `
   <text x="204" y="242" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">RTIN · LIDAR 0.5 pts/m²</text>
   <text x="204" y="256" font-family="Inter, system-ui" font-size="9" fill="#64748b">Malla ≤ 8 m · flujo no permanente</text>
 
-  <path d="M196 226 L182 226" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr-l)"/>
+  <path d="M196 226 L182 226" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr-l-bc)"/>
 
   <rect x="24" y="188" width="158" height="76" rx="8" fill="#20040e" stroke="#f43f5e" stroke-width="1.5"/>
   <text x="32" y="208" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#fb7185">08</text>
@@ -116,57 +125,48 @@ const workflowSvg = `
   <text x="482" y="364" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">población en zona inundable</text>
   <text x="652" y="346" font-family="Inter, system-ui" font-size="26" font-weight="800" fill="#34d399" text-anchor="middle">1946</text>
   <text x="652" y="364" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">validación mancha T10 vs ortofoto</text>
-
-  <defs>
-    <marker id="arr" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L7,3 z" fill="#475569"/>
-    </marker>
-    <marker id="arr-l" markerWidth="7" markerHeight="7" refX="1" refY="3" orient="auto">
-      <path d="M7,0 L7,6 L0,3 z" fill="#475569"/>
-    </marker>
-  </defs>
 </svg>`;
 
 // ─── SVG figures — Valencia DANA ────────────────────────────────────────────
 
 const danaSvg = `
-<svg viewBox="0 0 760 280" role="img" aria-label="Flujo metodológico Valencia DANA 2024" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 760 280" width="100%" role="img" aria-label="Flujo metodológico Valencia DANA 2024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr-dana" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L7,3 z" fill="#475569"/>
+    </marker>
+  </defs>
+
   <rect width="760" height="280" rx="8" fill="#0f172a"/>
-  <text x="28" y="34" font-family="Inter, system-ui" font-size="15" font-weight="800" fill="#f1f5f9">Pipeline: Valencia DANA — 29 octubre 2024</text>
+  <text x="28" y="34" font-family="Inter, system-ui" font-size="15" font-weight="800" fill="#f1f5f9">Pipeline: Valencia DANA — 29 octubre 2024 (JIA 2025)</text>
 
   <!-- Step 01 -->
   <rect x="24" y="56" width="330" height="88" rx="8" fill="#251000" stroke="#f97316" stroke-width="1.5"/>
   <text x="36" y="80" font-family="Inter, system-ui" font-size="22" font-weight="800" fill="#fb923c">01</text>
-  <text x="36" y="100" font-family="Inter, system-ui" font-size="12" font-weight="700" fill="#fdba74">Exploración de datos</text>
-  <text x="36" y="118" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">Registros pluviométricos · Control de calidad</text>
-  <text x="36" y="134" font-family="Inter, system-ui" font-size="9" fill="#64748b">Fuentes: AEMET · CHJ · Meteostat</text>
+  <text x="36" y="100" font-family="Inter, system-ui" font-size="12" font-weight="700" fill="#fdba74">Datos y contexto histórico</text>
+  <text x="36" y="118" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">9 estaciones AEMET · SIAR · AVAMET</text>
+  <text x="36" y="134" font-family="Inter, system-ui" font-size="9" fill="#64748b">AMS por año hidrológico · Turís 8337X · Carlet V103</text>
 
-  <path d="M354 100 L380 100" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr2)"/>
+  <path d="M354 100 L380 100" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr-dana)"/>
 
   <!-- Step 02 -->
   <rect x="380" y="56" width="356" height="88" rx="8" fill="#200840" stroke="#a855f7" stroke-width="1.5"/>
   <text x="392" y="80" font-family="Inter, system-ui" font-size="22" font-weight="800" fill="#c084fc">02</text>
-  <text x="392" y="100" font-family="Inter, system-ui" font-size="12" font-weight="700" fill="#d8b4fe">Análisis de extremos</text>
-  <text x="392" y="118" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">GEV / GPD · Período de retorno del evento</text>
-  <text x="392" y="134" font-family="Inter, system-ui" font-size="9" fill="#64748b">Comparación con registros históricos</text>
+  <text x="392" y="100" font-family="Inter, system-ui" font-size="12" font-weight="700" fill="#d8b4fe">Ajuste GEV + RFA</text>
+  <text x="392" y="118" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">MLE · L-mom · Bayesiano (HMC/Stan) — SD vs CD</text>
+  <text x="392" y="134" font-family="Inter, system-ui" font-size="9" fill="#64748b">Individual · RFA local (9 est.) · RFA global (C. Valenciana)</text>
 
   <!-- Results bar -->
   <rect x="24" y="172" width="712" height="88" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
-  <text x="380" y="196" font-family="Inter, system-ui" font-size="12" font-weight="700" fill="#94a3b8" text-anchor="middle">DATOS DEL EPISODIO DANA — 29/10/2024</text>
-  <text x="122" y="232" font-family="Inter, system-ui" font-size="26" font-weight="800" fill="#fb923c" text-anchor="middle">&gt;900</text>
-  <text x="122" y="250" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">mm en 8 horas (Chiva)</text>
-  <text x="322" y="232" font-family="Inter, system-ui" font-size="26" font-weight="800" fill="#c084fc" text-anchor="middle">&gt;220</text>
-  <text x="322" y="250" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">víctimas mortales</text>
-  <text x="522" y="232" font-family="Inter, system-ui" font-size="26" font-weight="800" fill="#60a5fa" text-anchor="middle">T&gt;500</text>
-  <text x="522" y="250" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">período de retorno est.</text>
-  <text x="682" y="232" font-family="Inter, system-ui" font-size="26" font-weight="800" fill="#34d399" text-anchor="middle">10+</text>
-  <text x="682" y="250" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">cuencas afectadas</text>
-
-  <defs>
-    <marker id="arr2" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L7,3 z" fill="#475569"/>
-    </marker>
-  </defs>
+  <text x="380" y="196" font-family="Inter, system-ui" font-size="12" font-weight="700" fill="#94a3b8" text-anchor="middle">RESULTADOS PRINCIPALES — Turís (8337X)</text>
+  <text x="122" y="232" font-family="Inter, system-ui" font-size="24" font-weight="800" fill="#fb923c" text-anchor="middle">710,8 mm</text>
+  <text x="122" y="250" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">récord diario nacional</text>
+  <text x="322" y="232" font-family="Inter, system-ui" font-size="24" font-weight="800" fill="#c084fc" text-anchor="middle">31.345 años</text>
+  <text x="322" y="250" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">T retorno sin DANA (L-mom)</text>
+  <text x="522" y="232" font-family="Inter, system-ui" font-size="24" font-weight="800" fill="#60a5fa" text-anchor="middle">66–91 años</text>
+  <text x="522" y="250" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">T retorno con DANA</text>
+  <text x="682" y="232" font-family="Inter, system-ui" font-size="24" font-weight="800" fill="#34d399" text-anchor="middle">Bayes</text>
+  <text x="682" y="250" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">método más estable</text>
 </svg>`;
 
 // ─── Pilot cases ────────────────────────────────────────────────────────────
