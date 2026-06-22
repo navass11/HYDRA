@@ -177,6 +177,28 @@ async def _refresh_requested_notebook_if_stale(
         if template_is_current and session_is_stale:
             await _jupyter_upload_notebook(client, dest, NOTEBOOK_TEMPLATES_DIR / relative)
 
+    # Migration for Besaya pilot-case notebooks after shared data became
+    # read-only in Azure. Generated CSV/PNG/TIF outputs belong in the isolated
+    # Jupyter session copy, while /workspace/data remains the shared input tree.
+    besaya_session_output_notebooks = {
+        "pilot_cases/los_corrales_buelna/03_extreme_value_analysis.ipynb",
+        "pilot_cases/los_corrales_buelna/04_design_storm_hms.ipynb",
+        "pilot_cases/los_corrales_buelna/06_hybrid_event_reconstruction.ipynb",
+        "pilot_cases/los_corrales_buelna/07_hec_ras_hydraulics.ipynb",
+        "pilot_cases/los_corrales_buelna/08_hybrid_return_periods.ipynb",
+    }
+    if relative.as_posix() in besaya_session_output_notebooks:
+        current_text = _notebook_source_text(current)
+        template = json.loads((NOTEBOOK_TEMPLATES_DIR / relative).read_bytes())
+        template_text = _notebook_source_text(template)
+        template_is_current = (
+            "SESSION_DATA_ROOT = SESSION_ROOT / 'data' / 'pilot_cases' / 'los_corrales_buelna'"
+            in template_text
+        )
+        session_is_stale = "SESSION_DATA_ROOT" not in current_text
+        if template_is_current and session_is_stale:
+            await _jupyter_upload_notebook(client, dest, NOTEBOOK_TEMPLATES_DIR / relative)
+
 
 async def _jupyter_upload_file(client: httpx.AsyncClient, dest_path: str, src: Path) -> None:
     encoded = base64.b64encode(src.read_bytes()).decode()
