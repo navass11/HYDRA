@@ -199,6 +199,24 @@ async def _refresh_requested_notebook_if_stale(
         if template_is_current and session_is_stale:
             await _jupyter_upload_notebook(client, dest, NOTEBOOK_TEMPLATES_DIR / relative)
 
+    # Same isolation rule for the Valencia DANA pilot notebooks: derived CSVs
+    # are session artifacts, not writes to the shared input data volume.
+    valencia_session_output_notebooks = {
+        "pilot_cases/valencia_dana/01_data_exploration.ipynb",
+        "pilot_cases/valencia_dana/02_extreme_value_analysis.ipynb",
+    }
+    if relative.as_posix() in valencia_session_output_notebooks:
+        current_text = _notebook_source_text(current)
+        template = json.loads((NOTEBOOK_TEMPLATES_DIR / relative).read_bytes())
+        template_text = _notebook_source_text(template)
+        template_is_current = (
+            "SESSION_DATA_ROOT = SESSION_ROOT / 'data' / 'pilot_cases' / 'valencia_dana'"
+            in template_text
+        )
+        session_is_stale = "SESSION_DATA_ROOT" not in current_text
+        if template_is_current and session_is_stale:
+            await _jupyter_upload_notebook(client, dest, NOTEBOOK_TEMPLATES_DIR / relative)
+
 
 async def _jupyter_upload_file(client: httpx.AsyncClient, dest_path: str, src: Path) -> None:
     encoded = base64.b64encode(src.read_bytes()).decode()
