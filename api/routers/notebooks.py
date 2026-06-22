@@ -171,6 +171,9 @@ async def _refresh_requested_notebook_if_stale(
         current_markers = [
             "SHARED_OUT_DIR = PROC_DIR / 'cc_scenarios'",
             "SIMUL_DIR     = OUT_DIR / 'flood_maps' / 'simulations'",
+            "Do not copy them",
+            "ignore=shutil.ignore_patterns('*.hdf'",
+            "RUN_GIS_PLOTS",
         ]
         template_is_current = all(marker in template_text for marker in current_markers)
         session_is_stale = any(marker not in current_text for marker in current_markers)
@@ -209,11 +212,12 @@ async def _refresh_requested_notebook_if_stale(
         current_text = _notebook_source_text(current)
         template = json.loads((NOTEBOOK_TEMPLATES_DIR / relative).read_bytes())
         template_text = _notebook_source_text(template)
-        template_is_current = (
-            "SESSION_DATA_ROOT = SESSION_ROOT / 'data' / 'pilot_cases' / 'valencia_dana'"
-            in template_text
-        )
-        session_is_stale = "SESSION_DATA_ROOT" not in current_text
+        current_markers = [
+            "SESSION_DATA_ROOT = SESSION_ROOT / 'data' / 'pilot_cases' / 'valencia_dana'",
+            "Valencia session output guard",
+        ]
+        template_is_current = all(marker in template_text for marker in current_markers)
+        session_is_stale = any(marker not in current_text for marker in current_markers)
         if template_is_current and session_is_stale:
             await _jupyter_upload_notebook(client, dest, NOTEBOOK_TEMPLATES_DIR / relative)
 

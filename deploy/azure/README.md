@@ -601,8 +601,9 @@ az containerapp logs show \
   modifican desde la web.
 - `api/Dockerfile` usa Python 3.11 porque `pydsstools` fallo con Python 3.12.
 - La memoria total en Consumption debe cumplir combinaciones fijas. El despliegue
-  actual usa `1.75 CPU / 3.5Gi` en total:
-  `web=0.25/0.5Gi`, `api=0.5/1Gi`, `jupyter=1/2Gi`.
+  actual reserva `3.75 CPU / 7.5Gi` en total para permitir mapas GIS en notebooks
+  pesados:
+  `web=0.25/0.5Gi`, `api=0.5/1Gi`, `jupyter=3/6Gi`.
 - Los datos compartidos deben vivir en Azure Files con esta estructura:
 
 ```text
