@@ -184,8 +184,11 @@ async def _refresh_requested_notebook_if_stale(
     # read-only in Azure. Generated CSV/PNG/TIF outputs belong in the isolated
     # Jupyter session copy, while /workspace/data remains the shared input tree.
     besaya_session_output_notebooks = {
+        "pilot_cases/los_corrales_buelna/01_data_acquisition.ipynb",
+        "pilot_cases/los_corrales_buelna/02_spatial_interpolation.ipynb",
         "pilot_cases/los_corrales_buelna/03_extreme_value_analysis.ipynb",
         "pilot_cases/los_corrales_buelna/04_design_storm_hms.ipynb",
+        "pilot_cases/los_corrales_buelna/05_continuous_simulation.ipynb",
         "pilot_cases/los_corrales_buelna/06_hybrid_event_reconstruction.ipynb",
         "pilot_cases/los_corrales_buelna/07_hec_ras_hydraulics.ipynb",
         "pilot_cases/los_corrales_buelna/08_hybrid_return_periods.ipynb",
@@ -194,11 +197,21 @@ async def _refresh_requested_notebook_if_stale(
         current_text = _notebook_source_text(current)
         template = json.loads((NOTEBOOK_TEMPLATES_DIR / relative).read_bytes())
         template_text = _notebook_source_text(template)
-        template_is_current = (
-            "SESSION_DATA_ROOT = SESSION_ROOT / 'data' / 'pilot_cases' / 'los_corrales_buelna'"
-            in template_text
-        )
-        session_is_stale = "SESSION_DATA_ROOT" not in current_text
+        current_markers = [
+            "SESSION_DATA_ROOT = SESSION_ROOT / 'data' / 'pilot_cases' / 'los_corrales_buelna'",
+        ]
+        extra_markers = {
+            "pilot_cases/los_corrales_buelna/05_continuous_simulation.ipynb": [
+                "HEC-HMS continuous setup skipped",
+            ],
+            "pilot_cases/los_corrales_buelna/07_hec_ras_hydraulics.ipynb": [
+                "RUN_HEC_RAS",
+                "HEC-RAS no ejecutado en modo publico",
+            ],
+        }
+        current_markers.extend(extra_markers.get(relative.as_posix(), []))
+        template_is_current = all(marker in template_text for marker in current_markers)
+        session_is_stale = any(marker not in current_text for marker in current_markers)
         if template_is_current and session_is_stale:
             await _jupyter_upload_notebook(client, dest, NOTEBOOK_TEMPLATES_DIR / relative)
 
@@ -215,6 +228,32 @@ async def _refresh_requested_notebook_if_stale(
         current_markers = [
             "SESSION_DATA_ROOT = SESSION_ROOT / 'data' / 'pilot_cases' / 'valencia_dana'",
             "Valencia session output guard",
+        ]
+        template_is_current = all(marker in template_text for marker in current_markers)
+        session_is_stale = any(marker not in current_text for marker in current_markers)
+        if template_is_current and session_is_stale:
+            await _jupyter_upload_notebook(client, dest, NOTEBOOK_TEMPLATES_DIR / relative)
+
+    # Public data-source notebooks must not launch remote downloads or write to
+    # shared data by default. Refresh older session copies that predate the
+    # HYDRA_RUN_DOWNLOADS guards.
+    guarded_download_notebooks = {
+        "data_sources/climate_change/CDS_download.ipynb",
+        "data_sources/climate_change/ESGF_download.ipynb",
+        "data_sources/rainfall/AEMET_download.ipynb",
+        "data_sources/rainfall/GPM_download.ipynb",
+        "data_sources/rainfall/Meteostat_download.ipynb",
+        "data_sources/rainfall/PERSSIAN_download.ipynb",
+        "data_sources/river_discharge/GloFAS_download.ipynb",
+        "data_sources/river_discharge/USGS_download.ipynb",
+    }
+    if relative.as_posix() in guarded_download_notebooks:
+        current_text = _notebook_source_text(current)
+        template = json.loads((NOTEBOOK_TEMPLATES_DIR / relative).read_bytes())
+        template_text = _notebook_source_text(template)
+        current_markers = [
+            "HYDRA_RUN_DOWNLOADS",
+            "public mode",
         ]
         template_is_current = all(marker in template_text for marker in current_markers)
         session_is_stale = any(marker not in current_text for marker in current_markers)

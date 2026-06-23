@@ -601,9 +601,33 @@ az containerapp logs show \
   modifican desde la web.
 - `api/Dockerfile` usa Python 3.11 porque `pydsstools` fallo con Python 3.12.
 - La memoria total en Consumption debe cumplir combinaciones fijas. El despliegue
-  actual reserva `3.75 CPU / 7.5Gi` en total para permitir mapas GIS en notebooks
-  pesados:
-  `web=0.25/0.5Gi`, `api=0.5/1Gi`, `jupyter=3/6Gi`.
+  publico mantiene un perfil contenido para coste estable:
+  `web=0.25/0.5Gi`, `api=0.5/1Gi`, `jupyter=1/2Gi`
+  (`1.75 CPU / 3.5Gi` en total).
+- Para ejecutar puntualmente notebooks pesados con mapas GIS, como el notebook 8
+  del caso Besaya, subir temporalmente `jupyter` a `3 CPU / 6Gi` y activar
+  `HYDRA_RUN_GIS_PLOTS=1`. Al terminar, volver a `1 CPU / 2Gi` y
+  `HYDRA_RUN_GIS_PLOTS=0` para no mantener el sobrecoste.
+
+```bash
+# Modo pesado temporal para mapas GIS
+az containerapp update \
+  -n "$AZ_CONTAINERAPP_NAME" \
+  -g "$AZ_RESOURCE_GROUP" \
+  --container-name jupyter \
+  --cpu 3.0 \
+  --memory 6Gi \
+  --set-env-vars HYDRA_RUN_GIS_PLOTS=1
+
+# Volver al perfil publico
+az containerapp update \
+  -n "$AZ_CONTAINERAPP_NAME" \
+  -g "$AZ_RESOURCE_GROUP" \
+  --container-name jupyter \
+  --cpu 1.0 \
+  --memory 2Gi \
+  --set-env-vars HYDRA_RUN_GIS_PLOTS=0
+```
 - Los datos compartidos deben vivir en Azure Files con esta estructura:
 
 ```text

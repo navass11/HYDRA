@@ -78,15 +78,15 @@ properties:
           - name: HYDRA_JUPYTER_SESSIONS_PATH
             value: ""
           - name: HYDRA_RUN_GIS_PLOTS
-            value: "1"
+            value: "0"
         volumeMounts:
           - volumeName: hydra-data
             mountPath: /workspace/data
           - volumeName: hydra-sessions
             mountPath: /workspace/sessions
         resources:
-          cpu: 3.0
-          memory: 6Gi
+          cpu: 1.0
+          memory: 2Gi
 
     volumes:
       - name: hydra-data

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
 Execute a Jupyter notebook cell by cell using exec() — no kernel needed.
-Writes captured stdout/stderr back into cell outputs so the notebook reflects
-the actual run. Cells tagged 'skip' or starting with %% magic are skipped.
+Writes captured stdout/stderr and matplotlib figures back into cell outputs
+so the notebook reflects the actual run.
+Cells tagged 'skip' or starting with %% magic are skipped.
 
 Usage:
     python exec_nb.py <notebook.ipynb> [--timeout 300]
@@ -13,6 +14,7 @@ Exit codes:
 """
 
 import argparse
+import base64
 import io
 import json
 import math
@@ -21,6 +23,14 @@ import sys
 import traceback
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
+
+# Use non-interactive backend before any matplotlib import so figures are
+# never displayed in a GUI window and plt.show() becomes a safe no-op.
+os.environ.setdefault('MPLBACKEND', 'Agg')
+
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 
 
 class _CaptureIO(io.StringIO):
@@ -64,6 +74,53 @@ def _json_safe(obj):
     return obj
 
 
+def _fig_to_output(fig):
+    """Render a matplotlib figure to a display_data notebook output dict."""
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png', dpi=100, bbox_inches='tight')
+    buf.seek(0)
+    w, h = fig.get_size_inches()
+    return {
+        'output_type': 'display_data',
+        'data': {
+            'image/png': base64.b64encode(buf.read()).decode('ascii'),
+            'text/plain': ['<Figure>'],
+        },
+        'metadata': {
+            'image/png': {'width': int(w * 100), 'height': int(h * 100)},
+        },
+    }
+
+
+def _make_show_interceptor(captured_list, captured_nums):
+    """Return a plt.show replacement that saves open figures instead of displaying them."""
+    def _show(*args, **kwargs):
+        for num in sorted(plt.get_fignums()):
+            if num not in captured_nums:
+                captured_list.append(_fig_to_output(plt.figure(num)))
+                captured_nums.add(num)
+        plt.close('all')
+    return _show
+
+
+def _make_close_interceptor(captured_list, captured_nums, original_close):
+    """Return a plt.close replacement that saves a figure just before it is closed."""
+    def _close(fig=None):
+        targets = []
+        if fig is None or (isinstance(fig, str) and fig == 'all'):
+            targets = list(plt.get_fignums())
+        elif isinstance(fig, int):
+            targets = [fig] if fig in plt.get_fignums() else []
+        elif hasattr(fig, 'number'):
+            targets = [fig.number] if fig.number in plt.get_fignums() else []
+        for num in targets:
+            if num not in captured_nums:
+                captured_list.append(_fig_to_output(plt.figure(num)))
+                captured_nums.add(num)
+        original_close(fig)
+    return _close
+
+
 def run_notebook(nb_path, timeout=300):
     nb_path = Path(nb_path).resolve()
     nb = json.loads(nb_path.read_text())
@@ -102,6 +159,16 @@ def run_notebook(nb_path, timeout=300):
 
         stdout_buf = _CaptureIO(sys.__stdout__)
         stderr_buf = _CaptureIO(sys.__stderr__)
+        fig_outputs = []
+        captured_nums = set()
+
+        # Intercept plt.show() and plt.close() so figures are always captured
+        original_show = plt.show
+        original_close = plt.close
+        plt.show = _make_show_interceptor(fig_outputs, captured_nums)
+        plt.close = _make_close_interceptor(fig_outputs, captured_nums, original_close)
+
+        figs_before = set(plt.get_fignums())
         outputs = []
 
         try:
@@ -113,6 +180,14 @@ def run_notebook(nb_path, timeout=300):
             tb = traceback.format_exc()
             stderr_buf.write(tb)
             errors.append((cell_idx, tb.strip().splitlines()[-1]))
+        finally:
+            plt.show = original_show
+            plt.close = original_close
+
+        # Capture any figures still open after the cell (not yet shown or closed)
+        for num in sorted(set(plt.get_fignums()) - figs_before - captured_nums):
+            fig_outputs.append(_fig_to_output(plt.figure(num)))
+        plt.close('all')
 
         out = stdout_buf.getvalue()
         err = stderr_buf.getvalue()
@@ -121,6 +196,7 @@ def run_notebook(nb_path, timeout=300):
             outputs.append({'output_type': 'stream', 'name': 'stdout', 'text': out})
         if err:
             outputs.append({'output_type': 'stream', 'name': 'stderr', 'text': err})
+        outputs.extend(fig_outputs)
         if not ok:
             outputs.append({
                 'output_type': 'error',
