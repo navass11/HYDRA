@@ -183,73 +183,59 @@
   },
   {
     "slug": "pilot_cases--los_corrales_buelna--01_data_acquisition",
-    "title": "Besaya 01 · Datos",
+    "title": "Besaya 01 · Data",
     "category": "Caso piloto",
     "icon": "①",
     "href": "http://localhost/jupyter/lab/tree/pilot_cases/los_corrales_buelna/01_data_acquisition.ipynb"
   },
   {
     "slug": "pilot_cases--los_corrales_buelna--02_spatial_interpolation",
-    "title": "Besaya 02 · Interpolación",
+    "title": "Besaya 02 · Interpolation",
     "category": "Caso piloto",
     "icon": "②",
     "href": "http://localhost/jupyter/lab/tree/pilot_cases/los_corrales_buelna/02_spatial_interpolation.ipynb"
   },
   {
     "slug": "pilot_cases--los_corrales_buelna--03_extreme_value_analysis",
-    "title": "Besaya 03 · Extremos",
+    "title": "Besaya 03 · Extremes",
     "category": "Caso piloto",
     "icon": "③",
     "href": "http://localhost/jupyter/lab/tree/pilot_cases/los_corrales_buelna/03_extreme_value_analysis.ipynb"
   },
   {
     "slug": "pilot_cases--los_corrales_buelna--04_design_storm_hms",
-    "title": "Besaya 04 · HEC-HMS diseño",
+    "title": "Besaya 04 · HEC-HMS design",
     "category": "Caso piloto",
     "icon": "④",
     "href": "http://localhost/jupyter/lab/tree/pilot_cases/los_corrales_buelna/04_design_storm_hms.ipynb"
   },
   {
     "slug": "pilot_cases--los_corrales_buelna--05_continuous_simulation",
-    "title": "Besaya 05 · Simulación continua",
+    "title": "Besaya 05 · Continuous simulation",
     "category": "Caso piloto",
     "icon": "⑤",
     "href": "http://localhost/jupyter/lab/tree/pilot_cases/los_corrales_buelna/05_continuous_simulation.ipynb"
   },
   {
     "slug": "pilot_cases--los_corrales_buelna--06_hybrid_event_reconstruction",
-    "title": "Besaya 06 · Cópulas",
+    "title": "Besaya 06 · Copulas",
     "category": "Caso piloto",
     "icon": "⑥",
     "href": "http://localhost/jupyter/lab/tree/pilot_cases/los_corrales_buelna/06_hybrid_event_reconstruction.ipynb"
   },
   {
     "slug": "pilot_cases--los_corrales_buelna--07_hec_ras_hydraulics",
-    "title": "Besaya 07 · Hidráulica 2D",
+    "title": "Besaya 07 · 2D hydraulics",
     "category": "Caso piloto",
     "icon": "⑦",
     "href": "http://localhost/jupyter/lab/tree/pilot_cases/los_corrales_buelna/07_hec_ras_hydraulics.ipynb"
   },
   {
     "slug": "pilot_cases--los_corrales_buelna--08_hybrid_return_periods",
-    "title": "Besaya 08 · Riesgo",
+    "title": "Besaya 08 · Risk",
     "category": "Caso piloto",
     "icon": "⑧",
     "href": "http://localhost/jupyter/lab/tree/pilot_cases/los_corrales_buelna/08_hybrid_return_periods.ipynb"
-  },
-  {
-    "slug": "pilot_cases--valencia_dana--01_data_exploration",
-    "title": "Valencia 01 · Datos",
-    "category": "Caso piloto",
-    "icon": "①",
-    "href": "http://localhost/jupyter/lab/tree/pilot_cases/valencia_dana/01_data_exploration.ipynb"
-  },
-  {
-    "slug": "pilot_cases--valencia_dana--02_extreme_value_analysis",
-    "title": "Valencia 02 · Extremos GEV",
-    "category": "Caso piloto",
-    "icon": "②",
-    "href": "http://localhost/jupyter/lab/tree/pilot_cases/valencia_dana/02_extreme_value_analysis.ipynb"
   },
   {
     "slug": "pilot_cases--manning_rugosidades--01_monte_carlo_rugosidades",
@@ -274,30 +260,44 @@
   },
   {
     "slug": "pilot_cases--manning_rugosidades--04_comparacion_modelos",
-    "title": "Manning 04 · Comparación",
+    "title": "Manning 04 · Comparison",
     "category": "Caso piloto",
     "icon": "④",
     "href": "http://localhost/jupyter/lab/tree/pilot_cases/manning_rugosidades/04_comparacion_modelos.ipynb"
   },
   {
     "slug": "pilot_cases--manning_rugosidades--05_analisis_regimenes",
-    "title": "Manning 05 · Bifurcación",
+    "title": "Manning 05 · Regimes",
     "category": "Caso piloto",
     "icon": "⑤",
     "href": "http://localhost/jupyter/lab/tree/pilot_cases/manning_rugosidades/05_analisis_regimenes.ipynb"
   },
   {
     "slug": "pilot_cases--manning_rugosidades--06_figuras_paper",
-    "title": "Manning 06 · Figuras",
+    "title": "Manning 06 · Figures",
     "category": "Caso piloto",
     "icon": "⑥",
     "href": "http://localhost/jupyter/lab/tree/pilot_cases/manning_rugosidades/06_figuras_paper.ipynb"
   },
   {
     "slug": "pilot_cases--manning_rugosidades--07_correlated_manning",
-    "title": "Manning 07 · Correlado",
+    "title": "Manning 07 · Correlated",
     "category": "Caso piloto",
     "icon": "⑦",
     "href": "http://localhost/jupyter/lab/tree/pilot_cases/manning_rugosidades/07_correlated_manning.ipynb"
+  },
+  {
+    "slug": "pilot_cases--valencia_dana--01_data_exploration",
+    "title": "DANA 01 · Data",
+    "category": "Caso piloto",
+    "icon": "①",
+    "href": "http://localhost/jupyter/lab/tree/pilot_cases/valencia_dana/01_data_exploration.ipynb"
+  },
+  {
+    "slug": "pilot_cases--valencia_dana--02_extreme_value_analysis",
+    "title": "DANA 02 · Extremes",
+    "category": "Caso piloto",
+    "icon": "②",
+    "href": "http://localhost/jupyter/lab/tree/pilot_cases/valencia_dana/02_extreme_value_analysis.ipynb"
   }
 ]
