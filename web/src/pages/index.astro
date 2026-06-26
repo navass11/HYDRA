@@ -450,10 +450,6 @@ const notebookSessionHref = (slug: string) => {
     <!-- Prerequisites row -->
     <div class="fade-in flex flex-wrap items-center gap-3 justify-center mb-10">
       <span class="text-sm font-semibold text-gray-500 uppercase tracking-wide" data-i18n="install.prereq">Requisitos previos</span>
-      <span class="inline-flex items-center gap-1.5 bg-gray-100 border border-gray-200 rounded-full px-3 py-1.5 text-sm font-medium text-gray-700">
-        <svg class="w-4 h-4 text-orange-500" viewBox="0 0 24 24" fill="currentColor"><path d="M2.5 2.5C2.5 2.5 2 12.5 7 15.5C8.5 16.4 10 17 12 17C14 17 15.5 16.4 17 15.5C22 12.5 21.5 2.5 21.5 2.5L12 5.5L2.5 2.5Z"/></svg>
-        <span data-i18n="install.prereq.git">Git</span>
-      </span>
       <span class="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-200 rounded-full px-3 py-1.5 text-sm font-medium text-blue-700">
         🐳 <span data-i18n="install.prereq.docker">Docker Desktop</span>
         <span class="text-blue-400 text-xs">(opción 1)</span>
@@ -480,7 +476,7 @@ const notebookSessionHref = (slug: string) => {
             <div class="flex-1 bg-white/5 rounded-lg px-3 py-2.5 border border-white/10">
               <span class="text-gray-500 select-none">$ </span>
               <span class="text-green-400">git clone</span>
-              <span class="text-gray-300 break-all"> https://github.com/navass11/HYDRA.git</span>
+              <span class="text-gray-300 break-all"> https://github.com/navass11/pyhydra.git</span>
             </div>
           </div>
           <div class="flex items-start gap-2">
@@ -488,9 +484,7 @@ const notebookSessionHref = (slug: string) => {
             <div class="flex-1 bg-white/5 rounded-lg px-3 py-2.5 border border-white/10">
               <span class="text-gray-500 select-none">$ </span>
               <span class="text-green-400">docker compose</span>
-              <span class="text-gray-300"> -f docker/docker-compose.yml</span>
-              <br/><span class="text-gray-500 select-none pl-4">  </span><span class="text-green-400">up</span>
-              <span class="text-gray-300"> --build</span>
+              <span class="text-gray-300"> -f docker/docker-compose.yml up --build</span>
             </div>
           </div>
           <div class="flex items-start gap-2">
@@ -498,13 +492,13 @@ const notebookSessionHref = (slug: string) => {
             <div class="flex-1 bg-cyan-950/30 rounded-lg px-3 py-2.5 border border-cyan-500/20">
               <span class="text-cyan-400" data-i18n="install.open">Abre JupyterLab</span>
               <span class="text-white"> → </span>
-              <a href="http://localhost" target="_blank" class="text-cyan-300 underline underline-offset-2">http://localhost</a>
+              <a href="http://localhost:8888" target="_blank" class="text-cyan-300 underline underline-offset-2">http://localhost:8888</a>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Python manual -->
+      <!-- pip install -->
       <div class="fade-in bg-gray-950 rounded-2xl p-7 text-white">
         <div class="flex items-center gap-3 mb-5">
           <div class="w-10 h-10 rounded-xl bg-yellow-600/20 flex items-center justify-center text-xl">🐍</div>
@@ -518,93 +512,80 @@ const notebookSessionHref = (slug: string) => {
             <span class="mt-[3px] flex-shrink-0 w-5 h-5 rounded-full bg-white/10 text-gray-400 text-xs flex items-center justify-center font-sans">1</span>
             <div class="flex-1 bg-white/5 rounded-lg px-3 py-2.5 border border-white/10">
               <span class="text-gray-500 select-none">$ </span>
-              <span class="text-green-400">git clone</span>
-              <span class="text-gray-300 break-all"> https://github.com/navass11/HYDRA.git</span>
-              <span class="text-gray-300"> && </span><span class="text-green-400">cd</span>
-              <span class="text-gray-300"> HYDRA</span>
+              <span class="text-green-400">pip install</span>
+              <span class="text-gray-300 break-all"> git+https://github.com/navass11/pyhydra.git</span>
             </div>
           </div>
           <div class="flex items-start gap-2">
             <span class="mt-[3px] flex-shrink-0 w-5 h-5 rounded-full bg-white/10 text-gray-400 text-xs flex items-center justify-center font-sans">2</span>
-            <div class="flex-1 bg-white/5 rounded-lg px-3 py-2.5 border border-white/10">
+            <div class="flex-1 bg-white/5 rounded-lg px-3 py-2.5 border border-emerald-500/20">
               <span class="text-gray-500 select-none">$ </span>
-              <span class="text-green-400">pip install</span>
-              <span class="text-gray-300"> NEOPRENE lmoments3 openturns</span>
+              <span class="text-green-400">pyhydra-get-data</span>
+              <span class="text-emerald-300"> manning_rugosidades</span>
             </div>
           </div>
           <div class="flex items-start gap-2">
             <span class="mt-[3px] flex-shrink-0 w-5 h-5 rounded-full bg-white/10 text-gray-400 text-xs flex items-center justify-center font-sans">3</span>
             <div class="flex-1 bg-white/5 rounded-lg px-3 py-2.5 border border-white/10">
               <span class="text-gray-500 select-none">$ </span>
-              <span class="text-green-400">pip install</span>
-              <span class="text-gray-300"> git+https://github.com/navass11/CoSMoS_py.git</span>
-            </div>
-          </div>
-          <div class="flex items-start gap-2">
-            <span class="mt-[3px] flex-shrink-0 w-5 h-5 rounded-full bg-white/10 text-gray-400 text-xs flex items-center justify-center font-sans">4</span>
-            <div class="flex-1 bg-white/5 rounded-lg px-3 py-2.5 border border-white/10">
-              <span class="text-gray-500 select-none">$ </span>
-              <span class="text-green-400">pip install</span>
-              <span class="text-gray-300"> -e . </span>
-              <span class="text-gray-500">&amp;&amp; jupyter lab notebooks/</span>
+              <span class="text-green-400">jupyter lab</span>
+              <span class="text-gray-300"> notebooks/</span>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Azure pilot case data -->
+    <!-- pyhydra-get-data datasets -->
     <div class="fade-in bg-gray-950 rounded-2xl p-7 text-white border border-emerald-500/20">
       <div class="flex items-start gap-4 mb-5">
-        <div class="w-10 h-10 rounded-xl bg-emerald-600/20 flex items-center justify-center text-xl flex-shrink-0">☁️</div>
+        <div class="w-10 h-10 rounded-xl bg-emerald-600/20 flex items-center justify-center text-xl flex-shrink-0">📦</div>
         <div>
-          <h3 class="font-bold text-lg" data-i18n="install.azure.title">Azure · Casos piloto</h3>
-          <p class="text-gray-400 text-xs" data-i18n="install.azure.subtitle">Datos de simulación hidráulica en la nube</p>
+          <h3 class="font-bold text-lg" data-i18n="install.data.title">Datos de casos piloto</h3>
+          <p class="text-gray-400 text-xs" data-i18n="install.data.subtitle">Descarga con un comando — sin cuenta de Azure</p>
         </div>
       </div>
       <div class="grid lg:grid-cols-2 gap-6">
-        <div>
-          <p class="text-gray-400 text-sm leading-relaxed mb-4" data-i18n="install.azure.desc">
-            Los notebooks de Manning Roughness y otros casos piloto requieren ficheros TIF de gran tamaño (resultados de SFINCS y HEC-RAS). Estos datos se sirven desde un Azure File Share. Configura la ruta con la variable de entorno:
-          </p>
-          <div class="space-y-2 font-mono text-sm">
-            <div class="bg-white/5 rounded-lg px-3 py-2.5 border border-white/10">
-              <span class="text-gray-500 select-none"># </span>
-              <span class="text-gray-400">Local (montar el share en /mnt/data)</span>
-            </div>
-            <div class="bg-white/5 rounded-lg px-3 py-2.5 border border-emerald-500/20">
-              <span class="text-gray-500 select-none">$ </span>
-              <span class="text-yellow-300">export</span>
-              <span class="text-emerald-400"> HYDRA_DATA</span>
-              <span class="text-white">=</span>
-              <span class="text-orange-300">/mnt/data/manning_besaya</span>
-            </div>
-            <div class="bg-white/5 rounded-lg px-3 py-2.5 border border-white/10">
-              <span class="text-gray-500 select-none"># </span>
-              <span class="text-gray-400">Azure Container Instances (ver azure_deploy.sh)</span>
-            </div>
-            <div class="bg-white/5 rounded-lg px-3 py-2.5 border border-white/10">
-              <span class="text-gray-500 select-none">$ </span>
-              <span class="text-green-400">az</span>
-              <span class="text-gray-300"> container create ... </span>
-              <span class="text-yellow-300">--azure-file-volume-share-name</span>
-              <span class="text-orange-300"> dockerdata</span>
-            </div>
+        <div class="space-y-2 font-mono text-sm">
+          <div class="bg-white/5 rounded-lg px-3 py-2.5 border border-white/10">
+            <span class="text-gray-500 select-none"># </span>
+            <span class="text-gray-400" data-i18n="install.data.list">Ver datasets disponibles</span>
+          </div>
+          <div class="bg-white/5 rounded-lg px-3 py-2.5 border border-white/10">
+            <span class="text-gray-500 select-none">$ </span>
+            <span class="text-green-400">pyhydra-get-data</span>
+          </div>
+          <div class="mt-3 bg-white/5 rounded-lg px-3 py-2.5 border border-white/10">
+            <span class="text-gray-500 select-none"># </span>
+            <span class="text-gray-400" data-i18n="install.data.download">Descargar un dataset concreto</span>
+          </div>
+          <div class="bg-white/5 rounded-lg px-3 py-2.5 border border-emerald-500/20">
+            <span class="text-gray-500 select-none">$ </span>
+            <span class="text-green-400">pyhydra-get-data</span>
+            <span class="text-emerald-300"> manning_rugosidades</span>
+          </div>
+          <div class="bg-white/5 rounded-lg px-3 py-2.5 border border-white/10">
+            <span class="text-gray-500 select-none">$ </span>
+            <span class="text-green-400">pyhydra-get-data</span>
+            <span class="text-emerald-300"> los_corrales_buelna</span>
+          </div>
+          <div class="bg-white/5 rounded-lg px-3 py-2.5 border border-white/10">
+            <span class="text-gray-500 select-none">$ </span>
+            <span class="text-green-400">pyhydra-get-data</span>
+            <span class="text-emerald-300"> valencia_dana</span>
           </div>
         </div>
         <div>
-          <p class="text-gray-400 text-sm font-medium mb-3" data-i18n="install.azure.files">Contenido del File Share (hydratools / dockerdata):</p>
+          <p class="text-gray-400 text-sm font-medium mb-3" data-i18n="install.data.dest">Los datos se descargan en <code class="text-emerald-400">$HYDRA_DATA_DIR/pilot_cases/&lt;dataset&gt;/</code></p>
           <ul class="space-y-1.5 font-mono text-xs">
             {[
-              { path: 'manning_besaya/sfincs_results/hamax_sim_*.tif', desc: '1,000 resultados SFINCS', color: 'text-teal-400' },
-              { path: 'manning_besaya/hecras_results/hamax_sim_*.tif', desc: '1,000 resultados HEC-RAS', color: 'text-amber-400' },
-              { path: 'manning_besaya/manning.tif', desc: 'Raster rugosidad base', color: 'text-blue-400' },
-              { path: 'manning_besaya/dem_corrales.asc', desc: 'MDE dominio (Fig. 0)', color: 'text-purple-400' },
-              { path: 'manning_besaya/LandCover.tif', desc: 'Usos del suelo (Fig. 0)', color: 'text-green-400' },
+              { name: 'manning_rugosidades', desc: '301 MB · SFINCS + HEC-RAS ensemble', color: 'text-teal-400' },
+              { name: 'los_corrales_buelna', desc: 'Datos hidro-climáticos río Besaya', color: 'text-sky-400' },
+              { name: 'valencia_dana',       desc: 'Precipitación extrema DANA 2024',  color: 'text-orange-400' },
             ].map(item => (
-              <li class="flex gap-3 bg-white/[0.03] rounded-lg px-3 py-2 border border-white/8">
-                <span class={`${item.color} flex-1 truncate`}>{item.path}</span>
-                <span class="text-gray-500 text-right flex-shrink-0">{item.desc}</span>
+              <li class="flex gap-3 bg-white/[0.03] rounded-lg px-3 py-2.5 border border-white/8">
+                <span class={`${item.color} flex-shrink-0 font-semibold`}>{item.name}</span>
+                <span class="text-gray-500 text-right flex-1 text-right">{item.desc}</span>
               </li>
             ))}
           </ul>
