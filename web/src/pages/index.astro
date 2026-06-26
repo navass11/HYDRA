@@ -106,6 +106,38 @@ const tools = [
     color: 'text-teal-800 bg-teal-100',
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="6" r="1.8"/><circle cx="18" cy="5" r="1.8"/><circle cx="9" cy="14" r="1.8"/><circle cx="19" cy="15" r="1.8"/><line x1="6.5" y1="7.2" x2="7.8" y2="12.3" stroke-width="1.1" stroke-opacity="0.6"/><line x1="17" y1="6.8" x2="18.3" y2="13.2" stroke-width="1.1" stroke-opacity="0.6"/><line x1="11" y1="14" x2="17" y2="15" stroke-width="1.1" stroke-opacity="0.6"/><line x1="6.8" y1="6" x2="16.2" y2="5.2" stroke-width="1.1" stroke-opacity="0.6"/><circle cx="12" cy="10" r="2.5" fill="rgba(13,148,136,0.2)" stroke="rgb(13,148,136)" stroke-width="1.5"/></svg>',
   },
+  {
+    title: 'Curva IDF',
+    description: 'Ajusta una GEV a los máximos anuales por duración y genera la curva Intensidad-Duración-Frecuencia.',
+    href: asset('/tools/idf'),
+    tag: 'Extremos',
+    color: 'text-blue-800 bg-blue-100',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="14" width="3" height="5" rx="0.5"/><rect x="8" y="10" width="3" height="9" rx="0.5"/><rect x="13" y="6" width="3" height="13" rx="0.5"/><rect x="18" y="3" width="3" height="16" rx="0.5"/><line x1="2" y1="20" x2="22" y2="20" stroke-width="1.2"/></svg>',
+  },
+  {
+    title: 'Corrección de sesgo',
+    description: 'Aplica quantile mapping entre series observada y modelo. Genera QQ-plot y estadísticas antes/después.',
+    href: asset('/tools/bias'),
+    tag: 'Clima',
+    color: 'text-cyan-800 bg-cyan-100',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="3" y1="21" x2="3" y2="4" stroke-width="1.2"/><line x1="3" y1="21" x2="22" y2="21" stroke-width="1.2"/><path d="M5 19 Q9 14 13 10 Q17 6 19 4" stroke-width="1.4" stroke-dasharray="3 2" stroke-opacity="0.6"/><path d="M5 19 Q9 16 13 14 Q17 12 19 4" stroke-width="1.8"/></svg>',
+  },
+  {
+    title: 'Análisis de tendencia',
+    description: 'Mann-Kendall, punto de cambio de Pettitt y pendiente de Sen sobre series anuales o mensuales.',
+    href: asset('/tools/trend'),
+    tag: 'Clima',
+    color: 'text-rose-800 bg-rose-100',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="3,18 7,12 11,14 15,9 19,7"/><line x1="3" y1="18" x2="21" y2="18" stroke-width="1.2"/><line x1="21" y1="7" x2="21" y2="18" stroke-width="1.2" stroke-dasharray="2 2"/></svg>',
+  },
+  {
+    title: 'Frecuencia regional',
+    description: 'Análisis regional por L-momentos: discordancia, heterogeneidad y curva de crecimiento GEV regional.',
+    href: asset('/tools/rfa'),
+    tag: 'Espacial',
+    color: 'text-fuchsia-800 bg-fuchsia-100',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 19 Q5 14 7 12" stroke-width="1.2" stroke-opacity="0.5"/><path d="M6 19 Q8 13 10 10" stroke-width="1.2" stroke-opacity="0.5"/><path d="M9 19 Q11 12 13 9" stroke-width="1.2" stroke-opacity="0.5"/><path d="M5 20 Q10 10 17 5" stroke-width="2" stroke-linecap="round"/><circle cx="17" cy="5" r="2" fill="currentColor" stroke="none"/><line x1="2" y1="20" x2="22" y2="20" stroke-width="1.2"/></svg>',
+  },
 ];
 
 const catColors: Record<string, string> = {
