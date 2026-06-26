@@ -155,3 +155,20 @@ notebooks/climate/spatial_analysis/build/
 
 # Runtime directories
 **/.hydra_runtime/
+outputs/manual-20260625-hydra-seminario/presentations/seminario-hydra-tesis/output/seminario-hydra-tesis.pptx
+outputs/manual-20260625-hydra-visual/presentations/seminario-hydra-visual/claim-spine.txt
+outputs/manual-20260625-hydra-visual/presentations/seminario-hydra-visual/design-system.txt
+outputs/manual-20260625-hydra-visual/presentations/seminario-hydra-visual/profile-plan.txt
+outputs/manual-20260625-hydra-visual/presentations/seminario-hydra-visual/source-notes.txt
+outputs/manual-20260625-hydra-visual/presentations/seminario-hydra-visual/assets/repo-map.html
+outputs/manual-20260625-hydra-visual/presentations/seminario-hydra-visual/assets/screens/case-besaya.png
+outputs/manual-20260625-hydra-visual/presentations/seminario-hydra-visual/assets/screens/case-dana.png
+outputs/manual-20260625-hydra-visual/presentations/seminario-hydra-visual/assets/screens/module-datos.png
+outputs/manual-20260625-hydra-visual/presentations/seminario-hydra-visual/assets/screens/module-modelizacion.png
+outputs/manual-20260625-hydra-visual/presentations/seminario-hydra-visual/assets/screens/notebook-extremes.png
+outputs/manual-20260625-hydra-visual/presentations/seminario-hydra-visual/assets/screens/notebook-hecras.png
+outputs/manual-20260625-hydra-visual/presentations/seminario-hydra-visual/assets/screens/notebook-manning.png
+outputs/manual-20260625-hydra-visual/presentations/seminario-hydra-visual/assets/screens/repo-map.png
+outputs/manual-20260625-hydra-visual/presentations/seminario-hydra-visual/assets/screens/tool-sensitivity.png
+outputs/manual-20260625-hydra-visual/presentations/seminario-hydra-visual/assets/screens/tool-stochastic.png
+outputs/*

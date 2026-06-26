@@ -131,7 +131,9 @@ const stepTitleColors: Record<number, string> = {
           class="text-blue-100/75 leading-relaxed max-w-5xl"
           data-t-es={pc.approach.es}
           data-t-en={pc.approach.en}
-        >{pc.approach.es}</p>
+          data-html="true"
+          set:html={pc.approach.es}
+        />
       </section>
 
       <!-- ── WORKFLOW ── -->

@@ -236,5 +236,68 @@
     "category": "Caso piloto",
     "icon": "⑧",
     "href": "http://localhost/jupyter/lab/tree/pilot_cases/los_corrales_buelna/08_hybrid_return_periods.ipynb"
+  },
+  {
+    "slug": "pilot_cases--valencia_dana--01_data_exploration",
+    "title": "Valencia 01 · Datos",
+    "category": "Caso piloto",
+    "icon": "①",
+    "href": "http://localhost/jupyter/lab/tree/pilot_cases/valencia_dana/01_data_exploration.ipynb"
+  },
+  {
+    "slug": "pilot_cases--valencia_dana--02_extreme_value_analysis",
+    "title": "Valencia 02 · Extremos GEV",
+    "category": "Caso piloto",
+    "icon": "②",
+    "href": "http://localhost/jupyter/lab/tree/pilot_cases/valencia_dana/02_extreme_value_analysis.ipynb"
+  },
+  {
+    "slug": "pilot_cases--manning_rugosidades--01_monte_carlo_rugosidades",
+    "title": "Manning 01 · Monte Carlo",
+    "category": "Caso piloto",
+    "icon": "①",
+    "href": "http://localhost/jupyter/lab/tree/pilot_cases/manning_rugosidades/01_monte_carlo_rugosidades.ipynb"
+  },
+  {
+    "slug": "pilot_cases--manning_rugosidades--02_analisis_sfincs",
+    "title": "Manning 02 · SFINCS",
+    "category": "Caso piloto",
+    "icon": "②",
+    "href": "http://localhost/jupyter/lab/tree/pilot_cases/manning_rugosidades/02_analisis_sfincs.ipynb"
+  },
+  {
+    "slug": "pilot_cases--manning_rugosidades--03_analisis_hecras",
+    "title": "Manning 03 · HEC-RAS",
+    "category": "Caso piloto",
+    "icon": "③",
+    "href": "http://localhost/jupyter/lab/tree/pilot_cases/manning_rugosidades/03_analisis_hecras.ipynb"
+  },
+  {
+    "slug": "pilot_cases--manning_rugosidades--04_comparacion_modelos",
+    "title": "Manning 04 · Comparación",
+    "category": "Caso piloto",
+    "icon": "④",
+    "href": "http://localhost/jupyter/lab/tree/pilot_cases/manning_rugosidades/04_comparacion_modelos.ipynb"
+  },
+  {
+    "slug": "pilot_cases--manning_rugosidades--05_analisis_regimenes",
+    "title": "Manning 05 · Bifurcación",
+    "category": "Caso piloto",
+    "icon": "⑤",
+    "href": "http://localhost/jupyter/lab/tree/pilot_cases/manning_rugosidades/05_analisis_regimenes.ipynb"
+  },
+  {
+    "slug": "pilot_cases--manning_rugosidades--06_figuras_paper",
+    "title": "Manning 06 · Figuras",
+    "category": "Caso piloto",
+    "icon": "⑥",
+    "href": "http://localhost/jupyter/lab/tree/pilot_cases/manning_rugosidades/06_figuras_paper.ipynb"
+  },
+  {
+    "slug": "pilot_cases--manning_rugosidades--07_correlated_manning",
+    "title": "Manning 07 · Correlado",
+    "category": "Caso piloto",
+    "icon": "⑦",
+    "href": "http://localhost/jupyter/lab/tree/pilot_cases/manning_rugosidades/07_correlated_manning.ipynb"
   }
 ]

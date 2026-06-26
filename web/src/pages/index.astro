@@ -119,6 +119,17 @@ const catColors: Record<string, string> = {
 const pilotNotebooks = notebooksMeta.filter(nb => nb.category === 'Caso piloto');
 const generalNotebooks = notebooksMeta.filter(nb => nb.category !== 'Caso piloto');
 
+type AccentStyle = { card: string; label: string; labelHover: string; divider: string; runHover: string; icon: string };
+const accentStyles: Record<string, AccentStyle> = {
+  sky:     { card: 'bg-sky-950/50 border-sky-500/30 hover:border-sky-400/60 hover:bg-sky-900/60',     label: 'text-sky-400',     labelHover: 'hover:text-sky-300',     divider: 'bg-sky-500/25',     runHover: 'group-hover:text-sky-400',     icon: 'opacity-60 group-hover:opacity-100' },
+  orange:  { card: 'bg-orange-950/50 border-orange-500/30 hover:border-orange-400/60 hover:bg-orange-900/60', label: 'text-orange-400', labelHover: 'hover:text-orange-300', divider: 'bg-orange-500/25', runHover: 'group-hover:text-orange-400', icon: 'opacity-60 group-hover:opacity-100' },
+  emerald: { card: 'bg-emerald-950/50 border-emerald-500/30 hover:border-emerald-400/60 hover:bg-emerald-900/60', label: 'text-emerald-400', labelHover: 'hover:text-emerald-300', divider: 'bg-emerald-500/25', runHover: 'group-hover:text-emerald-400', icon: 'opacity-60 group-hover:opacity-100' },
+};
+const pilotCaseGroups = pilotCases.map(pc => {
+  const prefix = `pilot_cases--${pc.slug.replace(/-/g, '_')}--`;
+  return { pc, style: accentStyles[pc.accentColor] ?? accentStyles.sky, notebooks: pilotNotebooks.filter(nb => nb.slug.startsWith(prefix)) };
+}).filter(g => g.notebooks.length > 0);
+
 const notebookSessionHref = (slug: string) => {
   // slug uses '--' as path separator (e.g. "data_sources--rainfall--OGIMET_download")
   const path = slug.replaceAll('--', '/') + '.ipynb';
@@ -264,22 +275,37 @@ const notebookSessionHref = (slug: string) => {
           <div class="flex-1 h-px bg-gray-200"></div>
           <span class="text-sm text-gray-400">{pilotNotebooks.length} notebooks · {pilotCases.length} <span data-i18n="cases.notebooks_count">casos</span></span>
         </div>
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 xl:grid-cols-10 gap-3">
-          {pilotNotebooks.map((nb, i) => (
-            <a
-              href={notebookSessionHref(nb.slug)}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="fade-in bg-white border border-cyan-100 rounded-xl p-4 hover:border-cyan-400 hover:shadow-md transition-all group text-center"
-              title={nb.description?.es}
-              style={`transition-delay: ${i * 40}ms`}
-            >
-              <span class="text-2xl mb-2 block">{nb.icon}</span>
-              <h4 class="font-semibold text-gray-900 text-xs mb-2 group-hover:text-cyan-700 transition-colors leading-tight">
-                {nb.title}
-              </h4>
-              <span class="text-xs text-gray-400 group-hover:text-cyan-500 transition-colors">▶ <span data-i18n="notebooks.run">Ejecutar</span></span>
-            </a>
+        <div class="space-y-5">
+          {pilotCaseGroups.map((group, gi) => (
+            <div>
+              <div class="flex items-center gap-3 mb-2">
+                <a
+                  href={`${base}cases/${group.pc.slug}`}
+                  class={`text-xs font-bold tracking-wide uppercase ${group.style.label} ${group.style.labelHover} transition-colors whitespace-nowrap`}
+                >
+                  {group.pc.title} →
+                </a>
+                <div class={`flex-1 h-px ${group.style.divider}`}></div>
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-8 gap-3">
+                {group.notebooks.map((nb, i) => (
+                  <a
+                    href={notebookSessionHref(nb.slug)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class={`fade-in border rounded-xl p-4 hover:shadow-lg hover:shadow-black/40 hover:-translate-y-0.5 transition-all group text-center ${group.style.card}`}
+                    title={nb.description?.es}
+                    style={`transition-delay: ${(gi * 10 + i) * 40}ms`}
+                  >
+                    <span class={`text-2xl mb-2 block transition-all ${group.style.icon}`}>{nb.icon}</span>
+                    <h4 class="font-semibold text-slate-300 text-xs mb-2 leading-tight group-hover:text-white transition-colors">
+                      {nb.title}
+                    </h4>
+                    <span class={`text-xs text-slate-500 ${group.style.runHover} transition-colors`}>▶ <span data-i18n="notebooks.run">Ejecutar</span></span>
+                  </a>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
       </div>
@@ -416,63 +442,172 @@ const notebookSessionHref = (slug: string) => {
 
   <!-- ── INSTALACIÓN ── -->
   <section id="instalacion" class="py-24 max-w-7xl mx-auto px-6">
-    <div class="text-center mb-16 fade-in">
+    <div class="text-center mb-12 fade-in">
       <h2 class="text-4xl font-bold mb-4" data-i18n="install.title">Instalación</h2>
-      <p class="text-gray-500 text-lg" data-i18n="install.description">Dos opciones para empezar en minutos.</p>
+      <p class="text-gray-500 text-lg" data-i18n="install.description">Tres formas de arrancar HYDRA según tu entorno.</p>
     </div>
 
-    <div class="grid md:grid-cols-2 gap-8">
-      <div class="fade-in bg-gray-950 rounded-2xl p-8 text-white">
-        <div class="flex items-center gap-3 mb-6">
-          <span class="text-2xl">🐳</span>
+    <!-- Prerequisites row -->
+    <div class="fade-in flex flex-wrap items-center gap-3 justify-center mb-10">
+      <span class="text-sm font-semibold text-gray-500 uppercase tracking-wide" data-i18n="install.prereq">Requisitos previos</span>
+      <span class="inline-flex items-center gap-1.5 bg-gray-100 border border-gray-200 rounded-full px-3 py-1.5 text-sm font-medium text-gray-700">
+        <svg class="w-4 h-4 text-orange-500" viewBox="0 0 24 24" fill="currentColor"><path d="M2.5 2.5C2.5 2.5 2 12.5 7 15.5C8.5 16.4 10 17 12 17C14 17 15.5 16.4 17 15.5C22 12.5 21.5 2.5 21.5 2.5L12 5.5L2.5 2.5Z"/></svg>
+        <span data-i18n="install.prereq.git">Git</span>
+      </span>
+      <span class="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-200 rounded-full px-3 py-1.5 text-sm font-medium text-blue-700">
+        🐳 <span data-i18n="install.prereq.docker">Docker Desktop</span>
+        <span class="text-blue-400 text-xs">(opción 1)</span>
+      </span>
+      <span class="inline-flex items-center gap-1.5 bg-yellow-50 border border-yellow-200 rounded-full px-3 py-1.5 text-sm font-medium text-yellow-700">
+        🐍 <span data-i18n="install.prereq.python">Python ≥ 3.10</span>
+        <span class="text-yellow-500 text-xs">(opción 2)</span>
+      </span>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6 mb-6">
+      <!-- Docker -->
+      <div class="fade-in bg-gray-950 rounded-2xl p-7 text-white">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-10 h-10 rounded-xl bg-blue-600/20 flex items-center justify-center text-xl">🐳</div>
           <div>
             <h3 class="font-bold text-lg" data-i18n="install.docker.title">Docker</h3>
-            <p class="text-gray-400 text-sm" data-i18n="install.docker.subtitle">Recomendado — sin configurar dependencias</p>
+            <p class="text-gray-400 text-xs" data-i18n="install.docker.subtitle">Recomendado — entorno preconfigurado, sin instalar dependencias</p>
           </div>
         </div>
-        <div class="space-y-3 font-mono text-sm">
-          <div class="bg-white/5 rounded-lg px-4 py-3 border border-white/10">
-            <span class="text-gray-500 select-none">$ </span>
-            <span class="text-green-400">git clone</span>
-            <span class="text-gray-300"> https://github.com/navass11/HYDRA.git</span>
+        <div class="space-y-2 font-mono text-sm">
+          <div class="flex items-start gap-2">
+            <span class="mt-[3px] flex-shrink-0 w-5 h-5 rounded-full bg-white/10 text-gray-400 text-xs flex items-center justify-center font-sans">1</span>
+            <div class="flex-1 bg-white/5 rounded-lg px-3 py-2.5 border border-white/10">
+              <span class="text-gray-500 select-none">$ </span>
+              <span class="text-green-400">git clone</span>
+              <span class="text-gray-300 break-all"> https://github.com/navass11/HYDRA.git</span>
+            </div>
           </div>
-          <div class="bg-white/5 rounded-lg px-4 py-3 border border-white/10">
-            <span class="text-gray-500 select-none">$ </span>
-            <span class="text-green-400">docker compose</span>
-            <span class="text-gray-300"> -f docker/docker-compose.yml up --build</span>
+          <div class="flex items-start gap-2">
+            <span class="mt-[3px] flex-shrink-0 w-5 h-5 rounded-full bg-white/10 text-gray-400 text-xs flex items-center justify-center font-sans">2</span>
+            <div class="flex-1 bg-white/5 rounded-lg px-3 py-2.5 border border-white/10">
+              <span class="text-gray-500 select-none">$ </span>
+              <span class="text-green-400">docker compose</span>
+              <span class="text-gray-300"> -f docker/docker-compose.yml</span>
+              <br/><span class="text-gray-500 select-none pl-4">  </span><span class="text-green-400">up</span>
+              <span class="text-gray-300"> --build</span>
+            </div>
           </div>
-          <div class="bg-white/5 rounded-lg px-4 py-3 border border-white/10">
-            <span class="text-gray-500 select-none"># </span>
-            <span class="text-cyan-400" data-i18n="install.open">Abrir</span>
-            <span class="text-white"> → http://localhost:8888</span>
+          <div class="flex items-start gap-2">
+            <span class="mt-[3px] flex-shrink-0 w-5 h-5 rounded-full bg-cyan-600/40 text-cyan-300 text-xs flex items-center justify-center font-sans">✓</span>
+            <div class="flex-1 bg-cyan-950/30 rounded-lg px-3 py-2.5 border border-cyan-500/20">
+              <span class="text-cyan-400" data-i18n="install.open">Abre JupyterLab</span>
+              <span class="text-white"> → </span>
+              <a href="http://localhost" target="_blank" class="text-cyan-300 underline underline-offset-2">http://localhost</a>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="fade-in bg-gray-950 rounded-2xl p-8 text-white">
-        <div class="flex items-center gap-3 mb-6">
-          <span class="text-2xl">🐍</span>
+      <!-- Python manual -->
+      <div class="fade-in bg-gray-950 rounded-2xl p-7 text-white">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-10 h-10 rounded-xl bg-yellow-600/20 flex items-center justify-center text-xl">🐍</div>
           <div>
-            <h3 class="font-bold text-lg" data-i18n="install.manual.title">Instalación manual</h3>
-            <p class="text-gray-400 text-sm" data-i18n="install.manual.subtitle">Python 3.9 o superior requerido</p>
+            <h3 class="font-bold text-lg" data-i18n="install.manual.title">Python manual</h3>
+            <p class="text-gray-400 text-xs" data-i18n="install.manual.subtitle">Para integrarlo en tu propio entorno</p>
           </div>
         </div>
-        <div class="space-y-3 font-mono text-sm">
-          <div class="bg-white/5 rounded-lg px-4 py-3 border border-white/10">
-            <span class="text-gray-500 select-none">$ </span>
-            <span class="text-green-400">pip install</span>
-            <span class="text-gray-300"> NEOPRENE lmoments3 openturns</span>
+        <div class="space-y-2 font-mono text-sm">
+          <div class="flex items-start gap-2">
+            <span class="mt-[3px] flex-shrink-0 w-5 h-5 rounded-full bg-white/10 text-gray-400 text-xs flex items-center justify-center font-sans">1</span>
+            <div class="flex-1 bg-white/5 rounded-lg px-3 py-2.5 border border-white/10">
+              <span class="text-gray-500 select-none">$ </span>
+              <span class="text-green-400">git clone</span>
+              <span class="text-gray-300 break-all"> https://github.com/navass11/HYDRA.git</span>
+              <span class="text-gray-300"> && </span><span class="text-green-400">cd</span>
+              <span class="text-gray-300"> HYDRA</span>
+            </div>
           </div>
-          <div class="bg-white/5 rounded-lg px-4 py-3 border border-white/10">
-            <span class="text-gray-500 select-none">$ </span>
-            <span class="text-green-400">pip install</span>
-            <span class="text-gray-300"> git+https://github.com/navass11/CoSMoS_py.git</span>
+          <div class="flex items-start gap-2">
+            <span class="mt-[3px] flex-shrink-0 w-5 h-5 rounded-full bg-white/10 text-gray-400 text-xs flex items-center justify-center font-sans">2</span>
+            <div class="flex-1 bg-white/5 rounded-lg px-3 py-2.5 border border-white/10">
+              <span class="text-gray-500 select-none">$ </span>
+              <span class="text-green-400">pip install</span>
+              <span class="text-gray-300"> NEOPRENE lmoments3 openturns</span>
+            </div>
           </div>
-          <div class="bg-white/5 rounded-lg px-4 py-3 border border-white/10">
-            <span class="text-gray-500 select-none">$ </span>
-            <span class="text-green-400">pip install</span>
-            <span class="text-gray-300"> -e .</span>
+          <div class="flex items-start gap-2">
+            <span class="mt-[3px] flex-shrink-0 w-5 h-5 rounded-full bg-white/10 text-gray-400 text-xs flex items-center justify-center font-sans">3</span>
+            <div class="flex-1 bg-white/5 rounded-lg px-3 py-2.5 border border-white/10">
+              <span class="text-gray-500 select-none">$ </span>
+              <span class="text-green-400">pip install</span>
+              <span class="text-gray-300"> git+https://github.com/navass11/CoSMoS_py.git</span>
+            </div>
           </div>
+          <div class="flex items-start gap-2">
+            <span class="mt-[3px] flex-shrink-0 w-5 h-5 rounded-full bg-white/10 text-gray-400 text-xs flex items-center justify-center font-sans">4</span>
+            <div class="flex-1 bg-white/5 rounded-lg px-3 py-2.5 border border-white/10">
+              <span class="text-gray-500 select-none">$ </span>
+              <span class="text-green-400">pip install</span>
+              <span class="text-gray-300"> -e . </span>
+              <span class="text-gray-500">&amp;&amp; jupyter lab notebooks/</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Azure pilot case data -->
+    <div class="fade-in bg-gray-950 rounded-2xl p-7 text-white border border-emerald-500/20">
+      <div class="flex items-start gap-4 mb-5">
+        <div class="w-10 h-10 rounded-xl bg-emerald-600/20 flex items-center justify-center text-xl flex-shrink-0">☁️</div>
+        <div>
+          <h3 class="font-bold text-lg" data-i18n="install.azure.title">Azure · Casos piloto</h3>
+          <p class="text-gray-400 text-xs" data-i18n="install.azure.subtitle">Datos de simulación hidráulica en la nube</p>
+        </div>
+      </div>
+      <div class="grid lg:grid-cols-2 gap-6">
+        <div>
+          <p class="text-gray-400 text-sm leading-relaxed mb-4" data-i18n="install.azure.desc">
+            Los notebooks de Manning Roughness y otros casos piloto requieren ficheros TIF de gran tamaño (resultados de SFINCS y HEC-RAS). Estos datos se sirven desde un Azure File Share. Configura la ruta con la variable de entorno:
+          </p>
+          <div class="space-y-2 font-mono text-sm">
+            <div class="bg-white/5 rounded-lg px-3 py-2.5 border border-white/10">
+              <span class="text-gray-500 select-none"># </span>
+              <span class="text-gray-400">Local (montar el share en /mnt/data)</span>
+            </div>
+            <div class="bg-white/5 rounded-lg px-3 py-2.5 border border-emerald-500/20">
+              <span class="text-gray-500 select-none">$ </span>
+              <span class="text-yellow-300">export</span>
+              <span class="text-emerald-400"> HYDRA_DATA</span>
+              <span class="text-white">=</span>
+              <span class="text-orange-300">/mnt/data/manning_besaya</span>
+            </div>
+            <div class="bg-white/5 rounded-lg px-3 py-2.5 border border-white/10">
+              <span class="text-gray-500 select-none"># </span>
+              <span class="text-gray-400">Azure Container Instances (ver azure_deploy.sh)</span>
+            </div>
+            <div class="bg-white/5 rounded-lg px-3 py-2.5 border border-white/10">
+              <span class="text-gray-500 select-none">$ </span>
+              <span class="text-green-400">az</span>
+              <span class="text-gray-300"> container create ... </span>
+              <span class="text-yellow-300">--azure-file-volume-share-name</span>
+              <span class="text-orange-300"> dockerdata</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <p class="text-gray-400 text-sm font-medium mb-3" data-i18n="install.azure.files">Contenido del File Share (hydratools / dockerdata):</p>
+          <ul class="space-y-1.5 font-mono text-xs">
+            {[
+              { path: 'manning_besaya/sfincs_results/hamax_sim_*.tif', desc: '1,000 resultados SFINCS', color: 'text-teal-400' },
+              { path: 'manning_besaya/hecras_results/hamax_sim_*.tif', desc: '1,000 resultados HEC-RAS', color: 'text-amber-400' },
+              { path: 'manning_besaya/manning.tif', desc: 'Raster rugosidad base', color: 'text-blue-400' },
+              { path: 'manning_besaya/dem_corrales.asc', desc: 'MDE dominio (Fig. 0)', color: 'text-purple-400' },
+              { path: 'manning_besaya/LandCover.tif', desc: 'Usos del suelo (Fig. 0)', color: 'text-green-400' },
+            ].map(item => (
+              <li class="flex gap-3 bg-white/[0.03] rounded-lg px-3 py-2 border border-white/8">
+                <span class={`${item.color} flex-1 truncate`}>{item.path}</span>
+                <span class="text-gray-500 text-right flex-shrink-0">{item.desc}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>

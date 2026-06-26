@@ -18,6 +18,7 @@ export type PilotCase = {
   region: string;
   color: string;
   tag: string;
+  accentColor: string;
   summary: I18n;
   challenge: I18n;
   approach: I18n;
@@ -47,36 +48,36 @@ const workflowSvg = `
   </defs>
 
   <rect width="760" height="400" rx="8" fill="#0f172a"/>
-  <text x="28" y="34" font-family="Inter, system-ui" font-size="15" font-weight="800" fill="#f1f5f9">Pipeline: Los Corrales de Buelna — Río Besaya (ROP 3598, 2018)</text>
+  <text x="28" y="34" font-family="Inter, system-ui" font-size="15" font-weight="800" fill="#f1f5f9" data-t-es="Pipeline: Los Corrales de Buelna — Río Besaya (ROP 3598, 2018)" data-t-en="Pipeline: Los Corrales de Buelna — Río Besaya (ROP 3598, 2018)">Pipeline: Los Corrales de Buelna — Río Besaya (ROP 3598, 2018)</text>
 
   <!-- Row 1: steps 1-4 -->
   <rect x="24" y="56" width="158" height="76" rx="8" fill="#0c1f40" stroke="#3b82f6" stroke-width="1.5"/>
   <text x="32" y="76" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#60a5fa">01</text>
-  <text x="32" y="94" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#93c5fd">Adquisición</text>
-  <text x="32" y="110" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">13 pluvióm. · aforos Besaya</text>
+  <text x="32" y="94" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#93c5fd" data-t-es="Adquisición" data-t-en="Acquisition">Adquisición</text>
+  <text x="32" y="110" font-family="Inter, system-ui" font-size="10" fill="#94a3b8" data-t-es="13 pluvióm. · aforos Besaya" data-t-en="13 rain gauges · Besaya flows">13 pluvióm. · aforos Besaya</text>
   <text x="32" y="124" font-family="Inter, system-ui" font-size="9" fill="#64748b">LIDAR 0.5 pts/m² · BTA 25m</text>
 
   <path d="M182 94 L196 94" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr-bc)"/>
 
   <rect x="196" y="56" width="158" height="76" rx="8" fill="#1a0c3e" stroke="#7c3aed" stroke-width="1.5"/>
   <text x="204" y="76" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#a78bfa">02</text>
-  <text x="204" y="94" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#c4b5fd">Interpolación geoest.</text>
+  <text x="204" y="94" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#c4b5fd" data-t-es="Interpolación geoest." data-t-en="Geostat. interpolation">Interpolación geoest.</text>
   <text x="204" y="110" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">KO · UK · IDW → Taylor</text>
-  <text x="204" y="124" font-family="Inter, system-ui" font-size="9" fill="#64748b">IDW seleccionado · 9 subcuencas</text>
+  <text x="204" y="124" font-family="Inter, system-ui" font-size="9" fill="#64748b" data-t-es="IDW seleccionado · 9 subcuencas" data-t-en="IDW selected · 9 subbasins">IDW seleccionado · 9 subcuencas</text>
 
   <path d="M354 94 L368 94" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr-bc)"/>
 
   <rect x="368" y="56" width="158" height="76" rx="8" fill="#0e1545" stroke="#6366f1" stroke-width="1.5"/>
   <text x="376" y="76" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#818cf8">03</text>
-  <text x="376" y="94" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#a5b4fc">Extremos de caudal</text>
-  <text x="376" y="110" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">GEV · GPD sobre aforos</text>
+  <text x="376" y="94" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#a5b4fc" data-t-es="Extremos de caudal" data-t-en="Streamflow extremes">Extremos de caudal</text>
+  <text x="376" y="110" font-family="Inter, system-ui" font-size="10" fill="#94a3b8" data-t-es="GEV · GPD sobre aforos" data-t-en="GEV · GPD on gauges">GEV · GPD sobre aforos</text>
   <text x="376" y="124" font-family="Inter, system-ui" font-size="9" fill="#64748b">T10 · T100 · T500</text>
 
   <path d="M526 94 L540 94" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr-bc)"/>
 
   <rect x="540" y="56" width="196" height="76" rx="8" fill="#291500" stroke="#f59e0b" stroke-width="1.5"/>
   <text x="548" y="76" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#fbbf24">04</text>
-  <text x="548" y="94" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#fcd34d">HEC-HMS calibrado</text>
+  <text x="548" y="94" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#fcd34d" data-t-es="HEC-HMS calibrado" data-t-en="Calibrated HEC-HMS">HEC-HMS calibrado</text>
   <text x="548" y="110" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">SMA + Clark + Muskingum</text>
   <text x="548" y="124" font-family="Inter, system-ui" font-size="9" fill="#64748b">NSE &gt; 0.8 · Torrelavega + Las Caldas</text>
 
@@ -86,17 +87,17 @@ const workflowSvg = `
   <!-- Row 2: steps 8←7←6←5 -->
   <rect x="540" y="188" width="196" height="76" rx="8" fill="#291500" stroke="#f59e0b" stroke-width="1.5"/>
   <text x="548" y="208" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#fbbf24">05</text>
-  <text x="548" y="226" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#fcd34d">Separación de eventos</text>
-  <text x="548" y="242" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">Umbral → Qmax · Qmed · T · Tipo</text>
-  <text x="548" y="256" font-family="Inter, system-ui" font-size="9" fill="#64748b">Serie continua 1970–2012</text>
+  <text x="548" y="226" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#fcd34d" data-t-es="Separación de eventos" data-t-en="Event separation">Separación de eventos</text>
+  <text x="548" y="242" font-family="Inter, system-ui" font-size="10" fill="#94a3b8" data-t-es="Umbral → Qmax · Qmed · T · Tipo" data-t-en="Threshold → Qmax · Qmed · T · Type">Umbral → Qmax · Qmed · T · Tipo</text>
+  <text x="548" y="256" font-family="Inter, system-ui" font-size="9" fill="#64748b" data-t-es="Serie continua 1970–2012" data-t-en="Continuous series 1970–2012">Serie continua 1970–2012</text>
 
   <path d="M540 226 L526 226" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr-l-bc)"/>
 
   <rect x="368" y="188" width="158" height="76" rx="8" fill="#200840" stroke="#a855f7" stroke-width="1.5"/>
   <text x="376" y="208" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#c084fc">06</text>
-  <text x="376" y="226" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#d8b4fe">Síntesis híbrida</text>
-  <text x="376" y="242" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">PCA+K-Means+Cóp. Gauss.+MaxDiss</text>
-  <text x="376" y="256" font-family="Inter, system-ui" font-size="9" fill="#64748b">Reconstrucción polinomios grado 2</text>
+  <text x="376" y="226" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#d8b4fe" data-t-es="Síntesis híbrida" data-t-en="Hybrid synthesis">Síntesis híbrida</text>
+  <text x="376" y="242" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">PCA+K-Means+Cóp.+MaxDiss</text>
+  <text x="376" y="256" font-family="Inter, system-ui" font-size="9" fill="#64748b" data-t-es="Reconstr. polinomios grado 2" data-t-en="Degree-2 polynomial reconstr.">Reconstr. polinomios grado 2</text>
 
   <path d="M368 226 L354 226" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr-l-bc)"/>
 
@@ -104,27 +105,27 @@ const workflowSvg = `
   <text x="204" y="208" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#fb923c">07</text>
   <text x="204" y="226" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#fdba74">Iber / HEC-RAS 2D</text>
   <text x="204" y="242" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">RTIN · LIDAR 0.5 pts/m²</text>
-  <text x="204" y="256" font-family="Inter, system-ui" font-size="9" fill="#64748b">Malla ≤ 8 m · flujo no permanente</text>
+  <text x="204" y="256" font-family="Inter, system-ui" font-size="9" fill="#64748b" data-t-es="Malla ≤ 8m · no permanente" data-t-en="Mesh ≤ 8m · unsteady flow">Malla ≤ 8m · no permanente</text>
 
   <path d="M196 226 L182 226" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr-l-bc)"/>
 
   <rect x="24" y="188" width="158" height="76" rx="8" fill="#20040e" stroke="#f43f5e" stroke-width="1.5"/>
   <text x="32" y="208" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#fb7185">08</text>
-  <text x="32" y="226" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#fda4af">Riesgo de inundación</text>
-  <text x="32" y="242" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">KNN k=6 · CDF empírica píxel a píxel</text>
+  <text x="32" y="226" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#fda4af" data-t-es="Riesgo de inundación" data-t-en="Flood risk">Riesgo de inundación</text>
+  <text x="32" y="242" font-family="Inter, system-ui" font-size="10" fill="#94a3b8" data-t-es="KNN k=6 · CDF emp. píxel" data-t-en="KNN k=6 · Emp. CDF pixel">KNN k=6 · CDF emp. píxel</text>
   <text x="32" y="256" font-family="Inter, system-ui" font-size="9" fill="#64748b">HR · AV · T10 · T100 · T500</text>
 
   <!-- Results bar -->
   <rect x="24" y="292" width="712" height="88" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
-  <text x="380" y="316" font-family="Inter, system-ui" font-size="12" font-weight="700" fill="#94a3b8" text-anchor="middle">RESULTADOS PRINCIPALES</text>
+  <text x="380" y="316" font-family="Inter, system-ui" font-size="12" font-weight="700" fill="#94a3b8" text-anchor="middle" data-t-es="RESULTADOS PRINCIPALES" data-t-en="MAIN RESULTS">RESULTADOS PRINCIPALES</text>
   <text x="122" y="346" font-family="Inter, system-ui" font-size="26" font-weight="800" fill="#60a5fa" text-anchor="middle">50–60%</text>
-  <text x="122" y="364" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">reducción caudal punta HEC-HMS</text>
+  <text x="122" y="364" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle" data-t-es="reducción caudal punta HEC-HMS" data-t-en="peak flow reduction (HEC-HMS)">reducción caudal punta HEC-HMS</text>
   <text x="302" y="346" font-family="Inter, system-ui" font-size="26" font-weight="800" fill="#a78bfa" text-anchor="middle">k=6</text>
-  <text x="302" y="364" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">vecinos KNN óptimo</text>
+  <text x="302" y="364" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle" data-t-es="vecinos KNN óptimo" data-t-en="optimal KNN neighbours">vecinos KNN óptimo</text>
   <text x="482" y="346" font-family="Inter, system-ui" font-size="26" font-weight="800" fill="#fb7185" text-anchor="middle">&gt;13%</text>
-  <text x="482" y="364" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">población en zona inundable</text>
+  <text x="482" y="364" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle" data-t-es="población en zona inundable" data-t-en="population in floodplain">población en zona inundable</text>
   <text x="652" y="346" font-family="Inter, system-ui" font-size="26" font-weight="800" fill="#34d399" text-anchor="middle">1946</text>
-  <text x="652" y="364" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">validación mancha T10 vs ortofoto</text>
+  <text x="652" y="364" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle" data-t-es="validación mancha T10 vs ortofoto" data-t-en="T10 extent vs 1946 orthophoto">validación mancha T10 vs ortofoto</text>
 </svg>`;
 
 // ─── SVG figures — Valencia DANA ────────────────────────────────────────────
@@ -138,35 +139,35 @@ const danaSvg = `
   </defs>
 
   <rect width="760" height="280" rx="8" fill="#0f172a"/>
-  <text x="28" y="34" font-family="Inter, system-ui" font-size="15" font-weight="800" fill="#f1f5f9">Pipeline: Valencia DANA — 29 octubre 2024 (JIA 2025)</text>
+  <text x="28" y="34" font-family="Inter, system-ui" font-size="15" font-weight="800" fill="#f1f5f9" data-t-es="Pipeline: Valencia DANA — 29 octubre 2024 (JIA 2025)" data-t-en="Pipeline: Valencia DANA — 29 October 2024 (JIA 2025)">Pipeline: Valencia DANA — 29 octubre 2024 (JIA 2025)</text>
 
   <!-- Step 01 -->
   <rect x="24" y="56" width="330" height="88" rx="8" fill="#251000" stroke="#f97316" stroke-width="1.5"/>
   <text x="36" y="80" font-family="Inter, system-ui" font-size="22" font-weight="800" fill="#fb923c">01</text>
-  <text x="36" y="100" font-family="Inter, system-ui" font-size="12" font-weight="700" fill="#fdba74">Datos y contexto histórico</text>
+  <text x="36" y="100" font-family="Inter, system-ui" font-size="12" font-weight="700" fill="#fdba74" data-t-es="Datos y contexto histórico" data-t-en="Data &amp; historical context">Datos y contexto histórico</text>
   <text x="36" y="118" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">9 estaciones AEMET · SIAR · AVAMET</text>
-  <text x="36" y="134" font-family="Inter, system-ui" font-size="9" fill="#64748b">AMS por año hidrológico · Turís 8337X · Carlet V103</text>
+  <text x="36" y="134" font-family="Inter, system-ui" font-size="9" fill="#64748b" data-t-es="AMS por año hidrológico · Turís 8337X · Carlet V103" data-t-en="AMS by hydrol. year · Turís 8337X · Carlet V103">AMS por año hidrológico · Turís 8337X · Carlet V103</text>
 
   <path d="M354 100 L380 100" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr-dana)"/>
 
   <!-- Step 02 -->
   <rect x="380" y="56" width="356" height="88" rx="8" fill="#200840" stroke="#a855f7" stroke-width="1.5"/>
   <text x="392" y="80" font-family="Inter, system-ui" font-size="22" font-weight="800" fill="#c084fc">02</text>
-  <text x="392" y="100" font-family="Inter, system-ui" font-size="12" font-weight="700" fill="#d8b4fe">Ajuste GEV + RFA</text>
-  <text x="392" y="118" font-family="Inter, system-ui" font-size="10" fill="#94a3b8">MLE · L-mom · Bayesiano (HMC/Stan) — SD vs CD</text>
-  <text x="392" y="134" font-family="Inter, system-ui" font-size="9" fill="#64748b">Individual · RFA local (9 est.) · RFA global (C. Valenciana)</text>
+  <text x="392" y="100" font-family="Inter, system-ui" font-size="12" font-weight="700" fill="#d8b4fe" data-t-es="Ajuste GEV + RFA" data-t-en="GEV fitting + RFA">Ajuste GEV + RFA</text>
+  <text x="392" y="118" font-family="Inter, system-ui" font-size="10" fill="#94a3b8" data-t-es="MLE · L-mom · Bayesiano (HMC/Stan) — SD vs CD" data-t-en="MLE · L-mom · Bayesian (HMC/Stan) — WO vs W">MLE · L-mom · Bayesiano (HMC/Stan) — SD vs CD</text>
+  <text x="392" y="134" font-family="Inter, system-ui" font-size="9" fill="#64748b" data-t-es="Individual · RFA local (9 est.) · RFA global (C. Valenciana)" data-t-en="Individual · local RFA (9 stn.) · global RFA (Valencia)">Individual · RFA local (9 est.) · RFA global (C. Valenciana)</text>
 
   <!-- Results bar -->
   <rect x="24" y="172" width="712" height="88" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
-  <text x="380" y="196" font-family="Inter, system-ui" font-size="12" font-weight="700" fill="#94a3b8" text-anchor="middle">RESULTADOS PRINCIPALES — Turís (8337X)</text>
+  <text x="380" y="196" font-family="Inter, system-ui" font-size="12" font-weight="700" fill="#94a3b8" text-anchor="middle" data-t-es="RESULTADOS PRINCIPALES — Turís (8337X)" data-t-en="MAIN RESULTS — Turís (8337X)">RESULTADOS PRINCIPALES — Turís (8337X)</text>
   <text x="122" y="232" font-family="Inter, system-ui" font-size="24" font-weight="800" fill="#fb923c" text-anchor="middle">710,8 mm</text>
-  <text x="122" y="250" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">récord diario nacional</text>
-  <text x="322" y="232" font-family="Inter, system-ui" font-size="24" font-weight="800" fill="#c084fc" text-anchor="middle">31.345 años</text>
-  <text x="322" y="250" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">T retorno sin DANA (L-mom)</text>
-  <text x="522" y="232" font-family="Inter, system-ui" font-size="24" font-weight="800" fill="#60a5fa" text-anchor="middle">66–91 años</text>
-  <text x="522" y="250" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">T retorno con DANA</text>
+  <text x="122" y="250" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle" data-t-es="récord diario nacional" data-t-en="national daily record">récord diario nacional</text>
+  <text x="322" y="232" font-family="Inter, system-ui" font-size="24" font-weight="800" fill="#c084fc" text-anchor="middle" data-t-es="31.345 años" data-t-en="31,345 years">31.345 años</text>
+  <text x="322" y="250" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle" data-t-es="T retorno sin DANA (L-mom)" data-t-en="Return period w/o DANA (L-mom)">T retorno sin DANA (L-mom)</text>
+  <text x="522" y="232" font-family="Inter, system-ui" font-size="24" font-weight="800" fill="#60a5fa" text-anchor="middle" data-t-es="66–91 años" data-t-en="66–91 years">66–91 años</text>
+  <text x="522" y="250" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle" data-t-es="T retorno con DANA" data-t-en="Return period with DANA">T retorno con DANA</text>
   <text x="682" y="232" font-family="Inter, system-ui" font-size="24" font-weight="800" fill="#34d399" text-anchor="middle">Bayes</text>
-  <text x="682" y="250" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle">método más estable</text>
+  <text x="682" y="250" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle" data-t-es="método más estable" data-t-en="most stable method">método más estable</text>
 </svg>`;
 
 // ─── Pilot cases ────────────────────────────────────────────────────────────
@@ -187,6 +188,7 @@ export const pilotCases: PilotCase[] = [
     region: 'Cantabria',
     color: 'from-blue-900 via-blue-800 to-slate-900',
     tag: 'Caso Piloto',
+    accentColor: 'sky',
     summary: {
       es: 'Los Corrales de Buelna es el caso piloto que dio origen a HYDRA: un estudio real publicado en la Revista de Obras Públicas (ROP 3598, mayo 2018) y galardonado con el Premio de Mejor Calidad y Contenido en el 1.er Concurso Nacional de Proyectos Fin de Máster de Ingeniería de Caminos. El municipio se asienta en el fondo del valle del Besaya — cuenca corta y de fuerte desnivel que responde en horas a la precipitación — y ha sufrido inundaciones históricas recurrentes ligadas a los desbordamientos del río. La metodología propuesta abandona el paradigma habitual de los hietogramas de diseño: genera una colección extensa de eventos sintéticos de crecida mediante técnicas geoestadísticas, simulación hidrológica continua y regresión probabilística con cópulas, y aplica la estadística de extremos directamente sobre los calados y velocidades obtenidos de la simulación hidráulica 2D, no sobre la precipitación. Esto permite mapas de peligrosidad, vulnerabilidad y riesgo más fieles a la realidad histórica.',
       en: 'Los Corrales de Buelna is the pilot case that seeded HYDRA: a real study published in the Revista de Obras Públicas (ROP 3598, May 2018) and awarded the Best Quality and Content Prize at the 1st National Competition of Masters Theses in Civil Engineering. The town sits on the Besaya valley floor — a short, steep catchment that responds to rainfall within hours — and has suffered recurring historical floods from the river. The proposed methodology abandons the conventional design-hyetogram paradigm: it generates a large collection of synthetic flood events through geostatistical techniques, continuous hydrological simulation and probabilistic regression with copulas, then applies extreme-value statistics directly to the water depths and velocities from 2D hydraulic simulation rather than to rainfall. This produces hazard, vulnerability and risk maps that more faithfully match historical observations.',
@@ -416,6 +418,7 @@ export const pilotCases: PilotCase[] = [
     region: 'Valencia',
     color: 'from-orange-900 via-red-900 to-slate-900',
     tag: 'Caso Piloto',
+    accentColor: 'orange',
     summary: {
       es: 'La DANA del 29 de octubre de 2024 desencadenó el episodio de precipitación más extremo registrado en la Comunitat Valenciana: la estación de Turís (8337X) acumuló 710,8 mm en 24 horas — récord nacional — y Carlet (V103) registró 265,1 mm simultáneamente. Este caso piloto es la implementación en HYDRA del trabajo publicado en las VIII Jornadas de Ingeniería del Agua (JIA 2025, Zaragoza): "Comparación de métodos de ajuste para la distribución de precipitaciones extremas: Análisis del evento de octubre 2024 en Valencia" (del Jesus, Navas y Urrea, IHCantabria, 2025). El objetivo central es evaluar cómo se comportan tres métodos de ajuste de la GEV — MLE, L-momentos e inferencia bayesiana — frente a la inclusión o exclusión del evento extremo, a tres escalas espaciales: análisis individual en las dos estaciones más afectadas, análisis regional de frecuencia local (RFA local, 9 estaciones próximas) y análisis regional de frecuencia global (RFA global, red amplia de la Comunitat Valenciana).',
       en: 'The 29 October 2024 DANA triggered the most extreme precipitation episode ever recorded in the Valencian Community: the Turís station (8337X) accumulated 710.8 mm in 24 hours — a national record — while Carlet (V103) simultaneously recorded 265.1 mm. This pilot case is the HYDRA implementation of the work published at the VIII Jornadas de Ingeniería del Agua (JIA 2025, Zaragoza): "Comparison of Fitting Methods for Extreme Precipitation Distributions: Analysis of the October 2024 Event in Valencia" (del Jesus, Navas and Urrea, IHCantabria, 2025). The central objective is to evaluate how three GEV fitting methods — MLE, L-moments and Bayesian inference — behave under the inclusion or exclusion of the extreme event, at three spatial scales: individual analysis at the two most affected stations, local regional frequency analysis (local RFA, 9 nearby stations) and global regional frequency analysis (global RFA, wide Valencian Community network).',
@@ -425,8 +428,8 @@ export const pilotCases: PilotCase[] = [
       en: 'The statistical characterisation of 710.8 mm/24h at Turís faces a structural problem: without including the event in the series, classical methods estimate implausibly high return periods — over 31,000 years with L-moments and 11,453 years with MLE — creating a false sense of security. When it is included, the same classical methods collapse to return periods of 66–91 years at Turís, a three-order-of-magnitude jump that makes them unreliable as decision-making tools. Bayesian inference, by explicitly representing parameter uncertainty, provides more stable answers (3,069 years without event, 66 years with event) though equally sensitive to the scenario. The spatial aggregation scale further complicates the analysis: the global RFA smooths the event effect so much that it can underestimate extreme local risk.',
     },
     approach: {
-      es: 'Los notebooks implementan la metodología del artículo JIA 2025. El primer notebook construye la base de datos: 9 estaciones seleccionadas de las redes AEMET (30 disponibles), SIAR (41) y AVAMET (153) distribuidas entre la costa y el interior de la Comunitat Valenciana, mapa de localización, análisis de cobertura temporal y extracción de series de máximos anuales (AMS) por año hidrológico. El segundo notebook aplica tres métodos de ajuste GEV — MLE (máxima verosimilitud), L-momentos (robusto frente a atípicos) e inferencia bayesiana (HMC vía Stan, 4 cadenas × 1000 muestras, priores débiles: μ∼N(0,10⁴), σ∼Cauchy(0,5), ξ∼N(0.25)) — bajo dos escenarios paralelos: sin el evento de 2024 y con él. Los cuantiles regionales (RFA) se obtienen estandarizando las series por Z-score, ajustando la GEV a la muestra conjunta regional y reescalando a escala local mediante z_T,i = y_T · s_i + x̄_i.',
-      en: 'The notebooks implement the JIA 2025 article methodology. The first notebook builds the database: 9 selected stations from the AEMET (30 available), SIAR (41) and AVAMET (153) networks distributed between the coast and inland Valencian Community, location map, temporal coverage analysis and annual maximum series (AMS) extraction by hydrological year. The second notebook applies three GEV fitting methods — MLE (maximum likelihood), L-moments (robust to outliers) and Bayesian inference (HMC via Stan, 4 chains × 1000 samples, weak priors: μ∼N(0,10⁴), σ∼Cauchy(0,5), ξ∼N(0.25)) — under two parallel scenarios: without the 2024 event and with it. Regional quantiles (RFA) are obtained by Z-score standardising the series, fitting the GEV to the joint regional sample and back-scaling to local scale via z_T,i = y_T · s_i + x̄_i.',
+      es: 'Los notebooks implementan la metodología del artículo JIA 2025. El primer notebook construye la base de datos: 9 estaciones seleccionadas de las redes AEMET (30 disponibles), SIAR (41) y AVAMET (153) distribuidas entre la costa y el interior de la Comunitat Valenciana, mapa de localización, análisis de cobertura temporal y extracción de series de máximos anuales (AMS) por año hidrológico. El segundo notebook aplica tres métodos de ajuste GEV — MLE (máxima verosimilitud), L-momentos (robusto frente a atípicos) e inferencia bayesiana (HMC vía Stan, 4 cadenas × 1000 muestras, priores débiles: μ∼N(0,10⁴), σ∼Cauchy(0,5), ξ∼N(0.25)) — bajo dos escenarios paralelos: sin el evento de 2024 y con él. Los cuantiles regionales (RFA) se obtienen estandarizando las series por Z-score, ajustando la GEV a la muestra conjunta regional y reescalando a escala local mediante z<sub>T,i</sub> = y<sub>T</sub> · s<sub>i</sub> + x̄<sub>i</sub>.',
+      en: 'The notebooks implement the JIA 2025 article methodology. The first notebook builds the database: 9 selected stations from the AEMET (30 available), SIAR (41) and AVAMET (153) networks distributed between the coast and inland Valencian Community, location map, temporal coverage analysis and annual maximum series (AMS) extraction by hydrological year. The second notebook applies three GEV fitting methods — MLE (maximum likelihood), L-moments (robust to outliers) and Bayesian inference (HMC via Stan, 4 chains × 1000 samples, weak priors: μ∼N(0,10⁴), σ∼Cauchy(0,5), ξ∼N(0.25)) — under two parallel scenarios: without the 2024 event and with it. Regional quantiles (RFA) are obtained by Z-score standardising the series, fitting the GEV to the joint regional sample and back-scaling to local scale via z<sub>T,i</sub> = y<sub>T</sub> · s<sub>i</sub> + x̄<sub>i</sub>.',
     },
     steps: [
       {
@@ -506,8 +509,8 @@ export const pilotCases: PilotCase[] = [
           es: 'Análisis meteorológico oficial del episodio: registros pluviométricos, evolución sinóptica de la DANA y comparación con valores históricos en la Comunitat Valenciana.',
           en: 'Official meteorological analysis of the episode: rainfall records, synoptic evolution of the DANA and comparison with historical values in the Valencian Community.',
         },
-        href: 'https://www.aemet.es/es/noticias/2024/11/dana_octubre_2024',
-        cta: { es: 'Ver en AEMET', en: 'View at AEMET' },
+        href: 'https://www.aemet.es/es/conocermas/recursos_en_linea/publicaciones_y_estudios/estudios/detalles/episodio_dana_oct_nov24',
+        cta: { es: 'Ver estudio AEMET', en: 'View AEMET study' },
       },
       {
         title: {
@@ -535,3 +538,263 @@ export const pilotCases: PilotCase[] = [
     ],
   },
 ];
+
+// ─── Manning SVG ─────────────────────────────────────────────────────────────
+
+const manningSvg = `
+<svg viewBox="0 0 760 400" width="100%" role="img" aria-label="Flujo metodológico Manning Roughness Sensitivity" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr-mn" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L7,3 z" fill="#475569"/>
+    </marker>
+    <marker id="arr-l-mn" markerWidth="7" markerHeight="7" refX="1" refY="3" orient="auto">
+      <path d="M7,0 L7,6 L0,3 z" fill="#475569"/>
+    </marker>
+  </defs>
+
+  <rect width="760" height="400" rx="8" fill="#0f172a"/>
+  <text x="28" y="34" font-family="Inter, system-ui" font-size="14" font-weight="800" fill="#f1f5f9" data-t-es="Pipeline: Manning Roughness — Besaya (Env. Modelling &amp; Software, en revisión)" data-t-en="Pipeline: Manning Roughness — Besaya (Env. Modelling &amp; Software, under review)">Pipeline: Manning Roughness — Besaya (Env. Modelling &amp; Software, en revisión)</text>
+
+  <!-- Row 1: steps 01–04 -->
+  <rect x="24" y="56" width="158" height="76" rx="8" fill="#0c1f40" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="32" y="76" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#60a5fa">01</text>
+  <text x="32" y="94" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#93c5fd" data-t-es="Monte Carlo" data-t-en="Monte Carlo">Monte Carlo</text>
+  <text x="32" y="110" font-family="Inter, system-ui" font-size="10" fill="#94a3b8" data-t-es="1,000 combins. rugosidad" data-t-en="1,000 roughness combns.">1,000 combins. rugosidad</text>
+  <text x="32" y="124" font-family="Inter, system-ui" font-size="9" fill="#64748b" data-t-es="9 clases · Normal/LogN/Gamma" data-t-en="9 classes · Normal/LogN/Gamma">9 clases · Normal/LogN/Gamma</text>
+
+  <path d="M182 94 L196 94" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr-mn)"/>
+
+  <rect x="196" y="56" width="158" height="76" rx="8" fill="#0c2020" stroke="#0d9488" stroke-width="1.5"/>
+  <text x="204" y="76" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#2dd4bf">02</text>
+  <text x="204" y="94" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#99f6e4" data-t-es="Análisis SFINCS" data-t-en="SFINCS analysis">Análisis SFINCS</text>
+  <text x="204" y="110" font-family="Inter, system-ui" font-size="10" fill="#94a3b8" data-t-es="Calado · velocidad · área" data-t-en="Depth · velocity · area">Calado · velocidad · área</text>
+  <text x="204" y="124" font-family="Inter, system-ui" font-size="9" fill="#64748b" data-t-es="Ecs. inerciales simplif." data-t-en="Simplified inertial eqs.">Ecs. inerciales simplif.</text>
+
+  <path d="M354 94 L368 94" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr-mn)"/>
+
+  <rect x="368" y="56" width="158" height="76" rx="8" fill="#291500" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="376" y="76" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#fbbf24">03</text>
+  <text x="376" y="94" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#fcd34d" data-t-es="Análisis HEC-RAS" data-t-en="HEC-RAS analysis">Análisis HEC-RAS</text>
+  <text x="376" y="110" font-family="Inter, system-ui" font-size="10" fill="#94a3b8" data-t-es="Saint-Venant 2D completo" data-t-en="Full 2D Saint-Venant">Saint-Venant 2D completo</text>
+  <text x="376" y="124" font-family="Inter, system-ui" font-size="9" fill="#64748b" data-t-es="Distribución bimodal" data-t-en="Bimodal distribution">Distribución bimodal</text>
+
+  <path d="M526 94 L540 94" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr-mn)"/>
+
+  <rect x="540" y="56" width="196" height="76" rx="8" fill="#1a0c3e" stroke="#7c3aed" stroke-width="1.5"/>
+  <text x="548" y="76" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#a78bfa">04</text>
+  <text x="548" y="94" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#c4b5fd" data-t-es="Comparación modelos" data-t-en="Model comparison">Comparación modelos</text>
+  <text x="548" y="110" font-family="Inter, system-ui" font-size="10" fill="#94a3b8" data-t-es="SFINCS vs HEC-RAS · dispersión" data-t-en="SFINCS vs HEC-RAS · scatter">SFINCS vs HEC-RAS · dispersión</text>
+  <text x="548" y="124" font-family="Inter, system-ui" font-size="9" fill="#64748b">CV · scatter · KDE</text>
+
+  <!-- vertical connector 04→05 -->
+  <path d="M638 132 L638 188" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr-mn)"/>
+
+  <!-- Row 2: 07←06←05 (right-to-left flow) -->
+  <rect x="540" y="188" width="196" height="76" rx="8" fill="#20040e" stroke="#f43f5e" stroke-width="1.5"/>
+  <text x="548" y="208" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#fb7185">05</text>
+  <text x="548" y="226" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#fda4af" data-t-es="Bifurcación hidráulica" data-t-en="Hydraulic bifurcation">Bifurcación hidráulica</text>
+  <text x="548" y="242" font-family="Inter, system-ui" font-size="10" fill="#94a3b8" data-t-es="GMM bimodal · umbral topogr." data-t-en="Bimodal GMM · topogr. threshold">GMM bimodal · umbral topogr.</text>
+  <text x="548" y="256" font-family="Inter, system-ui" font-size="9" fill="#64748b" data-t-es="7,4 ha zona secund. · ~60 m" data-t-en="7.4 ha secondary zone · ~60 m">7,4 ha zona secund. · ~60 m</text>
+
+  <path d="M540 226 L526 226" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr-l-mn)"/>
+
+  <rect x="368" y="188" width="158" height="76" rx="8" fill="#0e1545" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="376" y="208" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#818cf8">06</text>
+  <text x="376" y="226" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#a5b4fc" data-t-es="Figuras artículo" data-t-en="Paper figures">Figuras artículo</text>
+  <text x="376" y="242" font-family="Inter, system-ui" font-size="10" fill="#94a3b8" data-t-es="6 figuras · PDF + PNG" data-t-en="6 figures · PDF + PNG">6 figuras · PDF + PNG</text>
+  <text x="376" y="256" font-family="Inter, system-ui" font-size="9" fill="#64748b" data-t-es="Env. Modelling &amp; Software" data-t-en="Env. Modelling &amp; Software">Env. Modelling &amp; Software</text>
+
+  <path d="M368 226 L354 226" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#arr-l-mn)"/>
+
+  <rect x="24" y="188" width="330" height="76" rx="8" fill="#0c2018" stroke="#059669" stroke-width="1.5"/>
+  <text x="32" y="208" font-family="Inter, system-ui" font-size="18" font-weight="800" fill="#34d399">07</text>
+  <text x="32" y="226" font-family="Inter, system-ui" font-size="11" font-weight="700" fill="#6ee7b7" data-t-es="Manning correlado" data-t-en="Correlated Manning">Manning correlado</text>
+  <text x="32" y="242" font-family="Inter, system-ui" font-size="10" fill="#94a3b8" data-t-es="Cópula Gaussiana entre clases" data-t-en="Gaussian copula across classes">Cópula Gaussiana entre clases</text>
+  <text x="32" y="256" font-family="Inter, system-ui" font-size="9" fill="#64748b" data-t-es="ρ=0 · ρ=0.5 · ρ=1.0 — amplif. CV" data-t-en="ρ=0 · ρ=0.5 · ρ=1.0 — CV amplif.">ρ=0 · ρ=0.5 · ρ=1.0 — amplif. CV</text>
+
+  <!-- Results bar -->
+  <rect x="24" y="292" width="712" height="88" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="380" y="316" font-family="Inter, system-ui" font-size="12" font-weight="700" fill="#94a3b8" text-anchor="middle" data-t-es="RESULTADOS PRINCIPALES" data-t-en="MAIN RESULTS">RESULTADOS PRINCIPALES</text>
+  <text x="122" y="348" font-family="Inter, system-ui" font-size="26" font-weight="800" fill="#60a5fa" text-anchor="middle">1,000</text>
+  <text x="122" y="366" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle" data-t-es="simulaciones Monte Carlo" data-t-en="Monte Carlo simulations">simulaciones Monte Carlo</text>
+  <text x="302" y="348" font-family="Inter, system-ui" font-size="26" font-weight="800" fill="#2dd4bf" text-anchor="middle">2</text>
+  <text x="302" y="366" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle" data-t-es="modelos 2D comparados" data-t-en="2D models compared">modelos 2D comparados</text>
+  <text x="482" y="348" font-family="Inter, system-ui" font-size="26" font-weight="800" fill="#fb7185" text-anchor="middle" data-t-es="Bimodal" data-t-en="Bimodal">Bimodal</text>
+  <text x="482" y="366" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle" data-t-es="bifurcación HEC-RAS" data-t-en="HEC-RAS bifurcation">bifurcación HEC-RAS</text>
+  <text x="652" y="348" font-family="Inter, system-ui" font-size="26" font-weight="800" fill="#34d399" text-anchor="middle">7,4 ha</text>
+  <text x="652" y="366" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle" data-t-es="zona secundaria bimodal" data-t-en="bimodal secondary zone">zona secundaria bimodal</text>
+</svg>`;
+
+// ─── Manning pilot case ───────────────────────────────────────────────────────
+
+pilotCases.push({
+  slug: 'manning-rugosidades',
+  title: 'Manning Roughness — Besaya',
+  subtitle: {
+    es: 'Sensibilidad hidráulica 2D a la incertidumbre en coeficientes de Manning: SFINCS vs HEC-RAS en el Río Besaya',
+    en: 'Hydraulic 2D sensitivity to Manning roughness uncertainty: SFINCS vs HEC-RAS on the Besaya River',
+  },
+  location: {
+    es: 'Los Corrales de Buelna, Cantabria, España',
+    en: 'Los Corrales de Buelna, Cantabria, Spain',
+  },
+  river: 'Río Besaya',
+  region: 'Cantabria',
+  color: 'from-emerald-900 via-teal-800 to-slate-900',
+  tag: 'Caso Piloto',
+  accentColor: 'emerald',
+  summary: {
+    es: 'Tercer caso piloto de HYDRA: cuantifica la propagación de la incertidumbre en los coeficientes de Manning a través de dos modelos hidráulicos 2D — SFINCS y HEC-RAS — aplicados al tramo urbano del Río Besaya. Se generan 1,000 combinaciones Monte Carlo de rugosidades para 9 clases de uso de suelo, ajustando la distribución marginal de cada clase (Normal, Log-Normal o Gamma) a valores bibliográficos (Chow 1959, USGS, FHWA). El hallazgo principal es una bifurcación hidráulica en HEC-RAS: la distribución del área inundada es bimodal y una Mezcla Gaussiana identifica dos regímenes cuya causa física es un umbral topográfico — una silla de presión a ~60 m s.n.m. — que controla si una zona secundaria de 7,4 ha se inunda. Este fenómeno no está gobernado por la rugosidad y es invisible para SFINCS. El estudio ha sido enviado a Environmental Modelling & Software.',
+    en: 'Third HYDRA pilot case: quantifies how Manning roughness uncertainty propagates through two 2D hydraulic models — SFINCS and HEC-RAS — applied to the Besaya River urban reach. 1,000 Monte Carlo combinations of roughness coefficients for 9 land-use classes are generated, fitting the marginal distribution (Normal, Log-Normal or Gamma) of each class to bibliographic sources (Chow 1959, USGS, FHWA). The key finding is a hydraulic bifurcation in HEC-RAS: the flooded-area distribution is bimodal, and a Gaussian Mixture Model identifies two regimes whose physical cause is a topographic saddle at ~60 m a.s.l. controlling whether a secondary zone of 7.4 ha is flooded. This phenomenon is NOT driven by Manning roughness and is invisible to SFINCS. Submitted to Environmental Modelling & Software.',
+  },
+  challenge: {
+    es: 'La práctica habitual asigna un único valor "representativo" de Manning por clase de uso de suelo, ignorando la variabilidad bibliográfica que puede alcanzar ±50 % para la misma categoría. En el tramo urbano del Besaya, esta incertidumbre se amplifica por la coexistencia de cauce, llanura, arbolado y zonas urbanas con geometrías complejas. La cuestión central no es cuánto varía el resultado numérico, sino si esa variabilidad puede predecir el régimen de inundación — o si el control real es topográfico, no paramétrico. Responder a esto requiere un ensemble de simulaciones suficientemente grande para distinguir la varianza Monte Carlo de una bifurcación hidráulica estructural.',
+    en: 'Standard practice assigns a single "representative" Manning value per land-use class, ignoring bibliographic variability that can reach ±50 % for the same category. In the Besaya urban reach, this uncertainty is amplified by the coexistence of main channel, floodplain, woodland and urban areas with complex geometries. The central question is not how much the numerical result varies, but whether that variability can predict the inundation regime — or whether the real control is topographic, not parametric. Answering this requires an ensemble large enough to separate Monte Carlo variance from a structural hydraulic bifurcation.',
+  },
+  approach: {
+    es: 'El notebook 01 genera 1,000 combinaciones de Manning para 9 clases ajustando la distribución de mejor ajuste (criterio: p-valor KS máximo entre Normal, Log-Normal y Gamma) a fuentes bibliográficas (Chow 1959, USGS, FHWA, Brater & King, Barnes). Los notebooks 02 y 03 ejecutan las simulaciones en SFINCS (ecuaciones inerciales simplificadas, GPU/SLURM) y HEC-RAS 6.6 (Saint-Venant 2D completo, COM rascontrol, Windows) respectivamente. El notebook 04 compara modelos: dispersión 1:1, KDE de distribuciones de resultados y coeficiente de variación (CV) por métrica. El notebook 05 identifica la bifurcación hidráulica mediante una Mezcla Gaussiana de 2 componentes y localiza la causa topográfica — umbral en ~60 m s.n.m. que, al superarse, inunda una zona secundaria de 7,4 ha — verificando mediante tests estadísticos (t-Student, Spearman) que el régimen no está correlacionado con los valores de Manning. El notebook 06 genera las 6 figuras del artículo. El notebook 07 extiende el análisis con una cópula Gaussiana para correlaciones cruzadas entre clases (ρ = 0, 0.5, 1.0), cuantificando la amplificación del CV del ensemble.',
+    en: 'Notebook 01 generates 1,000 Manning combinations for 9 classes by fitting the best-fit distribution (criterion: maximum KS p-value among Normal, Log-Normal and Gamma) to bibliographic sources (Chow 1959, USGS, FHWA, Brater & King, Barnes). Notebooks 02 and 03 run the simulations in SFINCS (simplified inertial equations, GPU/SLURM) and HEC-RAS 6.6 (full 2D Saint-Venant, COM rascontrol, Windows) respectively. Notebook 04 compares models: 1:1 scatter, KDE of result distributions and coefficient of variation (CV) per metric. Notebook 05 identifies the hydraulic bifurcation via a 2-component Gaussian Mixture Model and locates the topographic cause — a saddle at ~60 m a.s.l. that, when water exceeds it, floods a secondary zone of 7.4 ha — verified by statistical tests (t-Student, Spearman) that the regime is uncorrelated with Manning values. Notebook 06 generates the 6 paper figures. Notebook 07 extends the analysis with a Gaussian copula for cross-class correlations (ρ = 0, 0.5, 1.0), quantifying the ensemble CV amplification.',
+  },
+  steps: [
+    {
+      number: 1,
+      title: { es: 'Generación Monte Carlo', en: 'Monte Carlo generation' },
+      description: {
+        es: 'Generación de 1,000 combinaciones estocásticas de coeficientes de Manning para 9 clases de uso de suelo. Se ajusta la distribución marginal de mejor ajuste (Normal, Log-Normal o Gamma) por clase a partir de valores bibliográficos (Chow 1959, USGS, FHWA, Brater & King, Barnes) y se muestrea sin reemplazamiento.',
+        en: 'Generation of 1,000 stochastic combinations of Manning coefficients for 9 land-use classes. The best-fit marginal distribution (Normal, Log-Normal or Gamma) per class is fitted from bibliographic values (Chow 1959, USGS, FHWA, Brater & King, Barnes) and sampled without replacement.',
+      },
+      notebookPath: 'pilot_cases/manning_rugosidades/01_monte_carlo_rugosidades.ipynb',
+      tags: ['Monte Carlo'],
+      tagColor: 'bg-blue-100 text-blue-700',
+    },
+    {
+      number: 2,
+      title: { es: 'Sensibilidad SFINCS', en: 'SFINCS sensitivity' },
+      description: {
+        es: 'Ejecución de las 1,000 simulaciones en SFINCS (ecuaciones inerciales simplificadas, GPU/SLURM) y extracción de métricas por simulación: calado máximo, velocidad máxima y área inundada. SFINCS usa ecuaciones de onda difusiva sin términos advectivos.',
+        en: 'Running 1,000 simulations in SFINCS (simplified inertial equations, GPU/SLURM) and extracting per-simulation metrics: maximum depth, maximum velocity and flooded area. SFINCS uses diffusive wave equations without advective terms.',
+      },
+      notebookPath: 'pilot_cases/manning_rugosidades/02_analisis_sfincs.ipynb',
+      tags: ['SFINCS'],
+      tagColor: 'bg-teal-100 text-teal-700',
+    },
+    {
+      number: 3,
+      title: { es: 'Sensibilidad HEC-RAS', en: 'HEC-RAS sensitivity' },
+      description: {
+        es: 'Ejecución de las 1,000 simulaciones en HEC-RAS 6.6 (Saint-Venant 2D completo, COM rascontrol, Windows). La distribución de área inundada resulta bimodal — una característica inesperada que da lugar al análisis del notebook 05.',
+        en: 'Running 1,000 simulations in HEC-RAS 6.6 (full 2D Saint-Venant, COM rascontrol, Windows). The flooded-area distribution turns out to be bimodal — an unexpected characteristic that drives the notebook 05 analysis.',
+      },
+      notebookPath: 'pilot_cases/manning_rugosidades/03_analisis_hecras.ipynb',
+      tags: ['HEC-RAS'],
+      tagColor: 'bg-amber-100 text-amber-700',
+    },
+    {
+      number: 4,
+      title: { es: 'Comparación inter-modelo', en: 'Inter-model comparison' },
+      description: {
+        es: 'Comparación de la respuesta de ambos modelos a la misma incertidumbre en Manning: dispersión 1:1, KDE de la distribución de resultados para calado, velocidad y área, y coeficiente de variación (CV) por métrica. Se cuantifica cuánto difieren SFINCS y HEC-RAS en sensibilidad.',
+        en: 'Comparison of both models\' response to the same Manning uncertainty: 1:1 scatter, KDE of results distribution for depth, velocity and area, and coefficient of variation (CV) per metric. Quantifies how much SFINCS and HEC-RAS differ in sensitivity.',
+      },
+      notebookPath: 'pilot_cases/manning_rugosidades/04_comparacion_modelos.ipynb',
+      tags: ['Comparación'],
+      tagColor: 'bg-violet-100 text-violet-700',
+    },
+    {
+      number: 5,
+      title: { es: 'Bifurcación hidráulica', en: 'Hydraulic bifurcation' },
+      description: {
+        es: 'La distribución bimodal del área inundada en HEC-RAS se clasifica mediante una Mezcla Gaussiana de 2 componentes. Se localiza la causa física: una silla topográfica a ~60 m s.n.m. que controla si una zona secundaria de 7,4 ha se inunda. Tests estadísticos (t-Student, Spearman) verifican que el régimen no está correlacionado con Manning.',
+        en: 'The bimodal flooded-area distribution in HEC-RAS is classified using a 2-component Gaussian Mixture Model. The physical cause is located: a topographic saddle at ~60 m a.s.l. that controls whether a secondary 7.4 ha zone is flooded. Statistical tests (t-Student, Spearman) verify that the regime is uncorrelated with Manning values.',
+      },
+      notebookPath: 'pilot_cases/manning_rugosidades/05_analisis_regimenes.ipynb',
+      tags: ['Régimen'],
+      tagColor: 'bg-rose-100 text-rose-700',
+    },
+    {
+      number: 6,
+      title: { es: 'Figuras del artículo', en: 'Paper figures' },
+      description: {
+        es: 'Generación de las 6 figuras del artículo a resolución de publicación (PDF + PNG). Incluye: distribuciones de Manning por clase, boxplots del ensemble Monte Carlo, dispersión intra-modelo coloreada por régimen, comparación inter-modelo 1:1 y KDE, bifurcación hidráulica, y CV por modelo y métrica.',
+        en: 'Generation of the 6 paper figures at publication resolution (PDF + PNG). Includes: Manning distributions by class, Monte Carlo ensemble boxplots, intra-model scatter coloured by regime, inter-model 1:1 and KDE comparison, hydraulic bifurcation, and CV by model and metric.',
+      },
+      notebookPath: 'pilot_cases/manning_rugosidades/06_figuras_paper.ipynb',
+      tags: ['Paper'],
+      tagColor: 'bg-indigo-100 text-indigo-700',
+    },
+    {
+      number: 7,
+      title: { es: 'Manning correlado', en: 'Correlated Manning' },
+      description: {
+        es: 'Extensión del análisis base con una cópula Gaussiana que permite correlaciones cruzadas entre clases de uso de suelo. Se evalúan 3 escenarios: independiente (ρ=0, referencia), correlación moderada (ρ=0.5) y correlación perfecta (ρ=1.0). Se cuantifica la amplificación del coeficiente de variación del ensemble sin desplazar el umbral de bifurcación.',
+        en: 'Extension of the base analysis with a Gaussian copula allowing cross-class correlations among land-use classes. Three scenarios are evaluated: independent (ρ=0, reference), moderate correlation (ρ=0.5) and perfect correlation (ρ=1.0). The ensemble CV amplification is quantified without shifting the bifurcation threshold.',
+      },
+      notebookPath: 'pilot_cases/manning_rugosidades/07_correlated_manning.ipynb',
+      tags: ['Cópula'],
+      tagColor: 'bg-emerald-100 text-emerald-700',
+    },
+  ],
+  stats: [
+    { value: '1,000', label: { es: 'simulaciones Monte Carlo', en: 'Monte Carlo simulations' } },
+    { value: '9 clases', label: { es: 'clases de uso de suelo', en: 'land-use classes' } },
+    { value: 'Bimodal', label: { es: 'bifurcación en HEC-RAS', en: 'HEC-RAS bifurcation' } },
+    { value: '7,4 ha', label: { es: 'zona secundaria topográfica', en: 'topographic secondary zone' } },
+  ],
+  keyFindings: [
+    {
+      es: 'La distribución del área inundada en HEC-RAS es bimodal: una Mezcla Gaussiana de 2 componentes identifica claramente dos regímenes de inundación — el régimen ALTO inunda ~7,4 ha más que el régimen BAJO, en función de si el agua supera una silla topográfica a ~60 m s.n.m.',
+      en: 'The HEC-RAS flooded-area distribution is bimodal: a 2-component Gaussian Mixture Model clearly identifies two flooding regimes — the HIGH regime floods ~7.4 ha more than the LOW regime, depending on whether water exceeds a topographic saddle at ~60 m a.s.l.',
+    },
+    {
+      es: 'La bifurcación hidráulica NO está gobernada por los coeficientes de Manning: los tests estadísticos (t-Student y Spearman) muestran que los valores de Manning no predicen el régimen. El control es exclusivamente topográfico, no paramétrico.',
+      en: 'The hydraulic bifurcation is NOT driven by Manning coefficients: statistical tests (t-Student and Spearman) show that Manning values do not predict the regime. The control is exclusively topographic, not parametric.',
+    },
+    {
+      es: 'SFINCS, con sus ecuaciones inerciales simplificadas, no reproduce la bifurcación: su distribución de área inundada es unimodal, con varianza atribuible únicamente a la rugosidad. La bifurcación es un fenómeno invisible para modelos simplificados.',
+      en: 'SFINCS, with its simplified inertial equations, does not reproduce the bifurcation: its flooded-area distribution is unimodal, with variance attributable solely to roughness. The bifurcation is a phenomenon invisible to simplified models.',
+    },
+    {
+      es: 'La incorporación de correlaciones cruzadas entre clases mediante una cópula Gaussiana amplifica el coeficiente de variación del ensemble, pero no desplaza el umbral de bifurcación: la topografía mantiene su rol dominante independientemente de la estructura de correlación de Manning.',
+      en: 'Incorporating cross-class correlations via a Gaussian copula amplifies the ensemble coefficient of variation, but does not shift the bifurcation threshold: topography maintains its dominant role regardless of the Manning correlation structure.',
+    },
+    {
+      es: 'El hallazgo tiene implicaciones directas para la modelización hidráulica de riesgo: en tramos con geometría compleja que generen bifurcaciones de régimen, la variabilidad de los resultados depende más de la topografía que de la incertidumbre paramétrica, y los modelos simplificados pueden ocultar este comportamiento.',
+      en: 'The finding has direct implications for hydraulic risk modelling: in reaches with complex geometry that generate regime bifurcations, result variability depends more on topography than parametric uncertainty, and simplified models can mask this behaviour.',
+    },
+  ],
+  references: [
+    {
+      title: {
+        es: 'Navas et al. — Environmental Modelling & Software (en revisión)',
+        en: 'Navas et al. — Environmental Modelling & Software (under review)',
+      },
+      description: {
+        es: 'Sensibilidad de los resultados de modelos hidráulicos 2D (SFINCS y HEC-RAS) a la incertidumbre en los coeficientes de Manning: análisis Monte Carlo y bifurcación hidráulica en el Río Besaya. IHCantabria — Universidad de Cantabria.',
+        en: 'Sensitivity of 2D hydraulic model outputs (SFINCS and HEC-RAS) to Manning roughness uncertainty: Monte Carlo analysis and hydraulic bifurcation on the Besaya River. IHCantabria — Universidad de Cantabria.',
+      },
+    },
+    {
+      title: {
+        es: 'Chow, V.T. (1959) — Open-channel hydraulics',
+        en: 'Chow, V.T. (1959) — Open-channel hydraulics',
+      },
+      description: {
+        es: 'Referencia bibliográfica fundamental para los valores de Manning por tipo de cauce y uso del suelo. McGraw-Hill, New York. Fuente principal de los rangos de rugosidad utilizados en el ajuste de distribuciones.',
+        en: 'Fundamental bibliographic reference for Manning values by channel type and land use. McGraw-Hill, New York. Primary source of roughness ranges used in distribution fitting.',
+      },
+    },
+  ],
+  figures: [
+    {
+      title: {
+        es: 'Pipeline: Manning Roughness Sensitivity — 7 pasos',
+        en: 'Pipeline: Manning Roughness Sensitivity — 7 steps',
+      },
+      caption: {
+        es: 'Flujo metodológico: desde la generación Monte Carlo de 1,000 combinaciones de rugosidad (paso 1) hasta el análisis con cópulas correlacionadas (paso 7). El hallazgo central — bifurcación hidráulica topográfica en HEC-RAS — se identifica en el paso 5.',
+        en: 'Methodology workflow: from Monte Carlo generation of 1,000 roughness combinations (step 1) to correlated copula analysis (step 7). The central finding — topographic hydraulic bifurcation in HEC-RAS — is identified in step 5.',
+      },
+      svg: manningSvg,
+    },
+  ],
+});

@@ -186,7 +186,11 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
         document.querySelectorAll('[data-t-es]').forEach((el) => {
           const es = el.getAttribute('data-t-es') ?? '';
           const en = el.getAttribute('data-t-en') ?? '';
-          el.textContent = lang === 'en' ? en : es;
+          if (el.getAttribute('data-html') === 'true') {
+            el.innerHTML = lang === 'en' ? en : es;
+          } else {
+            el.textContent = lang === 'en' ? en : es;
+          }
         });
       };
 
