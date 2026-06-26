@@ -7,6 +7,7 @@ export const ui: Record<Lang, Record<string, string>> = {
     'nav.tools': 'Herramientas',
     'nav.cases': 'Casos piloto',
     'nav.install': 'Instalación',
+    'nav.author': 'Autor',
     'footer.description': 'Librería modular de Python para análisis hidrológico y climático.',
     'hero.kicker': 'Python · Hidrología · Clima · Riesgo',
     'hero.description':
@@ -80,6 +81,12 @@ export const ui: Record<Lang, Record<string, string>> = {
     'back.modules': '← Volver a módulos',
     'back.module': '← Volver al módulo',
     'back.cases': '← Casos piloto',
+    'author.kicker': 'Autor',
+    'author.name': 'Salvador Navas Fernández',
+    'author.role': 'Investigador en hidráulica e hidrología · IH Cantabria · Universidad de Cantabria',
+    'author.bio': 'Ingeniero de Caminos con doctorado en curso en la Universidad de Cantabria, especializado en análisis de riesgo de inundación, modelización hidráulica 2D e incertidumbre en coeficientes de rugosidad. Creador del paquete pyhydra y de los flujos de trabajo reproducibles que constituyen el proyecto HYDRA.',
+    'author.linkedin': 'LinkedIn',
+    'author.email': 'Contacto',
   },
   en: {
     'nav.modules': 'Modules',
@@ -87,6 +94,7 @@ export const ui: Record<Lang, Record<string, string>> = {
     'nav.tools': 'Tools',
     'nav.cases': 'Pilot cases',
     'nav.install': 'Install',
+    'nav.author': 'Author',
     'footer.description': 'Modular Python library for hydrological and climate analysis.',
     'hero.kicker': 'Python · Hydrology · Climate · Risk',
     'hero.description':
@@ -160,5 +168,11 @@ export const ui: Record<Lang, Record<string, string>> = {
     'back.modules': '← Back to modules',
     'back.module': '← Back to module',
     'back.cases': '← Pilot cases',
+    'author.kicker': 'Author',
+    'author.name': 'Salvador Navas Fernández',
+    'author.role': 'Hydraulic & hydrology researcher · IH Cantabria · University of Cantabria',
+    'author.bio': 'Civil engineer with an ongoing PhD at the University of Cantabria, specialising in flood risk analysis, 2D hydraulic modelling and uncertainty in Manning roughness coefficients. Creator of the pyhydra package and the reproducible workflows that make up the HYDRA project.',
+    'author.linkedin': 'LinkedIn',
+    'author.email': 'Contact',
   },
 };
