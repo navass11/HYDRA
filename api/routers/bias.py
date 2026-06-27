@@ -19,22 +19,20 @@ N_QUANTILES = 100  # resolution for QQ plots
 def _demo_data() -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """30 years historical + 30 years future with wet bias in model."""
     rng = np.random.default_rng(42)
-    n_hist = 365 * 30
-    n_future = 365 * 30
+    n = 365 * 30
 
-    # Observed: realistic daily precip (gamma + zero inflation)
-    wet_hist = rng.random(n_hist) < 0.20
-    obs_hist = np.where(wet_hist, rng.gamma(0.8, 8.0, n_hist), 0.0)
+    # Observed: gamma + zero inflation (20% wet days)
+    wet_obs = rng.random(n) < 0.20
+    obs_hist = np.where(wet_obs, rng.gamma(0.8, 8.0, n), 0.0)
 
-    # Model historical: biased (scale * 1.4 + additive noise)
-    mod_hist = obs_hist * 1.4 + rng.normal(0, 2.0, n_hist)
-    mod_hist = np.clip(mod_hist, 0, None)
+    # Model historical: same wet days but +40% scale bias (no additive noise so
+    # gamma fits in SDM stay clean — additive noise converts dry days to wet days
+    # and breaks parametric distribution fitting)
+    mod_hist = np.where(wet_obs, rng.gamma(0.8, 11.2, n), 0.0)
 
-    # Model future: slightly warmer, keep same bias structure
-    wet_fut = rng.random(n_future) < 0.22
-    mod_future = np.where(wet_fut, rng.gamma(0.85, 9.5, n_future), 0.0)
-    mod_future = mod_future * 1.4 + rng.normal(0, 2.0, n_future)
-    mod_future = np.clip(mod_future, 0, None)
+    # Model future: slightly more wet days + same +40% bias, slight climate warming
+    wet_fut = rng.random(n) < 0.24
+    mod_future = np.where(wet_fut, rng.gamma(0.85, 13.3, n), 0.0)
 
     return obs_hist, mod_hist, mod_future
 
