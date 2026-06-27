@@ -71,7 +71,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
           <h3 class="font-semibold text-gray-800 dark:text-slate-200 text-sm uppercase tracking-wide" data-t-es="Resultados" data-t-en="Results">Resultados</h3>
           <div id="mk-card" class="rounded-xl border p-4 space-y-1"></div>
           <div id="pettitt-card" class="rounded-xl border p-4 space-y-1"></div>
-          <div id="sen-card" class="rounded-xl border bg-gray-50 dark:bg-slate-700 p-4 space-y-1"></div>
+          <div id="sen-card" class="rounded-xl border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700/50 p-4 space-y-1"></div>
         </div>
       </aside>
 
@@ -226,7 +226,7 @@ function renderResults(data: any) {
     <p class="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide mb-2">Mann-Kendall</p>
     <div class="flex items-center justify-between mb-1">
       <span class="text-sm text-gray-700 dark:text-slate-300">τ = <strong>${mk.tau}</strong></span>
-      <span class="text-sm text-gray-500 dark:text-slate-400">p = ${mk.p_value}</span>
+      <span class="text-sm text-gray-500 dark:text-slate-400">p ${mk.p_value < 0.001 ? '< 0.001' : '= ' + mk.p_value}</span>
     </div>
     <p class="text-sm text-gray-700 dark:text-slate-300 mb-2 capitalize">${t('Tendencia:', 'Trend:')} <strong>${mk.trend}</strong></p>
     ${badge(mk.significant)}`;
@@ -239,7 +239,7 @@ function renderResults(data: any) {
   document.getElementById('pettitt-card')!.innerHTML = `
     <p class="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide mb-2">Pettitt</p>
     <p class="text-sm text-gray-700 dark:text-slate-300 mb-1">${cpText}</p>
-    <p class="text-sm text-gray-500 dark:text-slate-400 mb-2">p ≈ ${pt.p_value}</p>
+    <p class="text-sm text-gray-500 dark:text-slate-400 mb-2">p ${pt.p_value < 0.001 ? '< 0.001' : '≈ ' + pt.p_value}</p>
     ${badge(pt.significant)}`;
   document.getElementById('pettitt-card')!.className =
     `rounded-xl border p-4 space-y-1 ${pt.significant ? 'border-amber-200 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/40' : 'border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-slate-700/50'}`;

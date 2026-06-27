@@ -290,14 +290,15 @@ function renderResults(data: any) {
     legend: { orientation: 'h', y: -0.28 },
   }, { responsive: true, displayModeBar: false });
 
-  // Monthly means
-  const mm = data.monthly_means as {month: string, obs: number, mod_raw: number, mod_corrected: number}[];
+  // Monthly means (backend returns numeric month 1-12, translate with MONTHS array)
+  const mm = data.monthly_means as {month: number, obs: number, mod_raw: number, mod_corrected: number}[];
+  const monthLabels = mm.map(m => MONTHS[m.month - 1]);
   Plotly.newPlot('chart-monthly', [
-    { x: mm.map(m => m.month), y: mm.map(m => m.obs),           type: 'bar', name: t('Observado', 'Observed'),
+    { x: monthLabels, y: mm.map(m => m.obs),           type: 'bar', name: t('Observado', 'Observed'),
       marker: { color: DARK_SLATE, opacity: 0.85 } },
-    { x: mm.map(m => m.month), y: mm.map(m => m.mod_raw),       type: 'bar', name: t('Modelo (antes)', 'Model (before)'),
+    { x: monthLabels, y: mm.map(m => m.mod_raw),       type: 'bar', name: t('Modelo (antes)', 'Model (before)'),
       marker: { color: GRAY,  opacity: 0.85 } },
-    { x: mm.map(m => m.month), y: mm.map(m => m.mod_corrected), type: 'bar', name: t('Modelo (después)', 'Model (after)'),
+    { x: monthLabels, y: mm.map(m => m.mod_corrected), type: 'bar', name: t('Modelo (después)', 'Model (after)'),
       marker: { color: TEAL, opacity: 0.9 } },
   ], {
     ...layoutBase,

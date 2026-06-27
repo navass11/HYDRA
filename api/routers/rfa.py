@@ -76,7 +76,8 @@ def _discordancy(data_dict: dict[str, np.ndarray]) -> list[dict]:
     u_bar = u.mean(axis=0)
     # Covariance matrix A
     diff = u - u_bar
-    A = (diff.T @ diff) / (n - 1) if n > 1 else np.eye(3)
+    # Hosking & Wallis (1993): A = sum of outer products, NOT sample covariance
+    A = (diff.T @ diff) if n > 1 else np.eye(3)
 
     results = []
     try:

@@ -77,9 +77,8 @@ def _monthly_means(obs: np.ndarray, mod_raw: np.ndarray, mod_corr: np.ndarray) -
     mo = _monthly(obs)
     mr = _monthly(mod_raw)
     mc = _monthly(mod_corr)
-    month_names = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
     return [
-        {"month": month_names[i], "obs": _safe(mo[i]), "mod_raw": _safe(mr[i]), "mod_corrected": _safe(mc[i])}
+        {"month": i + 1, "obs": _safe(mo[i]), "mod_raw": _safe(mr[i]), "mod_corrected": _safe(mc[i])}
         for i in range(12)
     ]
 
