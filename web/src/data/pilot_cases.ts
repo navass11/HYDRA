@@ -49,112 +49,164 @@ const m30Svg = `
   </defs>
 
   <rect width="760" height="420" rx="8" fill="#0f172a"/>
-  <text x="28" y="32" font-family="Inter, system-ui" font-size="13" font-weight="700" fill="#f1f5f9">Pipeline: Estadística Multivariada de Inundación — M30 Manzanares</text>
+  <text x="28" y="32" font-family="Inter, system-ui" font-size="13" font-weight="700" fill="#f1f5f9"
+        data-t-es="Pipeline: Estadística Multivariada de Inundación — M30 Manzanares"
+        data-t-en="Pipeline: Multivariate Flood Frequency Analysis — M30 Manzanares"
+  >Pipeline: Estadística Multivariada de Inundación — M30 Manzanares</text>
 
   <!-- Row 1: precip → PCA → copula → maxdiss -->
   <!-- Step 1 -->
   <rect x="24"  y="52" width="148" height="72" rx="7" fill="#0c1f40" stroke="#3b82f6" stroke-width="1.5"/>
-  <text x="98"  y="72" text-anchor="middle" font-family="Inter" font-size="9" fill="#93c5fd">PASO 1</text>
-  <text x="98"  y="86" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">Series de</text>
-  <text x="98"  y="100" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">precipitación</text>
-  <text x="98"  y="114" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8">17 pluviómetros · M30</text>
+  <text x="98"  y="72" text-anchor="middle" font-family="Inter" font-size="9" fill="#93c5fd"
+        data-t-es="PASO 1" data-t-en="STEP 1">PASO 1</text>
+  <text x="98"  y="86" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9"
+        data-t-es="Series de" data-t-en="Rainfall">Series de</text>
+  <text x="98"  y="100" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9"
+        data-t-es="precipitación" data-t-en="series">precipitación</text>
+  <text x="98"  y="114" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8"
+        data-t-es="17 pluviómetros · M30" data-t-en="17 rain gauges · M30">17 pluviómetros · M30</text>
   <line x1="172" y1="88" x2="196" y2="88" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#arr-m30)"/>
 
   <!-- Step 2 -->
   <rect x="196" y="52" width="148" height="72" rx="7" fill="#0c1f40" stroke="#3b82f6" stroke-width="1.5"/>
-  <text x="270" y="72" text-anchor="middle" font-family="Inter" font-size="9" fill="#93c5fd">PASO 2</text>
-  <text x="270" y="86" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">PCA + K-Means</text>
-  <text x="270" y="100" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">clasificación</text>
-  <text x="270" y="114" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8">24 tipos de evento</text>
+  <text x="270" y="72" text-anchor="middle" font-family="Inter" font-size="9" fill="#93c5fd"
+        data-t-es="PASO 2" data-t-en="STEP 2">PASO 2</text>
+  <text x="270" y="86" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9"
+        data-t-es="PCA + K-Means" data-t-en="PCA + K-Means">PCA + K-Means</text>
+  <text x="270" y="100" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9"
+        data-t-es="clasificación" data-t-en="classification">clasificación</text>
+  <text x="270" y="114" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8"
+        data-t-es="~100 tipos de evento" data-t-en="~100 event types">~100 tipos de evento</text>
   <line x1="344" y1="88" x2="368" y2="88" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#arr-m30)"/>
 
   <!-- Step 3 -->
   <rect x="368" y="52" width="148" height="72" rx="7" fill="#0c1f40" stroke="#3b82f6" stroke-width="1.5"/>
-  <text x="442" y="72" text-anchor="middle" font-family="Inter" font-size="9" fill="#93c5fd">PASO 3</text>
-  <text x="442" y="86" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">Cópula Gaussiana</text>
-  <text x="442" y="100" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">multivariada</text>
-  <text x="442" y="114" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8">~1 000 000 eventos sint.</text>
+  <text x="442" y="72" text-anchor="middle" font-family="Inter" font-size="9" fill="#93c5fd"
+        data-t-es="PASO 3" data-t-en="STEP 3">PASO 3</text>
+  <text x="442" y="86" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9"
+        data-t-es="Cópula Gaussiana" data-t-en="Gaussian Copula">Cópula Gaussiana</text>
+  <text x="442" y="100" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9"
+        data-t-es="multivariada" data-t-en="multivariate">multivariada</text>
+  <text x="442" y="114" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8"
+        data-t-es="~1 000 000 eventos sint." data-t-en="~1,000,000 synth. events">~1 000 000 eventos sint.</text>
   <line x1="516" y1="88" x2="540" y2="88" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#arr-m30)"/>
 
   <!-- Step 4 -->
   <rect x="540" y="52" width="196" height="72" rx="7" fill="#0c1f40" stroke="#3b82f6" stroke-width="1.5"/>
-  <text x="638" y="72" text-anchor="middle" font-family="Inter" font-size="9" fill="#93c5fd">PASO 4</text>
-  <text x="638" y="86" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">MaxDiss</text>
-  <text x="638" y="100" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">selección</text>
-  <text x="638" y="114" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8">1 000 eventos representativos</text>
+  <text x="638" y="72" text-anchor="middle" font-family="Inter" font-size="9" fill="#93c5fd"
+        data-t-es="PASO 4" data-t-en="STEP 4">PASO 4</text>
+  <text x="638" y="86" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9"
+        data-t-es="MaxDiss" data-t-en="MaxDiss">MaxDiss</text>
+  <text x="638" y="100" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9"
+        data-t-es="selección" data-t-en="selection">selección</text>
+  <text x="638" y="114" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8"
+        data-t-es="1 000 eventos representativos" data-t-en="1,000 representative events">1 000 eventos representativos</text>
 
   <!-- Arrow down from step 4 -->
   <line x1="638" y1="124" x2="638" y2="154" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr-m30-b)"/>
 
-  <!-- Row 2: right to left — RAS → HMS → kNN → T de retorno -->
+  <!-- Row 2: right to left — HMS → RAS → kNN → return period -->
   <!-- Step 5 -->
   <rect x="540" y="155" width="196" height="72" rx="7" fill="#0f2e28" stroke="#059669" stroke-width="1.5"/>
-  <text x="638" y="175" text-anchor="middle" font-family="Inter" font-size="9" fill="#6ee7b7">PASO 5</text>
-  <text x="638" y="189" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">HEC-HMS</text>
-  <text x="638" y="203" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">simulación hidrológica</text>
-  <text x="638" y="217" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8">1 000 caudales máximos</text>
+  <text x="638" y="175" text-anchor="middle" font-family="Inter" font-size="9" fill="#6ee7b7"
+        data-t-es="PASO 5" data-t-en="STEP 5">PASO 5</text>
+  <text x="638" y="189" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9"
+        data-t-es="HEC-HMS" data-t-en="HEC-HMS">HEC-HMS</text>
+  <text x="638" y="203" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9"
+        data-t-es="simulación hidrológica" data-t-en="hydrological simulation">simulación hidrológica</text>
+  <text x="638" y="217" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8"
+        data-t-es="1 000 caudales máximos" data-t-en="1,000 peak discharges">1 000 caudales máximos</text>
   <line x1="540" y1="191" x2="516" y2="191" stroke="#059669" stroke-width="1.5" marker-end="url(#arr-m30)"/>
 
   <!-- Step 6 -->
   <rect x="368" y="155" width="148" height="72" rx="7" fill="#0f2e28" stroke="#059669" stroke-width="1.5"/>
-  <text x="442" y="175" text-anchor="middle" font-family="Inter" font-size="9" fill="#6ee7b7">PASO 6</text>
-  <text x="442" y="189" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">HEC-RAS</text>
-  <text x="442" y="203" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">hidráulica 1D</text>
-  <text x="442" y="217" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8">22 manchas simuladas</text>
+  <text x="442" y="175" text-anchor="middle" font-family="Inter" font-size="9" fill="#6ee7b7"
+        data-t-es="PASO 6" data-t-en="STEP 6">PASO 6</text>
+  <text x="442" y="189" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9"
+        data-t-es="HEC-RAS" data-t-en="HEC-RAS">HEC-RAS</text>
+  <text x="442" y="203" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9"
+        data-t-es="hidráulica 1D" data-t-en="1D hydraulics">hidráulica 1D</text>
+  <text x="442" y="217" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8"
+        data-t-es="22 perfiles simulados" data-t-en="22 simulated profiles">22 perfiles simulados</text>
   <line x1="368" y1="191" x2="344" y2="191" stroke="#059669" stroke-width="1.5" marker-end="url(#arr-m30)"/>
 
   <!-- Step 7 -->
   <rect x="196" y="155" width="148" height="72" rx="7" fill="#0f2e28" stroke="#059669" stroke-width="1.5"/>
-  <text x="270" y="175" text-anchor="middle" font-family="Inter" font-size="9" fill="#6ee7b7">PASO 7</text>
-  <text x="270" y="189" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">kNN</text>
-  <text x="270" y="203" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">reconstrucción</text>
-  <text x="270" y="217" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8">1M calados interpolados</text>
+  <text x="270" y="175" text-anchor="middle" font-family="Inter" font-size="9" fill="#6ee7b7"
+        data-t-es="PASO 7" data-t-en="STEP 7">PASO 7</text>
+  <text x="270" y="189" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9"
+        data-t-es="kNN" data-t-en="kNN">kNN</text>
+  <text x="270" y="203" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9"
+        data-t-es="reconstrucción" data-t-en="reconstruction">reconstrucción</text>
+  <text x="270" y="217" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8"
+        data-t-es="1M calados interpolados" data-t-en="1M interpolated depths">1M calados interpolados</text>
   <line x1="196" y1="191" x2="172" y2="191" stroke="#059669" stroke-width="1.5" marker-end="url(#arr-m30)"/>
 
   <!-- Step 8 -->
   <rect x="24"  y="155" width="148" height="72" rx="7" fill="#0f2e28" stroke="#059669" stroke-width="1.5"/>
-  <text x="98"  y="175" text-anchor="middle" font-family="Inter" font-size="9" fill="#6ee7b7">PASO 8</text>
-  <text x="98"  y="189" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">Régimen extremal</text>
-  <text x="98"  y="203" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">multivariado</text>
-  <text x="98"  y="217" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8">T = 2…500 años</text>
+  <text x="98"  y="175" text-anchor="middle" font-family="Inter" font-size="9" fill="#6ee7b7"
+        data-t-es="PASO 8" data-t-en="STEP 8">PASO 8</text>
+  <text x="98"  y="189" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9"
+        data-t-es="Régimen extremal" data-t-en="Extreme value">Régimen extremal</text>
+  <text x="98"  y="203" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9"
+        data-t-es="multivariado" data-t-en="analysis">multivariado</text>
+  <text x="98"  y="217" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8"
+        data-t-es="T = 2…500 años" data-t-en="T = 2…500 years">T = 2…500 años</text>
 
   <!-- Divider -->
   <line x1="24" y1="260" x2="736" y2="260" stroke="#1e293b" stroke-width="1"/>
 
   <!-- Results comparison row -->
-  <text x="28" y="283" font-family="Inter" font-size="10" font-weight="700" fill="#94a3b8">SECCIÓN PUENTE DE TOLEDO — Calado por período de retorno:</text>
+  <text x="28" y="283" font-family="Inter" font-size="10" font-weight="700" fill="#94a3b8"
+        data-t-es="SECCIÓN PUENTE DE TOLEDO — Calado por período de retorno:"
+        data-t-en="TOLEDO BRIDGE CROSS-SECTION — Design depth by return period:"
+  >SECCIÓN PUENTE DE TOLEDO — Calado por período de retorno:</text>
 
   <!-- T=100 comparison -->
   <rect x="24" y="295" width="218" height="54" rx="6" fill="#111827" stroke="#1e293b" stroke-width="1"/>
-  <text x="133" y="316" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8">T = 100 AÑOS</text>
+  <text x="133" y="316" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8"
+        data-t-es="T = 100 AÑOS" data-t-en="T = 100 YEARS">T = 100 AÑOS</text>
   <text x="78"  y="336" text-anchor="middle" font-family="Inter" font-size="18" font-weight="700" fill="#60a5fa">5.05 m</text>
-  <text x="78"  y="349" text-anchor="middle" font-family="Inter" font-size="8" fill="#94a3b8">Clásico</text>
+  <text x="78"  y="349" text-anchor="middle" font-family="Inter" font-size="8" fill="#94a3b8"
+        data-t-es="Clásico" data-t-en="Classical">Clásico</text>
   <text x="178" y="336" text-anchor="middle" font-family="Inter" font-size="18" font-weight="700" fill="#f97316">6.00 m</text>
-  <text x="178" y="349" text-anchor="middle" font-family="Inter" font-size="8" fill="#94a3b8">Cópula</text>
+  <text x="178" y="349" text-anchor="middle" font-family="Inter" font-size="8" fill="#94a3b8"
+        data-t-es="Cópula" data-t-en="Copula">Cópula</text>
   <text x="128" y="340" text-anchor="middle" font-family="Inter" font-size="11" fill="#475569">+0.95 m</text>
 
   <!-- T=500 comparison -->
   <rect x="254" y="295" width="218" height="54" rx="6" fill="#111827" stroke="#1e293b" stroke-width="1"/>
-  <text x="363" y="316" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8">T = 500 AÑOS</text>
+  <text x="363" y="316" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8"
+        data-t-es="T = 500 AÑOS" data-t-en="T = 500 YEARS">T = 500 AÑOS</text>
   <text x="308" y="336" text-anchor="middle" font-family="Inter" font-size="18" font-weight="700" fill="#60a5fa">6.78 m</text>
-  <text x="308" y="349" text-anchor="middle" font-family="Inter" font-size="8" fill="#94a3b8">Clásico</text>
+  <text x="308" y="349" text-anchor="middle" font-family="Inter" font-size="8" fill="#94a3b8"
+        data-t-es="Clásico" data-t-en="Classical">Clásico</text>
   <text x="408" y="336" text-anchor="middle" font-family="Inter" font-size="18" font-weight="700" fill="#f97316">7.61 m</text>
-  <text x="408" y="349" text-anchor="middle" font-family="Inter" font-size="8" fill="#94a3b8">Cópula</text>
+  <text x="408" y="349" text-anchor="middle" font-family="Inter" font-size="8" fill="#94a3b8"
+        data-t-es="Cópula" data-t-en="Copula">Cópula</text>
   <text x="358" y="340" text-anchor="middle" font-family="Inter" font-size="11" fill="#475569">+0.83 m</text>
 
   <!-- Lambda / events stats -->
   <rect x="484" y="295" width="252" height="54" rx="6" fill="#111827" stroke="#1e293b" stroke-width="1"/>
-  <text x="610" y="312" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8">ESTADÍSTICAS DE LA METODOLOGÍA</text>
+  <text x="610" y="312" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8"
+        data-t-es="ESTADÍSTICAS DE LA METODOLOGÍA" data-t-en="METHODOLOGY STATISTICS"
+  >ESTADÍSTICAS DE LA METODOLOGÍA</text>
   <text x="530" y="330" text-anchor="middle" font-family="Inter" font-size="13" font-weight="700" fill="#f1f5f9">λ = 5.17</text>
-  <text x="530" y="344" text-anchor="middle" font-family="Inter" font-size="8" fill="#94a3b8">eventos/año</text>
+  <text x="530" y="344" text-anchor="middle" font-family="Inter" font-size="8" fill="#94a3b8"
+        data-t-es="eventos/año" data-t-en="events/year">eventos/año</text>
   <text x="620" y="330" text-anchor="middle" font-family="Inter" font-size="13" font-weight="700" fill="#f1f5f9">17</text>
-  <text x="620" y="344" text-anchor="middle" font-family="Inter" font-size="8" fill="#94a3b8">pluviómetros</text>
+  <text x="620" y="344" text-anchor="middle" font-family="Inter" font-size="8" fill="#94a3b8"
+        data-t-es="pluviómetros" data-t-en="rain gauges">pluviómetros</text>
   <text x="706" y="330" text-anchor="middle" font-family="Inter" font-size="13" font-weight="700" fill="#f1f5f9">1M</text>
-  <text x="706" y="344" text-anchor="middle" font-family="Inter" font-size="8" fill="#94a3b8">sint. generados</text>
+  <text x="706" y="344" text-anchor="middle" font-family="Inter" font-size="8" fill="#94a3b8"
+        data-t-es="sint. generados" data-t-en="synth. generated">sint. generados</text>
 
   <!-- Footer note -->
-  <text x="28" y="396" font-family="Inter" font-size="8" fill="#475569">Navas et al. (2024) · Ingeniería del Agua · Caso M30 Manzanares, Madrid · DOI: 10.4995/ia.2024.20925</text>
-  <text x="28" y="410" font-family="Inter" font-size="8" fill="#475569">pyhydra: HydrographClassifier · FloodEventSelector · FloodMapInterpolator · pixel_return_period</text>
+  <text x="28" y="396" font-family="Inter" font-size="8" fill="#475569">Navas et al. (2024) · Ingeniería del Agua · M30 Manzanares, Madrid · DOI: 10.4995/ia.2024.22293</text>
+  <text x="28" y="410" font-family="Inter" font-size="8" fill="#475569"
+        data-t-es="pyhydra: maxdiss · OpenTURNS GaussianCopula · scikit-learn KNN · Poisson compuesto"
+        data-t-en="pyhydra: maxdiss · OpenTURNS GaussianCopula · scikit-learn KNN · Compound Poisson"
+  >pyhydra: maxdiss · OpenTURNS GaussianCopula · scikit-learn KNN · Poisson compuesto</text>
 </svg>`;
 
 const workflowSvg = `
