@@ -66,6 +66,12 @@ CATEGORIES = {
     "pilot_cases/manning_rugosidades/05_analisis_regimenes":             ("Caso piloto", "⑤"),
     "pilot_cases/manning_rugosidades/06_figuras_paper":                  ("Caso piloto", "⑥"),
     "pilot_cases/manning_rugosidades/07_correlated_manning":             ("Caso piloto", "⑦"),
+    "pilot_cases/m30_manzanares/01_rain_data":                           ("Caso piloto", "①"),
+    "pilot_cases/m30_manzanares/02_classification":                      ("Caso piloto", "②"),
+    "pilot_cases/m30_manzanares/03_copula_generation":                   ("Caso piloto", "③"),
+    "pilot_cases/m30_manzanares/04_maxdiss_selection":                   ("Caso piloto", "④"),
+    "pilot_cases/m30_manzanares/05_hms_ras_simulation":                  ("Caso piloto", "⑤"),
+    "pilot_cases/m30_manzanares/06_knn_return_periods":                  ("Caso piloto", "⑥"),
 }
 
 TITLES = {
@@ -112,6 +118,12 @@ TITLES = {
     "pilot_cases/manning_rugosidades/05_analisis_regimenes":             "Manning 05 · Regimes",
     "pilot_cases/manning_rugosidades/06_figuras_paper":                  "Manning 06 · Figures",
     "pilot_cases/manning_rugosidades/07_correlated_manning":             "Manning 07 · Correlated",
+    "pilot_cases/m30_manzanares/01_rain_data":                           "M30 01 · Rain data",
+    "pilot_cases/m30_manzanares/02_classification":                      "M30 02 · Classification",
+    "pilot_cases/m30_manzanares/03_copula_generation":                   "M30 03 · Copula",
+    "pilot_cases/m30_manzanares/04_maxdiss_selection":                   "M30 04 · MaxDiss",
+    "pilot_cases/m30_manzanares/05_hms_ras_simulation":                  "M30 05 · HMS+RAS",
+    "pilot_cases/m30_manzanares/06_knn_return_periods":                  "M30 06 · kNN return periods",
 }
 
 GITHUB_RAW = "https://nbviewer.org/github/navass11/HYDRA/blob/main/notebooks"

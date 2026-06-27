@@ -130,7 +130,7 @@ const m30Svg = `
   <text x="78"  y="336" text-anchor="middle" font-family="Inter" font-size="18" font-weight="700" fill="#60a5fa">5.05 m</text>
   <text x="78"  y="349" text-anchor="middle" font-family="Inter" font-size="8" fill="#94a3b8">Clásico</text>
   <text x="178" y="336" text-anchor="middle" font-family="Inter" font-size="18" font-weight="700" fill="#f97316">6.00 m</text>
-  <text x="178" y="349" text-anchor="middle" font-family="Inter" font-size="8" fill="#94a3b8">FORESEE</text>
+  <text x="178" y="349" text-anchor="middle" font-family="Inter" font-size="8" fill="#94a3b8">Cópula</text>
   <text x="128" y="340" text-anchor="middle" font-family="Inter" font-size="11" fill="#475569">+0.95 m</text>
 
   <!-- T=500 comparison -->
@@ -139,7 +139,7 @@ const m30Svg = `
   <text x="308" y="336" text-anchor="middle" font-family="Inter" font-size="18" font-weight="700" fill="#60a5fa">6.78 m</text>
   <text x="308" y="349" text-anchor="middle" font-family="Inter" font-size="8" fill="#94a3b8">Clásico</text>
   <text x="408" y="336" text-anchor="middle" font-family="Inter" font-size="18" font-weight="700" fill="#f97316">7.61 m</text>
-  <text x="408" y="349" text-anchor="middle" font-family="Inter" font-size="8" fill="#94a3b8">FORESEE</text>
+  <text x="408" y="349" text-anchor="middle" font-family="Inter" font-size="8" fill="#94a3b8">Cópula</text>
   <text x="358" y="340" text-anchor="middle" font-family="Inter" font-size="11" fill="#475569">+0.83 m</text>
 
   <!-- Lambda / events stats -->
@@ -320,16 +320,16 @@ export const pilotCases: PilotCase[] = [
       en: 'Univariate precipitation frequency analysis underestimates risk in densely instrumented urban catchments such as the Manzanares in Madrid. Single-station precipitation statistics ignore spatial variability and inter-gauge correlations. Furthermore, translating precipitation to discharge requires a model chain (hydrological + hydraulic) whose accumulated uncertainty is hard to quantify when only classical design hyetographs are propagated. The result is a risk characterisation with insufficient uncertainty coverage and potential underestimation of the design event.',
     },
     approach: {
-      es: 'La metodología implementada en los notebooks utiliza <code>pyhydra.climate.hybrid_downscaling</code>: (1) <code>FloodEventSelector</code> extrae y clasifica eventos históricos de 17 pluviómetros; (2) <code>FloodEventSelector.generate_synthetic</code> ajusta una cópula gaussiana con <code>kendall</code> y genera ~1M eventos en el espacio de uniformes; (3) <code>HydrographReconstructor.maxdiss</code> selecciona 1.000 eventos representativos por disimilaridad máxima en el espacio PCA; (4) los hietogramas se exportan a formato HEC-HMS (.met) y se simulan en HEC-RAS estacionario (22 caudales de referencia); (5) <code>FloodMapInterpolator</code> reconstruye los calados en 1M puntos mediante kNN (k=5); (6) <code>pixel_return_period</code> aplica el modelo de Poisson compuesto (λ=5.17 ev/año) para obtener calados en T=2…500 años.',
-      en: 'The methodology implemented in the notebooks uses <code>pyhydra.climate.hybrid_downscaling</code>: (1) <code>FloodEventSelector</code> extracts and classifies historical events from 17 rain gauges; (2) <code>FloodEventSelector.generate_synthetic</code> fits a Gaussian copula with Kendall\'s τ and generates ~1M events in uniform space; (3) <code>HydrographReconstructor.maxdiss</code> selects 1,000 representative events via maximum dissimilarity in PCA space; (4) hyetographs are exported to HEC-HMS format (.met) and simulated in steady-state HEC-RAS (22 reference discharges); (5) <code>FloodMapInterpolator</code> reconstructs flood depths at 1M points via kNN (k=5); (6) <code>pixel_return_period</code> applies the compound Poisson model (λ=5.17 ev/yr) to obtain depths at T=2…500 yr.',
+      es: 'La metodología de los notebooks reproduce el pipeline de Navas et al. (2024): (1) los 1.761 eventos históricos de 17 pluviómetros se caracterizan con cuatro parámetros por estación (Pmax, Pmed, Duración, Tipo de hietograma); (2) PCA + K-Means sobre la forma temporal normalizada del hietograma clasifica los eventos (≥100 tipos); (3) una cópula gaussiana OpenTURNS sobre las 68 variables genera ~1M de eventos sintéticos; (4) el algoritmo MaxDiss (<code>pyhydra.climate.hybrid_downscaling.reconstruction.maxdiss</code>) selecciona 1.000 eventos representativos; (5) los hietogramas se simulan en HEC-HMS (caudales) y HEC-RAS 1D estacionario (calados en 303 secciones); (6) un regresor k-NN (scikit-learn, k=3, espacio log-Q) reconstruye calados en los ~1M eventos; (7) el modelo de Poisson compuesto (λ=5.17 ev/año) transforma frecuencias anuales en calados de diseño para T=2…500 años.',
+      en: 'The notebooks reproduce the pipeline of Navas et al. (2024): (1) 1,761 historical events from 17 rain gauges are characterised with four parameters per station (Pmax, Pmed, Duration, hyetograph Type); (2) PCA + K-Means on the normalised temporal shape of the hyetograph classifies events (≥100 types); (3) an OpenTURNS Gaussian copula over 68 variables generates ~1M synthetic events; (4) the MaxDiss algorithm (<code>pyhydra.climate.hybrid_downscaling.reconstruction.maxdiss</code>) selects 1,000 representative events; (5) hyetographs are simulated in HEC-HMS (peak discharges) and steady-state HEC-RAS 1D (water depths at 303 cross-sections); (6) a k-NN regressor (scikit-learn, k=3, log-Q space) reconstructs depths for all ~1M events; (7) the compound Poisson model (λ=5.17 ev/yr) yields design depths at T=2…500 years.',
     },
     steps: [
       {
         number: 1,
         title: { es: 'Datos pluviométricos y eventos históricos', en: 'Rain-gauge data & historical events' },
         description: {
-          es: 'Carga de las series horarias de 17 pluviómetros de la red Ferrovial (Calle 30, Madrid) y extracción de eventos de precipitación independientes con <code>FloodEventSelector.extract_events()</code>. Cada evento queda caracterizado por sus variables descriptoras en cada estación: Pmax (mm/6 min), Pmed, Duración y Tipo de hietograma. Análisis de completitud temporal y visualización de la distribución espacial de la red de pluviómetros sobre la cuenca del Manzanares.',
-          en: 'Loading hourly series from 17 Ferrovial rain gauges (M30, Madrid) and extracting independent precipitation events with <code>FloodEventSelector.extract_events()</code>. Each event is characterised by its descriptor variables at each station: Pmax (mm/6 min), Pmed, Duration and hyetograph Type. Temporal completeness analysis and visualisation of the rain-gauge spatial distribution over the Manzanares catchment.',
+          es: 'Carga del dataset de eventos de la red Ferrovial (M30, Madrid): 17 pluviómetros con 1.000 eventos sintéticos seleccionados, cada uno caracterizado por cuatro parámetros por estación — Pmax (mm), Pmed (mm), Duración (h) y Tipo de hietograma. Exploración de la distribución espacial de la red, relación elevación-precipitación y estadísticas por estación para la estación de referencia P_27 (930 eventos no nulos; Pmax máx = 16.79 mm).',
+          en: 'Loading the Ferrovial rain-gauge dataset (M30, Madrid): 17 gauges with 1,000 synthetic-selected events, each characterised by four parameters per station — Pmax (mm), Pmed (mm), Duration (h) and hyetograph Type. Exploration of the spatial network distribution, elevation–rainfall relationship and per-station statistics for the reference gauge P_27 (930 non-zero events; max Pmax = 16.79 mm).',
         },
         notebookPath: 'pilot_cases/m30_manzanares/01_rain_data.ipynb',
         tags: ['Datos', 'Clima'],
@@ -339,8 +339,8 @@ export const pilotCases: PilotCase[] = [
         number: 2,
         title: { es: 'Clasificación PCA + K-Means', en: 'PCA + K-Means classification' },
         description: {
-          es: 'Clasificación de los eventos históricos de precipitación con <code>HydrographClassifier</code>: normalización e interpolación a 100 puntos, reducción de dimensionalidad con PCA (≥95% varianza), agrupación K-Means en una malla 4×6 = 24 tipos de hietograma. Visualización de los centroides por tipo y de la distribución de los eventos en el espacio PCA. La clasificación permite estructurar la cópula gaussiana por tipo de evento y preservar la correlación espacial entre pluviómetros.',
-          en: 'Classification of historical precipitation events with <code>HydrographClassifier</code>: normalisation and resampling to 100 points, dimensionality reduction via PCA (≥95% variance), K-Means clustering in a 4×6 = 24-type grid. Visualisation of type centroids and event distribution in PCA space. The classification structures the Gaussian copula by event type and preserves inter-gauge spatial correlation.',
+          es: 'Análisis de la columna <code>Tipo</code> del dataset, que recoge la clasificación de la forma temporal del hietograma obtenida mediante PCA + K-Means sobre 100 instantes normalizados: ≥100 tipos en el artículo. Se muestra la distribución de eventos por tipo, los estadísticos (Pmax, Pmed, Duración) por tipo para P_27 y se explica que la clasificación se realiza sobre la <em>forma temporal</em> del hietograma, no sobre el patrón espacial de precipitación.',
+          en: 'Analysis of the <code>Type</code> column in the dataset, which records the temporal hyetograph shape classification obtained via PCA + K-Means on 100 normalised time steps: ≥100 types in the paper. Shows the event distribution per type, per-type statistics (Pmax, Pmed, Duration) for P_27, and explains that the classification is performed on the <em>temporal shape</em> of the hyetograph, not the spatial rainfall pattern.',
         },
         notebookPath: 'pilot_cases/m30_manzanares/02_classification.ipynb',
         tags: ['Estadística'],
@@ -350,8 +350,8 @@ export const pilotCases: PilotCase[] = [
         number: 3,
         title: { es: 'Cópula gaussiana y generación sintética', en: 'Gaussian copula & synthetic generation' },
         description: {
-          es: 'Ajuste de distribuciones marginales (exponencial-Weibull) para Pmax, Pmed y Duración en cada estación mediante <code>FloodEventSelector.fit_marginals()</code>. Ajuste de la cópula gaussiana multivariada (17 variables × N_tipos) mediante la τ de Kendall y generación de ~1M de eventos sintéticos en el espacio uniforme con <code>generate_synthetic()</code>. Transformación a espacio físico mediante las inversas de las marginales. Validación visual de la estructura de correlación reproducida.',
-          en: 'Marginal distribution fitting (exponential-Weibull) for Pmax, Pmed and Duration at each station via <code>FloodEventSelector.fit_marginals()</code>. Multivariate Gaussian copula fitting (17 variables × N_types) using Kendall\'s τ and generation of ~1M synthetic events in uniform space with <code>generate_synthetic()</code>. Back-transformation to physical space via marginal inverse functions. Visual validation of the reproduced correlation structure.',
+          es: 'Reproducción de la Figura 6 de Navas et al. (2024): scatters de 4 paneles para la estación de referencia P_27 (Pmax vs Pmed, Pmax vs Duración, Pmed vs Duración, Pmed vs Tipo). Comparación entre los eventos sintéticos generados por la cópula gaussiana OpenTURNS (~1M, azul) y los 1.000 eventos seleccionados (rojo). Ajuste de distribuciones marginales (Exponencial, Weibull, LogNormal, Gamma) con test KS y curva de período de retorno para Pmax en P_27.',
+          en: 'Reproduction of Figure 6 from Navas et al. (2024): 4-panel scatter plots for reference gauge P_27 (Pmax vs Pmed, Pmax vs Duration, Pmed vs Duration, Pmed vs Type). Comparison between synthetic events generated by the OpenTURNS Gaussian copula (~1M, blue) and the 1,000 selected events (red). Marginal distribution fitting (Exponential, Weibull, LogNormal, Gamma) with KS test and return period curve for Pmax at P_27.',
         },
         notebookPath: 'pilot_cases/m30_manzanares/03_copula_generation.ipynb',
         tags: ['Estadística', 'Hidrología'],
@@ -361,8 +361,8 @@ export const pilotCases: PilotCase[] = [
         number: 4,
         title: { es: 'MaxDiss — selección de 1.000 eventos', en: 'MaxDiss — selection of 1,000 events' },
         description: {
-          es: 'Selección de 1.000 eventos representativos del espacio sintético (~1M) mediante el algoritmo MaxDiss (<code>HydrographReconstructor.maxdiss()</code>) en el espacio PCA. El primer evento es el de máxima disimilaridad al centroide global; cada nuevo evento maximiza la distancia mínima al subconjunto ya seleccionado. El resultado es una cobertura cuasi-uniforme del espacio de posibilidades con solo el 0.1 % de los eventos, reduciendo el coste computacional de la cadena HMS+RAS a un nivel asequible.',
-          en: 'Selection of 1,000 representative events from the ~1M synthetic space using the MaxDiss algorithm (<code>HydrographReconstructor.maxdiss()</code>) in PCA space. The first event is the one with maximum dissimilarity to the global centroid; each new event maximises the minimum distance to the already-selected subset. The result is quasi-uniform coverage of the possibility space with only 0.1% of events, reducing the HMS+RAS chain computational cost to a manageable level.',
+          es: 'Reproducción de la Figura 7 de Navas et al. (2024): scatters para P_27 con los 1.000 eventos seleccionados por MaxDiss (rojo) sobre los ~1M sintéticos (azul). Demostración en vivo del algoritmo MaxDiss (<code>pyhydra.climate.hybrid_downscaling.reconstruction.maxdiss</code>): selección de 50 eventos representativos de una muestra de 10.000 en el espacio 4D de P_27, mostrando la cobertura cuasi-uniforme obtenida.',
+          en: 'Reproduction of Figure 7 from Navas et al. (2024): scatter plots for P_27 with 1,000 MaxDiss-selected events (red) overlaid on ~1M synthetic (blue). Live demonstration of the MaxDiss algorithm (<code>pyhydra.climate.hybrid_downscaling.reconstruction.maxdiss</code>): selection of 50 representative events from 10,000 in the 4D space of P_27, showing the quasi-uniform coverage achieved.',
         },
         notebookPath: 'pilot_cases/m30_manzanares/04_maxdiss_selection.ipynb',
         tags: ['Hidrología'],
@@ -383,8 +383,8 @@ export const pilotCases: PilotCase[] = [
         number: 6,
         title: { es: 'kNN + régimen extremal', en: 'kNN + extreme value analysis' },
         description: {
-          es: 'Reconstrucción de los calados en las 1M simulaciones sintéticas mediante interpolación k-vecinos más cercanos (<code>FloodMapInterpolator</code>, k=5) en el espacio de caudales máximos. Aplicación del modelo de Poisson compuesto (λ=5.17 eventos/año) con <code>pixel_return_period</code> para obtener calados de diseño en T=2, 5, 10, 20, 50, 100 y 500 años en las 303 secciones. Comparación con el régimen extremal clásico (GEV univariada sobre la serie de aforos). El método FORESEE supera en ~0.83 m al clásico en el Puente de Toledo para T=500 años.',
-          en: 'Reconstruction of water depths across 1M synthetic simulations via k-nearest-neighbour interpolation (<code>FloodMapInterpolator</code>, k=5) in peak-discharge space. Application of the compound Poisson model (λ=5.17 ev/yr) with <code>pixel_return_period</code> to obtain design depths at T=2, 5, 10, 20, 50, 100 and 500 years across all 303 cross-sections. Comparison with the classical extreme value analysis (univariate GEV on the gauged series). The FORESEE method exceeds the classical approach by ~0.83 m at Puente de Toledo for T=500 years.',
+          es: 'Reconstrucción de los calados en las 1M simulaciones sintéticas mediante interpolación k-vecinos más cercanos (k=3) en el espacio de caudales máximos. Aplicación del modelo de Poisson compuesto (λ=5.17 eventos/año) para obtener calados de diseño en T=2, 5, 10, 20, 50, 100 y 500 años en las 303 secciones. Comparación con el régimen extremal clásico (GEV univariada sobre la serie de aforos). El método basado en cópulas (Navas et al., 2024) supera en ~0.83 m al clásico en el Puente de Toledo para T=500 años.',
+          en: 'Reconstruction of water depths across 1M synthetic simulations via k-nearest-neighbour interpolation (k=3) in peak-discharge space. Application of the compound Poisson model (λ=5.17 ev/yr) to obtain design depths at T=2, 5, 10, 20, 50, 100 and 500 years across all 303 cross-sections. Comparison with the classical extreme value analysis (univariate GEV on the gauged series). The copula-based method (Navas et al., 2024) exceeds the classical approach by ~0.83 m at Puente de Toledo for T=500 years.',
         },
         notebookPath: 'pilot_cases/m30_manzanares/06_knn_return_periods.ipynb',
         tags: ['Estadística', 'Hidráulica'],
@@ -394,13 +394,13 @@ export const pilotCases: PilotCase[] = [
     stats: [
       { value: '17', label: { es: 'pluviómetros red Ferrovial', en: 'Ferrovial rain gauges' } },
       { value: '~1M', label: { es: 'eventos sintéticos generados', en: 'synthetic events generated' } },
-      { value: '+0.83 m', label: { es: 'calado adicional T=500 (FORESEE vs clásico)', en: 'extra depth T=500 (FORESEE vs classical)' } },
+      { value: '+0.83 m', label: { es: 'calado adicional T=500 (cópula vs clásico)', en: 'extra depth T=500 (copula vs classical)' } },
       { value: '303', label: { es: 'secciones transversales HEC-RAS', en: 'HEC-RAS cross-sections' } },
     ],
     keyFindings: [
       {
-        es: 'El método FORESEE (cópula gaussiana multivariada + kNN + Poisson compuesto) produce calados de diseño sistemáticamente mayores que el método clásico (GEV univariada) en toda la longitud del tramo M30 canalizado. Para T=500 años en el Puente de Toledo, la diferencia es de +0,83 m (7,61 m vs 6,78 m), con implicaciones directas para el dimensionamiento de las obras de protección y la zonificación de inundabilidad.',
-        en: 'The FORESEE method (multivariate Gaussian copula + kNN + compound Poisson) systematically produces larger design depths than the classical method (univariate GEV) along the entire channelised M30 reach. For T=500 years at Puente de Toledo, the difference is +0.83 m (7.61 m vs 6.78 m), with direct implications for flood protection sizing and flood zoning.',
+        es: 'La metodología basada en cópulas (Navas et al., 2024) — cópula gaussiana multivariada + kNN + Poisson compuesto — produce calados de diseño sistemáticamente mayores que el método clásico (GEV univariada) en toda la longitud del tramo M30 canalizado. Para T=500 años en el Puente de Toledo, la diferencia es de +0,83 m (7,61 m vs 6,78 m), con implicaciones directas para el dimensionamiento de las obras de protección y la zonificación de inundabilidad.',
+        en: 'The copula-based methodology (Navas et al., 2024) — multivariate Gaussian copula + kNN + compound Poisson — systematically produces larger design depths than the classical method (univariate GEV) along the entire channelised M30 reach. For T=500 years at Puente de Toledo, the difference is +0.83 m (7.61 m vs 6.78 m), with direct implications for flood protection sizing and flood zoning.',
       },
       {
         es: 'La cópula gaussiana multivariada sobre 17 pluviómetros captura la covarianza espacial de la precipitación extrema: eventos con máximos simultáneos en múltiples estaciones — que representan el verdadero escenario de riesgo en una cuenca urbana extensa — son generados en proporción realista por la cópula pero subrepresentados por el análisis univariado en una sola estación.',

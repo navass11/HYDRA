@@ -238,6 +238,48 @@
     "href": "http://localhost/jupyter/lab/tree/pilot_cases/los_corrales_buelna/08_hybrid_return_periods.ipynb"
   },
   {
+    "slug": "pilot_cases--m30_manzanares--01_rain_data",
+    "title": "M30 01 · Rain data",
+    "category": "Caso piloto",
+    "icon": "①",
+    "href": "http://localhost/jupyter/lab/tree/pilot_cases/m30_manzanares/01_rain_data.ipynb"
+  },
+  {
+    "slug": "pilot_cases--m30_manzanares--02_classification",
+    "title": "M30 02 · Classification",
+    "category": "Caso piloto",
+    "icon": "②",
+    "href": "http://localhost/jupyter/lab/tree/pilot_cases/m30_manzanares/02_classification.ipynb"
+  },
+  {
+    "slug": "pilot_cases--m30_manzanares--03_copula_generation",
+    "title": "M30 03 · Copula",
+    "category": "Caso piloto",
+    "icon": "③",
+    "href": "http://localhost/jupyter/lab/tree/pilot_cases/m30_manzanares/03_copula_generation.ipynb"
+  },
+  {
+    "slug": "pilot_cases--m30_manzanares--04_maxdiss_selection",
+    "title": "M30 04 · MaxDiss",
+    "category": "Caso piloto",
+    "icon": "④",
+    "href": "http://localhost/jupyter/lab/tree/pilot_cases/m30_manzanares/04_maxdiss_selection.ipynb"
+  },
+  {
+    "slug": "pilot_cases--m30_manzanares--05_hms_ras_simulation",
+    "title": "M30 05 · HMS+RAS",
+    "category": "Caso piloto",
+    "icon": "⑤",
+    "href": "http://localhost/jupyter/lab/tree/pilot_cases/m30_manzanares/05_hms_ras_simulation.ipynb"
+  },
+  {
+    "slug": "pilot_cases--m30_manzanares--06_knn_return_periods",
+    "title": "M30 06 · kNN return periods",
+    "category": "Caso piloto",
+    "icon": "⑥",
+    "href": "http://localhost/jupyter/lab/tree/pilot_cases/m30_manzanares/06_knn_return_periods.ipynb"
+  },
+  {
     "slug": "pilot_cases--manning_rugosidades--01_monte_carlo_rugosidades",
     "title": "Manning 01 · Monte Carlo",
     "category": "Caso piloto",
