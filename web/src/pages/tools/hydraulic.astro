@@ -1,0 +1,604 @@
+---
+import Layout from '../../layouts/Layout.astro';
+const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
+---
+
+<Layout title="Modelado hidráulico — HYDRA">
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js" is:inline></script>
+
+  <!-- ── HEADER ── -->
+  <section class="pt-24 pb-10 bg-gradient-to-br from-slate-950 via-blue-950 to-teal-800 text-white">
+    <div class="max-w-7xl mx-auto px-6">
+      <a href="/" data-i18n="back.home" class="inline-flex items-center gap-2 text-white/65 hover:text-white text-sm mb-6 transition-colors">← Volver al inicio</a>
+      <h1 class="text-4xl font-extrabold mb-2"
+          data-t-es="Modelado hidráulico" data-t-en="Hydraulic Modelling">Modelado hidráulico</h1>
+      <p class="text-white/75 text-lg max-w-3xl"
+         data-t-es="Canal compuesto con llanura de inundación. Flujo uniforme o con curva de remanso según la condición de contorno aguas abajo. Método de Manning con sección dividida."
+         data-t-en="Compound channel with floodplain. Uniform flow or backwater curve depending on the downstream boundary condition. Manning's equation with the divided-channel method.">
+        Canal compuesto con llanura de inundación. Flujo uniforme o con curva de remanso según la condición de contorno aguas abajo. Método de Manning con sección dividida.
+      </p>
+    </div>
+  </section>
+
+  <div class="max-w-7xl mx-auto px-6 py-10" id="app" data-api-url={apiUrl}>
+    <div class="grid lg:grid-cols-[340px_1fr] gap-8">
+
+      <!-- ══════════════════════════════════════════
+           PANEL IZQUIERDO
+      ══════════════════════════════════════════ -->
+      <aside class="space-y-5">
+
+        <!-- Parámetros hidráulicos -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm p-5 space-y-4">
+          <h3 class="font-semibold text-gray-800 dark:text-slate-200 text-sm uppercase tracking-wide"
+              data-t-es="Condiciones hidráulicas" data-t-en="Hydraulic conditions">Condiciones hidráulicas</h3>
+
+          <div>
+            <label class="flex justify-between text-xs font-medium text-gray-600 dark:text-slate-400 mb-1"
+                   title="Caudal total que circula por el canal (m³/s). Determina la profundidad de agua y si el flujo desborda hacia la llanura.">
+              <span data-t-es="Caudal Q (m³/s)" data-t-en="Discharge Q (m³/s)">Caudal Q (m³/s)</span>
+              <span class="font-mono text-teal-700 dark:text-teal-400"><span id="lbl-Q">80</span></span>
+            </label>
+            <input type="range" id="sl-Q" min="5" max="500" step="5" value="80"
+                   class="w-full h-2 rounded-full appearance-none bg-gray-200 dark:bg-slate-600 accent-teal-600 cursor-pointer" />
+          </div>
+
+          <div>
+            <label class="flex justify-between text-xs font-medium text-gray-600 dark:text-slate-400 mb-1"
+                   title="Coeficiente de rugosidad de Manning del cauce principal. Menor valor = superficie más lisa (hormigón 0.013, grava 0.025-0.045, roca irregular 0.060).">
+              <span data-t-es="Manning cauce n₁" data-t-en="Channel Manning n₁">Manning cauce n₁</span>
+              <span class="font-mono text-teal-700 dark:text-teal-400"><span id="lbl-n1">0.035</span></span>
+            </label>
+            <input type="range" id="sl-n1" min="0.010" max="0.120" step="0.001" value="0.035"
+                   class="w-full h-2 rounded-full appearance-none bg-gray-200 dark:bg-slate-600 accent-teal-600 cursor-pointer" />
+          </div>
+
+          <div>
+            <label class="flex justify-between text-xs font-medium text-gray-600 dark:text-slate-400 mb-1"
+                   title="Rugosidad de Manning de la llanura de inundación. Siempre mayor que n₁ (hierba corta 0.030, hierba alta 0.050, arbustos 0.080, bosque 0.120).">
+              <span data-t-es="Manning llanura n₂" data-t-en="Floodplain Manning n₂">Manning llanura n₂</span>
+              <span class="font-mono text-teal-700 dark:text-teal-400"><span id="lbl-n2">0.080</span></span>
+            </label>
+            <input type="range" id="sl-n2" min="0.020" max="0.200" step="0.005" value="0.080"
+                   class="w-full h-2 rounded-full appearance-none bg-gray-200 dark:bg-slate-600 accent-teal-600 cursor-pointer" />
+          </div>
+
+          <div>
+            <label class="flex justify-between text-xs font-medium text-gray-600 dark:text-slate-400 mb-1"
+                   title="Pendiente longitudinal del fondo del cauce (m/m). Controla la velocidad y el régimen hidráulico junto con la rugosidad.">
+              <span data-t-es="Pendiente S (m/m)" data-t-en="Bed slope S (m/m)">Pendiente S (m/m)</span>
+              <span class="font-mono text-teal-700 dark:text-teal-400"><span id="lbl-S">0.0010</span></span>
+            </label>
+            <input type="range" id="sl-S" min="0.0001" max="0.020" step="0.0001" value="0.001"
+                   class="w-full h-2 rounded-full appearance-none bg-gray-200 dark:bg-slate-600 accent-teal-600 cursor-pointer" />
+          </div>
+        </div>
+
+        <!-- Geometría -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm p-5 space-y-4">
+          <h3 class="font-semibold text-gray-800 dark:text-slate-200 text-sm uppercase tracking-wide"
+              data-t-es="Geometría del canal" data-t-en="Channel geometry">Geometría del canal</h3>
+
+          <div>
+            <label class="flex justify-between text-xs font-medium text-gray-600 dark:text-slate-400 mb-1"
+                   title="Ancho del fondo plano del cauce (m). No incluye los taludes.">
+              <span data-t-es="Ancho plantilla b (m)" data-t-en="Bottom width b (m)">Ancho plantilla b (m)</span>
+              <span class="font-mono text-teal-700 dark:text-teal-400"><span id="lbl-b">8.0</span></span>
+            </label>
+            <input type="range" id="sl-b" min="1" max="50" step="0.5" value="8"
+                   class="w-full h-2 rounded-full appearance-none bg-gray-200 dark:bg-slate-600 accent-teal-600 cursor-pointer" />
+          </div>
+
+          <div>
+            <label class="flex justify-between text-xs font-medium text-gray-600 dark:text-slate-400 mb-1"
+                   title="Relación horizontal:vertical del talud del cauce. m=0 = paredes verticales; m=1.5 = 1.5 m horizontal por 1 m vertical. Típico para canales en tierra: m=1.5–2.">
+              <span data-t-es="Talud m (h:v)" data-t-en="Side slope m (h:v)">Talud m (h:v)</span>
+              <span class="font-mono text-teal-700 dark:text-teal-400"><span id="lbl-m">1.5</span></span>
+            </label>
+            <input type="range" id="sl-m" min="0" max="4" step="0.1" value="1.5"
+                   class="w-full h-2 rounded-full appearance-none bg-gray-200 dark:bg-slate-600 accent-teal-600 cursor-pointer" />
+          </div>
+
+          <div>
+            <label class="flex justify-between text-xs font-medium text-gray-600 dark:text-slate-400 mb-1"
+                   title="Altura del cauce desde el fondo hasta el borde de las márgenes (m). Por encima de H el flujo entra en la llanura de inundación.">
+              <span data-t-es="Altura cauce lleno H (m)" data-t-en="Bankfull height H (m)">Altura cauce lleno H (m)</span>
+              <span class="font-mono text-teal-700 dark:text-teal-400"><span id="lbl-H">4.5</span></span>
+            </label>
+            <input type="range" id="sl-H" min="0.5" max="10" step="0.1" value="4.5"
+                   class="w-full h-2 rounded-full appearance-none bg-gray-200 dark:bg-slate-600 accent-teal-600 cursor-pointer" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="flex justify-between text-xs font-medium text-gray-600 dark:text-slate-400 mb-1"
+                     title="Ancho de la llanura de inundación a la izquierda del cauce (m). Poner 0 para eliminar la llanura izquierda.">
+                <span data-t-es="Llanura izq. w_l" data-t-en="Left plain w_l">Llanura izq. w_l</span>
+                <span class="font-mono text-teal-700 dark:text-teal-400"><span id="lbl-wl">40</span> m</span>
+              </label>
+              <input type="range" id="sl-wl" min="0" max="200" step="5" value="40"
+                     class="w-full h-2 rounded-full appearance-none bg-gray-200 dark:bg-slate-600 accent-teal-600 cursor-pointer" />
+            </div>
+            <div>
+              <label class="flex justify-between text-xs font-medium text-gray-600 dark:text-slate-400 mb-1"
+                     title="Ancho de la llanura de inundación a la derecha del cauce (m).">
+                <span data-t-es="Llanura der. w_r" data-t-en="Right plain w_r">Llanura der. w_r</span>
+                <span class="font-mono text-teal-700 dark:text-teal-400"><span id="lbl-wr">40</span> m</span>
+              </label>
+              <input type="range" id="sl-wr" min="0" max="200" step="5" value="40"
+                     class="w-full h-2 rounded-full appearance-none bg-gray-200 dark:bg-slate-600 accent-teal-600 cursor-pointer" />
+            </div>
+          </div>
+
+          <div>
+            <label class="flex justify-between text-xs font-medium text-gray-600 dark:text-slate-400 mb-1"
+                   title="Longitud del tramo de canal a simular (m). Afecta al mapa 2D y a la extensión visible de la curva de remanso.">
+              <span data-t-es="Longitud L (m)" data-t-en="Reach length L (m)">Longitud L (m)</span>
+              <span class="font-mono text-teal-700 dark:text-teal-400"><span id="lbl-L">1000</span></span>
+            </label>
+            <input type="range" id="sl-L" min="200" max="5000" step="100" value="1000"
+                   class="w-full h-2 rounded-full appearance-none bg-gray-200 dark:bg-slate-600 accent-teal-600 cursor-pointer" />
+          </div>
+        </div>
+
+        <!-- Condición de contorno aguas abajo -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm p-5 space-y-4">
+          <h3 class="font-semibold text-gray-800 dark:text-slate-200 text-sm uppercase tracking-wide"
+              data-t-es="Condición aguas abajo" data-t-en="Downstream boundary condition">Condición aguas abajo</h3>
+
+          <div>
+            <label class="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1.5"
+                   data-t-es="Tipo de condición" data-t-en="Condition type">Tipo de condición</label>
+            <select id="sel-bc" class="w-full text-sm border border-gray-200 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500">
+              <option value="normal"    data-t-es="Flujo uniforme (yn constante)"           data-t-en="Uniform flow (constant yn)">Flujo uniforme (yn constante)</option>
+              <option value="critical"  data-t-es="Calado crítico — vertedero libre (M2)"    data-t-en="Critical depth — free outfall (M2)">Calado crítico — vertedero libre (M2)</option>
+              <option value="tailwater" data-t-es="Nivel impuesto aguas abajo — remanso (M1)" data-t-en="Imposed tailwater — backwater (M1)">Nivel impuesto aguas abajo — remanso (M1)</option>
+            </select>
+          </div>
+
+          <div id="yds-row" class="hidden">
+            <label class="flex justify-between text-xs font-medium text-gray-600 dark:text-slate-400 mb-1"
+                   title="Calado en el extremo aguas abajo del tramo. Debe ser mayor que la profundidad normal para generar curva de remanso M1.">
+              <span data-t-es="Calado aguas abajo y_ds (m)" data-t-en="Downstream depth y_ds (m)">Calado aguas abajo y_ds (m)</span>
+              <span class="font-mono text-teal-700 dark:text-teal-400"><span id="lbl-yds">5.50</span></span>
+            </label>
+            <input type="range" id="sl-yds" min="0.10" max="20" step="0.10" value="5.50"
+                   class="w-full h-2 rounded-full appearance-none bg-gray-200 dark:bg-slate-600 accent-teal-600 cursor-pointer" />
+          </div>
+
+          <p class="text-xs text-gray-400 dark:text-slate-500 leading-relaxed"
+             data-t-es="En flujo subcrítico (Fr&lt;1), las perturbaciones se propagan aguas arriba. Un azud o embalse aguas abajo eleva el nivel y genera una curva de remanso M1. Una caída libre genera una curva de depresión M2."
+             data-t-en="In subcritical flow (Fr&lt;1), disturbances propagate upstream. A weir or reservoir downstream raises the level and creates an M1 backwater curve. A free outfall creates an M2 drawdown curve.">
+            En flujo subcrítico (Fr&lt;1), las perturbaciones se propagan aguas arriba. Un azud o embalse aguas abajo eleva el nivel y genera una curva de remanso M1. Una caída libre genera una curva de depresión M2.
+          </p>
+        </div>
+
+        <!-- Instrucciones -->
+        <details class="bg-teal-50 dark:bg-teal-950/40 border border-teal-100 dark:border-teal-800 rounded-2xl overflow-hidden">
+          <summary class="cursor-pointer px-5 py-4 text-sm font-semibold text-teal-900 dark:text-teal-200 flex items-center justify-between select-none">
+            <span data-t-es="¿Cómo funciona?" data-t-en="How does it work?">¿Cómo funciona?</span>
+            <svg class="w-4 h-4 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 text-xs text-teal-900 dark:text-teal-200 space-y-3 leading-relaxed">
+            <p><strong data-t-es="Sección compuesta" data-t-en="Compound section">Sección compuesta</strong><br>
+              <span data-t-es="Cauce trapezoidal central + llanuras horizontales a ambos lados. Cuando el calado supera H, el flujo entra en la llanura. La capacidad hidráulica total se calcula sumando las subáreas (método de sección dividida)." data-t-en="Central trapezoidal channel + flat floodplains on both sides. When depth exceeds H, flow enters the floodplain. Total hydraulic capacity is the sum of sub-areas (divided channel method).">
+              Cauce trapezoidal central + llanuras horizontales a ambos lados. Cuando el calado supera H, el flujo entra en la llanura. La capacidad hidráulica total se calcula sumando las subáreas (método de sección dividida).</span>
+            </p>
+            <p><strong data-t-es="Ecuación de Manning" data-t-en="Manning's equation">Ecuación de Manning</strong><br>
+              <span class="font-mono text-xs">Q = Σ (1/nᵢ)·Aᵢ·Rᵢ<sup>2/3</sup>·S<sup>1/2</sup></span><br>
+              <span data-t-es="Donde A = sección mojada, R = radio hidráulico (A/P), P = perímetro mojado, S = pendiente longitudinal." data-t-en="Where A = wetted area, R = hydraulic radius (A/P), P = wetted perimeter, S = longitudinal bed slope.">Donde A = sección mojada, R = radio hidráulico (A/P), P = perímetro mojado, S = pendiente longitudinal.</span>
+            </p>
+            <p><strong data-t-es="Régimen hidráulico" data-t-en="Hydraulic regime">Régimen hidráulico</strong><br>
+              <span data-t-es="Número de Froude Fr = V/√(g·D). Fr&lt;1 → subcrítico (lento, el nivel lo controla la condición aguas abajo). Fr&gt;1 → supercrítico (rápido, las perturbaciones no se propagan aguas arriba)." data-t-en="Froude number Fr = V/√(g·D). Fr&lt;1 → subcritical (slow; level controlled by downstream BC). Fr&gt;1 → supercritical (fast; disturbances do not propagate upstream).">
+              Número de Froude Fr = V/√(g·D). Fr&lt;1 → subcrítico (lento, el nivel lo controla la condición aguas abajo). Fr&gt;1 → supercrítico (rápido, las perturbaciones no se propagan aguas arriba).</span>
+            </p>
+            <p><strong data-t-es="Perfiles de flujo graduado" data-t-en="Gradually-varied flow profiles">Perfiles de flujo graduado</strong><br>
+              <span data-t-es="Calculados con el Método del Paso Directo (ecuación de energía específica entre secciones). M1 (remanso): profundidad > yn, causada por obstáculo aguas abajo. M2 (depresión): profundidad entre yn y yc, causada por salida libre." data-t-en="Computed with the Direct Step Method (specific energy equation between sections). M1 (backwater): depth > yn, caused by obstacle downstream. M2 (drawdown): depth between yn and yc, caused by free outfall.">
+              Calculados con el Método del Paso Directo. M1 (remanso): calado &gt; yn, causado por un obstáculo aguas abajo. M2 (depresión): calado entre yn y yc, causado por salida libre.</span>
+            </p>
+            <p class="pt-1 border-t border-teal-200/50 dark:border-teal-700/50"
+               data-t-es="Aumenta n₂ (llanura) para ver cómo la mayor rugosidad reduce el caudal en llanura y aumenta el calado. Activa 'Nivel impuesto aguas abajo' y sube y_ds para ver la curva de remanso en el perfil longitudinal."
+               data-t-en="Increase n₂ (floodplain) to see how higher roughness reduces floodplain discharge and raises depth. Enable 'Imposed tailwater' and raise y_ds to see the backwater curve in the longitudinal profile.">
+              <strong>Tip:</strong> Aumenta n₂ para ver cómo más rugosidad eleva el calado en llanura. Activa "Nivel impuesto" y sube y_ds para ver la curva de remanso.
+            </p>
+          </div>
+        </details>
+
+        <!-- Estado -->
+        <div class="flex items-center gap-2 text-sm text-gray-400 dark:text-slate-500">
+          <svg id="spinner" class="hidden w-4 h-4 animate-spin text-teal-600" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+          </svg>
+          <span id="status-text"></span>
+        </div>
+        <div id="error-box" class="hidden bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg p-3 text-sm text-red-700 dark:text-red-300"></div>
+
+      </aside>
+
+      <!-- ══════════════════════════════════════════
+           PANEL DERECHO
+      ══════════════════════════════════════════ -->
+      <main class="space-y-6">
+
+        <!-- Métricas -->
+        <div id="metrics-row" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div>
+
+        <!-- Perfil longitudinal -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm p-5">
+          <div class="flex items-start justify-between mb-3 gap-3">
+            <div>
+              <h3 class="font-semibold text-gray-800 dark:text-slate-200"
+                  data-t-es="Perfil longitudinal de lámina libre" data-t-en="Longitudinal water surface profile">Perfil longitudinal de lámina libre</h3>
+              <p class="text-xs text-gray-400 dark:text-slate-500 mt-0.5"
+                 data-t-es="Cota del lecho (gris) y lámina libre (azul). Líneas de referencia: profundidad normal yn (rojo) y crítica yc (verde)."
+                 data-t-en="Bed elevation (grey) and water surface (blue). Reference lines: normal depth yn (red) and critical yc (green).">
+                Cota del lecho y lámina libre. Referencias: yn (rojo), yc (verde).</p>
+            </div>
+            <span id="profile-badge" class="hidden shrink-0 text-xs font-semibold px-3 py-1 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 whitespace-nowrap"></span>
+          </div>
+          <div id="plot-long" style="height:260px"></div>
+        </div>
+
+        <!-- Mapa 2D -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm p-5">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 class="font-semibold text-gray-800 dark:text-slate-200"
+                  data-t-es="Mancha de calados (planta)" data-t-en="Flood inundation map (plan view)">Mancha de calados (planta)</h3>
+              <p class="text-xs text-gray-400 dark:text-slate-500 mt-0.5"
+                 data-t-es="Vista cenital — color proporcional al calado (m). Las líneas de puntos marcan el borde de las márgenes del cauce."
+                 data-t-en="Bird's-eye view — colour proportional to depth (m). Dotted lines mark channel bank edges.">
+                Vista cenital — color ∝ calado. Líneas de puntos = márgenes del cauce.</p>
+            </div>
+            <span id="regime-badge" class="hidden text-xs font-semibold px-3 py-1 rounded-full"></span>
+          </div>
+          <div id="plot-map" style="height:360px"></div>
+        </div>
+
+        <!-- Sección transversal -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm p-5">
+          <h3 class="font-semibold text-gray-800 dark:text-slate-200 mb-1"
+              data-t-es="Sección transversal (en cauce lleno + llanura)" data-t-en="Cross-section (bankfull + floodplain)">Sección transversal</h3>
+          <p class="text-xs text-gray-400 dark:text-slate-500 mb-3"
+             data-t-es="Perfil transversal de la sección compuesta. Área mojada en azul, lecho en marrón. La línea discontinua indica la lámina libre a la profundidad normal yn."
+             data-t-en="Transverse profile of the compound section. Wetted area in blue, bed in brown. Dashed line = water surface at normal depth yn.">
+            Perfil transversal. Área mojada en azul, lecho en marrón. Línea discontinua = lámina libre (yn).</p>
+          <div id="plot-xs" style="height:260px"></div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = (document.getElementById('app')?.dataset.apiUrl ?? 'http://localhost:8000') + '/api/hydraulic/compute';
+
+    // ── Sliders ──────────────────────────────────────────────────────────────
+    const sliders = [
+      { id: 'sl-Q',   lbl: 'lbl-Q',   fmt: v => (+v).toFixed(0) },
+      { id: 'sl-n1',  lbl: 'lbl-n1',  fmt: v => (+v).toFixed(3) },
+      { id: 'sl-n2',  lbl: 'lbl-n2',  fmt: v => (+v).toFixed(3) },
+      { id: 'sl-S',   lbl: 'lbl-S',   fmt: v => (+v).toFixed(4) },
+      { id: 'sl-b',   lbl: 'lbl-b',   fmt: v => (+v).toFixed(1) },
+      { id: 'sl-m',   lbl: 'lbl-m',   fmt: v => (+v).toFixed(1) },
+      { id: 'sl-H',   lbl: 'lbl-H',   fmt: v => (+v).toFixed(1) },
+      { id: 'sl-wl',  lbl: 'lbl-wl',  fmt: v => (+v).toFixed(0) },
+      { id: 'sl-wr',  lbl: 'lbl-wr',  fmt: v => (+v).toFixed(0) },
+      { id: 'sl-L',   lbl: 'lbl-L',   fmt: v => (+v).toFixed(0) },
+      { id: 'sl-yds', lbl: 'lbl-yds', fmt: v => (+v).toFixed(2) },
+    ];
+
+    sliders.forEach(({ id, lbl, fmt }) => {
+      const el = document.getElementById(id);
+      const lblEl = document.getElementById(lbl);
+      el?.addEventListener('input', () => {
+        if (lblEl) lblEl.textContent = fmt(el.value);
+        scheduleCompute();
+      });
+    });
+
+    // BC selector
+    const selBC = document.getElementById('sel-bc');
+    const ydsRow = document.getElementById('yds-row');
+    selBC?.addEventListener('change', () => {
+      ydsRow?.classList.toggle('hidden', selBC.value !== 'tailwater');
+      scheduleCompute();
+    });
+
+    function getParams() {
+      const bc_type = selBC?.value ?? 'normal';
+      const params = {
+        Q:    +document.getElementById('sl-Q').value,
+        n1:   +document.getElementById('sl-n1').value,
+        n2:   +document.getElementById('sl-n2').value,
+        S:    +document.getElementById('sl-S').value,
+        b:    +document.getElementById('sl-b').value,
+        m:    +document.getElementById('sl-m').value,
+        H:    +document.getElementById('sl-H').value,
+        w_l:  +document.getElementById('sl-wl').value,
+        w_r:  +document.getElementById('sl-wr').value,
+        L:    +document.getElementById('sl-L').value,
+        bc_type,
+      };
+      if (bc_type === 'tailwater') {
+        params.y_ds = +document.getElementById('sl-yds').value;
+      }
+      return params;
+    }
+
+    // ── Debounce ──────────────────────────────────────────────────────────────
+    let debounceTimer;
+    function scheduleCompute() {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(runCompute, 350);
+    }
+
+    function setLoading(on) {
+      document.getElementById('spinner')?.classList.toggle('hidden', !on);
+      const st = document.getElementById('status-text');
+      if (st) st.textContent = on ? (st.dataset.tEs ?? 'Actualizando…') : '';
+    }
+
+    async function runCompute() {
+      setLoading(true);
+      const errBox = document.getElementById('error-box');
+      errBox?.classList.add('hidden');
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(getParams()),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ detail: res.statusText }));
+          throw new Error(err.detail ?? res.statusText);
+        }
+        renderAll(await res.json());
+      } catch (e) {
+        if (errBox) { errBox.textContent = e.message; errBox.classList.remove('hidden'); }
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    // ── Theme helpers ─────────────────────────────────────────────────────────
+    function isDark() { return document.documentElement.classList.contains('dark'); }
+
+    function themeLayout() {
+      const dark = isDark();
+      const tc = dark ? '#94a3b8' : '#4b5563';
+      const gc = dark ? '#1e293b' : '#e5e7eb';
+      const lc = dark ? '#334155' : '#d1d5db';
+      const bg = dark ? '#0f172a' : '#F8FAFC';
+      const lb = dark ? 'rgba(15,23,42,0.92)' : 'rgba(255,255,255,0.92)';
+      const bc = dark ? '#334155' : '#e5e7eb';
+      const axisBase = { gridcolor:gc, linecolor:lc, zerolinecolor:lc,
+                         tickfont:{color:tc, size:11}, title:{font:{color:tc}} };
+      return {
+        paper_bgcolor:'transparent', plot_bgcolor:bg,
+        font:{color:tc, size:11},
+        xaxis:axisBase, yaxis:axisBase,
+        legend:{bgcolor:lb, bordercolor:bc, borderwidth:1, font:{color:tc, size:10}},
+      };
+    }
+
+    // Merges themeLayout with chart-specific overrides (nested)
+    function mkLayout(overrides) {
+      const th = themeLayout();
+      const res = {...th, ...overrides};
+      if (overrides.xaxis) res.xaxis = {...th.xaxis, ...overrides.xaxis};
+      if (overrides.yaxis) res.yaxis = {...th.yaxis, ...overrides.yaxis};
+      if (overrides.legend) res.legend = {...th.legend, ...overrides.legend};
+      return res;
+    }
+
+    // ── Metrics ───────────────────────────────────────────────────────────────
+    function renderMetrics(p) {
+      const regimeColor = p.Fr > 1
+        ? 'bg-red-50 border-red-200 text-red-700 dark:bg-red-900/20 dark:border-red-700 dark:text-red-300'
+        : 'bg-teal-50 border-teal-200 text-teal-700 dark:bg-teal-900/20 dark:border-teal-700 dark:text-teal-300';
+
+      const badge = document.getElementById('regime-badge');
+      if (badge) {
+        badge.textContent = p.regime;
+        badge.className = `text-xs font-semibold px-3 py-1 rounded-full ${regimeColor}`;
+        badge.classList.remove('hidden');
+      }
+
+      const qbf = p.Q_bankfull ?? 0;
+      const cards = [
+        { lbl: 'y<sub>n</sub> / y<sub>c</sub>', val: `${p.yn.toFixed(3)} / ${(p.yc??0).toFixed(3)} m`, sub: 'calado normal / crítico' },
+        { lbl: 'Fr',      val: p.Fr.toFixed(3),    sub: p.regime },
+        { lbl: 'V (m/s)', val: p.V.toFixed(3),     sub: `A = ${p.A_total.toFixed(1)} m²` },
+        p.overbank
+          ? { lbl: 'Q<sub>cauce</sub> / Q<sub>llanura</sub>', val: `${p.Q_channel.toFixed(0)} / ${p.Q_floodplain.toFixed(0)} m³/s`, sub: `Q<sub>bf</sub> = ${qbf.toFixed(0)} m³/s` }
+          : { lbl: 'R hidráulico (m)', val: `${p.R.toFixed(3)} m`, sub: `Q<sub>bf</sub> = ${qbf.toFixed(0)} m³/s | P = ${p.P.toFixed(1)} m` },
+      ];
+
+      document.getElementById('metrics-row').innerHTML = cards.map(c => `
+        <div class="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm p-4">
+          <p class="text-xs text-gray-500 dark:text-slate-400 font-medium mb-1">${c.lbl}</p>
+          <p class="text-xl font-bold text-gray-900 dark:text-white leading-tight">${c.val}</p>
+          <p class="text-xs text-gray-400 dark:text-slate-500 mt-0.5">${c.sub}</p>
+        </div>`).join('');
+    }
+
+    // ── Longitudinal profile ──────────────────────────────────────────────────
+    let longInit = false;
+
+    function renderLongProfile(lp, profileType) {
+      const badge = document.getElementById('profile-badge');
+      if (badge) {
+        const names = {
+          'uniforme':          { es: 'Flujo uniforme',      en: 'Uniform flow' },
+          'M1 (remanso)':      { es: 'Curva de remanso M1', en: 'M1 backwater curve' },
+          'M2 (depresión)':    { es: 'Curva de depresión M2', en: 'M2 drawdown curve' },
+          'S2 (flujo rápido)': { es: 'Flujo supercrítico',  en: 'Supercritical flow' },
+        };
+        const lang = document.documentElement.lang ?? 'es';
+        const entry = names[profileType] ?? { es: profileType, en: profileType };
+        badge.textContent = lang === 'en' ? entry.en : entry.es;
+        badge.classList.remove('hidden');
+      }
+
+      const yMaxVal = Math.max(...lp.z_wse, ...lp.z_yn) * 1.08 + 0.2;
+
+      const traces = [
+        { type:'scatter', mode:'lines', x:lp.x, y:lp.z_bed,
+          fill:'tozeroy', fillcolor:'rgba(110,72,32,0.82)',
+          line:{color:'rgb(70,42,12)', width:1.5},
+          name:'Lecho', showlegend:true,
+          hovertemplate:'x: %{x:.0f} m | z<sub>lecho</sub>: %{y:.3f} m<extra></extra>' },
+        { type:'scatter', mode:'lines', x:lp.x, y:lp.z_wse,
+          line:{color:'rgb(29,78,216)', width:2.5},
+          name:'Lámina libre', showlegend:true,
+          hovertemplate:'x: %{x:.0f} m | Lámina libre: %{y:.3f} m<extra></extra>' },
+        { type:'scatter', mode:'lines', x:lp.x, y:lp.z_yn,
+          line:{color:'rgba(220,38,38,0.80)', width:1.5, dash:'dash'},
+          name:'y<sub>n</sub> (uniforme)', showlegend:true, hoverinfo:'skip' },
+        { type:'scatter', mode:'lines', x:lp.x, y:lp.z_yc,
+          line:{color:'rgba(22,163,74,0.75)', width:1.3, dash:'dot'},
+          name:'y<sub>c</sub> (crítico)', showlegend:true, hoverinfo:'skip' },
+      ];
+
+      const layout = mkLayout({
+        margin:{t:10,r:20,b:50,l:65},
+        xaxis:{title:'x (m)'},
+        yaxis:{title:'Cota z (m)', range:[0, yMaxVal]},
+        legend:{x:0.02, y:0.97},
+      });
+
+      if (!longInit) {
+        Plotly.newPlot('plot-long', traces, layout, {responsive:true, displayModeBar:false});
+        longInit = true;
+      } else {
+        Plotly.react('plot-long', traces, layout, {responsive:true, displayModeBar:false});
+      }
+    }
+
+    // ── 2D flood map ──────────────────────────────────────────────────────────
+    let mapInit = false;
+
+    function renderFloodMap(fm, geo) {
+      const maxDepth = Math.max(fm.max_depth, 0.01);
+      const H = geo.H;
+      const B_top = geo.B_top;
+      const dark = isDark();
+      const cbFont = { tickfont:{color: dark ? '#94a3b8' : '#4b5563'}, title:{font:{color: dark ? '#94a3b8' : '#4b5563'}} };
+
+      // Trace 1: terrain DEM (always visible)
+      const traceTerrain = {
+        type:'heatmap', x:fm.xl, y:fm.xt, z:fm.z_dem,
+        colorscale:[
+          [0,    '#1a4731'],  // fondo cauce: verde oscuro
+          [0.12, '#2d7d46'],
+          [0.30, '#6aad72'],  // talud inferior
+          [0.55, '#c9a96b'],  // talud superior: arena
+          [0.80, '#a07848'],  // margen: marrón
+          [1.0,  '#8B6030'],  // llanura: marrón oscuro
+        ],
+        zmin:0, zmax:H * 1.15,
+        showscale:false, hoverinfo:'skip', zsmooth:'best',
+      };
+
+      // Trace 2: water depth (null where dry → terrain shows through)
+      const z_water = fm.depths.map(row => row.map(d => d > 0.01 ? d : null));
+      const traceWater = {
+        type:'heatmap', x:fm.xl, y:fm.xt, z:z_water,
+        colorscale:[
+          [0,   '#BAE6FD'],
+          [0.2, '#60A5FA'],
+          [0.5, '#2563EB'],
+          [0.8, '#1D4ED8'],
+          [1.0, '#1E3A8A'],
+        ],
+        zmin:0, zmax:maxDepth,
+        colorbar:{title:{text:'Calado (m)', side:'right', ...cbFont.title}, thickness:14, len:0.8, ...cbFont},
+        hovertemplate:'x: %{x:.0f} m | y: %{y:.1f} m | calado: %{z:.3f} m<extra></extra>',
+        zsmooth:'best',
+      };
+
+      const bankColor = dark ? 'rgba(200,160,100,0.85)' : 'rgba(100,80,50,0.85)';
+      const shapes = [
+        {type:'line', x0:fm.xl[0], x1:fm.xl[fm.xl.length-1], y0:-B_top/2, y1:-B_top/2,
+          line:{color:bankColor, width:1.5, dash:'dot'}},
+        {type:'line', x0:fm.xl[0], x1:fm.xl[fm.xl.length-1], y0: B_top/2, y1: B_top/2,
+          line:{color:bankColor, width:1.5, dash:'dot'}},
+      ];
+
+      const layout = mkLayout({
+        margin:{t:10,r:90,b:50,l:65},
+        xaxis:{title:'x (m)'},
+        yaxis:{title:'y (m)'},
+        shapes,
+      });
+
+      if (!mapInit) {
+        Plotly.newPlot('plot-map', [traceTerrain, traceWater], layout, {responsive:true, displayModeBar:false});
+        mapInit = true;
+      } else {
+        Plotly.react('plot-map', [traceTerrain, traceWater], layout, {responsive:true, displayModeBar:false});
+      }
+    }
+
+    // ── Cross-section ─────────────────────────────────────────────────────────
+    let xsInit = false;
+
+    function renderCrossSection(xs) {
+      const yn = xs.yn;
+      const yMax = Math.max(...xs.z_dem, yn) * 1.15 + 0.1;
+
+      const traces = [
+        // Blue water fill (0 → yn, full width)
+        { type:'scatter', mode:'lines', x:xs.xt, y:xs.xt.map(()=>Math.max(0,yn)),
+          fill:'tozeroy', fillcolor:'rgba(37,99,235,0.25)',
+          line:{color:'transparent', width:0}, showlegend:false, hoverinfo:'skip' },
+        // Terrain fill — fully opaque so only the exposed water (z_dem < yn) stays blue
+        { type:'scatter', mode:'lines', x:xs.xt, y:xs.z_dem,
+          fill:'tozeroy', fillcolor:'rgb(110,72,32)',
+          line:{color:'rgb(70,42,12)', width:1.5},
+          name:'Sección', showlegend:false,
+          hovertemplate:'y: %{x:.1f} m | z: %{y:.3f} m<extra></extra>' },
+        // Water surface line
+        { type:'scatter', mode:'lines',
+          x:[xs.xt[0], xs.xt[xs.xt.length-1]], y:[yn, yn],
+          line:{color:'rgb(37,99,235)', width:2, dash:'dash'},
+          name:`y<sub>n</sub> = ${yn.toFixed(3)} m`,
+          hovertemplate:`Lámina libre y<sub>n</sub> = ${yn.toFixed(3)} m<extra></extra>` },
+      ];
+
+      const layout = mkLayout({
+        margin:{t:10,r:20,b:50,l:65},
+        xaxis:{title:'y (m)', zeroline:false},
+        yaxis:{title:'z (m)', range:[-yMax*0.05, yMax]},
+        legend:{x:0.02, y:0.97},
+      });
+
+      if (!xsInit) {
+        Plotly.newPlot('plot-xs', traces, layout, {responsive:true, displayModeBar:false});
+        xsInit = true;
+      } else {
+        Plotly.react('plot-xs', traces, layout, {responsive:true, displayModeBar:false});
+      }
+    }
+
+    // ── Render all ────────────────────────────────────────────────────────────
+    let lastData = null;
+
+    function renderAll(data) {
+      lastData = data;
+      renderMetrics(data.params);
+      renderLongProfile(data.longitudinal_profile, data.profile_type);
+      renderFloodMap(data.flood_map, data.geometry);
+      renderCrossSection(data.cross_section);
+    }
+
+    // Re-render when light/dark mode toggles
+    new MutationObserver(() => { if (lastData) renderAll(lastData); })
+      .observe(document.documentElement, { attributes:true, attributeFilter:['class'] });
+
+    // ── Boot ──────────────────────────────────────────────────────────────────
+    runCompute();
+  </script>
+</Layout>

@@ -132,7 +132,6 @@ download_aemet_daily_data(
           { name: 'netcdf_folder', type: 'str', description: { es: 'Carpeta donde se guardarán los NetCDF descargados.', en: 'Folder where downloaded NetCDF files will be saved.' } },
           { name: 'stations_shapefile', type: 'str | None', default: 'None', description: { es: 'Shapefile con las estaciones AEMET. Si None, usa la red completa.', en: 'Shapefile with AEMET stations. If None, uses the full network.' } },
         ],
-        returns: { es: 'ipywidgets.VBox — widget interactivo para Jupyter.', en: 'ipywidgets.VBox — interactive widget for Jupyter.' },
         example: `from pyhydra.data_sources.rainfall.aemet import AEMETDownloader
 widget = AEMETDownloader(netcdf_folder='./aemet_data/', stations_shapefile='estaciones.shp')
 widget  # Displays the interactive widget in Jupyter`,
@@ -330,6 +329,13 @@ rutas = download_glofas(
           { name: 'dataset', type: 'str', default: '"cems-glofas-historical"', description: { es: 'Dataset CDS.', en: 'CDS dataset.' } },
         ],
         returns: { es: 'Lista de rutas (una por año).', en: 'List of file paths (one per year).' },
+        example: `from pyhydra.data_sources.river_discharge.glofas import download_glofas_by_year
+# Descarga un NetCDF por año (útil para series largas >10 años)
+rutas = download_glofas_by_year(
+    area=[44, -10, 35, 5],
+    years=range(1980, 2024),
+    output_dir="./glofas_data",
+)`,
       },
       {
         kind: 'function',
@@ -346,6 +352,10 @@ rutas = download_glofas(
           { name: 'variable', type: 'str', default: '"dis24"', description: { es: 'Nombre de la variable NetCDF de caudal.', en: 'Name of the NetCDF streamflow variable.' } },
         ],
         returns: { es: "pd.DataFrame con columnas 'date' y 'discharge' (m³/s).", en: "pd.DataFrame with columns 'date' and 'discharge' (m³/s)." },
+        example: `from pyhydra.data_sources.river_discharge.glofas import download_glofas_by_year, read_glofas_nc
+rutas = download_glofas_by_year(area=[44, -10, 35, 5], years=range(2000, 2023), output_dir="./glofas/")
+df = read_glofas_nc(rutas[0], lat=43.35, lon=-3.80)
+print(df.head())`,
       },
       // ── GRDC ─────────────────────────────────────────────────────────────────
       {
@@ -372,6 +382,9 @@ stats = analyze_grdc_quality(df)`,
         description: { es: 'Extrae metadatos de estación del cabecero del archivo GRDC (nombre, río, país, lat/lon, cuenca).', en: 'Extracts station metadata from the GRDC file header (name, river, country, lat/lon, basin).' },
         params: [{ name: 'filepath', type: 'str', description: { es: 'Ruta al archivo GRDC.', en: 'Path to the GRDC file.' } }],
         returns: { es: "Dict con claves 'station', 'river', 'country', 'latitude', 'longitude', 'altitude_m', 'catchment_area_km2', 'grdc_no'.", en: "Dict with keys 'station', 'river', 'country', 'latitude', 'longitude', 'altitude_m', 'catchment_area_km2', 'grdc_no'." },
+        example: `from pyhydra.data_sources.river_discharge.grdc import read_grdc, read_grdc_metadata
+meta = read_grdc_metadata("6335020_Q_Day.Cmd.day")
+print(meta['station'], meta['latitude'], meta['longitude'])`,
       },
       {
         kind: 'function',
@@ -383,6 +396,9 @@ stats = analyze_grdc_quality(df)`,
           { name: 'pattern', type: 'str', default: '"*.day"', description: { es: "Patrón glob. Usar '*.mon' para mensual.", en: "Glob pattern. Use '*.mon' for monthly." } },
         ],
         returns: { es: 'Dict nombre_archivo → DataFrame.', en: 'Dict filename → DataFrame.' },
+        example: `from pyhydra.data_sources.river_discharge.grdc import read_grdc_folder
+series_dict = read_grdc_folder("./grdc_data/", pattern="*.day")
+# {'6335020_Q_Day.Cmd.day': pd.DataFrame(...), ...}`,
       },
       {
         kind: 'function',
@@ -441,6 +457,10 @@ print(info.T)`,
           { name: 'parameter_cd', type: 'str', default: '"00060"', description: { es: "Código de parámetro NWIS. '00060' = caudal.", en: "NWIS parameter code. '00060' = discharge." } },
         ],
         returns: { es: "pd.DataFrame con columnas 'site_no', 'station_nm', 'dec_lat_va', 'dec_long_va', 'drain_area_km2'.", en: "pd.DataFrame with columns 'site_no', 'station_nm', 'dec_lat_va', 'dec_long_va', 'drain_area_km2'." },
+        example: `from pyhydra.data_sources.river_discharge.usgs import search_usgs_sites
+# Buscar estaciones de caudal en la Península Ibérica
+estaciones = search_usgs_sites(bbox=(-9, 36, 3, 44))
+print(estaciones[['site_no', 'station_nm', 'dec_lat_va', 'dec_long_va']].head())`,
       },
       // ── SoilGrids ─────────────────────────────────────────────────────────────
       {
@@ -619,6 +639,9 @@ stats_precip, _ = extract_events(precip, threshold=30, variable='precipitation',
           { name: 'plot', type: 'bool', default: 'False', description: { es: 'Si True, muestra el evento más grande con marcadores.', en: 'If True, plots the largest event with markers.' } },
         ],
         returns: { es: 'Tupla (stats, bounds). stats: DataFrame con [peak, mean, duration, volume, date_peak]. bounds: DataFrame con [start, end].', en: 'Tuple (stats, bounds). stats: DataFrame with [peak, mean, duration, volume, date_peak]. bounds: DataFrame with [start, end].' },
+        example: `from pyhydra.climate.time_series.events import extract_discharge_events
+stats, bounds = extract_discharge_events(caudal_diario, threshold=200, threshold2=400)
+print(f"{len(stats)} eventos | pico máximo: {stats['peak'].max():.0f} m³/s")`,
       },
       {
         kind: 'function',
@@ -654,6 +677,13 @@ stats, bounds = extract_precipitation_events_pot(
           { name: 'stats', type: 'tuple[str, ...]', default: "('max', 'mean', 'total')", description: { es: "Estadísticos a calcular: 'max', 'mean', 'total'.", en: "Statistics to compute: 'max', 'mean', 'total'." } },
         ],
         returns: { es: "pd.DataFrame con una fila por evento y columnas '<nombre>_max', '<nombre>_mean', '<nombre>_total' por estación.", en: "pd.DataFrame with one row per event and columns '<name>_max', '<name>_mean', '<name>_total' per station." },
+        example: `from pyhydra.climate.time_series.events import extract_discharge_events, extract_concurrent_events
+_, bounds = extract_discharge_events(Q_salida, threshold=200)
+concurrent = extract_concurrent_events(
+    bounds,
+    series_dict={'P_cuenca': precip, 'Q_entrada': Q_entrada},
+    buffer_days=2,
+)`,
       },
       {
         kind: 'function',
@@ -789,6 +819,11 @@ q100 = return_level_gpd(params, T=100)`,
           { name: 'T', type: 'float', description: { es: 'Período de retorno en años.', en: 'Return period in years.' } },
         ],
         returns: { es: 'float — nivel de retorno para T años.', en: 'float — T-year return level.' },
+        example: `from pyhydra.climate.time_series.extremes import extract_block_maxima, fit_gev, return_level_gev
+am = extract_block_maxima(caudal_diario)
+params = fit_gev(am, method='mle')
+q100 = return_level_gev(params, T=100)
+print(f"Q100 = {q100:.1f} m³/s")`,
       },
       {
         kind: 'function',
@@ -803,6 +838,10 @@ q100 = return_level_gpd(params, T=100)`,
           { name: 'T', type: 'float', description: { es: 'Período de retorno en años.', en: 'Return period in years.' } },
         ],
         returns: { es: 'float — nivel de retorno para T años.', en: 'float — T-year return level.' },
+        example: `from pyhydra.climate.time_series.extremes import fit_gpd, return_level_gpd
+params = fit_gpd(caudal_diario, threshold=500, method='mle')
+q100 = return_level_gpd(params, T=100)
+print(f"Q100 (GPD) = {q100:.1f} m³/s")`,
       },
       {
         kind: 'function',
@@ -840,6 +879,10 @@ rl = return_levels(params, [10, 50, 100, 500])`,
           { name: 'threshold', type: 'float | None', default: 'None', description: { es: 'Requerido cuando dist=gpd.', en: 'Required when dist=gpd.' } },
         ],
         returns: { es: 'Tupla (estimación_puntual, lower, upper).', en: 'Tuple (point_estimate, lower, upper).' },
+        example: `from pyhydra.climate.time_series.extremes import extract_block_maxima, return_level_ci
+am = extract_block_maxima(caudal_diario)
+q100, lo, hi = return_level_ci(am, T=100, dist='gev', n_bootstrap=500)
+print(f"Q100 = {q100:.0f}  IC95% [{lo:.0f}, {hi:.0f}] m³/s")`,
       },
       {
         kind: 'function',
@@ -856,6 +899,11 @@ rl = return_levels(params, [10, 50, 100, 500])`,
           { name: 'xi_prior_std', type: 'float', default: '0.3', description: { es: 'Desviación típica del prior de xi (centrado en 0).', en: 'Prior std for xi (centred at 0).' } },
         ],
         returns: { es: 'dict con claves mu, sigma, xi, map_logpost.', en: 'dict with keys mu, sigma, xi, map_logpost.' },
+        example: `from pyhydra.climate.time_series.extremes import extract_block_maxima, fit_gev_map, return_level_gev
+am = extract_block_maxima(caudal_diario)
+params = fit_gev_map(am)
+q100 = return_level_gev(params, T=100)
+print(f"MAP: mu={params['mu']:.1f}, sigma={params['sigma']:.1f}, xi={params['xi']:.3f}")`,
       },
       {
         kind: 'function',
@@ -891,6 +939,11 @@ print(rl_samples.quantile([0.025, 0.5, 0.975]))`,
         ],
         returns: { es: 'pd.DataFrame con columnas mu, sigma, xi — muestras del posterior.', en: 'pd.DataFrame with columns mu, sigma, xi — posterior samples.' },
         note: { es: 'Requiere PyMC o PyStan 3. Para análisis multi-estación usar HierarchicalGEV.', en: 'Requires PyMC or PyStan 3. For multi-station analysis use HierarchicalGEV.' },
+        example: `from pyhydra.climate.time_series.extremes import extract_block_maxima, fit_gev_mcmc, return_level_gev
+am = extract_block_maxima(caudal_diario)
+posterior = fit_gev_mcmc(am, n_samples=2000, n_chains=4)
+rl100 = posterior.apply(lambda r: return_level_gev(r.to_dict(), 100), axis=1)
+print(rl100.quantile([0.025, 0.5, 0.975]))`,
       },
       {
         kind: 'function',
@@ -956,6 +1009,11 @@ fig = plot_diagnostic(annual_max, params, dist='gev')`,
         ],
         returns: { es: 'dict con claves mu (localización), sigma (escala), xi (forma).', en: 'dict with keys mu (location), sigma (scale), xi (shape).' },
         note: { es: 'Requiere: pip install lmoments3', en: 'Requires: pip install lmoments3' },
+        example: `from pyhydra.climate.spatial_analysis.rfa import fit_gev_lmom, fit_gev_mle, return_level
+params_lmom = fit_gev_lmom(maximos_anuales)
+params_mle  = fit_gev_mle(maximos_anuales)
+print(f"L-mom xi={params_lmom['xi']:.3f}  MLE xi={params_mle['xi']:.3f}")
+q100 = return_level(params_lmom, 100)`,
       },
       {
         kind: 'function',
@@ -989,6 +1047,10 @@ q100 = return_level(params, 100)`,
         ],
         returns: { es: 'pd.DataFrame con columnas mu, sigma, xi (muestras del posterior).', en: 'pd.DataFrame with columns mu, sigma, xi (posterior samples).' },
         note: { es: 'Requiere PyMC. Para análisis multi-estación usar HierarchicalGEV.', en: 'Requires PyMC. For multi-station analysis use HierarchicalGEV.' },
+        example: `from pyhydra.climate.spatial_analysis.rfa import fit_gev_bayes, return_level_bayes
+posterior = fit_gev_bayes(maximos_anuales, n_chains=4, n_samples=1000)
+result = return_level_bayes(posterior, T=100)
+print(f"Q100 = {result['median']:.0f} [{result['lower']:.0f}, {result['upper']:.0f}] m³/s")`,
       },
       {
         kind: 'function',
@@ -1004,6 +1066,10 @@ q100 = return_level(params, 100)`,
           { name: 'credible', type: 'float', default: '0.95', description: { es: 'Amplitud del intervalo creíble.', en: 'Credible interval width.' } },
         ],
         returns: { es: "dict con claves 'median', 'lower', 'upper'.", en: "dict with keys 'median', 'lower', 'upper'." },
+        example: `from pyhydra.climate.spatial_analysis.rfa import fit_gev_bayes, return_level_bayes
+posterior = fit_gev_bayes(maximos_anuales, n_samples=1000)
+ic = return_level_bayes(posterior, T=100, credible=0.95)
+print(f"mediana={ic['median']:.0f}  IC95%=[{ic['lower']:.0f}, {ic['upper']:.0f}]")`,
       },
       {
         kind: 'function',
@@ -1017,6 +1083,10 @@ q100 = return_level(params, 100)`,
           { name: 'data_dict', type: 'dict[str, array-like]', description: { es: 'nombre_estacion → array 1D de máximos anuales.', en: 'station_name → 1D array of annual maxima.' } },
         ],
         returns: { es: 'Tupla (normalised_dict, index_floods_Series) — series normalizadas y crecidas índice por estación.', en: 'Tuple (normalised_dict, index_floods_Series) — normalised series and index floods per station.' },
+        example: `from pyhydra.climate.spatial_analysis.rfa import regional_index_flood, fit_regional_gev
+data = {'Est_A': am_a, 'Est_B': am_b, 'Est_C': am_c}
+norm_dict, index_floods = regional_index_flood(data)
+regional_params, _ = fit_regional_gev(data, method='lmom')`,
       },
       {
         kind: 'function',
@@ -1031,6 +1101,10 @@ q100 = return_level(params, 100)`,
           { name: 'method', type: 'str', default: '"lmom"', description: { es: "'lmom' o 'mle'.", en: "'lmom' or 'mle'." } },
         ],
         returns: { es: 'Tupla (regional_params_dict, index_floods_Series).', en: 'Tuple (regional_params_dict, index_floods_Series).' },
+        example: `from pyhydra.climate.spatial_analysis.rfa import fit_regional_gev, regional_return_levels
+data = {'Est_A': am_a, 'Est_B': am_b, 'Est_C': am_c}
+params, index_floods = fit_regional_gev(data, method='lmom')
+df_rl = regional_return_levels(data, T_values=(10, 50, 100))`,
       },
       {
         kind: 'function',
@@ -1113,6 +1187,10 @@ grid_values = idw.predict(rejilla_df)`,
         name: 'KrigingInterpolator',
         module: 'pyhydra.climate.spatial_analysis.interpolation',
         description: { es: 'Kriging Universal espacial via pykrige. Estima variograma automáticamente y produce predicción más varianza de error.', en: 'Universal spatial kriging via pykrige. Automatically estimates the variogram and produces prediction plus error variance.' },
+        example: `from pyhydra.climate.spatial_analysis.interpolation import KrigingInterpolator
+krig = KrigingInterpolator(variogram_model='spherical')
+krig.fit(estaciones_df, x_col='lon', y_col='lat', value_col='precip_anual')
+preds, variance = krig.predict(rejilla_df)`,
         note: { es: 'Requiere: pip install pykrige', en: 'Requires: pip install pykrige' },
         params: [
           { name: 'variogram_model', type: 'str', default: '"spherical"', description: { es: "'spherical', 'gaussian', 'exponential', 'linear'.", en: "'spherical', 'gaussian', 'exponential', 'linear'." } },
@@ -1128,6 +1206,10 @@ grid_values = idw.predict(rejilla_df)`,
         name: 'GaussianProcessInterpolator',
         module: 'pyhydra.climate.spatial_analysis.interpolation',
         description: { es: 'Regresión por Proceso Gaussiano (GPR) con scikit-learn. Soporta covariables adicionales (altitud, aspecto, etc.).', en: 'Gaussian Process Regression (GPR) with scikit-learn. Supports additional covariates (elevation, aspect, etc.).' },
+        example: `from pyhydra.climate.spatial_analysis.interpolation import GaussianProcessInterpolator
+gpr = GaussianProcessInterpolator()
+gpr.fit(estaciones_df, feature_cols=['lon', 'lat', 'elev'], value_col='precip_anual')
+mean, std = gpr.predict(rejilla_df, feature_cols=['lon', 'lat', 'elev'])`,
         note: { es: 'Requiere: pip install scikit-learn', en: 'Requires: pip install scikit-learn' },
         params: [
           { name: 'kernel', type: 'Kernel | None', default: 'None', description: { es: 'Kernel de covarianza. Por defecto RBF + WhiteKernel.', en: 'Covariance kernel. Default: RBF + WhiteKernel.' } },
@@ -1512,6 +1594,11 @@ classified = clf.fit()`,
           { name: 'method', type: 'str', default: '"D8"', description: { es: "Algoritmo de conectividad: 'D8'.", en: "Connectivity algorithm: 'D8'." } },
         ],
         returns: { es: 'Lista con la mejor permutación de tipos en la rejilla.', en: 'List with the best type permutation on the grid.' },
+        example: `from pyhydra.climate.hybrid_downscaling.classification import HydrographClassifier, find_spatial_arrangement
+clf = HydrographClassifier(Q, bounds, n_types=25)
+classified = clf.fit()
+# Organizar los 25 tipos en rejilla 5x5 para el modelo SFINCS
+arrangement = find_spatial_arrangement(n_rows=5, n_cols=5, centers=clf.pca_centers_)`,
       },
       {
         kind: 'function',
@@ -1528,6 +1615,13 @@ classified = clf.fit()`,
           { name: 'seed_positions', type: 'list[int]', description: { es: 'Índices semilla para inicializar la selección.', en: 'Seed indices to initialise the selection.' } },
         ],
         returns: { es: 'Tupla (subset_df, positions_list) — eventos seleccionados y sus índices en el conjunto original.', en: 'Tuple (subset_df, positions_list) — selected events and their indices in the original set.' },
+        example: `from pyhydra.climate.hybrid_downscaling.reconstruction import maxdiss
+subset, positions = maxdiss(
+    synthetic_df, n_select=400,
+    scalar_cols=['Qmax', 'Qmed', 'Duracion'],
+    seed_positions=[0, 1],
+)
+print(f"Seleccionados {len(subset)} de {len(synthetic_df)} eventos sintéticos")`,
       },
       {
         kind: 'class',
@@ -1661,6 +1755,14 @@ calados, paths = interp.compute_return_period_maps(return_periods=(10, 50, 100, 
           { name: 'landa', type: 'float', default: '4.943', description: { es: 'Tasa media anual de eventos λ.', en: 'Mean annual event rate λ.' } },
           { name: 'output_dir', type: 'str | None', default: 'None', description: { es: 'Directorio de salida GeoTIFF.', en: 'GeoTIFF output directory.' } },
         ],
+        example: `from pyhydra.climate.hybrid_downscaling.interpolation import FloodMapInterpolatorCC
+interp_cc = FloodMapInterpolatorCC(
+    synthetic_matrix=subset_hist, centroids=centroids_hist,
+    simulations_dir_hist='./sfincs_hist/', simulations_dir_cc='./sfincs_cc/',
+    n_simulations_hist=400, n_simulations_cc=400,
+    landa=4.943, output_dir='./return_period_cc/'
+)
+calados_hist, calados_cc = interp_cc.compute_return_period_maps(return_periods=(10, 50, 100, 500))`,
       },
       {
         kind: 'function',
@@ -1737,6 +1839,10 @@ sintetico = simulate_ts(modelo, from_date='2000-01-01', to_date='2099-12-31')`,
           { name: 'method', type: 'str', default: '"stat"', description: { es: "'stat' (DataFrame), 'dist' (gráficos marginales), 'acs' (gráficos ACS).", en: "'stat' (DataFrame), 'dist' (marginal plots), 'acs' (ACS plots)." } },
         ],
         returns: { es: "DataFrame de estadísticos estacionales cuando method='stat', None en caso contrario.", en: "DataFrame of seasonal statistics when method='stat', None otherwise." },
+        example: `from pyhydra.climate.stochastic_generation.point import analyze_ts, report_ts
+modelo = analyze_ts(caudal_diario, dist='gengamma')
+stats_df = report_ts(modelo, method='stat')
+report_ts(modelo, method='dist')  # gráficos de ajuste marginal`,
       },
       {
         kind: 'function',
@@ -1749,6 +1855,10 @@ sintetico = simulate_ts(modelo, from_date='2000-01-01', to_date='2099-12-31')`,
           { name: 'to_date', type: 'str | None', default: 'None', description: { es: 'Fecha de fin.', en: 'End date.' } },
         ],
         returns: { es: 'pd.Series sintética.', en: 'Synthetic pd.Series.' },
+        example: `from pyhydra.climate.stochastic_generation.point import analyze_ts, simulate_ts
+modelo = analyze_ts(caudal_diario, dist='gengamma')
+sintetico = simulate_ts(modelo, from_date='2000-01-01', to_date='2099-12-31')
+print(f"Generados {len(sintetico)} días de serie sintética")`,
       },
       {
         kind: 'class',
@@ -1868,6 +1978,13 @@ campo = model.simulate(n_steps=365)   # shape (365, 100)`,
           { name: 'stcs_id', type: 'str', default: '"clayton"', description: { es: 'Estructura de correlación espacio-temporal.', en: 'Space–time correlation structure.' } },
         ],
         returns: { es: 'Dict del modelo ajustado (entrada para generate_random_field / check_random_field).', en: 'Dict of the fitted model (input for generate_random_field / check_random_field).' },
+        example: `from pyhydra.climate.stochastic_generation.fields import fit_spatial_model, generate_random_field, check_random_field
+import numpy as np
+locations = np.random.rand(15, 2) * 100  # 15 estaciones irregulares
+model = fit_spatial_model(locations, p=1, dist='gengamma',
+                          dist_params={'scale': 5.0, 'shape1': 0.8, 'shape2': 0.5}, p0=0.6)
+campo = generate_random_field(n_steps=365, model=model)
+stats = check_random_field(campo, model)`,
       },
       {
         kind: 'function',
@@ -1879,6 +1996,10 @@ campo = model.simulate(n_steps=365)   # shape (365, 100)`,
           { name: 'model', type: 'dict', description: { es: 'Salida de fit_spatial_model().', en: 'Output of fit_spatial_model().' } },
         ],
         returns: { es: 'ndarray de forma (n_steps, n_sites).', en: 'ndarray of shape (n_steps, n_sites).' },
+        example: `from pyhydra.climate.stochastic_generation.fields import fit_spatial_model, generate_random_field
+model = fit_spatial_model(spacepoints=8, p=1, dist='gengamma',
+                          dist_params={'scale': 5.0, 'shape1': 0.8, 'shape2': 0.5})
+campo = generate_random_field(n_steps=365*30, model=model)  # 30 años, rejilla 8×8`,
       },
       {
         kind: 'function',
@@ -1890,6 +2011,12 @@ campo = model.simulate(n_steps=365)   # shape (365, 100)`,
           { name: 'model', type: 'dict', description: { es: 'Salida de fit_spatial_model().', en: 'Output of fit_spatial_model().' } },
         ],
         returns: { es: "Dict con claves 'marginal' (DataFrame), 'spatial_acf' (ndarray), 'temporal_acf' (ndarray).", en: "Dict with keys 'marginal' (DataFrame), 'spatial_acf' (ndarray), 'temporal_acf' (ndarray)." },
+        example: `from pyhydra.climate.stochastic_generation.fields import fit_spatial_model, generate_random_field, check_random_field
+model = fit_spatial_model(spacepoints=8, p=1, dist='gengamma',
+                          dist_params={'scale': 5.0, 'shape1': 0.8, 'shape2': 0.5})
+campo = generate_random_field(365, model)
+diag = check_random_field(campo, model)
+print(diag['marginal'])`,
       },
     ],
   },
@@ -1916,8 +2043,20 @@ campo = model.simulate(n_steps=365)   # shape (365, 100)`,
           { name: 'file_dss', type: 'str', description: { es: 'Archivo DSS de precipitación.', en: 'Precipitation DSS file.' } },
           { name: 'exists_gage', type: 'bool', default: 'False', description: { es: 'Si True, añade al archivo existente.', en: 'If True, appends to existing file.' } },
         ],
-        returns: { es: 'None.', en: 'None.' },
+        returns: { es: 'None. Escribe o actualiza el archivo .gage en path_model.', en: 'None. Writes or updates the .gage file in path_model.' },
         note: { es: 'Requiere HEC-HMS 4.x (Windows) o HEC_HMS_DIR + xvfb (Linux/Docker).', en: 'Requires HEC-HMS 4.x (Windows) or HEC_HMS_DIR + xvfb (Linux/Docker).' },
+        example: `from pyhydra.modeling.hydrology.hec_hms import generate_gage, generate_met, generate_flow
+generate_gage(
+    name_model='cuenca', names_stations=['P1', 'P2'],
+    time_interval='1DAY', path_model='./hms/',
+    start_time='1 January 2000, 00:00', end_time='31 December 2020, 00:00',
+    file_dss='precipitacion.dss',
+)
+generate_met(
+    name_model='cuenca', names_stations=['P1', 'P2'],
+    names_subbasins=['Sub1', 'Sub2'], path_model='./hms/', file_dss='precipitacion.dss',
+)
+Q = generate_flow(path_dss='./hms/resultados.dss', station_name='Sub1', run_name='Run1')`,
       },
       {
         kind: 'function',
@@ -1931,7 +2070,7 @@ campo = model.simulate(n_steps=365)   # shape (365, 100)`,
           { name: 'path_model', type: 'str', description: { es: 'Directorio del modelo.', en: 'Model directory.' } },
           { name: 'file_dss', type: 'str', description: { es: 'Archivo DSS referenciado.', en: 'Referenced DSS file.' } },
         ],
-        returns: { es: 'None.', en: 'None.' },
+        returns: { es: 'None. Escribe o actualiza el archivo .met en path_model.', en: 'None. Writes or updates the .met file in path_model.' },
       },
       {
         kind: 'function',
@@ -1961,7 +2100,11 @@ campo = model.simulate(n_steps=365)   # shape (365, 100)`,
           { name: 'output_path', type: 'str', description: { es: "Ruta del archivo de salida (ej. 'TxtInOut/pcp1.pcp').", en: "Output file path (e.g. 'TxtInOut/pcp1.pcp')." } },
           { name: 'missing_value', type: 'float', default: '-99.0', description: { es: 'Valor para datos faltantes.', en: 'Value for missing data.' } },
         ],
-        returns: { es: 'None.', en: 'None.' },
+        returns: { es: 'None. Escribe el archivo .pcp en output_path.', en: 'None. Writes the .pcp file to output_path.' },
+        example: `from pyhydra.modeling.hydrology.swat import write_precipitation_file
+import pandas as pd
+df_coords = pd.DataFrame({'Station': ['P1'], 'Lati': [43.3], 'Long': [-3.7], 'Elev': [10]})
+write_precipitation_file(df_coords, df_precip, output_path='TxtInOut/pcp1.pcp')`,
       },
       {
         kind: 'function',
@@ -1978,6 +2121,11 @@ campo = model.simulate(n_steps=365)   # shape (365, 100)`,
           { name: 'missing_value', type: 'float', default: '-99.0', description: { es: 'Valor para datos faltantes.', en: 'Value for missing data.' } },
         ],
         returns: { es: 'None. Archivos .pcp escritos en txtinout_dir.', en: 'None. .pcp files written to txtinout_dir.' },
+        example: `from pyhydra.modeling.hydrology.swat import write_swatplus_precipitation_files, write_swatplus_temperature_files
+import pandas as pd
+df_st = pd.DataFrame({'name': ['P1','P2'], 'lat': [43.3,43.4], 'lon': [-3.7,-3.8], 'elev': [10,20]})
+write_swatplus_precipitation_files(df_st, df_precip_mm, txtinout_dir='TxtInOut/')
+write_swatplus_temperature_files(df_st, df_tmax, df_tmin, txtinout_dir='TxtInOut/')`,
       },
       {
         kind: 'function',
@@ -1996,6 +2144,7 @@ campo = model.simulate(n_steps=365)   # shape (365, 100)`,
         ],
         returns: { es: 'None. Archivos .tmp y tmp.cli escritos en txtinout_dir.', en: 'None. .tmp files and tmp.cli written to txtinout_dir.' },
       },
+
       {
         kind: 'function',
         name: 'write_temperature_file',
@@ -2007,7 +2156,7 @@ campo = model.simulate(n_steps=365)   # shape (365, 100)`,
           { name: 'df_tmin', type: 'pd.DataFrame', description: { es: 'Temperatura mínima diaria (°C).', en: 'Daily minimum temperature (°C).' } },
           { name: 'output_path', type: 'str', description: { es: 'Ruta de salida (ej. TxtInOut/tmp1.tmp).', en: 'Output path (e.g. TxtInOut/tmp1.tmp).' } },
         ],
-        returns: { es: 'None.', en: 'None.' },
+        returns: { es: 'None. Escribe el archivo .tmp en output_path.', en: 'None. Writes the .tmp file to output_path.' },
       },
       {
         kind: 'function',
@@ -2020,6 +2169,10 @@ campo = model.simulate(n_steps=365)   # shape (365, 100)`,
           { name: 'end_year', type: 'int', description: { es: 'Último año de simulación.', en: 'Last simulation year.' } },
         ],
         returns: { es: 'None. Modifica el archivo en lugar.', en: 'None. Modifies the file in place.' },
+        example: `from pyhydra.modeling.hydrology.swat import edit_file_cio, run_swat
+edit_file_cio('TxtInOut/file.cio', start_year=2000, end_year=2020)
+ret = run_swat('TxtInOut/', swat_exe='./swat_rev60_64rel.exe')
+print("SWAT+ exitoso" if ret == 0 else f"Error: {ret}")`,
       },
       {
         kind: 'function',
@@ -2053,8 +2206,14 @@ campo = model.simulate(n_steps=365)   # shape (365, 100)`,
           { name: 'flow_series', type: 'pd.DataFrame', description: { es: 'DataFrame con índice datetime y una columna por condición de contorno.', en: 'DataFrame with datetime index and one column per boundary condition.' } },
           { name: 'bc_pathnames', type: 'list[str]', description: { es: 'Rutas DSS identificando cada condición de contorno.', en: 'DSS pathnames identifying each boundary condition.' } },
         ],
-        returns: { es: 'None.', en: 'None.' },
+        returns: { es: 'None. Escribe los datos de flujo en el archivo .u## indicado.', en: 'None. Writes flow data to the specified .u## file.' },
         note: { es: 'Requiere HEC-RAS 6.x (Windows). Para ejecución automática: pip install rascontrol.', en: 'Requires HEC-RAS 6.x (Windows). For automated runs: pip install rascontrol.' },
+        example: `from pyhydra.modeling.hydraulic.hec_ras import modify_unsteady_file, modify_plan_file, modify_project_file
+for i, Q_df in enumerate(hidrogramas):
+    modify_unsteady_file('./proyecto/', 'cuenca', file_number=i+1,
+                         rainfall_plan_name=i+1, flow_series=Q_df,
+                         bc_pathnames=['/CUENCA/CAUDAL//1DAY/RUN:1/'])
+    modify_plan_file('./proyecto/', 'cuenca', plan_number=1, new_flow_number=i+1)`,
       },
       {
         kind: 'function',
@@ -2067,7 +2226,7 @@ campo = model.simulate(n_steps=365)   # shape (365, 100)`,
           { name: 'plan_number', type: 'int', description: { es: 'Número del plan a modificar.', en: 'Plan number to modify.' } },
           { name: 'new_flow_number', type: 'int', description: { es: 'Número del nuevo archivo de flujo.', en: 'New flow file number.' } },
         ],
-        returns: { es: 'None.', en: 'None.' },
+        returns: { es: 'None. Modifica el archivo .p## en disco.', en: 'None. Modifies the .p## file on disk.' },
       },
       {
         kind: 'function',
@@ -2175,6 +2334,11 @@ run_sfincs("sfincs_run/", sfincs_exe="./sfincs")`,
           { name: 'tref', type: 'str', description: { es: "Tiempo de referencia 'YYYYMMDD HHMMSS'.", en: "Reference time 'YYYYMMDD HHMMSS'." } },
         ],
         returns: { es: 'None. Archivos modificados/escritos en model_dir.', en: 'None. Files modified/written in model_dir.' },
+        example: `from pyhydra.modeling.hydraulic.sfincs import setup_sfincs_model, write_manning_wl_boundary, run_sfincs
+mod = setup_sfincs_model(basin_gdf, "dem.tif", "sfincs_run/", Q_df, src_gdf)
+mod.write()
+write_manning_wl_boundary("sfincs_run/", discharge_series=Q_df, ch_w=50, ch_zb=2.5, tref="20000101 000000")
+ret = run_sfincs("sfincs_run/", sfincs_exe="./sfincs")`,
       },
       {
         kind: 'function',
@@ -2225,6 +2389,9 @@ df_reg = manning_flood_regression(ensemble, manning_ensemble)`,
           { name: 'threshold', type: 'float', default: '0.05', description: { es: 'Umbral de profundidad (m) para definir celda inundada.', en: 'Depth threshold (m) to define a flooded cell.' } },
         ],
         returns: { es: 'xr.DataArray de forma (n_sims, y, x) con dimensión simulation.', en: 'xr.DataArray of shape (n_sims, y, x) with a simulation dimension.' },
+        example: `from pyhydra.modeling.hydraulic.sensitivity import load_flood_ensemble, build_manning_ensemble
+flood = load_flood_ensemble("./sfincs_runs/", pattern="hamax_sim_*.tif", threshold=0.05)
+manning = build_manning_ensemble("usos_suelo.tif", combinations_dir="./manning_combinations/")`,
       },
       {
         kind: 'function',
@@ -2237,6 +2404,12 @@ df_reg = manning_flood_regression(ensemble, manning_ensemble)`,
           { name: 'simulation_numbers', type: 'list[int] | None', default: 'None', description: { es: 'Números de simulación. Si None usa todos los CSVs encontrados.', en: 'Simulation numbers. If None, uses all found CSVs.' } },
         ],
         returns: { es: 'xr.DataArray de forma (n_sims, y, x).', en: 'xr.DataArray of shape (n_sims, y, x).' },
+        example: `from pyhydra.modeling.hydraulic.sensitivity import build_manning_ensemble
+manning = build_manning_ensemble(
+    raster_path="usos_suelo.tif",
+    combinations_dir="./manning_combinations/",
+    simulation_numbers=list(range(500)),
+)  # shape (500, nrows, ncols)`,
       },
       {
         kind: 'function',
@@ -2268,6 +2441,15 @@ df_reg = manning_flood_regression(ensemble, manning_ensemble)`,
           { name: 'z_threshold', type: 'float', default: '3.0', description: { es: 'Umbral Z-score normalizado por MAD.', en: 'Normalised MAD Z-score threshold.' } },
         ],
         returns: { es: 'Tupla (mask_booleana, DataFrame_filtrado).', en: 'Tuple (boolean_mask, filtered_DataFrame).' },
+        example: `from pyhydra.modeling.hydraulic.sensitivity import (
+    load_flood_ensemble, build_manning_ensemble,
+    manning_flood_regression, filter_anomalous_simulations
+)
+flood = load_flood_ensemble("./sfincs_runs/")
+manning = build_manning_ensemble("usos_suelo.tif", "./combinations/")
+df_reg = manning_flood_regression(flood, manning)
+mask, df_clean = filter_anomalous_simulations(df_reg, z_threshold=3.0)
+print(f"Eliminadas {(~mask).sum()} simulaciones anómalas")`,
       },
       {
         kind: 'function',
@@ -2280,6 +2462,10 @@ df_reg = manning_flood_regression(ensemble, manning_ensemble)`,
           { name: 'threshold', type: 'float', default: '0.05', description: { es: 'Umbral de profundidad (m).', en: 'Depth threshold (m).' } },
         ],
         returns: { es: 'ndarray 1D de longitud n_sims con área inundada en m².', en: '1D ndarray of length n_sims with flooded area in m².' },
+        example: `from pyhydra.modeling.hydraulic.sensitivity import load_flood_ensemble, flooded_area, spatial_stats
+flood = load_flood_ensemble("./sfincs_runs/")
+areas = flooded_area(flood, cell_area_m2=100.0, threshold=0.05)
+print(f"Área inundada media: {areas.mean()/1e6:.2f} km²")`,
       },
       {
         kind: 'function',
@@ -2290,6 +2476,10 @@ df_reg = manning_flood_regression(ensemble, manning_ensemble)`,
           { name: 'ensemble', type: 'xr.DataArray', description: { es: 'Ensemble (n_sims, y, x).', en: 'Ensemble (n_sims, y, x).' } },
         ],
         returns: { es: "pd.DataFrame con índice = números de simulación y columnas ['mean', 'median', 'std', 'max'].", en: "pd.DataFrame with index = simulation numbers and columns ['mean', 'median', 'std', 'max']." },
+        example: `from pyhydra.modeling.hydraulic.sensitivity import load_flood_ensemble, spatial_stats
+flood = load_flood_ensemble("./sfincs_runs/")
+df = spatial_stats(flood)
+print(df.describe())  # media y dispersión de calados por simulación`,
       },
     ],
   },
