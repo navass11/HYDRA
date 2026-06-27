@@ -124,6 +124,7 @@ const layoutBase = {
 
 let useDemo = true;
 let isRunning = false;
+let lastData: any = null;
 
 const appEl        = document.getElementById('app')!;
 const apiUrl       = appEl.dataset.apiUrl!;
@@ -204,7 +205,10 @@ function statCard(label: string, value: string, unit = '', highlight = false) {
   </div>`;
 }
 
+document.addEventListener('hydra:lang', () => { if (lastData) renderResults(lastData); });
+
 function renderResults(data: any) {
+  lastData = data;
   placeholder.classList.add('hidden');
   resultsEl.classList.remove('hidden');
   testPanel.classList.remove('hidden');

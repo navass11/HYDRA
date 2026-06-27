@@ -105,8 +105,8 @@ async def bias_correct(
 ):
     use_demo = demo.lower() in ("true", "1", "yes")
 
-    if method not in {"quantile_mapping", "quantile_deltamapping"}:
-        raise HTTPException(status_code=400, detail="method debe ser quantile_mapping o quantile_deltamapping.")
+    if method not in {"quantile_mapping", "quantile_deltamapping", "scaled_distribution_mapping"}:
+        raise HTTPException(status_code=400, detail="method no válido.")
 
     if use_demo:
         obs_hist, mod_hist, mod_future = _demo_data()
@@ -130,8 +130,10 @@ async def bias_correct(
         bc = BiasCorrection(obs=obs_hist, mod=mod_hist, sce=mod_future)
         if method == "quantile_mapping":
             corrected = bc.quantile_mapping()
-        else:
+        elif method == "quantile_deltamapping":
             corrected = bc.quantile_deltamapping()
+        else:
+            corrected = bc.scaled_distribution_mapping(variable=variable)
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Error en corrección de sesgo: {exc}")
 

@@ -52,6 +52,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
             <select id="method-select" class="w-full rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400">
               <option value="quantile_mapping" data-t-es="Quantile Mapping (aditivo)" data-t-en="Quantile Mapping (additive)">Quantile Mapping (aditivo)</option>
               <option value="quantile_deltamapping" data-t-es="Quantile Delta Mapping (multiplicativo)" data-t-en="Quantile Delta Mapping (multiplicative)">Quantile Delta Mapping (multiplicativo)</option>
+              <option value="scaled_distribution_mapping" data-t-es="Scaled Distribution Mapping (paramétrico)" data-t-en="Scaled Distribution Mapping (parametric)">Scaled Distribution Mapping (paramétrico)</option>
             </select>
           </div>
 
@@ -78,7 +79,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
 
         <div class="bg-cyan-50 dark:bg-cyan-950/50 border border-cyan-100 dark:border-cyan-800 rounded-2xl p-5 text-sm text-cyan-900 dark:text-cyan-200 space-y-2">
           <p class="font-semibold" data-t-es="Método" data-t-en="Method">Método</p>
-          <p data-t-es="Quantile Mapping empírico: mapea los cuantiles del modelo a los de la observación. El modo aditivo ajusta diferencias; el multiplicativo ajusta ratios (recomendado para precipitación)." data-t-en="Empirical Quantile Mapping: maps model quantiles to observed quantiles. Additive mode corrects differences; multiplicative mode corrects ratios (recommended for precipitation).">Quantile Mapping empírico: mapea los cuantiles del modelo a los de la observación. El modo aditivo ajusta diferencias; el multiplicativo ajusta ratios (recomendado para precipitación).</p>
+          <p data-t-es="QM empírico: mapea cuantiles del modelo a los observados (aditivo o multiplicativo). SDM paramétrico: ajusta distribuciones gamma (precipitación) o normal (temperatura) y aplica corrección escalada — más robusto con series cortas." data-t-en="Empirical QM: maps model quantiles to observed ones (additive or multiplicative). Parametric SDM: fits gamma (precipitation) or normal (temperature) distributions and applies a scaled correction — more robust with short series.">QM empírico: mapea cuantiles del modelo a los observados (aditivo o multiplicativo). SDM paramétrico: ajusta distribuciones gamma (precipitación) o normal (temperatura) y aplica corrección escalada — más robusto con series cortas.</p>
         </div>
       </aside>
 
@@ -153,7 +154,7 @@ const grid = () => isDark() ? '#334155' : '#e2e8f0';
 const fontColor = () => isDark() ? '#94a3b8' : '#6b7280';
 const MONTHS_ES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 const MONTHS_EN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const MONTHS = document.documentElement.lang === 'en' ? MONTHS_EN : MONTHS_ES;
+const months = () => document.documentElement.lang === 'en' ? MONTHS_EN : MONTHS_ES;
 
 const layoutBase = {
   paper_bgcolor: 'transparent',
@@ -165,6 +166,7 @@ const layoutBase = {
 let useDemo = true;
 let isRunning = false;
 let correctedCsvB64 = '';
+let lastData: any = null;
 
 const appEl        = document.getElementById('app')!;
 const apiUrl       = appEl.dataset.apiUrl!;
@@ -252,7 +254,10 @@ function statCard(label: string, value: string, unit = '') {
   </div>`;
 }
 
+document.addEventListener('hydra:lang', () => { if (lastData) renderResults(lastData); });
+
 function renderResults(data: any) {
+  lastData = data;
   placeholder.classList.add('hidden');
   resultsEl.classList.remove('hidden');
   correctedCsvB64 = data.corrected_csv_b64 ?? '';
@@ -260,7 +265,7 @@ function renderResults(data: any) {
   const s = data.summary;
   document.getElementById('stats-row')!.innerHTML =
     statCard(t('Fuente', 'Source'), s.source === 'demo' ? 'Demo' : 'Upload', '') +
-    statCard(t('Método', 'Method'), s.method === 'quantile_mapping' ? t('QM aditivo', 'Additive QM') : t('QM multiplicativo', 'Multiplicative QM'), '') +
+    statCard(t('Método', 'Method'), s.method === 'quantile_mapping' ? t('QM aditivo', 'Additive QM') : s.method === 'quantile_deltamapping' ? t('QM multiplicativo', 'Multiplicative QM') : 'SDM', '') +
     statCard(t('Días observados', 'Observed days'), `${s.n_obs_hist.toLocaleString()}`, t('histórico', 'historical')) +
     statCard(t('Días corregidos', 'Corrected days'), `${s.n_mod_future.toLocaleString()}`, t('escenario', 'scenario'));
 
@@ -292,7 +297,7 @@ function renderResults(data: any) {
 
   // Monthly means (backend returns numeric month 1-12, translate with MONTHS array)
   const mm = data.monthly_means as {month: number, obs: number, mod_raw: number, mod_corrected: number}[];
-  const monthLabels = mm.map(m => MONTHS[m.month - 1]);
+  const monthLabels = mm.map(m => months()[m.month - 1]);
   Plotly.newPlot('chart-monthly', [
     { x: monthLabels, y: mm.map(m => m.obs),           type: 'bar', name: t('Observado', 'Observed'),
       marker: { color: DARK_SLATE, opacity: 0.85 } },
