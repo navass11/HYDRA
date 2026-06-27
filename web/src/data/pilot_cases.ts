@@ -737,9 +737,9 @@ export const pilotCases: PilotCase[] = [
     },
     river: 'Barranc del Poyo · Turia',
     region: 'Valencia',
-    color: 'from-orange-900 via-red-900 to-slate-900',
+    color: 'from-purple-900 via-violet-900 to-slate-900',
     tag: 'Caso Piloto',
-    accentColor: 'orange',
+    accentColor: 'purple',
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 17L4 17L5 15L6 17L8 16L9 17L11 6L13 17L15 15L16 17L18 16L19 17L22 17"/><line x1="2" y1="11" x2="22" y2="11" stroke-dasharray="3 2" stroke-width="1.2"/><circle cx="11" cy="6" r="2.2" stroke-width="1.5"/></svg>',
     summary: {
       es: 'La DANA del 29 de octubre de 2024 desencadenó el episodio de precipitación más extremo registrado en la Comunitat Valenciana: la estación de Turís (8337X) acumuló 710,8 mm en 24 horas — récord nacional — y Carlet (V103) registró 265,1 mm simultáneamente. Este caso piloto es la implementación en HYDRA del trabajo publicado en las VIII Jornadas de Ingeniería del Agua (JIA 2025, Zaragoza): "Comparación de métodos de ajuste para la distribución de precipitaciones extremas: Análisis del evento de octubre 2024 en Valencia" (del Jesus, Navas y Urrea, IHCantabria, 2025). El objetivo central es evaluar cómo se comportan tres métodos de ajuste de la GEV — MLE, L-momentos e inferencia bayesiana — frente a la inclusión o exclusión del evento extremo, a tres escalas espaciales: análisis individual en las dos estaciones más afectadas, análisis regional de frecuencia local (RFA local, 9 estaciones próximas) y análisis regional de frecuencia global (RFA global, red amplia de la Comunitat Valenciana).',
