@@ -37,6 +37,126 @@ export type PilotCase = {
 
 // ─── SVG figures ────────────────────────────────────────────────────────────
 
+const m30Svg = `
+<svg viewBox="0 0 760 420" width="100%" role="img" aria-label="Pipeline metodológico M30 Manzanares" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr-m30" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L7,3 z" fill="#60a5fa"/>
+    </marker>
+    <marker id="arr-m30-b" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L7,3 z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+
+  <rect width="760" height="420" rx="8" fill="#0f172a"/>
+  <text x="28" y="32" font-family="Inter, system-ui" font-size="13" font-weight="700" fill="#f1f5f9">Pipeline: Estadística Multivariada de Inundación — M30 Manzanares</text>
+
+  <!-- Row 1: precip → PCA → copula → maxdiss -->
+  <!-- Step 1 -->
+  <rect x="24"  y="52" width="148" height="72" rx="7" fill="#0c1f40" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="98"  y="72" text-anchor="middle" font-family="Inter" font-size="9" fill="#93c5fd">PASO 1</text>
+  <text x="98"  y="86" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">Series de</text>
+  <text x="98"  y="100" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">precipitación</text>
+  <text x="98"  y="114" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8">17 pluviómetros · M30</text>
+  <line x1="172" y1="88" x2="196" y2="88" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#arr-m30)"/>
+
+  <!-- Step 2 -->
+  <rect x="196" y="52" width="148" height="72" rx="7" fill="#0c1f40" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="270" y="72" text-anchor="middle" font-family="Inter" font-size="9" fill="#93c5fd">PASO 2</text>
+  <text x="270" y="86" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">PCA + K-Means</text>
+  <text x="270" y="100" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">clasificación</text>
+  <text x="270" y="114" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8">24 tipos de evento</text>
+  <line x1="344" y1="88" x2="368" y2="88" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#arr-m30)"/>
+
+  <!-- Step 3 -->
+  <rect x="368" y="52" width="148" height="72" rx="7" fill="#0c1f40" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="442" y="72" text-anchor="middle" font-family="Inter" font-size="9" fill="#93c5fd">PASO 3</text>
+  <text x="442" y="86" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">Cópula Gaussiana</text>
+  <text x="442" y="100" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">multivariada</text>
+  <text x="442" y="114" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8">~1 000 000 eventos sint.</text>
+  <line x1="516" y1="88" x2="540" y2="88" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#arr-m30)"/>
+
+  <!-- Step 4 -->
+  <rect x="540" y="52" width="196" height="72" rx="7" fill="#0c1f40" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="638" y="72" text-anchor="middle" font-family="Inter" font-size="9" fill="#93c5fd">PASO 4</text>
+  <text x="638" y="86" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">MaxDiss</text>
+  <text x="638" y="100" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">selección</text>
+  <text x="638" y="114" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8">1 000 eventos representativos</text>
+
+  <!-- Arrow down from step 4 -->
+  <line x1="638" y1="124" x2="638" y2="154" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr-m30-b)"/>
+
+  <!-- Row 2: right to left — RAS → HMS → kNN → T de retorno -->
+  <!-- Step 5 -->
+  <rect x="540" y="155" width="196" height="72" rx="7" fill="#0f2e28" stroke="#059669" stroke-width="1.5"/>
+  <text x="638" y="175" text-anchor="middle" font-family="Inter" font-size="9" fill="#6ee7b7">PASO 5</text>
+  <text x="638" y="189" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">HEC-HMS</text>
+  <text x="638" y="203" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">simulación hidrológica</text>
+  <text x="638" y="217" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8">1 000 caudales máximos</text>
+  <line x1="540" y1="191" x2="516" y2="191" stroke="#059669" stroke-width="1.5" marker-end="url(#arr-m30)"/>
+
+  <!-- Step 6 -->
+  <rect x="368" y="155" width="148" height="72" rx="7" fill="#0f2e28" stroke="#059669" stroke-width="1.5"/>
+  <text x="442" y="175" text-anchor="middle" font-family="Inter" font-size="9" fill="#6ee7b7">PASO 6</text>
+  <text x="442" y="189" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">HEC-RAS</text>
+  <text x="442" y="203" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">hidráulica 1D</text>
+  <text x="442" y="217" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8">22 manchas simuladas</text>
+  <line x1="368" y1="191" x2="344" y2="191" stroke="#059669" stroke-width="1.5" marker-end="url(#arr-m30)"/>
+
+  <!-- Step 7 -->
+  <rect x="196" y="155" width="148" height="72" rx="7" fill="#0f2e28" stroke="#059669" stroke-width="1.5"/>
+  <text x="270" y="175" text-anchor="middle" font-family="Inter" font-size="9" fill="#6ee7b7">PASO 7</text>
+  <text x="270" y="189" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">kNN</text>
+  <text x="270" y="203" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">reconstrucción</text>
+  <text x="270" y="217" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8">1M calados interpolados</text>
+  <line x1="196" y1="191" x2="172" y2="191" stroke="#059669" stroke-width="1.5" marker-end="url(#arr-m30)"/>
+
+  <!-- Step 8 -->
+  <rect x="24"  y="155" width="148" height="72" rx="7" fill="#0f2e28" stroke="#059669" stroke-width="1.5"/>
+  <text x="98"  y="175" text-anchor="middle" font-family="Inter" font-size="9" fill="#6ee7b7">PASO 8</text>
+  <text x="98"  y="189" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">Régimen extremal</text>
+  <text x="98"  y="203" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#f1f5f9">multivariado</text>
+  <text x="98"  y="217" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8">T = 2…500 años</text>
+
+  <!-- Divider -->
+  <line x1="24" y1="260" x2="736" y2="260" stroke="#1e293b" stroke-width="1"/>
+
+  <!-- Results comparison row -->
+  <text x="28" y="283" font-family="Inter" font-size="10" font-weight="700" fill="#94a3b8">SECCIÓN PUENTE DE TOLEDO — Calado por período de retorno:</text>
+
+  <!-- T=100 comparison -->
+  <rect x="24" y="295" width="218" height="54" rx="6" fill="#111827" stroke="#1e293b" stroke-width="1"/>
+  <text x="133" y="316" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8">T = 100 AÑOS</text>
+  <text x="78"  y="336" text-anchor="middle" font-family="Inter" font-size="18" font-weight="700" fill="#60a5fa">5.05 m</text>
+  <text x="78"  y="349" text-anchor="middle" font-family="Inter" font-size="8" fill="#94a3b8">Clásico</text>
+  <text x="178" y="336" text-anchor="middle" font-family="Inter" font-size="18" font-weight="700" fill="#f97316">6.00 m</text>
+  <text x="178" y="349" text-anchor="middle" font-family="Inter" font-size="8" fill="#94a3b8">FORESEE</text>
+  <text x="128" y="340" text-anchor="middle" font-family="Inter" font-size="11" fill="#475569">+0.95 m</text>
+
+  <!-- T=500 comparison -->
+  <rect x="254" y="295" width="218" height="54" rx="6" fill="#111827" stroke="#1e293b" stroke-width="1"/>
+  <text x="363" y="316" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8">T = 500 AÑOS</text>
+  <text x="308" y="336" text-anchor="middle" font-family="Inter" font-size="18" font-weight="700" fill="#60a5fa">6.78 m</text>
+  <text x="308" y="349" text-anchor="middle" font-family="Inter" font-size="8" fill="#94a3b8">Clásico</text>
+  <text x="408" y="336" text-anchor="middle" font-family="Inter" font-size="18" font-weight="700" fill="#f97316">7.61 m</text>
+  <text x="408" y="349" text-anchor="middle" font-family="Inter" font-size="8" fill="#94a3b8">FORESEE</text>
+  <text x="358" y="340" text-anchor="middle" font-family="Inter" font-size="11" fill="#475569">+0.83 m</text>
+
+  <!-- Lambda / events stats -->
+  <rect x="484" y="295" width="252" height="54" rx="6" fill="#111827" stroke="#1e293b" stroke-width="1"/>
+  <text x="610" y="312" text-anchor="middle" font-family="Inter" font-size="9" fill="#94a3b8">ESTADÍSTICAS DE LA METODOLOGÍA</text>
+  <text x="530" y="330" text-anchor="middle" font-family="Inter" font-size="13" font-weight="700" fill="#f1f5f9">λ = 5.17</text>
+  <text x="530" y="344" text-anchor="middle" font-family="Inter" font-size="8" fill="#94a3b8">eventos/año</text>
+  <text x="620" y="330" text-anchor="middle" font-family="Inter" font-size="13" font-weight="700" fill="#f1f5f9">17</text>
+  <text x="620" y="344" text-anchor="middle" font-family="Inter" font-size="8" fill="#94a3b8">pluviómetros</text>
+  <text x="706" y="330" text-anchor="middle" font-family="Inter" font-size="13" font-weight="700" fill="#f1f5f9">1M</text>
+  <text x="706" y="344" text-anchor="middle" font-family="Inter" font-size="8" fill="#94a3b8">sint. generados</text>
+
+  <!-- Footer note -->
+  <text x="28" y="396" font-family="Inter" font-size="8" fill="#475569">Navas et al. (2024) · Ingeniería del Agua · Caso M30 Manzanares, Madrid · DOI: 10.4995/ia.2024.20925</text>
+  <text x="28" y="410" font-family="Inter" font-size="8" fill="#475569">pyhydra: HydrographClassifier · FloodEventSelector · FloodMapInterpolator · pixel_return_period</text>
+</svg>`;
+
 const workflowSvg = `
 <svg viewBox="0 0 760 400" width="100%" role="img" aria-label="Flujo metodológico Los Corrales de Buelna" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -174,6 +294,153 @@ const danaSvg = `
 // ─── Pilot cases ────────────────────────────────────────────────────────────
 
 export const pilotCases: PilotCase[] = [
+  {
+    slug: 'm30-manzanares',
+    title: 'M30 · Manzanares',
+    subtitle: {
+      es: 'Estadística multivariada de inundación mediante cópulas gaussianas — Río Manzanares, Madrid',
+      en: 'Multivariate flood frequency analysis using Gaussian copulas — Manzanares River, Madrid',
+    },
+    location: {
+      es: 'Río Manzanares, Madrid, España',
+      en: 'Manzanares River, Madrid, Spain',
+    },
+    river: 'Río Manzanares',
+    region: 'Madrid',
+    color: 'from-orange-900 via-red-900 to-slate-900',
+    tag: 'Caso Piloto',
+    accentColor: 'orange',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="12" rx="10" ry="10"/><path d="M12 2 C8 6 8 10 12 12 C16 14 16 18 12 22"/><line x1="2" y1="12" x2="22" y2="12" stroke-dasharray="3 2" stroke-width="1.2"/></svg>',
+    summary: {
+      es: 'Caso piloto publicado en Ingeniería del Agua (Navas et al. 2024) en el que se desarrolla una metodología de análisis de frecuencia de inundación basada en la generación de hietogramas sintéticos multivariados a partir de cópulas gaussianas sobre 17 pluviómetros de la red Ferrovial en el entorno de la Calle 30 de Madrid. La metodología clasifica 1.761 eventos históricos mediante PCA + K-Means, genera ~1M eventos sintéticos por cópula, selecciona 1.000 mediante MaxDiss, los simula en HEC-HMS (1D) y HEC-RAS, y reconstruye los calados en 1M puntos mediante interpolación kNN, obteniendo curvas de periodo de retorno en las secciones de interés (Puente de Toledo, Represa nº9).',
+      en: 'Pilot case published in Ingeniería del Agua (Navas et al. 2024) presenting a flood frequency analysis methodology based on multivariate synthetic hyetogram generation using Gaussian copulas over 17 rain gauges from the Ferrovial network around the Madrid M30. The methodology classifies 1,761 historical events via PCA + K-Means, generates ~1M synthetic events by copula, selects 1,000 via MaxDiss, simulates them in HEC-HMS and HEC-RAS, and reconstructs flood depths at 1M points via kNN interpolation, yielding return period curves at key cross-sections (Puente de Toledo, Represa nº9).',
+    },
+    challenge: {
+      es: 'El análisis de frecuencia univariado de precipitación subestima el riesgo en cuencas urbanas densamente instrumentadas como el Manzanares en Madrid. La estadística de precipitación en una sola estación ignora la variabilidad espacial y la correlación entre pluviómetros. Además, transformar precipitación en caudal exige una cadena de modelos (hidrológico + hidráulico) cuya incertidumbre acumulada es difícil de cuantificar si sólo se propagan hietogramas de diseño clásicos. El resultado es una caracterización del riesgo con cobertura de incertidumbre insuficiente y potencial infravaloración del evento de diseño.',
+      en: 'Univariate precipitation frequency analysis underestimates risk in densely instrumented urban catchments such as the Manzanares in Madrid. Single-station precipitation statistics ignore spatial variability and inter-gauge correlations. Furthermore, translating precipitation to discharge requires a model chain (hydrological + hydraulic) whose accumulated uncertainty is hard to quantify when only classical design hyetographs are propagated. The result is a risk characterisation with insufficient uncertainty coverage and potential underestimation of the design event.',
+    },
+    approach: {
+      es: 'La metodología implementada en los notebooks utiliza <code>pyhydra.climate.hybrid_downscaling</code>: (1) <code>FloodEventSelector</code> extrae y clasifica eventos históricos de 17 pluviómetros; (2) <code>FloodEventSelector.generate_synthetic</code> ajusta una cópula gaussiana con <code>kendall</code> y genera ~1M eventos en el espacio de uniformes; (3) <code>HydrographReconstructor.maxdiss</code> selecciona 1.000 eventos representativos por disimilaridad máxima en el espacio PCA; (4) los hietogramas se exportan a formato HEC-HMS (.met) y se simulan en HEC-RAS estacionario (22 caudales de referencia); (5) <code>FloodMapInterpolator</code> reconstruye los calados en 1M puntos mediante kNN (k=5); (6) <code>pixel_return_period</code> aplica el modelo de Poisson compuesto (λ=5.17 ev/año) para obtener calados en T=2…500 años.',
+      en: 'The methodology implemented in the notebooks uses <code>pyhydra.climate.hybrid_downscaling</code>: (1) <code>FloodEventSelector</code> extracts and classifies historical events from 17 rain gauges; (2) <code>FloodEventSelector.generate_synthetic</code> fits a Gaussian copula with Kendall\'s τ and generates ~1M events in uniform space; (3) <code>HydrographReconstructor.maxdiss</code> selects 1,000 representative events via maximum dissimilarity in PCA space; (4) hyetographs are exported to HEC-HMS format (.met) and simulated in steady-state HEC-RAS (22 reference discharges); (5) <code>FloodMapInterpolator</code> reconstructs flood depths at 1M points via kNN (k=5); (6) <code>pixel_return_period</code> applies the compound Poisson model (λ=5.17 ev/yr) to obtain depths at T=2…500 yr.',
+    },
+    steps: [
+      {
+        number: 1,
+        title: { es: 'Datos pluviométricos y eventos históricos', en: 'Rain-gauge data & historical events' },
+        description: {
+          es: 'Carga de las series horarias de 17 pluviómetros de la red Ferrovial (Calle 30, Madrid) y extracción de eventos de precipitación independientes con <code>FloodEventSelector.extract_events()</code>. Cada evento queda caracterizado por sus variables descriptoras en cada estación: Pmax (mm/6 min), Pmed, Duración y Tipo de hietograma. Análisis de completitud temporal y visualización de la distribución espacial de la red de pluviómetros sobre la cuenca del Manzanares.',
+          en: 'Loading hourly series from 17 Ferrovial rain gauges (M30, Madrid) and extracting independent precipitation events with <code>FloodEventSelector.extract_events()</code>. Each event is characterised by its descriptor variables at each station: Pmax (mm/6 min), Pmed, Duration and hyetograph Type. Temporal completeness analysis and visualisation of the rain-gauge spatial distribution over the Manzanares catchment.',
+        },
+        notebookPath: 'pilot_cases/m30_manzanares/01_rain_data.ipynb',
+        tags: ['Datos', 'Clima'],
+        tagColor: 'bg-orange-100 text-orange-700',
+      },
+      {
+        number: 2,
+        title: { es: 'Clasificación PCA + K-Means', en: 'PCA + K-Means classification' },
+        description: {
+          es: 'Clasificación de los eventos históricos de precipitación con <code>HydrographClassifier</code>: normalización e interpolación a 100 puntos, reducción de dimensionalidad con PCA (≥95% varianza), agrupación K-Means en una malla 4×6 = 24 tipos de hietograma. Visualización de los centroides por tipo y de la distribución de los eventos en el espacio PCA. La clasificación permite estructurar la cópula gaussiana por tipo de evento y preservar la correlación espacial entre pluviómetros.',
+          en: 'Classification of historical precipitation events with <code>HydrographClassifier</code>: normalisation and resampling to 100 points, dimensionality reduction via PCA (≥95% variance), K-Means clustering in a 4×6 = 24-type grid. Visualisation of type centroids and event distribution in PCA space. The classification structures the Gaussian copula by event type and preserves inter-gauge spatial correlation.',
+        },
+        notebookPath: 'pilot_cases/m30_manzanares/02_classification.ipynb',
+        tags: ['Estadística'],
+        tagColor: 'bg-purple-100 text-purple-700',
+      },
+      {
+        number: 3,
+        title: { es: 'Cópula gaussiana y generación sintética', en: 'Gaussian copula & synthetic generation' },
+        description: {
+          es: 'Ajuste de distribuciones marginales (exponencial-Weibull) para Pmax, Pmed y Duración en cada estación mediante <code>FloodEventSelector.fit_marginals()</code>. Ajuste de la cópula gaussiana multivariada (17 variables × N_tipos) mediante la τ de Kendall y generación de ~1M de eventos sintéticos en el espacio uniforme con <code>generate_synthetic()</code>. Transformación a espacio físico mediante las inversas de las marginales. Validación visual de la estructura de correlación reproducida.',
+          en: 'Marginal distribution fitting (exponential-Weibull) for Pmax, Pmed and Duration at each station via <code>FloodEventSelector.fit_marginals()</code>. Multivariate Gaussian copula fitting (17 variables × N_types) using Kendall\'s τ and generation of ~1M synthetic events in uniform space with <code>generate_synthetic()</code>. Back-transformation to physical space via marginal inverse functions. Visual validation of the reproduced correlation structure.',
+        },
+        notebookPath: 'pilot_cases/m30_manzanares/03_copula_generation.ipynb',
+        tags: ['Estadística', 'Hidrología'],
+        tagColor: 'bg-blue-100 text-blue-700',
+      },
+      {
+        number: 4,
+        title: { es: 'MaxDiss — selección de 1.000 eventos', en: 'MaxDiss — selection of 1,000 events' },
+        description: {
+          es: 'Selección de 1.000 eventos representativos del espacio sintético (~1M) mediante el algoritmo MaxDiss (<code>HydrographReconstructor.maxdiss()</code>) en el espacio PCA. El primer evento es el de máxima disimilaridad al centroide global; cada nuevo evento maximiza la distancia mínima al subconjunto ya seleccionado. El resultado es una cobertura cuasi-uniforme del espacio de posibilidades con solo el 0.1 % de los eventos, reduciendo el coste computacional de la cadena HMS+RAS a un nivel asequible.',
+          en: 'Selection of 1,000 representative events from the ~1M synthetic space using the MaxDiss algorithm (<code>HydrographReconstructor.maxdiss()</code>) in PCA space. The first event is the one with maximum dissimilarity to the global centroid; each new event maximises the minimum distance to the already-selected subset. The result is quasi-uniform coverage of the possibility space with only 0.1% of events, reducing the HMS+RAS chain computational cost to a manageable level.',
+        },
+        notebookPath: 'pilot_cases/m30_manzanares/04_maxdiss_selection.ipynb',
+        tags: ['Hidrología'],
+        tagColor: 'bg-cyan-100 text-cyan-700',
+      },
+      {
+        number: 5,
+        title: { es: 'HEC-HMS + HEC-RAS — simulación hidráulica', en: 'HEC-HMS + HEC-RAS — hydraulic simulation' },
+        description: {
+          es: 'Exportación de los 1.000 hietogramas seleccionados a formato HEC-HMS (.met) y ejecución del modelo hidrológico sobre la cuenca del Manzanares (22 subcuencas, método SCS-CN, tránsito Muskingum). Los caudales pico resultantes se agrupan en 22 valores de referencia que se simulan en HEC-RAS 1D estacionario sobre el tramo canalizado M30 (17 km, 303 secciones transversales, hipótesis hidráulica 6). Los resultados se exportan como calados y láminas de agua en las 303 secciones.',
+          en: 'Export of the 1,000 selected hyetographs to HEC-HMS format (.met) and execution of the hydrological model over the Manzanares catchment (22 sub-basins, SCS-CN method, Muskingum routing). The resulting peak discharges are grouped into 22 reference values simulated in steady-state HEC-RAS 1D over the channelised M30 reach (17 km, 303 cross-sections, hydraulic hypothesis 6). Results are exported as water depths and surface elevations at all 303 sections.',
+        },
+        notebookPath: 'pilot_cases/m30_manzanares/05_hms_ras_simulation.ipynb',
+        tags: ['Hidrología', 'Hidráulica'],
+        tagColor: 'bg-green-100 text-green-700',
+      },
+      {
+        number: 6,
+        title: { es: 'kNN + régimen extremal', en: 'kNN + extreme value analysis' },
+        description: {
+          es: 'Reconstrucción de los calados en las 1M simulaciones sintéticas mediante interpolación k-vecinos más cercanos (<code>FloodMapInterpolator</code>, k=5) en el espacio de caudales máximos. Aplicación del modelo de Poisson compuesto (λ=5.17 eventos/año) con <code>pixel_return_period</code> para obtener calados de diseño en T=2, 5, 10, 20, 50, 100 y 500 años en las 303 secciones. Comparación con el régimen extremal clásico (GEV univariada sobre la serie de aforos). El método FORESEE supera en ~0.83 m al clásico en el Puente de Toledo para T=500 años.',
+          en: 'Reconstruction of water depths across 1M synthetic simulations via k-nearest-neighbour interpolation (<code>FloodMapInterpolator</code>, k=5) in peak-discharge space. Application of the compound Poisson model (λ=5.17 ev/yr) with <code>pixel_return_period</code> to obtain design depths at T=2, 5, 10, 20, 50, 100 and 500 years across all 303 cross-sections. Comparison with the classical extreme value analysis (univariate GEV on the gauged series). The FORESEE method exceeds the classical approach by ~0.83 m at Puente de Toledo for T=500 years.',
+        },
+        notebookPath: 'pilot_cases/m30_manzanares/06_knn_return_periods.ipynb',
+        tags: ['Estadística', 'Hidráulica'],
+        tagColor: 'bg-rose-100 text-rose-700',
+      },
+    ],
+    stats: [
+      { value: '17', label: { es: 'pluviómetros red Ferrovial', en: 'Ferrovial rain gauges' } },
+      { value: '~1M', label: { es: 'eventos sintéticos generados', en: 'synthetic events generated' } },
+      { value: '+0.83 m', label: { es: 'calado adicional T=500 (FORESEE vs clásico)', en: 'extra depth T=500 (FORESEE vs classical)' } },
+      { value: '303', label: { es: 'secciones transversales HEC-RAS', en: 'HEC-RAS cross-sections' } },
+    ],
+    keyFindings: [
+      {
+        es: 'El método FORESEE (cópula gaussiana multivariada + kNN + Poisson compuesto) produce calados de diseño sistemáticamente mayores que el método clásico (GEV univariada) en toda la longitud del tramo M30 canalizado. Para T=500 años en el Puente de Toledo, la diferencia es de +0,83 m (7,61 m vs 6,78 m), con implicaciones directas para el dimensionamiento de las obras de protección y la zonificación de inundabilidad.',
+        en: 'The FORESEE method (multivariate Gaussian copula + kNN + compound Poisson) systematically produces larger design depths than the classical method (univariate GEV) along the entire channelised M30 reach. For T=500 years at Puente de Toledo, the difference is +0.83 m (7.61 m vs 6.78 m), with direct implications for flood protection sizing and flood zoning.',
+      },
+      {
+        es: 'La cópula gaussiana multivariada sobre 17 pluviómetros captura la covarianza espacial de la precipitación extrema: eventos con máximos simultáneos en múltiples estaciones — que representan el verdadero escenario de riesgo en una cuenca urbana extensa — son generados en proporción realista por la cópula pero subrepresentados por el análisis univariado en una sola estación.',
+        en: 'The multivariate Gaussian copula over 17 rain gauges captures the spatial covariance of extreme precipitation: events with simultaneous maxima at multiple stations — which represent the true risk scenario in a large urban catchment — are generated in realistic proportion by the copula but underrepresented by single-station univariate analysis.',
+      },
+      {
+        es: 'El algoritmo MaxDiss reduce el espacio de ~1M eventos sintéticos a 1.000 eventos representativos manteniendo una cobertura cuasi-uniforme del espacio de posibilidades. Esto permite ejecutar la cadena HEC-HMS/HEC-RAS a coste computacional asequible (~22 runs de referencia) y reconstruir el resto por interpolación kNN con error medio de calado inferior a 0,05 m en las secciones de control.',
+        en: 'The MaxDiss algorithm reduces the ~1M synthetic event space to 1,000 representative events while maintaining quasi-uniform coverage of the possibility space. This enables running the HEC-HMS/HEC-RAS chain at affordable computational cost (~22 reference runs) and reconstructing the remainder by kNN interpolation with mean depth error below 0.05 m at the control cross-sections.',
+      },
+      {
+        es: 'La comparación entre las dos secciones de control — Puente de Toledo (XS 6262) y Represa nº9 (XS 4112) — muestra que la diferencia entre métodos aumenta con el período de retorno y es consistente en ambas secciones (+0,83 m y +0,69 m respectivamente para T=500 años), lo que indica que el incremento de calado no es un artefacto local sino una consecuencia sistemática de la metodología multivariada.',
+        en: 'The comparison between the two control sections — Puente de Toledo (XS 6262) and Represa nº9 (XS 4112) — shows that the method difference increases with return period and is consistent across both sections (+0.83 m and +0.69 m respectively for T=500 years), indicating that the depth increment is not a local artefact but a systematic consequence of the multivariate methodology.',
+      },
+    ],
+    references: [
+      {
+        title: {
+          es: 'Navas et al. (2024) — Ingeniería del Agua · DOI 10.4995/ia.2024.20925',
+          en: 'Navas et al. (2024) — Ingeniería del Agua · DOI 10.4995/ia.2024.20925',
+        },
+        description: {
+          es: 'Análisis de frecuencia de inundación multivariado mediante cópulas gaussianas sobre series de precipitación de 17 estaciones en el entorno de la M30 (Madrid). Metodología completa: PCA + K-Means + cópula + MaxDiss + HEC-HMS + HEC-RAS + kNN + Poisson compuesto. Ferrovial — IHCantabria — Universidad de Cantabria.',
+          en: 'Multivariate flood frequency analysis using Gaussian copulas over precipitation series from 17 stations around the M30 (Madrid). Complete methodology: PCA + K-Means + copula + MaxDiss + HEC-HMS + HEC-RAS + kNN + compound Poisson. Ferrovial — IHCantabria — University of Cantabria.',
+        },
+      },
+    ],
+    figures: [
+      {
+        title: {
+          es: 'Pipeline: Estadística Multivariada de Inundación M30 — 8 pasos',
+          en: 'Pipeline: M30 Multivariate Flood Frequency — 8 steps',
+        },
+        caption: {
+          es: 'Flujo metodológico: desde las series de precipitación de 17 pluviómetros (paso 1) hasta las curvas de período de retorno por sección (paso 8). Los pasos 1–4 (azul) construyen el espacio sintético multivariado; los pasos 5–8 (verde) ejecutan la cadena HMS+RAS+kNN y extraen el régimen extremal. El resultado central es el calado de diseño en el Puente de Toledo: +0,83 m sobre el método clásico para T=500 años.',
+          en: 'Methodology workflow: from 17 rain-gauge precipitation series (step 1) to return period curves by cross-section (step 8). Steps 1–4 (blue) build the multivariate synthetic space; steps 5–8 (green) run the HMS+RAS+kNN chain and extract the extreme-value regime. The central result is the design depth at Puente de Toledo: +0.83 m above the classical method for T=500 years.',
+        },
+        svg: m30Svg,
+      },
+    ],
+  },
   {
     slug: 'los-corrales-buelna',
     title: 'Los Corrales de Buelna',

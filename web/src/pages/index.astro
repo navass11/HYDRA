@@ -59,6 +59,14 @@ const tools = [
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 10C3 7 6 7 7 10 8 13 11 13 12 10 13 7 16 7 17 10 18 13 21 13 22 10" stroke-width="1.1" stroke-opacity="0.45"/><path d="M2 13C3 10 6 10 7 13 8 16 11 16 12 13 13 10 16 10 17 13 18 16 21 16 22 13"/><path d="M2 16C3 13 6 13 7 16 8 19 11 19 12 16 13 13 16 13 17 16 18 19 21 19 22 16" stroke-width="1.1" stroke-opacity="0.45"/></svg>',
   },
   {
+    title: 'Modelado hidráulico',
+    description: 'Canal compuesto con llanura de inundación. Ajusta rugosidad Manning, caudal y geometría, y observa cómo cambia la mancha de calados y el régimen hidráulico.',
+    href: asset('/tools/hydraulic'),
+    tag: 'Hidráulica',
+    color: 'text-teal-800 bg-teal-100',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 18 Q4 14 6 16 Q8 18 10 16 Q12 14 14 16 Q16 18 18 16 Q20 14 22 16" stroke-width="1.5"/><path d="M3 21L7 13L11 11L13 11L17 13L21 21" stroke-width="1.4"/><path d="M2 21 L22 21" stroke-width="1.2"/><path d="M7 13 L7 21 M17 13 L17 21" stroke-width="0.9" stroke-dasharray="2 2" stroke-opacity="0.6"/></svg>',
+  },
+  {
     title: 'Sensibilidad de Manning',
     description: 'Explora ensembles hidráulicos y relaciona rugosidad, calados y área inundada mediante correlaciones y regresión.',
     href: asset('/tools/sensitivity'),
@@ -178,7 +186,7 @@ const notebookSessionHref = (slug: string) => {
       alt=""
       class="absolute inset-0 h-full w-full object-cover"
     />
-    <div class="absolute inset-0 bg-gradient-to-r from-slate-950/86 via-slate-950/50 to-slate-900/10"></div>
+    <div class="hero-overlay absolute inset-0"></div>
     <div class="hero-bottom-fade absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-white via-white/80 to-transparent"></div>
     <div class="absolute bottom-0 left-0 right-0">
       <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full">
@@ -186,20 +194,22 @@ const notebookSessionHref = (slug: string) => {
       </svg>
     </div>
 
-    <div class="relative max-w-7xl mx-auto px-6 pt-24 pb-40 text-white w-full">
+    <div class="relative max-w-7xl mx-auto px-6 pt-24 pb-40 w-full">
       <div class="max-w-3xl">
         <img src={asset('/favicon.png')} alt="HYDRA" class="h-28 w-28 rounded-3xl shadow-2xl mb-8" />
-        <span class="inline-flex items-center gap-2 bg-white/14 border border-white/25 rounded-full px-4 py-1.5 text-sm font-medium mb-6 backdrop-blur-sm">
-          <span class="h-2 w-2 rounded-full bg-cyan-300"></span>
-          <span data-i18n="hero.kicker">Python · Hidrología · Clima · Riesgo</span>
-        </span>
-        <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 leading-tight">HYDRA</h1>
-        <p class="text-xl md:text-2xl text-white/80 mb-10 leading-relaxed">
+        <div class="flex flex-wrap gap-2 mb-7">
+          <span class="text-xs font-bold px-3 py-1.5 rounded-full bg-cyan-400 text-slate-900 tracking-wide">Python</span>
+          <span class="text-xs font-bold px-3 py-1.5 rounded-full bg-blue-500 text-white tracking-wide" data-t-es="Hidrología" data-t-en="Hydrology">Hidrología</span>
+          <span class="text-xs font-bold px-3 py-1.5 rounded-full bg-teal-500 text-white tracking-wide" data-t-es="Clima" data-t-en="Climate">Clima</span>
+          <span class="text-xs font-bold px-3 py-1.5 rounded-full bg-slate-700 text-white tracking-wide" data-t-es="Riesgo" data-t-en="Risk">Riesgo</span>
+        </div>
+        <h1 class="hero-title text-5xl md:text-7xl font-extrabold tracking-tight mb-6 leading-tight">HYDRA</h1>
+        <p class="hero-desc text-xl md:text-2xl mb-10 leading-relaxed max-w-2xl">
           <span data-i18n="hero.description">Librería modular para análisis hidrológico, climático y modelización de inundaciones. Integra datos, extremos, generación estocástica y modelos físicos en flujos reproducibles.</span>
         </p>
         <div class="flex flex-wrap gap-4">
           <a href="#notebooks"
-             class="bg-white text-hydra-800 font-semibold px-6 py-3 rounded-xl hover:bg-hydra-50 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+             class="hero-btn-primary font-semibold px-6 py-3 rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5">
             <span data-i18n="hero.notebooks">Ver notebooks</span> →
           </a>
           <a href="#herramientas"
@@ -207,14 +217,14 @@ const notebookSessionHref = (slug: string) => {
             <span data-i18n="hero.tools">Explorar herramientas</span>
           </a>
           <a href="https://github.com/navass11/pyhydra" target="_blank"
-             class="bg-white/10 border border-white/25 text-white font-semibold px-6 py-3 rounded-xl hover:bg-white/20 transition-all backdrop-blur-sm">
+             class="hero-btn-ghost font-semibold px-6 py-3 rounded-xl transition-all backdrop-blur-sm">
             GitHub
           </a>
         </div>
-        <div class="flex flex-wrap gap-8 mt-14 text-white/74">
-          <div><span class="block text-3xl font-bold text-white">{notebooksMeta.length}</span><span data-i18n="stats.notebooks">Notebooks</span></div>
-          <div><span class="block text-3xl font-bold text-white">4</span><span data-i18n="stats.modules">Módulos</span></div>
-          <div><span class="block text-3xl font-bold text-white">10+</span><span data-i18n="stats.sources">Fuentes de datos</span></div>
+        <div class="flex flex-wrap gap-8 mt-14 hero-stats">
+          <div><span class="block text-3xl font-bold">{notebooksMeta.length}</span><span data-i18n="stats.notebooks">Notebooks</span></div>
+          <div><span class="block text-3xl font-bold">4</span><span data-i18n="stats.modules">Módulos</span></div>
+          <div><span class="block text-3xl font-bold">10+</span><span data-i18n="stats.sources">Fuentes de datos</span></div>
         </div>
       </div>
     </div>
@@ -704,4 +714,48 @@ const notebookSessionHref = (slug: string) => {
   html.dark .hero-wave-fill {
     fill: #020617;
   }
+
+  /* ── Hero light mode ── */
+  .hero-overlay {
+    background: linear-gradient(to right, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0.42) 45%, transparent 100%);
+  }
+  .hero-title { color: #0f172a; }
+  .hero-desc  { color: #1e293b; }
+  .hero-stats { color: #475569; }
+  .hero-stats span.block { color: #0f172a; }
+  .hero-btn-primary {
+    background: #0f172a; color: #fff;
+  }
+  .hero-btn-primary:hover { background: #1e293b; }
+  .hero-btn-ghost {
+    background: rgba(15,23,42,0.08);
+    border: 1px solid rgba(15,23,42,0.18);
+    color: #0f172a;
+  }
+  .hero-btn-ghost:hover { background: rgba(15,23,42,0.14); }
+
+  /* ── Hero dark mode ── */
+  html.dark .hero-overlay {
+    background: linear-gradient(to right, #020617 0%, rgba(2,6,23,0.80) 50%, rgba(2,6,23,0.10) 100%);
+  }
+  html.dark .hero-title {
+    color: #fff;
+    text-shadow: 0 3px 20px rgba(0,0,0,0.70);
+  }
+  html.dark .hero-desc {
+    color: rgba(255,255,255,0.90);
+    text-shadow: 0 2px 16px rgba(0,0,0,0.85);
+  }
+  html.dark .hero-stats { color: rgba(255,255,255,0.70); }
+  html.dark .hero-stats span.block { color: #fff; }
+  html.dark .hero-btn-primary {
+    background: #fff; color: #1e3a5f;
+  }
+  html.dark .hero-btn-primary:hover { background: #e0f2fe; }
+  html.dark .hero-btn-ghost {
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff;
+  }
+  html.dark .hero-btn-ghost:hover { background: rgba(255,255,255,0.18); }
 </style>

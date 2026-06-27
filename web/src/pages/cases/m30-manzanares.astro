@@ -1,0 +1,437 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { pilotCases } from '../../data/pilot_cases';
+import m30Data from '../../data/m30_data.json';
+
+const pc = pilotCases.find((c) => c.slug === 'm30-manzanares')!;
+const base = import.meta.env.BASE_URL;
+const notebookSessionHref = (path: string) =>
+  `/api/notebooks/session?path=${encodeURIComponent(path)}`;
+
+const stepColors: Record<number, string> = {
+  1: 'border-orange-500/30 bg-orange-950/50',
+  2: 'border-purple-500/30 bg-purple-950/50',
+  3: 'border-blue-500/30 bg-blue-950/50',
+  4: 'border-cyan-500/30 bg-cyan-950/50',
+  5: 'border-green-500/30 bg-green-950/50',
+  6: 'border-rose-500/30 bg-rose-950/50',
+};
+const stepNumColors: Record<number, string> = {
+  1: 'text-orange-300 bg-orange-900/60',
+  2: 'text-purple-300 bg-purple-900/60',
+  3: 'text-blue-300 bg-blue-900/60',
+  4: 'text-cyan-300 bg-cyan-900/60',
+  5: 'text-green-300 bg-green-900/60',
+  6: 'text-rose-300 bg-rose-900/60',
+};
+const stepTitleColors: Record<number, string> = {
+  1: 'group-hover:text-orange-300',
+  2: 'group-hover:text-purple-300',
+  3: 'group-hover:text-blue-300',
+  4: 'group-hover:text-cyan-300',
+  5: 'group-hover:text-green-300',
+  6: 'group-hover:text-rose-300',
+};
+
+// Inline data for client-side charts
+const chartData = JSON.stringify(m30Data);
+---
+
+<Layout title="M30 Manzanares — HYDRA">
+
+  <!-- ── HERO ── -->
+  <section class={`pt-24 pb-16 bg-gradient-to-br ${pc.color} text-white`}>
+    <div class="max-w-7xl mx-auto px-6">
+      <a href={`${base}#casos-piloto`} class="inline-flex items-center gap-2 text-white/65 hover:text-white text-sm mb-6 transition-colors" data-i18n="back.cases">
+        ← Casos piloto
+      </a>
+      <div class="flex flex-wrap items-center gap-3 mb-5">
+        <span class="inline-flex rounded-full bg-white/12 border border-white/20 px-3 py-1 text-sm text-white/80" data-t-es="Caso Piloto" data-t-en="Pilot case">
+          {pc.tag}
+        </span>
+        <span class="inline-flex rounded-full bg-white/12 border border-white/20 px-3 py-1 text-sm text-white/80">{pc.river}</span>
+        <span class="inline-flex rounded-full bg-white/12 border border-white/20 px-3 py-1 text-sm text-white/80">
+          {pc.region}<span data-t-es=", España" data-t-en=", Spain">, España</span>
+        </span>
+      </div>
+      <h1 class="text-4xl md:text-6xl font-extrabold mb-4">{pc.title}</h1>
+      <p
+        class="text-xl text-white/78 max-w-3xl leading-relaxed"
+        data-t-es={pc.subtitle.es}
+        data-t-en={pc.subtitle.en}
+      >{pc.subtitle.es}</p>
+
+      <div class="flex flex-wrap gap-10 mt-10">
+        {pc.stats.map((s) => (
+          <div>
+            <span class="block text-3xl font-bold text-white">{s.value}</span>
+            <span class="text-sm text-white/65" data-t-es={s.label.es} data-t-en={s.label.en}>{s.label.es}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <main class="bg-slate-950 text-white">
+    <div class="max-w-7xl mx-auto px-6 py-14 space-y-16">
+
+      <!-- ── RESUMEN + RETO ── -->
+      <section class="grid lg:grid-cols-2 gap-10">
+        <div>
+          <h2 class="text-2xl font-bold text-white mb-4" data-i18n="case.summary">Descripción del caso</h2>
+          <p class="text-slate-300 leading-relaxed text-lg" data-t-es={pc.summary.es} data-t-en={pc.summary.en}>{pc.summary.es}</p>
+        </div>
+        <div class="rounded-2xl border border-amber-500/30 bg-amber-950/40 p-7">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-9 h-9 rounded-lg bg-amber-500/20 flex items-center justify-center">
+              <svg class="w-5 h-5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+            </div>
+            <h3 class="font-bold text-amber-300 text-lg" data-i18n="case.challenge">Reto hidrológico</h3>
+          </div>
+          <p class="text-amber-200/80 leading-relaxed" data-t-es={pc.challenge.es} data-t-en={pc.challenge.en}>{pc.challenge.es}</p>
+        </div>
+      </section>
+
+      <!-- ── ENFOQUE HYDRA ── -->
+      <section class="rounded-2xl border border-blue-500/30 bg-blue-950/40 p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-10 h-10 rounded-xl bg-blue-600/50 flex items-center justify-center">
+            <svg class="w-5 h-5 text-blue-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 8v4l3 3"/>
+            </svg>
+          </div>
+          <h2 class="text-xl font-bold text-blue-200" data-i18n="case.approach">Enfoque HYDRA</h2>
+        </div>
+        <p
+          class="text-blue-100/75 leading-relaxed max-w-5xl"
+          data-t-es={pc.approach.es}
+          data-t-en={pc.approach.en}
+          set:html={pc.approach.es}
+        />
+      </section>
+
+      <!-- ── WORKFLOW ── -->
+      <section>
+        <div class="mb-8">
+          <h2 class="text-3xl font-bold text-white mb-2" data-i18n="case.workflow.title">Flujo de trabajo</h2>
+          <p class="text-slate-400" data-i18n="case.workflow.description">{pc.steps.length} notebooks ejecutables — haz clic en cualquier paso para abrir en Jupyter Lab.</p>
+        </div>
+        <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
+          {pc.steps.map((step) => (
+            <a
+              href={notebookSessionHref(step.notebookPath)}
+              target="_blank"
+              rel="noopener noreferrer"
+              class={`group rounded-2xl border-2 p-5 transition-all hover:shadow-lg hover:shadow-black/40 hover:-translate-y-0.5 ${stepColors[step.number] ?? 'border-white/10 bg-white/5'}`}
+            >
+              <div class="flex items-center gap-3 mb-3">
+                <span class={`inline-flex w-8 h-8 rounded-lg items-center justify-center text-sm font-black ${stepNumColors[step.number] ?? 'bg-white/10 text-slate-300'}`}>
+                  {String(step.number).padStart(2, '0')}
+                </span>
+                <div class="flex flex-wrap gap-1">
+                  {step.tags.map((tag) => (
+                    <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-white/10 text-slate-300">{tag}</span>
+                  ))}
+                </div>
+              </div>
+              <h3
+                class={`font-bold text-white mb-2 transition-colors ${stepTitleColors[step.number] ?? 'group-hover:text-orange-300'}`}
+                data-t-es={step.title.es}
+                data-t-en={step.title.en}
+              >{step.title.es}</h3>
+              <p class="text-sm text-slate-400 leading-relaxed" data-t-es={step.description.es} data-t-en={step.description.en}>{step.description.es}</p>
+              <span class="inline-flex mt-3 text-xs font-semibold text-slate-500 group-hover:text-orange-400 transition-colors">
+                ▶ <span data-i18n="case.open_notebook">Abrir notebook</span>
+              </span>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <!-- ── FIGURA SVG ── -->
+      {pc.figures.map((fig) => (
+        <section class="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+          <h3 class="font-bold text-white mb-1" data-t-es={fig.title.es} data-t-en={fig.title.en}>{fig.title.es}</h3>
+          <p class="text-sm text-slate-400 mb-5 max-w-3xl" data-t-es={fig.caption.es} data-t-en={fig.caption.en}>{fig.caption.es}</p>
+          <div class="w-full overflow-x-auto rounded-xl" set:html={fig.svg} />
+        </section>
+      ))}
+
+      <!-- ── ANÁLISIS INTERACTIVO ── -->
+      <section class="space-y-8">
+        <div>
+          <h2 class="text-3xl font-bold text-white mb-2" data-t-es="Análisis interactivo" data-t-en="Interactive analysis">Análisis interactivo</h2>
+          <p class="text-slate-400 max-w-3xl" data-t-es="Curvas de período de retorno y perfil longitudinal de calados. FORESEE (cópula multivariada) vs Régimen Extremal clásico (GEV univariada) en las secciones de control del tramo M30." data-t-en="Return period curves and longitudinal depth profile. FORESEE (multivariate copula) vs classical Extreme Value Analysis (univariate GEV) at the M30 control cross-sections.">
+            Curvas de período de retorno y perfil longitudinal de calados. FORESEE (cópula multivariada) vs Régimen Extremal clásico (GEV univariada) en las secciones de control del tramo M30.
+          </p>
+        </div>
+
+        <!-- Charts grid -->
+        <div class="grid lg:grid-cols-2 gap-6">
+          <!-- Return Period Curves -->
+          <div class="rounded-2xl border border-white/10 bg-slate-900 p-5">
+            <h3 class="text-base font-semibold text-slate-200 mb-1" data-t-es="Curva de período de retorno — Puente de Toledo" data-t-en="Return period curve — Puente de Toledo">
+              Curva de período de retorno — Puente de Toledo
+            </h3>
+            <p class="text-xs text-slate-500 mb-3" data-t-es="Calado (m) vs T (años) · Sección XS 6262" data-t-en="Depth (m) vs T (years) · Cross-section XS 6262">Calado (m) vs T (años) · Sección XS 6262</p>
+            <div id="plot-rp" style="height:320px"></div>
+          </div>
+
+          <!-- Longitudinal Profile -->
+          <div class="rounded-2xl border border-white/10 bg-slate-900 p-5">
+            <h3 class="text-base font-semibold text-slate-200 mb-1" data-t-es="Perfil longitudinal de calados — T = 100 y 500 años" data-t-en="Longitudinal depth profile — T = 100 and 500 years">
+              Perfil longitudinal de calados — T = 100 y 500 años
+            </h3>
+            <p class="text-xs text-slate-500 mb-3" data-t-es="303 secciones transversales · FORESEE vs Clásico" data-t-en="303 cross-sections · FORESEE vs Classical">303 secciones transversales · FORESEE vs Clásico</p>
+            <div id="plot-profile" style="height:320px"></div>
+          </div>
+        </div>
+
+        <!-- Scatter events -->
+        <div class="rounded-2xl border border-white/10 bg-slate-900 p-5">
+          <h3 class="text-base font-semibold text-slate-200 mb-1" data-t-es="Nube de eventos seleccionados — espacio de precipitación" data-t-en="Cloud of selected events — precipitation space">
+            Nube de eventos seleccionados — espacio de precipitación
+          </h3>
+          <p class="text-xs text-slate-500 mb-3" data-t-es="200 eventos representativos (MaxDiss de ~1M sintéticos) · Pmax acumulado (mm) vs Duración (h)" data-t-en="200 representative events (MaxDiss from ~1M synthetic) · Cumulative Pmax (mm) vs Duration (h)">
+            200 eventos representativos (MaxDiss de ~1M sintéticos) · Pmax acumulado (mm) vs Duración (h)
+          </p>
+          <div id="plot-scatter" style="height:300px"></div>
+        </div>
+
+        <!-- Comparison table -->
+        <div class="rounded-2xl border border-white/10 bg-slate-900 p-6 overflow-x-auto">
+          <h3 class="text-base font-semibold text-slate-200 mb-4" data-t-es="Calados de diseño (m) — Puente de Toledo (XS 6262)" data-t-en="Design depths (m) — Puente de Toledo (XS 6262)">
+            Calados de diseño (m) — Puente de Toledo (XS 6262)
+          </h3>
+          <table class="w-full text-sm text-center border-collapse">
+            <thead>
+              <tr class="text-slate-400">
+                <th class="pb-3 text-left pr-4" data-t-es="Método" data-t-en="Method">Método</th>
+                <th class="pb-3">T=2</th>
+                <th class="pb-3">T=5</th>
+                <th class="pb-3">T=10</th>
+                <th class="pb-3">T=20</th>
+                <th class="pb-3">T=50</th>
+                <th class="pb-3">T=100</th>
+                <th class="pb-3 font-bold text-orange-300">T=500</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-white/5">
+              <tr>
+                <td class="py-3 text-left pr-4 font-semibold text-orange-300" data-t-es="FORESEE (cópula)" data-t-en="FORESEE (copula)">FORESEE (cópula)</td>
+                {m30Data.return_periods.foresee.d_pt.map((v) => (
+                  <td class="py-3 text-slate-200">{v.toFixed(2)}</td>
+                ))}
+              </tr>
+              <tr>
+                <td class="py-3 text-left pr-4 font-semibold text-blue-300" data-t-es="Clásico (GEV)" data-t-en="Classical (GEV)">Clásico (GEV)</td>
+                {m30Data.return_periods.classical.d_pt.map((v) => (
+                  <td class="py-3 text-slate-300">{v.toFixed(2)}</td>
+                ))}
+              </tr>
+              <tr class="bg-white/[0.03]">
+                <td class="py-3 text-left pr-4 font-semibold text-emerald-300" data-t-es="Diferencia (m)" data-t-en="Difference (m)">Diferencia (m)</td>
+                {m30Data.return_periods.foresee.d_pt.map((v, i) => {
+                  const diff = v - m30Data.return_periods.classical.d_pt[i];
+                  return (
+                    <td class={`py-3 font-semibold ${diff > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                      {diff > 0 ? '+' : ''}{diff.toFixed(2)}
+                    </td>
+                  );
+                })}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── REFERENCES ── -->
+      {pc.references?.length ? (
+        <section>
+          <div class="mb-6">
+            <h2 class="text-3xl font-bold text-white mb-2" data-i18n="case.references.title">Referencias del caso</h2>
+            <p class="text-slate-400 max-w-3xl" data-i18n="case.references.description">
+              Fuentes de datos, métodos y validaciones que sustentan el caso piloto.
+            </p>
+          </div>
+          <div class="grid md:grid-cols-2 gap-5">
+            {pc.references.map((ref) => (
+              <article class="rounded-xl border border-white/10 bg-white/[0.05] p-5">
+                <h3 class="font-bold text-white mb-2" data-t-es={ref.title.es} data-t-en={ref.title.en}>{ref.title.es}</h3>
+                <p class="text-sm text-slate-400 leading-relaxed" data-t-es={ref.description.es} data-t-en={ref.description.en}>{ref.description.es}</p>
+                {ref.href ? (
+                  <a href={ref.href} target="_blank" rel="noopener noreferrer" class="inline-flex mt-4 text-sm font-semibold text-cyan-400 hover:text-cyan-200 transition-colors">
+                    {ref.cta?.es ?? 'Abrir referencia'} →
+                  </a>
+                ) : null}
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      <!-- ── HALLAZGOS CLAVE ── -->
+      <section class="grid lg:grid-cols-[1fr_1.5fr] gap-10 items-start">
+        <div>
+          <h2 class="text-3xl font-bold text-white mb-3" data-i18n="case.findings.title">Hallazgos clave</h2>
+          <p class="text-slate-400 leading-relaxed" data-i18n="case.findings.description">Resultados principales extraídos del análisis.</p>
+        </div>
+        <ul class="space-y-4">
+          {pc.keyFindings.map((finding) => (
+            <li class="flex gap-4 rounded-xl border border-white/10 p-5 bg-white/[0.04]">
+              <div class="mt-0.5 flex-shrink-0 w-6 h-6 rounded-full bg-orange-600/60 flex items-center justify-center">
+                <svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </div>
+              <p class="text-slate-300 leading-relaxed" data-t-es={finding.es} data-t-en={finding.en}>{finding.es}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+    </div>
+  </main>
+</Layout>
+
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js" is:inline></script>
+<script define:vars={{ chartData }}>
+const DATA = JSON.parse(chartData);
+
+function isDark() { return document.documentElement.classList.contains('dark'); }
+
+function themeLayout() {
+  const dark = isDark();
+  const tc = dark ? '#94a3b8' : '#4b5563';
+  const gc = dark ? '#1e293b' : '#e5e7eb';
+  const lc = dark ? '#334155' : '#d1d5db';
+  const bg = dark ? '#0f172a' : '#F8FAFC';
+  const lb = dark ? 'rgba(15,23,42,0.92)' : 'rgba(255,255,255,0.92)';
+  const bc = dark ? '#334155' : '#e5e7eb';
+  const ax = { gridcolor: gc, linecolor: lc, zerolinecolor: lc,
+               tickfont: { color: tc, size: 11 }, title: { font: { color: tc } } };
+  return {
+    paper_bgcolor: 'transparent', plot_bgcolor: bg,
+    font: { color: tc, size: 11 },
+    xaxis: ax, yaxis: ax,
+    legend: { bgcolor: lb, bordercolor: bc, borderwidth: 1, font: { color: tc, size: 10 } },
+    margin: { l: 52, r: 18, t: 18, b: 46 },
+  };
+}
+
+function mkLayout(overrides) {
+  const th = themeLayout();
+  const res = { ...th, ...overrides };
+  if (overrides.xaxis) res.xaxis = { ...th.xaxis, ...overrides.xaxis };
+  if (overrides.yaxis) res.yaxis = { ...th.yaxis, ...overrides.yaxis };
+  if (overrides.legend) res.legend = { ...th.legend, ...overrides.legend };
+  return res;
+}
+
+const cfg = { responsive: true, displayModeBar: false };
+
+// ── Chart 1: Return period curves ──────────────────────────────────────────
+function renderRP() {
+  const rp = DATA.return_periods;
+  const traces = [
+    {
+      x: rp.T, y: rp.foresee.d_pt, name: 'FORESEE (cópula)',
+      mode: 'lines+markers', line: { color: '#f97316', width: 2.5 },
+      marker: { size: 6, color: '#f97316' },
+    },
+    {
+      x: rp.T, y: rp.classical.d_pt, name: 'Clásico (GEV)',
+      mode: 'lines+markers', line: { color: '#60a5fa', width: 2, dash: 'dash' },
+      marker: { size: 5, color: '#60a5fa' },
+    },
+  ];
+  const layout = mkLayout({
+    xaxis: { title: { text: 'Período de retorno T (años)' }, type: 'log',
+             tickvals: [2, 5, 10, 20, 50, 100, 500],
+             ticktext: ['2', '5', '10', '20', '50', '100', '500'] },
+    yaxis: { title: { text: 'Calado (m)' } },
+    legend: { x: 0.04, y: 0.97 },
+  });
+  Plotly.newPlot('plot-rp', traces, layout, cfg);
+}
+
+// ── Chart 2: Longitudinal profile ──────────────────────────────────────────
+function renderProfile() {
+  const pr = DATA.profile;
+  const xs = pr.xs;
+  // Downsample to every 2nd section for clarity
+  const idx = xs.map((_, i) => i).filter((_, i) => i % 1 === 0);
+  const xs_ds = idx.map((i) => xs[i]);
+  const traces = [
+    {
+      x: xs_ds, y: idx.map((i) => pr.foresee_t500[i]),
+      name: 'FORESEE T=500', mode: 'lines',
+      line: { color: '#f97316', width: 2.5 },
+    },
+    {
+      x: xs_ds, y: idx.map((i) => pr.foresee_t100[i]),
+      name: 'FORESEE T=100', mode: 'lines',
+      line: { color: '#fb923c', width: 1.5, dash: 'dot' },
+    },
+    {
+      x: xs_ds, y: idx.map((i) => pr.hab_t500[i]),
+      name: 'Clásico T=500', mode: 'lines',
+      line: { color: '#60a5fa', width: 2, dash: 'dash' },
+    },
+    {
+      x: xs_ds, y: idx.map((i) => pr.hab_t100[i]),
+      name: 'Clásico T=100', mode: 'lines',
+      line: { color: '#93c5fd', width: 1.5, dash: 'dashdot' },
+    },
+  ];
+  const layout = mkLayout({
+    xaxis: { title: { text: 'Sección transversal (RS, m)' }, autorange: 'reversed' },
+    yaxis: { title: { text: 'Calado (m)' } },
+    legend: { x: 0.04, y: 0.97 },
+  });
+  Plotly.newPlot('plot-profile', traces, layout, cfg);
+}
+
+// ── Chart 3: Scatter events ─────────────────────────────────────────────────
+function renderScatter() {
+  const evs = DATA.events_scatter;
+  const pmax = evs.map((e) => e.pmax);
+  const dur  = evs.map((e) => e.dur);
+  const trace = {
+    x: dur, y: pmax, mode: 'markers',
+    marker: {
+      size: 6, opacity: 0.75,
+      color: pmax,
+      colorscale: [[0, '#0ea5e9'], [0.5, '#f97316'], [1.0, '#dc2626']],
+      showscale: true,
+      colorbar: { title: 'Pmax (mm)', thickness: 10, len: 0.7,
+                  tickfont: { size: 10 }, titlefont: { size: 10 } },
+    },
+    hovertemplate: 'Duración: %{x:.1f} h<br>Pmax: %{y:.1f} mm<extra></extra>',
+  };
+  const layout = mkLayout({
+    xaxis: { title: { text: 'Duración media (h)' } },
+    yaxis: { title: { text: 'Pmax acumulado (mm)' } },
+  });
+  Plotly.newPlot('plot-scatter', [trace], layout, cfg);
+}
+
+function renderAll() {
+  renderRP();
+  renderProfile();
+  renderScatter();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', renderAll);
+} else {
+  renderAll();
+}
+
+new MutationObserver(renderAll)
+  .observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+</script>
