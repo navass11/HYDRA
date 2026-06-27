@@ -44,7 +44,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
               </div>
               <p class="text-xs text-gray-400 dark:text-slate-500" data-t-es="CSV: fecha, valor (o solo columna de valores)." data-t-en="CSV: date, value (or value column only).">CSV: fecha, valor (o solo columna de valores).</p>
             </div>
-            <p id="demo-note" class="text-xs text-gray-400 dark:text-slate-500 italic" data-t-es="Demo: 30 años precipitación diaria con sesgo húmedo en el modelo (+40%)" data-t-en="Demo: 30 years daily precipitation with wet bias in model (+40%)">Demo: 30 años precipitación diaria con sesgo húmedo en el modelo (+40%)</p>
+            <p id="demo-note" class="text-xs text-gray-400 dark:text-slate-500 italic">Demo: 30 años precipitación diaria con sesgo húmedo en el modelo (+40%)</p>
           </div>
 
           <div>
@@ -201,6 +201,17 @@ function setRunning(r: boolean) {
 
 function showError(msg: string) { errorBox.textContent = msg; errorBox.classList.remove('hidden'); }
 function clearError() { errorBox.classList.add('hidden'); errorBox.textContent = ''; }
+
+function updateDemoNote() {
+  const isTemp = (document.getElementById('variable-select') as HTMLSelectElement).value === 'temperature';
+  demoNote.textContent = isTemp
+    ? t('Demo: 30 años temperatura diaria con sesgo cálido (+2 °C) y cambio climático futuro (+3 °C)', 'Demo: 30 years daily temperature with warm bias (+2 °C) and future climate change (+3 °C)')
+    : t('Demo: 30 años precipitación diaria con sesgo húmedo en el modelo (+40%)', 'Demo: 30 years daily precipitation with wet bias in model (+40%)');
+}
+
+(document.getElementById('variable-select') as HTMLSelectElement).addEventListener('change', updateDemoNote);
+document.addEventListener('hydra:lang', updateDemoNote);
+updateDemoNote();
 
 btnDemo.addEventListener('click', () => setSource(true));
 btnUpload.addEventListener('click', () => setSource(false));

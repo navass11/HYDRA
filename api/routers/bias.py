@@ -16,23 +16,26 @@ router = APIRouter()
 N_QUANTILES = 100  # resolution for QQ plots
 
 
-def _demo_data() -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """30 years historical + 30 years future with wet bias in model."""
+def _demo_data(variable: str = "precipitation") -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     rng = np.random.default_rng(42)
     n = 365 * 30
 
-    # Observed: gamma + zero inflation (20% wet days)
-    wet_obs = rng.random(n) < 0.20
-    obs_hist = np.where(wet_obs, rng.gamma(0.8, 8.0, n), 0.0)
-
-    # Model historical: same wet days but +40% scale bias (no additive noise so
-    # gamma fits in SDM stay clean — additive noise converts dry days to wet days
-    # and breaks parametric distribution fitting)
-    mod_hist = np.where(wet_obs, rng.gamma(0.8, 11.2, n), 0.0)
-
-    # Model future: slightly more wet days + same +40% bias, slight climate warming
-    wet_fut = rng.random(n) < 0.24
-    mod_future = np.where(wet_fut, rng.gamma(0.85, 13.3, n), 0.0)
+    if variable == "temperature":
+        # Observed: ~15 °C mean, 5 °C std (daily Tmax-like series)
+        obs_hist = rng.normal(15.0, 5.0, n)
+        # Model historical: +2 °C warm bias, 10% variability overestimation
+        mod_hist = rng.normal(17.0, 5.5, n)
+        # Model future: additional +3 °C climate change signal, same variability bias
+        mod_future = rng.normal(20.0, 5.5, n)
+    else:
+        # Observed: gamma + zero inflation (20% wet days)
+        wet_obs = rng.random(n) < 0.20
+        obs_hist = np.where(wet_obs, rng.gamma(0.8, 8.0, n), 0.0)
+        # Model historical: same wet days, +40% scale bias
+        mod_hist = np.where(wet_obs, rng.gamma(0.8, 11.2, n), 0.0)
+        # Model future: slightly more wet days + same bias + climate warming
+        wet_fut = rng.random(n) < 0.24
+        mod_future = np.where(wet_fut, rng.gamma(0.85, 13.3, n), 0.0)
 
     return obs_hist, mod_hist, mod_future
 
@@ -107,7 +110,7 @@ async def bias_correct(
         raise HTTPException(status_code=400, detail="method no válido.")
 
     if use_demo:
-        obs_hist, mod_hist, mod_future = _demo_data()
+        obs_hist, mod_hist, mod_future = _demo_data(variable)
     else:
         if file_obs is None or file_mod_hist is None:
             raise HTTPException(status_code=400, detail="Se necesitan al menos file_obs y file_mod_hist.")
