@@ -101,9 +101,9 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
 
           <div class="grid lg:grid-cols-2 gap-8">
             <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm p-6">
-              <h3 class="font-semibold text-gray-800 dark:text-slate-200 mb-1">QQ-plot</h3>
-              <p class="text-sm text-gray-400 dark:text-slate-500 mb-4" data-t-es="Cuantiles obs vs modelo (antes/después). La línea perfecta es y=x." data-t-en="Observed vs model quantiles (before/after). The perfect fit line is y=x.">Cuantiles obs vs modelo (antes/después). La línea perfecta es y=x.</p>
-              <div id="chart-qq" class="h-80"></div>
+              <h3 class="font-semibold text-gray-800 dark:text-slate-200 mb-1" data-t-es="CDF empírica" data-t-en="Empirical CDF">CDF empírica</h3>
+              <p class="text-sm text-gray-400 dark:text-slate-500 mb-4" data-t-es="Distribución acumulada de obs, modelo bruto y modelo corregido." data-t-en="Cumulative distribution of observed, raw model and corrected model.">Distribución acumulada de obs, modelo bruto y modelo corregido.</p>
+              <div id="chart-cdf" class="h-80"></div>
             </div>
             <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm p-6">
               <h3 class="font-semibold text-gray-800 dark:text-slate-200 mb-1" data-t-es="Medias mensuales" data-t-en="Monthly means">Medias mensuales</h3>
@@ -146,7 +146,11 @@ const t = (es: string, en: string) => document.documentElement.lang === 'en' ? e
 
 const TEAL   = '#0891b2';
 const GRAY   = '#94a3b8';
-const ORANGE = '#f97316';
+const DARK_SLATE = '#475569';
+
+const isDark = () => document.documentElement.classList.contains('dark');
+const grid = () => isDark() ? '#334155' : '#e2e8f0';
+const fontColor = () => isDark() ? '#94a3b8' : '#6b7280';
 const MONTHS_ES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 const MONTHS_EN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const MONTHS = document.documentElement.lang === 'en' ? MONTHS_EN : MONTHS_ES;
@@ -241,10 +245,10 @@ runBtn.addEventListener('click', async () => {
 });
 
 function statCard(label: string, value: string, unit = '') {
-  return `<div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
-    <p class="text-xs text-gray-400 uppercase tracking-wide mb-2">${label}</p>
-    <p class="text-2xl font-bold text-gray-900">${value}</p>
-    <p class="text-xs text-gray-400 mt-1">${unit}</p>
+  return `<div class="bg-gray-50 dark:bg-slate-800 rounded-xl p-4 border border-gray-100 dark:border-slate-700">
+    <p class="text-xs text-gray-400 dark:text-slate-500 uppercase tracking-wide mb-2">${label}</p>
+    <p class="text-2xl font-bold text-gray-900 dark:text-white">${value}</p>
+    <p class="text-xs text-gray-400 dark:text-slate-500 mt-1">${unit}</p>
   </div>`;
 }
 
@@ -260,41 +264,48 @@ function renderResults(data: any) {
     statCard(t('Días observados', 'Observed days'), `${s.n_obs_hist.toLocaleString()}`, t('histórico', 'historical')) +
     statCard(t('Días corregidos', 'Corrected days'), `${s.n_mod_future.toLocaleString()}`, t('escenario', 'scenario'));
 
-  // QQ plot
+  // Empirical CDF (from quantile pairs)
   const qBefore = data.qq_before as {obs: number, mod: number}[];
   const qAfter  = data.qq_after  as {obs: number, mod: number}[];
-  const allObs  = qBefore.map(d => d.obs);
-  const diagMax = Math.max(...allObs, ...qBefore.map(d => d.mod), ...qAfter.map(d => d.mod));
+  const n = qBefore.length;
+  const probs = qBefore.map((_, i) => (i + 1) / (n + 1));
+  const obsVals  = qBefore.map(d => d.obs).sort((a, b) => a - b);
+  const rawVals  = qBefore.map(d => d.mod).sort((a, b) => a - b);
+  const corrVals = qAfter.map(d => d.mod).sort((a, b) => a - b);
+  const varLabel = (document.getElementById('variable-select') as HTMLSelectElement).value === 'temperature'
+    ? t('Temperatura (°C)', 'Temperature (°C)') : t('Precipitación (mm)', 'Precipitation (mm)');
 
-  Plotly.newPlot('chart-qq', [
-    { x: qBefore.map(d => d.obs), y: qBefore.map(d => d.mod),
-      mode: 'markers', name: t('Antes', 'Before'), marker: { color: GRAY, size: 4, opacity: 0.7 } },
-    { x: qAfter.map(d => d.obs),  y: qAfter.map(d => d.mod),
-      mode: 'markers', name: t('Después', 'After'), marker: { color: TEAL, size: 4, opacity: 0.85 } },
-    { x: [0, diagMax], y: [0, diagMax], mode: 'lines', name: 'y=x',
-      line: { color: '#334155', width: 1.5, dash: 'dot' }, hoverinfo: 'skip' },
+  Plotly.newPlot('chart-cdf', [
+    { x: obsVals,  y: probs, mode: 'lines', name: t('Observado', 'Observed'),
+      line: { color: DARK_SLATE, width: 2.5 } },
+    { x: rawVals,  y: probs, mode: 'lines', name: t('Modelo (antes)', 'Model (before)'),
+      line: { color: GRAY, width: 2, dash: 'dot' } },
+    { x: corrVals, y: probs, mode: 'lines', name: t('Modelo (después)', 'Model (after)'),
+      line: { color: TEAL, width: 2.5 } },
   ], {
     ...layoutBase,
-    xaxis: { title: t('Cuantiles observados', 'Observed quantiles'), gridcolor: '#f3f4f6' },
-    yaxis: { title: t('Cuantiles modelo', 'Model quantiles'), gridcolor: '#f3f4f6' },
-    legend: { orientation: 'h', y: -0.25 },
+    font: { ...layoutBase.font, color: fontColor() },
+    xaxis: { title: varLabel, gridcolor: grid() },
+    yaxis: { title: t('Probabilidad acumulada', 'Cumulative probability'), gridcolor: grid(), range: [0, 1] },
+    legend: { orientation: 'h', y: -0.28 },
   }, { responsive: true, displayModeBar: false });
 
   // Monthly means
   const mm = data.monthly_means as {month: string, obs: number, mod_raw: number, mod_corrected: number}[];
   Plotly.newPlot('chart-monthly', [
     { x: mm.map(m => m.month), y: mm.map(m => m.obs),           type: 'bar', name: t('Observado', 'Observed'),
-      marker: { color: '#334155', opacity: 0.7 } },
+      marker: { color: DARK_SLATE, opacity: 0.85 } },
     { x: mm.map(m => m.month), y: mm.map(m => m.mod_raw),       type: 'bar', name: t('Modelo (antes)', 'Model (before)'),
-      marker: { color: GRAY,  opacity: 0.8 } },
+      marker: { color: GRAY,  opacity: 0.85 } },
     { x: mm.map(m => m.month), y: mm.map(m => m.mod_corrected), type: 'bar', name: t('Modelo (después)', 'Model (after)'),
       marker: { color: TEAL, opacity: 0.9 } },
   ], {
     ...layoutBase,
+    font: { ...layoutBase.font, color: fontColor() },
     barmode: 'group',
-    xaxis: { gridcolor: '#f3f4f6' },
-    yaxis: { title: t('Media diaria', 'Daily mean'), gridcolor: '#f3f4f6' },
-    legend: { orientation: 'h', y: -0.25 },
+    xaxis: { gridcolor: grid() },
+    yaxis: { title: t('Media diaria', 'Daily mean'), gridcolor: grid() },
+    legend: { orientation: 'h', y: -0.28 },
   }, { responsive: true, displayModeBar: false });
 
   // Stats table
@@ -308,11 +319,11 @@ function renderResults(data: any) {
     [t('Frac. húmeda', 'Wet fraction'), st.obs.wet_fraction, st.before.wet_fraction, st.after.wet_fraction],
   ];
   document.getElementById('stats-table')!.innerHTML = rows.map(([name, obs, before, after]) =>
-    `<tr class="hover:bg-gray-50">
-      <td class="py-2 pr-4 font-medium text-gray-700">${name}</td>
-      <td class="py-2 px-3 text-right text-gray-700">${fmt(obs as number)}</td>
-      <td class="py-2 px-3 text-right text-gray-500">${fmt(before as number)}</td>
-      <td class="py-2 px-3 text-right font-semibold text-cyan-700">${fmt(after as number)}</td>
+    `<tr class="hover:bg-gray-50 dark:hover:bg-slate-700/50">
+      <td class="py-2 pr-4 font-medium text-gray-700 dark:text-slate-300">${name}</td>
+      <td class="py-2 px-3 text-right text-gray-700 dark:text-slate-300">${fmt(obs as number)}</td>
+      <td class="py-2 px-3 text-right text-gray-500 dark:text-slate-400">${fmt(before as number)}</td>
+      <td class="py-2 px-3 text-right font-semibold text-cyan-700 dark:text-cyan-400">${fmt(after as number)}</td>
     </tr>`
   ).join('');
 }

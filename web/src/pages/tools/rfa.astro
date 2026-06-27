@@ -83,10 +83,17 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
           <div id="stats-row" class="grid grid-cols-2 lg:grid-cols-4 gap-4"></div>
 
           <div class="grid lg:grid-cols-[1fr_340px] gap-8">
-            <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm p-6">
-              <h3 class="font-semibold text-gray-800 dark:text-slate-200 mb-1" data-t-es="Curva de crecimiento regional" data-t-en="Regional growth curve">Curva de crecimiento regional</h3>
-              <p class="text-sm text-gray-400 dark:text-slate-500 mb-4" data-t-es="Quantil normalizado vs periodo de retorno (escala log). Curvas por estación = curva regional × caudal índice." data-t-en="Normalised quantile vs return period (log scale). Per-station curves = regional curve × station index flood.">Quantil normalizado vs periodo de retorno (escala log). Curvas por estación = curva regional × caudal índice.</p>
-              <div id="chart-growth" class="h-80"></div>
+            <div class="space-y-6">
+              <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm p-6">
+                <h3 class="font-semibold text-gray-800 dark:text-slate-200 mb-1" data-t-es="Curva de crecimiento regional (normalizada)" data-t-en="Regional growth curve (normalised)">Curva de crecimiento regional (normalizada)</h3>
+                <p class="text-sm text-gray-400 dark:text-slate-500 mb-4" data-t-es="Factor de crecimiento q(T) = nivel(T) / caudal índice. Curva GEV regional ajustada a datos normalizados." data-t-en="Growth factor q(T) = level(T) / index flood. Regional GEV fitted to normalised data.">Factor de crecimiento q(T) = nivel(T) / caudal índice. Curva GEV regional ajustada a datos normalizados.</p>
+                <div id="chart-growth" class="h-64"></div>
+              </div>
+              <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm p-6">
+                <h3 class="font-semibold text-gray-800 dark:text-slate-200 mb-1" data-t-es="Niveles de retorno por estación" data-t-en="At-site return levels">Niveles de retorno por estación</h3>
+                <p class="text-sm text-gray-400 dark:text-slate-500 mb-4" data-t-es="Niveles en unidades originales = curva regional × caudal índice de cada estación." data-t-en="Levels in original units = regional curve × index flood per station.">Niveles en unidades originales = curva regional × caudal índice de cada estación.</p>
+                <div id="chart-atsite" class="h-64"></div>
+              </div>
             </div>
 
             <div class="space-y-6">
@@ -134,6 +141,10 @@ const t = (es: string, en: string) => document.documentElement.lang === 'en' ? e
 
 const FUCHSIA = '#a21caf';
 const COLORS  = ['#2563eb','#16a34a','#dc2626','#d97706','#7c3aed','#0891b2','#be185d'];
+
+const isDark = () => document.documentElement.classList.contains('dark');
+const grid = () => isDark() ? '#334155' : '#e2e8f0';
+const fontColor = () => isDark() ? '#94a3b8' : '#6b7280';
 
 const layoutBase = {
   paper_bgcolor: 'transparent',
@@ -208,10 +219,10 @@ runBtn.addEventListener('click', async () => {
 });
 
 function statCard(label: string, value: string, unit = '') {
-  return `<div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
-    <p class="text-xs text-gray-400 uppercase tracking-wide mb-2">${label}</p>
-    <p class="text-2xl font-bold text-gray-900">${value}</p>
-    <p class="text-xs text-gray-400 mt-1">${unit}</p>
+  return `<div class="bg-gray-50 dark:bg-slate-800 rounded-xl p-4 border border-gray-100 dark:border-slate-700">
+    <p class="text-xs text-gray-400 dark:text-slate-500 uppercase tracking-wide mb-2">${label}</p>
+    <p class="text-2xl font-bold text-gray-900 dark:text-white">${value}</p>
+    <p class="text-xs text-gray-400 dark:text-slate-500 mt-1">${unit}</p>
   </div>`;
 }
 
@@ -228,43 +239,59 @@ function renderResults(data: any) {
     statCard(t('Discordantes', 'Discordant'), `${nFlagged}`, 'Di > 3') +
     statCard('H', `${data.heterogeneity.H ?? '—'}`, data.heterogeneity.interpretation);
 
-  // Growth curve chart
+  // Regional growth curve (normalised — show only regional line)
   const gc = data.growth_curve as {T: number, quantile: number}[];
   const Ts = gc.map(d => d.T);
   const qs = gc.map(d => d.quantile);
 
-  const traces: any[] = [
+  Plotly.newPlot('chart-growth', [
     { x: Ts, y: qs, mode: 'lines+markers', name: t('Curva regional', 'Regional curve'),
-      line: { color: FUCHSIA, width: 3 }, marker: { size: 7 } },
-  ];
+      line: { color: FUCHSIA, width: 3 }, marker: { size: 7, color: FUCHSIA } },
+  ], {
+    ...layoutBase,
+    font: { ...layoutBase.font, color: fontColor() },
+    xaxis: { title: t('Periodo de retorno (años)', 'Return period (years)'), type: 'log', gridcolor: grid() },
+    yaxis: { title: t('Factor de crecimiento q(T)', 'Growth factor q(T)'), gridcolor: grid() },
+    showlegend: false,
+  }, { responsive: true, displayModeBar: false });
 
-  // At-site curves
+  // At-site return level curves (original units)
   const stations = s.stations as string[];
-  stations.forEach((st, i) => {
+  const atSiteTraces: any[] = stations.map((st, i) => {
     const levels = data.at_site_levels[st] as {T: number, level: number}[];
-    if (!levels) return;
-    traces.push({
+    return {
       x: levels.map(d => d.T),
       y: levels.map(d => d.level),
-      mode: 'lines',
+      mode: 'lines+markers',
       name: st,
-      line: { color: COLORS[i % COLORS.length], width: 1.5, dash: 'dot' },
-      opacity: 0.75,
-    });
+      line: { color: COLORS[i % COLORS.length], width: 2 },
+      marker: { size: 5 },
+    };
   });
 
-  Plotly.newPlot('chart-growth', traces, {
+  Plotly.newPlot('chart-atsite', atSiteTraces, {
     ...layoutBase,
-    xaxis: { title: t('Periodo de retorno (años)', 'Return period (years)'), type: 'log', gridcolor: '#f3f4f6' },
-    yaxis: { title: t('Nivel de crecimiento / valor', 'Growth factor / value'), gridcolor: '#f3f4f6' },
-    legend: { orientation: 'h', y: -0.25 },
+    font: { ...layoutBase.font, color: fontColor() },
+    xaxis: { title: t('Periodo de retorno (años)', 'Return period (years)'), type: 'log', gridcolor: grid() },
+    yaxis: { title: t('Nivel (unidades originales)', 'Level (original units)'), gridcolor: grid() },
+    legend: { orientation: 'h', y: -0.3 },
   }, { responsive: true, displayModeBar: false });
 
   // Heterogeneity card
   const het = data.heterogeneity;
   const hetColor = het.H == null ? 'gray' : het.H < 1 ? 'green' : het.H < 2 ? 'amber' : 'red';
-  const hetBg: Record<string,string> = { gray: 'bg-gray-50 border-gray-200', green: 'bg-green-50 border-green-200', amber: 'bg-amber-50 border-amber-200', red: 'bg-red-50 border-red-200' };
-  const hetText: Record<string,string> = { gray: 'text-gray-700', green: 'text-green-700', amber: 'text-amber-700', red: 'text-red-700' };
+  const hetBg: Record<string,string> = {
+    gray:  'bg-gray-50 dark:bg-gray-800/60 border-gray-200 dark:border-gray-700',
+    green: 'bg-green-50 dark:bg-green-950/40 border-green-200 dark:border-green-800',
+    amber: 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-700',
+    red:   'bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-800',
+  };
+  const hetText: Record<string,string> = {
+    gray:  'text-gray-700 dark:text-gray-300',
+    green: 'text-green-700 dark:text-green-400',
+    amber: 'text-amber-700 dark:text-amber-400',
+    red:   'text-red-700 dark:text-red-400',
+  };
   document.getElementById('het-content')!.innerHTML = `
     <div class="rounded-xl border p-4 ${hetBg[hetColor]}">
       <p class="text-2xl font-bold ${hetText[hetColor]} mb-1">H = ${het.H ?? '—'}</p>
@@ -278,22 +305,22 @@ function renderResults(data: any) {
     ['σ (scale)', rp.sigma],
     ['ξ (shape)', rp.xi],
   ].map(([name, val]) =>
-    `<div class="flex justify-between rounded-lg bg-gray-50 px-4 py-2.5 border border-gray-100">
-      <span class="text-sm text-gray-500">${name}</span>
-      <span class="text-sm font-bold text-gray-900">${val ?? '—'}</span>
+    `<div class="flex justify-between rounded-lg bg-gray-50 dark:bg-slate-700 px-4 py-2.5 border border-gray-100 dark:border-slate-600">
+      <span class="text-sm text-gray-500 dark:text-slate-400">${name}</span>
+      <span class="text-sm font-bold text-gray-900 dark:text-white">${val ?? '—'}</span>
     </div>`
   ).join('');
 
   // Discordancy table
   document.getElementById('discordancy-table')!.innerHTML =
     (data.discordancy as {station: string, Di: number, flagged: boolean}[]).map(d =>
-      `<tr class="hover:bg-gray-50 ${d.flagged ? 'bg-red-50' : ''}">
-        <td class="py-2 pr-6 font-medium text-gray-800">${d.station}</td>
-        <td class="py-2 px-3 text-right font-semibold ${d.flagged ? 'text-red-700' : 'text-gray-700'}">${d.Di}</td>
+      `<tr class="hover:bg-gray-50 dark:hover:bg-slate-700/50 ${d.flagged ? 'bg-red-50 dark:bg-red-950/30' : ''}">
+        <td class="py-2 pr-6 font-medium text-gray-800 dark:text-slate-200">${d.station}</td>
+        <td class="py-2 px-3 text-right font-semibold ${d.flagged ? 'text-red-700 dark:text-red-400' : 'text-gray-700 dark:text-slate-300'}">${d.Di}</td>
         <td class="py-2 px-3">
           ${d.flagged
-            ? `<span class="inline-block px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700">${t('Discordante (Di>3)', 'Discordant (Di>3)')}</span>`
-            : `<span class="inline-block px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">OK</span>`
+            ? `<span class="inline-block px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300">${t('Discordante (Di>3)', 'Discordant (Di>3)')}</span>`
+            : `<span class="inline-block px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300">OK</span>`
           }
         </td>
       </tr>`
@@ -302,16 +329,16 @@ function renderResults(data: any) {
   // At-site table
   const periods = [2, 5, 10, 25, 50, 100, 200, 500];
   let html = `<table class="w-full text-sm min-w-[500px]">
-    <thead class="text-left text-gray-500"><tr>
+    <thead class="text-left text-gray-500 dark:text-slate-400"><tr>
       <th class="py-2 pr-4">${t('Estación', 'Station')}</th>
       ${periods.map(T => `<th class="py-2 px-2 text-right">T${T}</th>`).join('')}
     </tr></thead>
-    <tbody class="divide-y divide-gray-100">`;
+    <tbody class="divide-y divide-gray-100 dark:divide-slate-700">`;
   stations.forEach(st => {
     const levels = data.at_site_levels[st] as {T: number, level: number | null}[];
-    html += `<tr class="hover:bg-gray-50">
-      <td class="py-2 pr-4 font-medium text-gray-800">${st}</td>
-      ${levels.map(l => `<td class="py-2 px-2 text-right text-gray-700">${l.level != null ? l.level.toFixed(1) : '—'}</td>`).join('')}
+    html += `<tr class="hover:bg-gray-50 dark:hover:bg-slate-700/50">
+      <td class="py-2 pr-4 font-medium text-gray-800 dark:text-slate-200">${st}</td>
+      ${levels.map(l => `<td class="py-2 px-2 text-right text-gray-700 dark:text-slate-300">${l.level != null ? l.level.toFixed(1) : '—'}</td>`).join('')}
     </tr>`;
   });
   html += '</tbody></table>';
