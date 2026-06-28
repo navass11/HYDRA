@@ -1,5 +1,20 @@
 /** Exact-match Spanish → English for static page copy not wired to data-i18n. */
 export const phraseTranslations: Record<string, string> = {
+  // Page titles (browser tab)
+  'HYDRA — Hidrología y Clima en Python': 'HYDRA — Hydrology and Climate in Python',
+  'Modelado hidráulico — HYDRA': 'Hydraulic Modelling — HYDRA',
+  'Generación Estocástica — HYDRA': 'Stochastic Generation — HYDRA',
+  'Sensibilidad Manning — HYDRA': 'Manning Sensitivity — HYDRA',
+  'Eventos y GEV Bayesiana — HYDRA': 'Events & Bayesian GEV — HYDRA',
+  'Descarga Meteostat — HYDRA': 'Meteostat Download — HYDRA',
+  'Cópulas de Eventos — HYDRA': 'Event Copulas — HYDRA',
+  'Eventos Compuestos — HYDRA': 'Compound Events — HYDRA',
+  'Interpolación Espacial — HYDRA': 'Spatial Interpolation — HYDRA',
+  'Curva IDF — HYDRA': 'IDF Curve — HYDRA',
+  'Corrección de sesgo — HYDRA': 'Bias Correction — HYDRA',
+  'Análisis de tendencia — HYDRA': 'Trend Analysis — HYDRA',
+  'Frecuencia Regional — HYDRA': 'Regional Frequency Analysis — HYDRA',
+  'Descarga OGIMET — HYDRA': 'OGIMET Download — HYDRA',
   '← Volver al inicio': '← Back to home',
   '← Volver a modulos': '← Back to modules',
   '← Volver a módulos': '← Back to modules',
@@ -279,19 +294,6 @@ export const phraseTranslations: Record<string, string> = {
   'Ejecutar simulación': 'Run simulation',
   'Configura los parámetros en el panel izquierdo y pulsa Ejecutar simulación. Puedes usar los datos de demo o subir tu propia serie en CSV.':
     'Configure the parameters in the left panel and click Run simulation. You can use demo data or upload your own CSV series.',
-
-  // ── Homepage tool cards (missing) ────────────────────────────────────────────
-  'Descarga Meteostat': 'Meteostat download',
-  'Busca estaciones en el mapa, selecciona periodo y descarga datos diarios o mensuales de temperatura, precipitación y viento.':
-    'Search stations on the map, select a period and download daily or monthly temperature, precipitation and wind data.',
-  'Eventos compuestos': 'Compound events',
-  'Ajusta una cópula bivariante y obtén curvas de período de retorno conjunto OR para pares de variables hidro-climáticas.':
-    'Fit a bivariate copula and obtain joint OR return-period curves for pairs of hydro-climatic variables.',
-  'Interpolación espacial': 'Spatial interpolation',
-  'Compara IDW, Kriging Ordinario, RBF y vecino más cercano sobre el mismo dataset. Sube 3 CSV y obtén RMSE de validación cruzada.':
-    'Compare IDW, Ordinary Kriging, RBF and nearest neighbour on the same dataset. Upload 3 CSVs and obtain cross-validation RMSE.',
-  'Espacial': 'Spatial',
-
   // ── meteostat.astro ───────────────────────────────────────────────────────────
   'Buscar en el mapa': 'Search on map',
   'Estación seleccionada': 'Selected station',
@@ -336,7 +338,6 @@ export const phraseTranslations: Record<string, string> = {
   'Interpolación Espacial': 'Spatial Interpolation',
   'Compara IDW, Kriging Ordinario, RBF y Vecino más cercano sobre el mismo conjunto de estaciones.\n        Sube tres CSV (coordenadas, valores, puntos objetivo) y obtén el mapa interpolado y RMSE de validación cruzada.':
     'Compare IDW, Ordinary Kriging, RBF and Nearest neighbour on the same station set.\n        Upload three CSVs (coordinates, values, target points) and obtain the interpolated map and cross-validation RMSE.',
-  'Métodos': 'Methods',
   'IDW (Ponderación distancia inversa)': 'IDW (Inverse distance weighting)',
   'Kriging Ordinario': 'Ordinary Kriging',
   'RBF Thin-plate spline': 'RBF Thin-plate spline',

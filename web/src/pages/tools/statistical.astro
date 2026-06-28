@@ -140,6 +140,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
 <script>
 declare const Plotly: any;
 
+const t = (es: string, en: string) => document.documentElement.lang === 'en' ? en : es;
 const layoutBase = {
   paper_bgcolor: 'transparent',
   plot_bgcolor: 'transparent',
@@ -172,7 +173,7 @@ function setSource(demo: boolean) {
   btnDemo.className = `src-btn py-2 px-3 rounded-lg text-sm font-medium border-2 transition-colors ${demo ? 'border-hydra-500 bg-hydra-50 text-hydra-700' : 'border-gray-200 text-gray-600 hover:border-hydra-300'}`;
   btnUpload.className = `src-btn py-2 px-3 rounded-lg text-sm font-medium border-2 transition-colors ${!demo ? 'border-hydra-500 bg-hydra-50 text-hydra-700' : 'border-gray-200 text-gray-600 hover:border-hydra-300'}`;
   csvHintEl.classList.toggle('hidden', demo);
-  if (demo) fileNameEl.textContent = 'Demo: precipitación diaria 1980-2024';
+  if (demo) fileNameEl.textContent = t('Demo: precipitación diaria 1980-2024', 'Demo: daily precipitation 1980-2024');
 }
 
 function setRunning(running: boolean) {

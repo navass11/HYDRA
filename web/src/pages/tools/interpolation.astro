@@ -30,11 +30,11 @@ import Layout from '../../layouts/Layout.astro';
             <label class="block text-sm font-semibold text-gray-800 mb-2">Fuente de datos</label>
             <label class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 cursor-pointer mb-2 has-[:checked]:border-teal-500 has-[:checked]:bg-teal-50">
               <input type="radio" name="datasource" value="demo" checked class="accent-teal-600" />
-              <span class="text-sm font-medium text-gray-700">Demo (lluvia, 8 estaciones Cantabria)</span>
+              <span class="text-sm font-medium text-gray-700" data-t-es="Demo (lluvia, 8 estaciones Cantabria)" data-t-en="Demo (rainfall, 8 Cantabria stations)">Demo (lluvia, 8 estaciones Cantabria)</span>
             </label>
             <label class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 cursor-pointer has-[:checked]:border-teal-500 has-[:checked]:bg-teal-50">
               <input type="radio" name="datasource" value="csv" class="accent-teal-600" />
-              <span class="text-sm font-medium text-gray-700">CSV propio (3 archivos)</span>
+              <span class="text-sm font-medium text-gray-700" data-t-es="CSV propio (3 archivos)" data-t-en="Own CSV (3 files)">CSV propio (3 archivos)</span>
             </label>
           </div>
 
@@ -44,12 +44,12 @@ import Layout from '../../layouts/Layout.astro';
               Los tres CSV deben tener el mismo separador (coma). Las filas de <strong>coordenadas</strong> y <strong>valores</strong> deben corresponder en orden.
             </p>
             <div>
-              <label class="block text-xs font-semibold text-gray-700 mb-1">① Coordenadas de estaciones (lon, lat)</label>
+              <label class="block text-xs font-semibold text-gray-700 mb-1" data-t-es="① Coordenadas de estaciones (lon, lat)" data-t-en="① Station coordinates (lon, lat)">① Coordenadas de estaciones (lon, lat)</label>
               <input id="csv-stations" type="file" accept=".csv"
                 class="block w-full text-sm text-gray-500 file:rounded-lg file:border-0 file:bg-teal-50 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-teal-700 hover:file:bg-teal-100" />
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-700 mb-1">② Valores en estaciones (una columna numérica)</label>
+              <label class="block text-xs font-semibold text-gray-700 mb-1" data-t-es="② Valores en estaciones (una columna numérica)" data-t-en="② Station values (one numeric column)">② Valores en estaciones (una columna numérica)</label>
               <input id="csv-values" type="file" accept=".csv"
                 class="block w-full text-sm text-gray-500 file:rounded-lg file:border-0 file:bg-teal-50 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-teal-700 hover:file:bg-teal-100" />
             </div>
