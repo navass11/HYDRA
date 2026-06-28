@@ -18,8 +18,12 @@ export const phraseTranslations: Record<string, string> = {
   'Generación estocástica': 'Stochastic generation',
   'Modelización': 'Modelling',
   'Generación Estocástica': 'Stochastic Generation',
+  'Modelado hidráulico': 'Hydraulic Modelling',
   'Sensibilidad de Manning': 'Manning Sensitivity',
   'Eventos + GEV bayesiana': 'Events + Bayesian GEV',
+  'Descarga Meteostat': 'Meteostat download',
+  'Eventos compuestos': 'Compound events',
+  'Interpolación espacial': 'Spatial interpolation',
   'Descarga OGIMET': 'OGIMET download',
   'Cópulas de eventos': 'Event copulas',
   'Cópulas multivariantes de eventos': 'Multivariate event copulas',
@@ -102,14 +106,22 @@ export const phraseTranslations: Record<string, string> = {
     'Integration and automation of hydrological (HEC-HMS, SWAT+) and hydraulic (HEC-RAS, SFINCS) models.',
   'Ajusta un modelo estacional CoSMoS a una serie diaria y genera un ensemble sintético reproducible.':
     'Fit a seasonal CoSMoS model to a daily series and generate a reproducible synthetic ensemble.',
+  'Canal compuesto con llanura de inundación. Ajusta rugosidad Manning, caudal y geometría, y observa cómo cambia la mancha de calados y el régimen hidráulico.':
+    'Compound channel with floodplain. Adjust Manning roughness, discharge and geometry, and observe how the flood depth pattern and hydraulic regime change.',
   'Explora ensembles hidráulicos y relaciona rugosidad, calados y área inundada mediante correlaciones y regresión.':
     'Explore hydraulic ensembles and relate roughness, water depths and flooded area via correlations and regression.',
   'Selecciona eventos extremos y estima niveles de retorno con una GEV MAP bayesiana y bandas aproximadas.':
     'Select extreme events and estimate return levels with a Bayesian MAP GEV and approximate uncertainty bands.',
+  'Busca estaciones en el mapa, selecciona periodo y descarga datos diarios o mensuales de temperatura, precipitación y viento.':
+    'Search stations on the map, select a period and download daily or monthly temperature, precipitation and wind data.',
   'Genera enlaces SYNOP por ventanas temporales para estaciones OGIMET sin credenciales ni API externa.':
     'Generate SYNOP request links for OGIMET stations without credentials or external API.',
   'Ajusta dependencias multivariantes entre pico, volumen, duración y variables discretas para generar eventos sintéticos.':
     'Fit multivariate dependencies between peak, volume, duration and discrete variables to generate synthetic events.',
+  'Ajusta una cópula bivariante y obtén curvas de período de retorno conjunto OR para pares de variables hidro-climáticas.':
+    'Fit a bivariate copula and obtain joint OR return period curves for pairs of hydro-climatic variables.',
+  'Compara IDW, Kriging Ordinario, RBF y vecino más cercano sobre el mismo dataset. Sube 3 CSV y obtén RMSE de validación cruzada.':
+    'Compare IDW, Ordinary Kriging, RBF and nearest neighbour on the same dataset. Upload 3 CSVs and get cross-validation RMSE.',
   'Clima': 'Climate',
   'Hidráulica': 'Hydraulics',
   'Extremos': 'Extremes',
