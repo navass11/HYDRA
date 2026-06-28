@@ -393,6 +393,28 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
       return res;
     }
 
+    // ── i18n dictionary for JS-rendered strings ───────────────────────────────
+    function lang() { return document.documentElement.lang ?? 'es'; }
+    const T = {
+      bed:          { es: 'Lecho',        en: 'Bed' },
+      wse:          { es: 'Lámina libre', en: 'Water surface' },
+      yn_uniform:   { es: 'y<sub>n</sub> (uniforme)', en: 'y<sub>n</sub> (uniform)' },
+      yc_critical:  { es: 'y<sub>c</sub> (crítico)',  en: 'y<sub>c</sub> (critical)' },
+      elev_z:       { es: 'Cota z (m)',   en: 'Elevation z (m)' },
+      depth_m:      { es: 'Calado (m)',   en: 'Depth (m)' },
+      yn_sub:       { es: 'normal / crítico', en: 'normal / critical' },
+      channel_fp:   { es: 'Q<sub>cauce</sub> / Q<sub>llanura</sub>', en: 'Q<sub>channel</sub> / Q<sub>fp</sub>' },
+      hyd_radius:   { es: 'R hidráulico (m)', en: 'Hydraulic radius (m)' },
+      updating:     { es: 'Actualizando…',    en: 'Updating…' },
+      profile: {
+        'uniforme':          { es: 'Flujo uniforme',       en: 'Uniform flow' },
+        'M1 (remanso)':      { es: 'Curva de remanso M1',  en: 'M1 backwater curve' },
+        'M2 (depresión)':    { es: 'Curva de depresión M2',en: 'M2 drawdown curve' },
+        'S2 (flujo rápido)': { es: 'Flujo supercrítico',   en: 'Supercritical flow' },
+      },
+    };
+    const t = (key) => T[key]?.[lang()] ?? T[key]?.es ?? key;
+
     // ── Metrics ───────────────────────────────────────────────────────────────
     function renderMetrics(p) {
       const regimeColor = p.Fr > 1
@@ -408,12 +430,12 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
 
       const qbf = p.Q_bankfull ?? 0;
       const cards = [
-        { lbl: 'y<sub>n</sub> / y<sub>c</sub>', val: `${p.yn.toFixed(3)} / ${(p.yc??0).toFixed(3)} m`, sub: 'calado normal / crítico' },
+        { lbl: 'y<sub>n</sub> / y<sub>c</sub>', val: `${p.yn.toFixed(3)} / ${(p.yc??0).toFixed(3)} m`, sub: t('yn_sub') },
         { lbl: 'Fr',      val: p.Fr.toFixed(3),    sub: p.regime },
         { lbl: 'V (m/s)', val: p.V.toFixed(3),     sub: `A = ${p.A_total.toFixed(1)} m²` },
         p.overbank
-          ? { lbl: 'Q<sub>cauce</sub> / Q<sub>llanura</sub>', val: `${p.Q_channel.toFixed(0)} / ${p.Q_floodplain.toFixed(0)} m³/s`, sub: `Q<sub>bf</sub> = ${qbf.toFixed(0)} m³/s` }
-          : { lbl: 'R hidráulico (m)', val: `${p.R.toFixed(3)} m`, sub: `Q<sub>bf</sub> = ${qbf.toFixed(0)} m³/s | P = ${p.P.toFixed(1)} m` },
+          ? { lbl: t('channel_fp'), val: `${p.Q_channel.toFixed(0)} / ${p.Q_floodplain.toFixed(0)} m³/s`, sub: `Q<sub>bf</sub> = ${qbf.toFixed(0)} m³/s` }
+          : { lbl: t('hyd_radius'), val: `${p.R.toFixed(3)} m`, sub: `Q<sub>bf</sub> = ${qbf.toFixed(0)} m³/s | P = ${p.P.toFixed(1)} m` },
       ];
 
       document.getElementById('metrics-row').innerHTML = cards.map(c => `
@@ -430,42 +452,36 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
     function renderLongProfile(lp, profileType) {
       const badge = document.getElementById('profile-badge');
       if (badge) {
-        const names = {
-          'uniforme':          { es: 'Flujo uniforme',      en: 'Uniform flow' },
-          'M1 (remanso)':      { es: 'Curva de remanso M1', en: 'M1 backwater curve' },
-          'M2 (depresión)':    { es: 'Curva de depresión M2', en: 'M2 drawdown curve' },
-          'S2 (flujo rápido)': { es: 'Flujo supercrítico',  en: 'Supercritical flow' },
-        };
-        const lang = document.documentElement.lang ?? 'es';
-        const entry = names[profileType] ?? { es: profileType, en: profileType };
-        badge.textContent = lang === 'en' ? entry.en : entry.es;
+        const entry = T.profile[profileType] ?? { es: profileType, en: profileType };
+        badge.textContent = lang() === 'en' ? entry.en : entry.es;
         badge.classList.remove('hidden');
       }
 
       const yMaxVal = Math.max(...lp.z_wse, ...lp.z_yn) * 1.08 + 0.2;
+      const wse = t('wse');
 
       const traces = [
         { type:'scatter', mode:'lines', x:lp.x, y:lp.z_bed,
           fill:'tozeroy', fillcolor:'rgba(110,72,32,0.82)',
           line:{color:'rgb(70,42,12)', width:1.5},
-          name:'Lecho', showlegend:true,
-          hovertemplate:'x: %{x:.0f} m | z<sub>lecho</sub>: %{y:.3f} m<extra></extra>' },
+          name: t('bed'), showlegend:true,
+          hovertemplate:`x: %{x:.0f} m | z: %{y:.3f} m<extra></extra>` },
         { type:'scatter', mode:'lines', x:lp.x, y:lp.z_wse,
           line:{color:'rgb(29,78,216)', width:2.5},
-          name:'Lámina libre', showlegend:true,
-          hovertemplate:'x: %{x:.0f} m | Lámina libre: %{y:.3f} m<extra></extra>' },
+          name: wse, showlegend:true,
+          hovertemplate:`x: %{x:.0f} m | ${wse}: %{y:.3f} m<extra></extra>` },
         { type:'scatter', mode:'lines', x:lp.x, y:lp.z_yn,
           line:{color:'rgba(220,38,38,0.80)', width:1.5, dash:'dash'},
-          name:'y<sub>n</sub> (uniforme)', showlegend:true, hoverinfo:'skip' },
+          name: t('yn_uniform'), showlegend:true, hoverinfo:'skip' },
         { type:'scatter', mode:'lines', x:lp.x, y:lp.z_yc,
           line:{color:'rgba(22,163,74,0.75)', width:1.3, dash:'dot'},
-          name:'y<sub>c</sub> (crítico)', showlegend:true, hoverinfo:'skip' },
+          name: t('yc_critical'), showlegend:true, hoverinfo:'skip' },
       ];
 
       const layout = mkLayout({
         margin:{t:10,r:20,b:50,l:65},
         xaxis:{title:'x (m)'},
-        yaxis:{title:'Cota z (m)', range:[0, yMaxVal]},
+        yaxis:{title: t('elev_z'), range:[0, yMaxVal]},
         legend:{x:0.02, y:0.97},
       });
 
@@ -487,23 +503,22 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
       const dark = isDark();
       const cbFont = { tickfont:{color: dark ? '#94a3b8' : '#4b5563'}, title:{font:{color: dark ? '#94a3b8' : '#4b5563'}} };
 
-      // Trace 1: terrain DEM (always visible)
       const traceTerrain = {
         type:'heatmap', x:fm.xl, y:fm.xt, z:fm.z_dem,
         colorscale:[
-          [0,    '#1a4731'],  // fondo cauce: verde oscuro
+          [0,    '#1a4731'],
           [0.12, '#2d7d46'],
-          [0.30, '#6aad72'],  // talud inferior
-          [0.55, '#c9a96b'],  // talud superior: arena
-          [0.80, '#a07848'],  // margen: marrón
-          [1.0,  '#8B6030'],  // llanura: marrón oscuro
+          [0.30, '#6aad72'],
+          [0.55, '#c9a96b'],
+          [0.80, '#a07848'],
+          [1.0,  '#8B6030'],
         ],
         zmin:0, zmax:H * 1.15,
         showscale:false, hoverinfo:'skip', zsmooth:'best',
       };
 
-      // Trace 2: water depth (null where dry → terrain shows through)
       const z_water = fm.depths.map(row => row.map(d => d > 0.01 ? d : null));
+      const depthLabel = t('depth_m');
       const traceWater = {
         type:'heatmap', x:fm.xl, y:fm.xt, z:z_water,
         colorscale:[
@@ -514,8 +529,8 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
           [1.0, '#1E3A8A'],
         ],
         zmin:0, zmax:maxDepth,
-        colorbar:{title:{text:'Calado (m)', side:'right', ...cbFont.title}, thickness:14, len:0.8, ...cbFont},
-        hovertemplate:'x: %{x:.0f} m | y: %{y:.1f} m | calado: %{z:.3f} m<extra></extra>',
+        colorbar:{title:{text: depthLabel, side:'right', ...cbFont.title}, thickness:14, len:0.8, ...cbFont},
+        hovertemplate:`x: %{x:.0f} m | y: %{y:.1f} m | ${depthLabel}: %{z:.3f}<extra></extra>`,
         zsmooth:'best',
       };
 
@@ -548,24 +563,22 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
     function renderCrossSection(xs) {
       const yn = xs.yn;
       const yMax = Math.max(...xs.z_dem, yn) * 1.15 + 0.1;
+      const wse = t('wse');
 
       const traces = [
-        // Blue water fill (0 → yn, full width)
         { type:'scatter', mode:'lines', x:xs.xt, y:xs.xt.map(()=>Math.max(0,yn)),
           fill:'tozeroy', fillcolor:'rgba(37,99,235,0.25)',
           line:{color:'transparent', width:0}, showlegend:false, hoverinfo:'skip' },
-        // Terrain fill — fully opaque so only the exposed water (z_dem < yn) stays blue
         { type:'scatter', mode:'lines', x:xs.xt, y:xs.z_dem,
           fill:'tozeroy', fillcolor:'rgb(110,72,32)',
           line:{color:'rgb(70,42,12)', width:1.5},
-          name:'Sección', showlegend:false,
+          showlegend:false,
           hovertemplate:'y: %{x:.1f} m | z: %{y:.3f} m<extra></extra>' },
-        // Water surface line
         { type:'scatter', mode:'lines',
           x:[xs.xt[0], xs.xt[xs.xt.length-1]], y:[yn, yn],
           line:{color:'rgb(37,99,235)', width:2, dash:'dash'},
           name:`y<sub>n</sub> = ${yn.toFixed(3)} m`,
-          hovertemplate:`Lámina libre y<sub>n</sub> = ${yn.toFixed(3)} m<extra></extra>` },
+          hovertemplate:`${wse} y<sub>n</sub> = ${yn.toFixed(3)} m<extra></extra>` },
       ];
 
       const layout = mkLayout({
@@ -594,9 +607,9 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
       renderCrossSection(data.cross_section);
     }
 
-    // Re-render when light/dark mode toggles
+    // Re-render when dark/light mode OR language changes
     new MutationObserver(() => { if (lastData) renderAll(lastData); })
-      .observe(document.documentElement, { attributes:true, attributeFilter:['class'] });
+      .observe(document.documentElement, { attributes:true, attributeFilter:['class', 'lang'] });
 
     // ── Boot ──────────────────────────────────────────────────────────────────
     runCompute();
