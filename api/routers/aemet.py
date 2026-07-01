@@ -8,7 +8,7 @@ from fastapi.responses import StreamingResponse
 
 router = APIRouter()
 
-AEMET_BASE = "https://opendata.aemet.es/openapi/api"
+AEMET_BASE = "https://opendata.aemet.es/opendata/api"
 
 
 def _parse_dms(s: str) -> float:
@@ -51,12 +51,11 @@ def _aemet_fetch(endpoint: str, api_key: str) -> list | dict:
     Dates in path segments are passed raw (colons are valid in URL paths
     per RFC 3986) to avoid double-encoding issues with requests.
     """
-    url1 = f"{AEMET_BASE}{endpoint}"
-    headers = {"Cache-Control": "no-cache", "api_key": api_key}
-    params  = {"api_key": api_key}
+    # Strip trailing slash before appending ?api_key (matches pyhydra convention)
+    url1 = f"{AEMET_BASE}{endpoint.rstrip('/')}?api_key={api_key}"
 
     try:
-        r1 = _requests.get(url1, headers=headers, params=params, timeout=30)
+        r1 = _requests.get(url1, timeout=30)
     except _requests.RequestException as exc:
         raise HTTPException(502, f"Error conectando con AEMET: {exc}")
 
