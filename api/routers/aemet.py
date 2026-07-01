@@ -1,5 +1,7 @@
 import io
+import json
 from datetime import datetime
+from pathlib import Path
 
 import requests as _requests
 import pandas as pd
@@ -9,6 +11,7 @@ from fastapi.responses import StreamingResponse
 router = APIRouter()
 
 AEMET_BASE = "https://opendata.aemet.es/opendata/api"
+STATIONS_CACHE = Path("/tmp/hydra_aemet_stations.json")
 
 
 def _parse_dms(s: str) -> float:
@@ -109,7 +112,23 @@ def _aemet_fetch(endpoint: str, api_key: str) -> list | dict:
 
 
 @router.get("/stations")
-def get_stations(api_key: str = Query(..., description="API key de AEMET OpenData")):
+def get_stations(
+    api_key: str | None = Query(None, description="API key de AEMET OpenData"),
+    refresh: bool = Query(False, description="Forzar recarga desde AEMET aunque exista caché"),
+):
+    if not refresh and STATIONS_CACHE.exists():
+        try:
+            stations = json.loads(STATIONS_CACHE.read_text(encoding="utf-8"))
+            return {"stations": stations, "total": len(stations), "cached": True}
+        except Exception:
+            pass  # cache corrupta → seguir y re-fetchar
+
+    if not api_key:
+        raise HTTPException(
+            400,
+            "No hay estaciones en caché. Introduce tu API key de AEMET para cargarlas por primera vez.",
+        )
+
     raw = _aemet_fetch("/valores/climatologicos/inventarioestaciones/todasestaciones/", api_key)
     stations = []
     for s in (raw if isinstance(raw, list) else []):
@@ -125,7 +144,13 @@ def get_stations(api_key: str = Query(..., description="API key de AEMET OpenDat
             "latitude":   lat,
             "longitude":  lon,
         })
-    return {"stations": stations, "total": len(stations)}
+
+    try:
+        STATIONS_CACHE.write_text(json.dumps(stations), encoding="utf-8")
+    except Exception:
+        pass  # si no se puede escribir, seguimos sin cache
+
+    return {"stations": stations, "total": len(stations), "cached": False}
 
 
 @router.get("/data")

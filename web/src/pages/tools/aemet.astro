@@ -55,16 +55,16 @@ import Layout from '../../layouts/Layout.astro';
             </p>
           </div>
 
-          <!-- Cargar estaciones -->
+          <!-- Cargar/Actualizar estaciones -->
           <button id="load-stations-btn"
             class="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors flex items-center justify-center gap-2">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/>
             </svg>
-            Cargar estaciones
+            <span id="load-stations-label">Cargar estaciones</span>
           </button>
           <p id="stations-count" class="text-xs text-gray-400 -mt-2 text-center">
-            Introduce tu API key y pulsa para cargar las estaciones.
+            Cargando estaciones…
           </p>
 
           <!-- Estación seleccionada -->
@@ -360,23 +360,42 @@ function clearMarkers() {
   stationMarkers.length = 0;
 }
 
-async function loadStations() {
+async function loadStations(forceRefresh = false) {
   const apiKey = apiKeyEl.value.trim();
-  if (!apiKey) { showError('Introduce tu API key de AEMET para cargar las estaciones.'); return; }
   clearError();
 
   (loadStationsBtn as HTMLButtonElement).disabled = true;
-  stationsCountEl.textContent = 'Cargando estaciones AEMET…';
+  stationsCountEl.textContent = 'Cargando estaciones…';
   stationsCountMap.textContent = 'Cargando estaciones…';
 
   try {
-    const res = await fetch(`/api/aemet/stations?api_key=${encodeURIComponent(apiKey)}`);
-    let data: any = {};
-    try { data = await res.json(); } catch { /* non-JSON */ }
-    if (!res.ok) throw new Error(data.detail ?? `Error ${res.status}: ${res.statusText}`);
+    let stations: AemetStation[];
 
-    allStations = data.stations ?? [];
+    if (forceRefresh) {
+      // Refresh via API (needs key, saves new cache in backend)
+      if (!apiKey) {
+        showError('Introduce tu API key de AEMET para actualizar las estaciones desde AEMET.');
+        stationsCountEl.textContent = allStations.length
+          ? `${allStations.length} estaciones (caché local).`
+          : 'Introduce tu API key y pulsa para actualizar.';
+        (loadStationsBtn as HTMLButtonElement).disabled = false;
+        return;
+      }
+      const res = await fetch(`/api/aemet/stations?api_key=${encodeURIComponent(apiKey)}&refresh=true`);
+      let data: any = {};
+      try { data = await res.json(); } catch { /* non-JSON */ }
+      if (!res.ok) throw new Error(data.detail ?? `Error ${res.status}: ${res.statusText}`);
+      stations = data.stations ?? [];
+    } else {
+      // Initial load: fetch static file bundled with app (no API call to AEMET)
+      const res = await fetch('/data/aemet_stations.json');
+      if (!res.ok) throw new Error('Fichero de estaciones no disponible.');
+      stations = await res.json();
+    }
+
+    allStations = stations;
     clearMarkers();
+    document.getElementById('load-stations-label')!.textContent = 'Actualizar estaciones';
 
     const txt = `${allStations.length} estaciones disponibles en AEMET.`;
     stationsCountEl.textContent = txt;
@@ -410,9 +429,15 @@ async function loadStations() {
     }
   } catch (err: any) {
     const msg = err.message ?? 'Error desconocido';
-    showError(msg);
-    stationsCountEl.textContent = 'Error cargando estaciones.';
-    stationsCountMap.textContent = 'Error cargando estaciones.';
+    if (forceRefresh) {
+      showError(msg);
+      stationsCountEl.textContent = 'Error actualizando estaciones.';
+      stationsCountMap.textContent = 'Error actualizando estaciones.';
+    } else {
+      // Static file failed on initial load — show hint, don't block
+      stationsCountEl.textContent = 'Estaciones no disponibles. Usa "Actualizar estaciones" con tu API key.';
+      stationsCountMap.textContent = 'Estaciones no disponibles.';
+    }
   } finally {
     (loadStationsBtn as HTMLButtonElement).disabled = false;
   }
@@ -483,9 +508,11 @@ async function downloadCsv() {
   a.click();
 }
 
-loadStationsBtn.addEventListener('click', loadStations);
+loadStationsBtn.addEventListener('click', () => loadStations(true));
 loadBtn.addEventListener('click', loadData);
 downloadBtn.addEventListener('click', downloadCsv);
 
 initMap();
+// Load stations from static file automatically on page load (no API call)
+loadStations(false);
 </script>
