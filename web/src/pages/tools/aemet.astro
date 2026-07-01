@@ -274,9 +274,9 @@ function renderChart() {
     borderColor:     PALETTE[i % PALETTE.length],
     backgroundColor: PALETTE[i % PALETTE.length] + '18',
     borderWidth: 1.5,
-    pointRadius: chartRows.length > 500 ? 0 : 2,
+    pointRadius: chartRows.length > 90 ? 0 : 3,
     tension: 0.3,
-    yAxisID: i === 1 ? 'yR' : 'yL',
+    yAxisID: i === 0 ? 'yL' : 'yR',
     spanGaps: true,
   }));
   if (chart) { chart.destroy(); chart = null; }
