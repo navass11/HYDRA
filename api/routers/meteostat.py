@@ -173,9 +173,8 @@ def get_station_data(
     df = df[cols_keep]
 
     n_total = len(df)
-    preview = df.head(500)
-    columns = list(preview.columns)
-    rows = preview.to_dict(orient="records")
+    columns = list(df.columns)
+    rows = df.to_dict(orient="records")
 
     return {
         "station": station,

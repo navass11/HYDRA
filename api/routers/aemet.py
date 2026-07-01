@@ -201,13 +201,12 @@ def get_data(
         )
 
     n_total = len(df)
-    preview  = df.head(500)
     return {
         "station": station,
         "freq":    freq,
         "start":   start,
         "end":     end,
         "n_rows":  n_total,
-        "columns": list(preview.columns),
-        "preview": preview.to_dict(orient="records"),
+        "columns": list(df.columns),
+        "preview": df.to_dict(orient="records"),
     }
