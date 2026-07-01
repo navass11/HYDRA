@@ -70,6 +70,8 @@ def _aemet_fetch(endpoint: str, api_key: str) -> list | dict:
 
     if r1.status_code == 401:
         raise HTTPException(401, "API key de AEMET inválida o expirada.")
+    if r1.status_code == 429:
+        raise HTTPException(429, "Límite de peticiones AEMET excedido (429). Espera un minuto antes de reintentar.")
     if r1.status_code not in (200, 404):
         raise HTTPException(r1.status_code, f"AEMET error {r1.status_code}: {r1.text[:300]}")
 
@@ -83,6 +85,8 @@ def _aemet_fetch(endpoint: str, api_key: str) -> list | dict:
         raise HTTPException(401, "API key de AEMET inválida.")
     if estado == 404:
         raise HTTPException(404, meta.get("descripcion", "No hay datos para el periodo o estación solicitada."))
+    if estado == 429:
+        raise HTTPException(429, meta.get("descripcion", "Límite de peticiones AEMET excedido. Espera un minuto antes de reintentar."))
     if estado != 200:
         raise HTTPException(400, meta.get("descripcion", f"AEMET error estado {estado}"))
 

@@ -167,6 +167,11 @@ import Layout from '../../layouts/Layout.astro';
 <style>
   :global(.leaflet-popup-content-wrapper) { border-radius: 8px; }
   :global(.leaflet-container) { font-family: Inter, system-ui, sans-serif; }
+  :global(html.dark) label:has(input[name="freq"]:checked) {
+    background-color: rgba(20, 184, 166, 0.15) !important;
+    border-color: rgba(45, 212, 191, 0.8) !important;
+    color: #e5e7eb !important;
+  }
 </style>
 
 <script>
@@ -415,8 +420,9 @@ async function searchStations() {
   try {
     const url = `/api/meteostat/stations?lat_min=${latMin}&lat_max=${latMax}&lon_min=${lonMin}&lon_max=${lonMax}&limit=200`;
     const res = await fetch(url);
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.detail ?? 'Error en la búsqueda');
+    let data: any = {};
+    try { data = await res.json(); } catch { /* non-JSON */ }
+    if (!res.ok) throw new Error(data.detail ?? `Error ${res.status}: ${res.statusText}`);
     allStations = data.stations ?? [];
     clearMarkers();
     if (drawRect) { drawRect.remove(); drawRect = null; }
@@ -469,8 +475,9 @@ async function loadData() {
     const res = await fetch(
       `/api/meteostat/data?station=${encodeURIComponent(wmo)}&start=${start}&end=${end}&freq=${f}`
     );
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.detail ?? 'Error cargando datos');
+    let data: any = {};
+    try { data = await res.json(); } catch { /* non-JSON */ }
+    if (!res.ok) throw new Error(data.detail ?? `Error ${res.status}: ${res.statusText}`);
 
     document.getElementById('stat-wmo')!.textContent = wmo;
     document.getElementById('stat-rows')!.textContent = String(data.n_rows);

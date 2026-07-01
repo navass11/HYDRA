@@ -101,7 +101,7 @@ import Layout from '../../layouts/Layout.astro';
                 Horaria
               </label>
             </div>
-            <p class="mt-1.5 text-xs text-gray-400">Horaria: máx. recomendado ~31 días por petición.</p>
+            <p class="mt-1.5 text-xs text-gray-400">Diaria: máx. 6 meses · Horaria: máx. 7 días.</p>
           </div>
 
           <button id="load-btn"
@@ -184,6 +184,11 @@ import Layout from '../../layouts/Layout.astro';
 <style>
   :global(.leaflet-popup-content-wrapper) { border-radius: 8px; }
   :global(.leaflet-container) { font-family: Inter, system-ui, sans-serif; }
+  :global(html.dark) label:has(input[name="freq"]:checked) {
+    background-color: rgba(249, 115, 22, 0.15) !important;
+    border-color: rgba(251, 146, 60, 0.8) !important;
+    color: #e5e7eb !important;
+  }
 </style>
 
 <script>
@@ -366,8 +371,9 @@ async function loadStations() {
 
   try {
     const res = await fetch(`/api/aemet/stations?api_key=${encodeURIComponent(apiKey)}`);
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.detail ?? 'Error cargando estaciones');
+    let data: any = {};
+    try { data = await res.json(); } catch { /* non-JSON */ }
+    if (!res.ok) throw new Error(data.detail ?? `Error ${res.status}: ${res.statusText}`);
 
     allStations = data.stations ?? [];
     clearMarkers();
@@ -421,6 +427,15 @@ async function loadData() {
   const end   = endDateEl.value;
   if (!start || !end || end < start) { showError('El periodo no es válido.'); return; }
   const f = freq();
+  const diffDays = (new Date(end).getTime() - new Date(start).getTime()) / 86_400_000;
+  if (f === 'daily' && diffDays > 184) {
+    showError('Para datos diarios el rango máximo es 6 meses (~184 días). Ajusta las fechas.');
+    return;
+  }
+  if (f === 'hourly' && diffDays > 7) {
+    showError('Para datos horarios el rango máximo es 7 días. Ajusta las fechas.');
+    return;
+  }
 
   dataPanel.classList.add('hidden');
   loadingMsg.classList.remove('hidden');
@@ -431,9 +446,10 @@ async function loadData() {
     const url =
       `/api/aemet/data?station=${encodeURIComponent(selectedStation.indicativo)}` +
       `&start=${start}&end=${end}&freq=${f}&api_key=${encodeURIComponent(apiKey)}`;
-    const res  = await fetch(url);
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.detail ?? 'Error cargando datos');
+    const res = await fetch(url);
+    let data: any = {};
+    try { data = await res.json(); } catch { /* non-JSON */ }
+    if (!res.ok) throw new Error(data.detail ?? `Error ${res.status}: ${res.statusText}`);
 
     document.getElementById('stat-station')!.textContent = selectedStation.indicativo;
     document.getElementById('stat-rows')!.textContent    = String(data.n_rows);
