@@ -32,23 +32,42 @@ def _check_meteostat():
 
 @router.get("/stations")
 def search_stations(
-    lat: float = Query(..., description="Latitud del punto de búsqueda"),
-    lon: float = Query(..., description="Longitud del punto de búsqueda"),
+    lat: float | None = Query(None, description="Latitud del punto central (modo radio)"),
+    lon: float | None = Query(None, description="Longitud del punto central (modo radio)"),
     radius: float = Query(500.0, description="Radio de búsqueda en km"),
+    lat_min: float | None = Query(None, description="Latitud sur del bbox"),
+    lat_max: float | None = Query(None, description="Latitud norte del bbox"),
+    lon_min: float | None = Query(None, description="Longitud oeste del bbox"),
+    lon_max: float | None = Query(None, description="Longitud este del bbox"),
     country: str = Query("", description="Código ISO-2 de país (opcional)"),
     limit: int = Query(50, ge=1, le=200),
 ):
     _check_meteostat()
+    bbox_mode = all(v is not None for v in [lat_min, lat_max, lon_min, lon_max])
+    nearby_mode = lat is not None and lon is not None
+    if not bbox_mode and not nearby_mode:
+        raise HTTPException(status_code=400, detail="Proporciona lat/lon o lat_min/lat_max/lon_min/lon_max.")
     try:
         country_code = country.upper() if isinstance(country, str) and country else ""
         if _METEOSTAT_API == "classes":
             station_query = Stations()
-            station_query = station_query.nearby(lat, lon, radius * 1000)
+            if bbox_mode:
+                station_query = station_query.bounds(lat_min, lon_min, lat_max, lon_max)
+            else:
+                station_query = station_query.nearby(lat, lon, radius * 1000)
             if country_code:
                 station_query = station_query.region(country_code)
             df = station_query.fetch(limit)
         else:
-            df = stations.nearby(Point(lat, lon), radius=int(radius * 1000), limit=limit)
+            if bbox_mode:
+                df = stations.nearby(Point((lat_min + lat_max) / 2, (lon_min + lon_max) / 2),
+                                     radius=int(max(lat_max - lat_min, lon_max - lon_min) * 111000),
+                                     limit=limit)
+                if not df.empty:
+                    df = df[(df["latitude"] >= lat_min) & (df["latitude"] <= lat_max) &
+                            (df["longitude"] >= lon_min) & (df["longitude"] <= lon_max)]
+            else:
+                df = stations.nearby(Point(lat, lon), radius=int(radius * 1000), limit=limit)
             if country_code and not df.empty and "country" in df.columns:
                 df = df[df["country"].str.upper() == country_code].head(limit)
         if df.empty:

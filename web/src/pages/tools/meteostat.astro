@@ -35,22 +35,19 @@ import Layout from '../../layouts/Layout.astro';
       <aside class="space-y-6">
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
 
-          <!-- Búsqueda -->
+          <!-- Búsqueda por rectángulo -->
           <div>
-            <label class="block text-sm font-semibold text-gray-800 mb-2">Buscar en el mapa</label>
-            <div class="flex gap-2">
-              <input id="search-lat" type="number" step="0.01" placeholder="Lat" value="40.42"
-                class="w-1/2 rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-hydra-400" />
-              <input id="search-lon" type="number" step="0.01" placeholder="Lon" value="-3.70"
-                class="w-1/2 rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-hydra-400" />
-            </div>
-            <div class="flex gap-2 mt-2">
-              <input id="search-radius" type="number" min="10" max="2000" value="300" placeholder="Radio km"
-                class="w-1/2 rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-hydra-400" />
-              <button id="search-btn"
-                class="flex-1 bg-sky-600 hover:bg-sky-700 text-white font-semibold py-2 rounded-lg text-sm transition-colors">
-                Buscar
-              </button>
+            <label class="block text-sm font-semibold text-gray-800 mb-2">Zona de búsqueda</label>
+            <button id="draw-btn"
+              class="w-full bg-sky-600 hover:bg-sky-700 text-white font-semibold py-2 rounded-lg text-sm transition-colors flex items-center justify-center gap-2">
+              <span id="draw-icon">⬛</span>
+              <span id="draw-label">Dibujar zona en el mapa</span>
+            </button>
+            <p id="draw-hint" class="hidden mt-2 text-xs text-sky-700 bg-sky-50 border border-sky-100 rounded-lg px-3 py-2">
+              Haz clic y arrastra sobre el mapa para definir la zona.
+            </p>
+            <div id="bbox-info" class="hidden mt-2 text-xs text-gray-500 bg-gray-50 rounded-lg px-3 py-2 space-y-0.5">
+              <p id="bbox-text"></p>
             </div>
           </div>
 
@@ -182,26 +179,34 @@ type MeteoStation = {
   icao: string;
 };
 
-const searchLatEl = document.getElementById('search-lat') as HTMLInputElement;
-const searchLonEl = document.getElementById('search-lon') as HTMLInputElement;
-const searchRadiusEl = document.getElementById('search-radius') as HTMLInputElement;
-const searchBtn = document.getElementById('search-btn')!;
-const selectedNameEl = document.getElementById('selected-name')!;
-const selectedMetaEl = document.getElementById('selected-meta')!;
-const selectedWmoEl = document.getElementById('selected-wmo') as HTMLInputElement;
-const startDateEl = document.getElementById('start-date') as HTMLInputElement;
-const endDateEl = document.getElementById('end-date') as HTMLInputElement;
-const loadBtn = document.getElementById('load-btn')!;
-const downloadBtn = document.getElementById('download-btn') as HTMLButtonElement;
-const errorBox = document.getElementById('error-box')!;
+// DOM refs
+const drawBtn       = document.getElementById('draw-btn')!;
+const drawLabel     = document.getElementById('draw-label')!;
+const drawHint      = document.getElementById('draw-hint')!;
+const bboxInfo      = document.getElementById('bbox-info')!;
+const bboxText      = document.getElementById('bbox-text')!;
+const selectedNameEl  = document.getElementById('selected-name')!;
+const selectedMetaEl  = document.getElementById('selected-meta')!;
+const selectedWmoEl   = document.getElementById('selected-wmo') as HTMLInputElement;
+const startDateEl   = document.getElementById('start-date') as HTMLInputElement;
+const endDateEl     = document.getElementById('end-date') as HTMLInputElement;
+const loadBtn       = document.getElementById('load-btn')!;
+const downloadBtn   = document.getElementById('download-btn') as HTMLButtonElement;
+const errorBox      = document.getElementById('error-box')!;
 const stationsCountEl = document.getElementById('stations-count')!;
-const dataPanel = document.getElementById('data-panel')!;
-const loadingMsg = document.getElementById('loading-msg')!;
+const dataPanel     = document.getElementById('data-panel')!;
+const loadingMsg    = document.getElementById('loading-msg')!;
 
 let map: any = null;
 const stationMarkers: any[] = [];
-let selectedStation: MeteoStation | null = null;
+let allStations: MeteoStation[] = [];
 let lastData: { wmo: string; start: string; end: string; freq: string } | null = null;
+
+// Draw state
+let drawMode = false;
+let drawStart: any = null;
+let drawRect: any = null;
+let currentBbox: { latMin: number; latMax: number; lonMin: number; lonMax: number } | null = null;
 
 function showError(msg: string) {
   errorBox.textContent = msg;
@@ -215,6 +220,12 @@ function freq(): string {
   return (document.querySelector('input[name="freq"]:checked') as HTMLInputElement)?.value ?? 'daily';
 }
 
+// Exposed globally so popup buttons can call it inline
+(window as any).__meteoSelectWmo = (wmo: string) => {
+  const st = allStations.find(s => s.wmo === wmo);
+  if (st) { selectStation(st); map?.closePopup(); }
+};
+
 function initMap() {
   const mapEl = document.getElementById('meteostat-map');
   if (!mapEl || typeof L === 'undefined') return;
@@ -225,6 +236,67 @@ function initMap() {
   }).addTo(map);
   window.setTimeout(() => map.invalidateSize(), 0);
   window.addEventListener('resize', () => map.invalidateSize());
+
+  // Rectangle drawing events
+  map.on('mousedown', (e: any) => {
+    if (!drawMode) return;
+    e.originalEvent.preventDefault();
+    drawStart = e.latlng;
+    if (drawRect) { drawRect.remove(); drawRect = null; }
+    drawRect = L.rectangle([drawStart, drawStart], {
+      color: '#0891b2', weight: 2, dashArray: '6 3', fillOpacity: 0.08, interactive: false,
+    }).addTo(map);
+  });
+
+  map.on('mousemove', (e: any) => {
+    if (!drawMode || !drawStart) return;
+    drawRect?.setBounds(L.latLngBounds(drawStart, e.latlng));
+  });
+
+  map.on('mouseup', (e: any) => {
+    if (!drawMode || !drawStart) return;
+    const bounds = L.latLngBounds(drawStart, e.latlng);
+    drawStart = null;
+    exitDrawMode();
+    if (Math.abs(bounds.getNorth() - bounds.getSouth()) < 0.05 ||
+        Math.abs(bounds.getEast() - bounds.getWest()) < 0.05) {
+      showError('El rectángulo es demasiado pequeño. Arrastra más para definir la zona.');
+      drawRect?.remove(); drawRect = null;
+      return;
+    }
+    currentBbox = {
+      latMin: bounds.getSouth(),
+      latMax: bounds.getNorth(),
+      lonMin: bounds.getWest(),
+      lonMax: bounds.getEast(),
+    };
+    bboxText.textContent =
+      `N ${currentBbox.latMax.toFixed(2)}  S ${currentBbox.latMin.toFixed(2)}  ` +
+      `W ${currentBbox.lonMin.toFixed(2)}  E ${currentBbox.lonMax.toFixed(2)}`;
+    bboxInfo.classList.remove('hidden');
+    searchStations();
+  });
+}
+
+function enterDrawMode() {
+  drawMode = true;
+  drawLabel.textContent = 'Cancelar dibujo';
+  drawBtn.classList.remove('bg-sky-600', 'hover:bg-sky-700');
+  drawBtn.classList.add('bg-amber-500', 'hover:bg-amber-600');
+  drawHint.classList.remove('hidden');
+  map.dragging.disable();
+  map.getContainer().style.cursor = 'crosshair';
+}
+
+function exitDrawMode() {
+  drawMode = false;
+  drawLabel.textContent = 'Dibujar zona en el mapa';
+  drawBtn.classList.remove('bg-amber-500', 'hover:bg-amber-600');
+  drawBtn.classList.add('bg-sky-600', 'hover:bg-sky-700');
+  drawHint.classList.add('hidden');
+  map.dragging.enable();
+  map.getContainer().style.cursor = '';
+  drawStart = null;
 }
 
 function clearMarkers() {
@@ -243,47 +315,43 @@ function markerStyle(active = false) {
 }
 
 function selectStation(st: MeteoStation) {
-  selectedStation = st;
   selectedNameEl.textContent = st.name;
-  selectedMetaEl.textContent = `WMO ${st.wmo} · ${st.latitude.toFixed(3)}, ${st.longitude.toFixed(3)}${st.elevation != null ? ` · ${st.elevation} m` : ''} · ${st.country}`;
+  selectedMetaEl.textContent =
+    `WMO ${st.wmo} · ${st.latitude.toFixed(3)}, ${st.longitude.toFixed(3)}` +
+    `${st.elevation != null ? ` · ${st.elevation} m` : ''} · ${st.country}`;
   selectedWmoEl.value = st.wmo;
-  stationMarkers.forEach(m => {
-    if (m._stData?.wmo === st.wmo) {
-      m.setStyle(markerStyle(true));
-    } else {
-      m.setStyle(markerStyle(false));
-    }
-  });
+  stationMarkers.forEach(m =>
+    m.setStyle(markerStyle(m._stData?.wmo === st.wmo))
+  );
 }
 
 async function searchStations() {
+  if (!currentBbox) { showError('Dibuja primero una zona en el mapa.'); return; }
   clearError();
-  const lat = parseFloat(searchLatEl.value);
-  const lon = parseFloat(searchLonEl.value);
-  const radius = parseFloat(searchRadiusEl.value);
-  if (isNaN(lat) || isNaN(lon) || isNaN(radius)) {
-    showError('Introduce coordenadas y radio válidos.');
-    return;
-  }
-  searchBtn.textContent = 'Buscando…';
-  searchBtn.setAttribute('disabled', '');
+  const { latMin, latMax, lonMin, lonMax } = currentBbox;
+  const drawBtnEl = drawBtn as HTMLButtonElement;
+  drawBtnEl.setAttribute('disabled', '');
+  stationsCountEl.textContent = 'Buscando estaciones…';
   try {
-    const res = await fetch(`/api/meteostat/stations?lat=${lat}&lon=${lon}&radius=${radius}&limit=100`);
+    const url = `/api/meteostat/stations?lat_min=${latMin}&lat_max=${latMax}&lon_min=${lonMin}&lon_max=${lonMax}&limit=200`;
+    const res = await fetch(url);
     const data = await res.json();
     if (!res.ok) throw new Error(data.detail ?? 'Error en la búsqueda');
-    const stations: MeteoStation[] = data.stations ?? [];
+    allStations = data.stations ?? [];
     clearMarkers();
-    stationsCountEl.textContent = `${stations.length} estaciones encontradas en un radio de ${radius} km.`;
-    stations.forEach(st => {
+    if (drawRect) { drawRect.remove(); drawRect = null; }
+    stationsCountEl.textContent = `${allStations.length} estaciones encontradas.`;
+    allStations.forEach(st => {
       const m = L.circleMarker([st.latitude, st.longitude], markerStyle(false)).addTo(map);
       m._stData = st;
       m.bindPopup(`
-        <div class="text-sm">
-          <p class="font-semibold text-gray-900">${st.name}</p>
-          <p class="text-gray-500">WMO ${st.wmo} · ${st.country}</p>
-          <p class="text-gray-500">${st.latitude.toFixed(4)}, ${st.longitude.toFixed(4)}${st.elevation != null ? ` · ${st.elevation} m` : ''}</p>
-          <button type="button" data-wmo="${st.wmo}"
-            class="mt-2 rounded-md bg-cyan-500 px-3 py-1.5 text-xs font-semibold text-slate-950 w-full">
+        <div style="min-width:180px;font-size:13px">
+          <p style="font-weight:600;margin:0 0 2px">${st.name}</p>
+          <p style="color:#6b7280;margin:0 0 2px">WMO ${st.wmo} · ${st.country}</p>
+          <p style="color:#6b7280;margin:0 0 8px">${st.latitude.toFixed(4)}, ${st.longitude.toFixed(4)}${st.elevation != null ? ` · ${st.elevation} m` : ''}</p>
+          <button type="button"
+            onclick="window.__meteoSelectWmo('${st.wmo}')"
+            style="width:100%;background:#06b6d4;color:#0f172a;font-weight:600;font-size:12px;padding:6px 10px;border-radius:6px;border:none;cursor:pointer">
             Seleccionar estación
           </button>
         </div>
@@ -291,32 +359,28 @@ async function searchStations() {
       m.on('click', () => selectStation(st));
       stationMarkers.push(m);
     });
-    map.on('popupopen', (evt: any) => {
-      const btn = evt.popup.getElement()?.querySelector('[data-wmo]');
-      btn?.addEventListener('click', () => {
-        const wmo = btn.getAttribute('data-wmo');
-        const st = stations.find(s => s.wmo === wmo);
-        if (st) { selectStation(st); map.closePopup(); }
-      });
-    });
-    if (stations.length > 0) {
-      const bounds = L.latLngBounds(stations.map((s: MeteoStation) => [s.latitude, s.longitude]));
+    if (allStations.length > 0) {
+      const bounds = L.latLngBounds(allStations.map((s: MeteoStation) => [s.latitude, s.longitude]));
       map.fitBounds(bounds, { padding: [24, 24], maxZoom: 10 });
     }
   } catch (err: any) {
     showError(err.message ?? 'Error desconocido');
+    stationsCountEl.textContent = 'Error en la búsqueda.';
   } finally {
-    searchBtn.textContent = 'Buscar';
-    searchBtn.removeAttribute('disabled');
+    drawBtnEl.removeAttribute('disabled');
   }
 }
 
 function renderTable(columns: string[], rows: Record<string, any>[]) {
   const thead = document.getElementById('data-thead')!;
   const tbody = document.getElementById('data-tbody')!;
-  thead.innerHTML = '<tr>' + columns.map(c => `<th class="py-2 px-3 font-medium text-gray-500 whitespace-nowrap">${c}</th>`).join('') + '</tr>';
+  thead.innerHTML = '<tr>' + columns.map(c =>
+    `<th class="py-2 px-3 font-medium text-gray-500 whitespace-nowrap">${c}</th>`
+  ).join('') + '</tr>';
   tbody.innerHTML = rows.slice(0, 500).map(row =>
-    '<tr>' + columns.map(c => `<td class="py-1.5 px-3 text-gray-700 whitespace-nowrap">${row[c] ?? ''}</td>`).join('') + '</tr>'
+    '<tr>' + columns.map(c =>
+      `<td class="py-1.5 px-3 text-gray-700 whitespace-nowrap">${row[c] ?? ''}</td>`
+    ).join('') + '</tr>'
   ).join('');
 }
 
@@ -335,7 +399,9 @@ async function loadData() {
   downloadBtn.disabled = true;
 
   try {
-    const res = await fetch(`/api/meteostat/data?station=${encodeURIComponent(wmo)}&start=${start}&end=${end}&freq=${f}`);
+    const res = await fetch(
+      `/api/meteostat/data?station=${encodeURIComponent(wmo)}&start=${start}&end=${end}&freq=${f}`
+    );
     const data = await res.json();
     if (!res.ok) throw new Error(data.detail ?? 'Error cargando datos');
 
@@ -359,14 +425,18 @@ async function loadData() {
 async function downloadCsv() {
   if (!lastData) return;
   const { wmo, start, end, freq: f } = lastData;
-  const url = `/api/meteostat/data?station=${encodeURIComponent(wmo)}&start=${start}&end=${end}&freq=${f}&download=true`;
+  const url =
+    `/api/meteostat/data?station=${encodeURIComponent(wmo)}&start=${start}&end=${end}&freq=${f}&download=true`;
   const a = document.createElement('a');
   a.href = url;
   a.download = `meteostat_${wmo}_${start}_${end}_${f}.csv`;
   a.click();
 }
 
-searchBtn.addEventListener('click', searchStations);
+drawBtn.addEventListener('click', () => {
+  if (!map) return;
+  if (drawMode) { exitDrawMode(); } else { enterDrawMode(); }
+});
 loadBtn.addEventListener('click', loadData);
 downloadBtn.addEventListener('click', downloadCsv);
 
