@@ -101,12 +101,12 @@ import Layout from '../../layouts/Layout.astro';
 
         <div class="bg-sky-50 border border-sky-100 rounded-2xl p-5 text-sm text-sky-900 space-y-2">
           <p class="font-semibold">Integración HYDRA</p>
-          <p>Usa <code class="text-sky-700">pyhydra.data_sources.rainfall.meteostat</code> para reproducir esta descarga en Python con el mismo periodo y estación.</p>
+          <p>Usa <code class="text-sky-700 break-all">pyhydra.data_sources.rainfall.meteostat</code> para reproducir esta descarga en Python con el mismo periodo y estación.</p>
         </div>
       </aside>
 
       <!-- ── PANEL PRINCIPAL ── -->
-      <main class="space-y-8">
+      <main class="space-y-8 min-w-0">
 
         <!-- Mapa -->
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
@@ -142,12 +142,14 @@ import Layout from '../../layouts/Layout.astro';
           </div>
 
           <!-- Tabla de preview -->
-          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 overflow-x-auto">
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
             <h3 class="font-semibold text-gray-800 mb-4">Vista previa (primeras 500 filas)</h3>
-            <table id="data-table" class="w-full text-sm text-left border-collapse">
-              <thead id="data-thead" class="text-xs text-gray-500 uppercase tracking-wide border-b border-gray-100"></thead>
-              <tbody id="data-tbody" class="divide-y divide-gray-50"></tbody>
-            </table>
+            <div class="overflow-x-auto">
+              <table id="data-table" class="min-w-max w-full text-sm text-left border-collapse">
+                <thead id="data-thead" class="text-xs text-gray-500 uppercase tracking-wide border-b border-gray-100"></thead>
+                <tbody id="data-tbody" class="divide-y divide-gray-50"></tbody>
+              </table>
+            </div>
           </div>
         </div>
 
