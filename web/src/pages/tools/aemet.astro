@@ -287,7 +287,7 @@ function renderChart() {
     options: {
       responsive: true, maintainAspectRatio: false, animation: false,
       interaction: { mode: 'index', intersect: false },
-      plugins: { legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 10, color: tickColor } } },
+      plugins: { legend: { display: false } },
       scales: {
         x:  { ticks: { maxTicksLimit: 10, maxRotation: 0, color: tickColor }, grid: { color: gridColor } },
         yL: { type: 'linear', position: 'left',
