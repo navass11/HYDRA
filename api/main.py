@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api.routers import bias, compound, copulas, hydraulic, idf, interpolation, meteostat, notebooks, rfa, sensitivity, statistical, stochastic, trend
+from api.routers import aemet, bias, compound, copulas, hydraulic, idf, interpolation, meteostat, notebooks, rfa, sensitivity, statistical, stochastic, trend
 
 app = FastAPI(title="HYDRA API", version="0.1.0")
 
@@ -18,6 +18,7 @@ app.include_router(statistical.router, prefix="/api/statistical", tags=["statist
 app.include_router(copulas.router, prefix="/api/copulas", tags=["copulas"])
 app.include_router(notebooks.router, prefix="/api/notebooks", tags=["notebooks"])
 app.include_router(meteostat.router, prefix="/api/meteostat", tags=["meteostat"])
+app.include_router(aemet.router,    prefix="/api/aemet",    tags=["aemet"])
 app.include_router(compound.router, prefix="/api/compound", tags=["compound"])
 app.include_router(interpolation.router, prefix="/api/interpolation", tags=["interpolation"])
 app.include_router(idf.router, prefix="/api/idf", tags=["idf"])
