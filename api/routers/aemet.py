@@ -2,7 +2,7 @@ import io
 from datetime import datetime
 from urllib.parse import quote
 
-import httpx
+import requests as _requests
 import pandas as pd
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import StreamingResponse
@@ -44,17 +44,24 @@ def _to_float(v) -> float | None:
         return None
 
 
-async def _aemet_fetch(endpoint: str, api_key: str) -> list | dict:
+def _aemet_fetch(endpoint: str, api_key: str) -> list | dict:
     """2-step AEMET fetch: metadata → datos URL → actual data."""
-    url1 = f"{AEMET_BASE}{endpoint}?api_key={quote(api_key, safe='')}"
-    async with httpx.AsyncClient(timeout=30, verify=True) as client:
-        r1 = await client.get(url1)
+    url1 = f"{AEMET_BASE}{endpoint}?api_key={api_key}"
+    try:
+        r1 = _requests.get(url1, timeout=30)
+    except _requests.RequestException as exc:
+        raise HTTPException(502, f"Error conectando con AEMET: {exc}")
+
     if r1.status_code == 401:
         raise HTTPException(401, "API key de AEMET inválida o expirada.")
     if r1.status_code not in (200, 404):
         raise HTTPException(r1.status_code, f"AEMET error {r1.status_code}: {r1.text[:300]}")
 
-    meta = r1.json()
+    try:
+        meta = r1.json()
+    except Exception:
+        raise HTTPException(502, f"AEMET devolvió una respuesta inesperada: {r1.text[:200]}")
+
     estado = int(meta.get("estado", 0))
     if estado == 401:
         raise HTTPException(401, "API key de AEMET inválida.")
@@ -65,19 +72,25 @@ async def _aemet_fetch(endpoint: str, api_key: str) -> list | dict:
 
     datos_url = meta.get("datos")
     if not datos_url:
-        raise HTTPException(500, "AEMET no devolvió URL de datos.")
+        raise HTTPException(502, "AEMET no devolvió URL de datos.")
 
-    async with httpx.AsyncClient(timeout=60, verify=True) as client:
-        r2 = await client.get(datos_url)
+    try:
+        r2 = _requests.get(datos_url, timeout=60)
+    except _requests.RequestException as exc:
+        raise HTTPException(502, f"Error descargando datos de AEMET: {exc}")
+
     if r2.status_code != 200:
         raise HTTPException(r2.status_code, f"Error descargando datos AEMET ({r2.status_code}).")
 
-    return r2.json()
+    try:
+        return r2.json()
+    except Exception:
+        raise HTTPException(502, f"AEMET datos: respuesta no-JSON ({r2.text[:200]})")
 
 
 @router.get("/stations")
-async def get_stations(api_key: str = Query(..., description="API key de AEMET OpenData")):
-    raw = await _aemet_fetch("/valores/climatologicos/inventarioestaciones/todasestaciones/", api_key)
+def get_stations(api_key: str = Query(..., description="API key de AEMET OpenData")):
+    raw = _aemet_fetch("/valores/climatologicos/inventarioestaciones/todasestaciones/", api_key)
     stations = []
     for s in (raw if isinstance(raw, list) else []):
         lat = _parse_dms(s.get("latitud", ""))
@@ -96,7 +109,7 @@ async def get_stations(api_key: str = Query(..., description="API key de AEMET O
 
 
 @router.get("/data")
-async def get_data(
+def get_data(
     station:  str  = Query(..., description="Indicativo AEMET de la estación"),
     start:    str  = Query(..., description="Fecha inicio YYYY-MM-DD"),
     end:      str  = Query(..., description="Fecha fin YYYY-MM-DD"),
@@ -112,7 +125,6 @@ async def get_data(
     if end_dt < start_dt:
         raise HTTPException(400, "La fecha de fin debe ser posterior a la de inicio.")
 
-    # AEMET date format in path segments (colons must be encoded)
     fi = quote(start_dt.strftime("%Y-%m-%dT00:00:00UTC"), safe="")
     ff = quote(end_dt.strftime("%Y-%m-%dT23:59:59UTC"),   safe="")
 
@@ -121,7 +133,7 @@ async def get_data(
     else:
         endpoint = f"/valores/climatologicos/diarios/datos/fechaini/{fi}/fechafin/{ff}/estacion/{station}/"
 
-    raw = await _aemet_fetch(endpoint, api_key)
+    raw = _aemet_fetch(endpoint, api_key)
 
     if not raw or not isinstance(raw, list):
         raise HTTPException(404, "No hay datos para esta estación y periodo.")
