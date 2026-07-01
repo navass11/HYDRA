@@ -146,7 +146,7 @@ import Layout from '../../layouts/Layout.astro';
           <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
             <div>
               <h3 class="font-semibold text-gray-800 mb-3">Visualización de variables</h3>
-              <p class="text-xs text-gray-400 mb-3">Activa/desactiva variables. Eje izquierdo = primera variable activa · Eje derecho = segunda.</p>
+              <p class="text-xs text-gray-400 mb-3">Selecciona hasta 2 variables para comparar. La más antigua queda en el eje <strong>L</strong> (izquierdo), la más nueva en el <strong>R</strong> (derecho). Al elegir una tercera se descarta la más antigua.</p>
               <div id="var-toggles" class="flex flex-wrap gap-2"></div>
             </div>
             <div class="relative" style="height:380px">
@@ -213,50 +213,77 @@ let allStations: MeteoStation[] = [];
 let lastData: { wmo: string; start: string; end: string; freq: string } | null = null;
 let chart: any = null;
 let chartRows: Record<string, any>[] = [];
-let activeVars: Set<string> = new Set();
+let colMap = new Map<string, string>();
+let activeOrdered: string[] = [];  // max 2, [0]=left axis [1]=right axis
 
 const PALETTE = ['#0891b2','#f97316','#10b981','#8b5cf6','#ef4444','#f59e0b','#06b6d4','#ec4899'];
+
+function getUnit(col: string): string {
+  if (col.endsWith('_mm'))  return 'mm';
+  if (col.endsWith('_C'))   return '°C';
+  if (col.endsWith('_kmh')) return 'km/h';
+  if (col.endsWith('_ms'))  return 'm/s';
+  if (col.endsWith('_hPa')) return 'hPa';
+  if (col.endsWith('_pct')) return '%';
+  if (col.endsWith('_h'))   return 'h';
+  if (col.endsWith('_deg')) return '°';
+  if (col.endsWith('_min')) return 'min';
+  return col;
+}
+
+function refreshPills() {
+  const container = document.getElementById('var-toggles')!;
+  container.querySelectorAll<HTMLElement>('.var-btn').forEach(btn => {
+    const col = btn.dataset.col!;
+    const color = colMap.get(col)!;
+    const pos = activeOrdered.indexOf(col);
+    const active = pos !== -1;
+    btn.style.borderColor = color;
+    btn.style.backgroundColor = active ? color + '28' : 'transparent';
+    btn.style.color = active ? color : '#9ca3af';
+    btn.textContent = active ? `${col} · ${pos === 0 ? 'L' : 'R'}` : col;
+  });
+}
 
 function buildVarToggles(columns: string[]) {
   const numCols = columns.filter(c => c !== 'date' && c !== 'fecha' && c !== 'hora');
   const container = document.getElementById('var-toggles')!;
   container.innerHTML = '';
-  activeVars.clear();
-  numCols.forEach((col, i) => {
-    const color = PALETTE[i % PALETTE.length];
-    const on = i < 4;
-    if (on) activeVars.add(col);
+  colMap.clear();
+  numCols.forEach((col, i) => colMap.set(col, PALETTE[i % PALETTE.length]));
+  activeOrdered = numCols.slice(0, 2);
+
+  numCols.forEach(col => {
     const btn = document.createElement('button');
     btn.className = 'var-btn px-3 py-1.5 rounded-full text-xs font-semibold border-2 transition-all cursor-pointer';
-    btn.textContent = col;
-    const setStyle = (active: boolean) => {
-      btn.style.borderColor = color;
-      btn.style.backgroundColor = active ? color + '22' : 'transparent';
-      btn.style.color = active ? color : '#9ca3af';
-    };
-    setStyle(on);
+    btn.dataset.col = col;
     btn.addEventListener('click', () => {
-      const has = activeVars.has(col);
-      if (has) activeVars.delete(col); else activeVars.add(col);
-      setStyle(!has);
+      const idx = activeOrdered.indexOf(col);
+      if (idx !== -1) {
+        activeOrdered.splice(idx, 1);
+      } else {
+        activeOrdered.push(col);
+        if (activeOrdered.length > 2) activeOrdered.shift();
+      }
+      refreshPills();
       renderChart();
     });
     container.appendChild(btn);
   });
+  refreshPills();
 }
 
 function renderChart() {
-  if (!chartRows.length || !activeVars.size) return;
+  if (!chartRows.length || activeOrdered.length === 0) return;
   const isDark = document.documentElement.classList.contains('dark');
   const gridColor  = isDark ? 'rgba(148,163,184,0.12)' : 'rgba(0,0,0,0.07)';
   const tickColor  = isDark ? '#94a3b8' : '#6b7280';
   const labels = chartRows.map(r => r.date ?? r.fecha ?? '');
-  const varList = [...activeVars];
-  const datasets = varList.map((col, i) => ({
+  const datasets = activeOrdered.map((col, i) => ({
     label: col,
     data: chartRows.map(r => (r[col] !== null && r[col] !== undefined ? Number(r[col]) : null)),
-    borderColor:     PALETTE[i % PALETTE.length],
-    backgroundColor: PALETTE[i % PALETTE.length] + '18',
+    borderColor:     colMap.get(col)!,
+    backgroundColor: colMap.get(col)! + '18',
     borderWidth: 1.5,
     pointRadius: chartRows.length > 90 ? 0 : 3,
     tension: 0.3,
@@ -275,11 +302,11 @@ function renderChart() {
       scales: {
         x:  { ticks: { maxTicksLimit: 10, maxRotation: 0, color: tickColor }, grid: { color: gridColor } },
         yL: { type: 'linear', position: 'left',
-               title: { display: true, text: varList[0] ?? '', color: tickColor },
+               title: { display: true, text: getUnit(activeOrdered[0]), color: colMap.get(activeOrdered[0]) },
                ticks: { color: tickColor }, grid: { color: gridColor } },
-        ...(varList.length > 1 ? { yR: {
+        ...(activeOrdered.length > 1 ? { yR: {
           type: 'linear', position: 'right',
-          title: { display: true, text: varList[1], color: tickColor },
+          title: { display: true, text: getUnit(activeOrdered[1]), color: colMap.get(activeOrdered[1]) },
           ticks: { color: tickColor }, grid: { drawOnChartArea: false },
         } } : {}),
       },
