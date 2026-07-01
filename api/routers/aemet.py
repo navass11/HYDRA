@@ -1,6 +1,5 @@
 import io
 from datetime import datetime
-from urllib.parse import quote
 
 import requests as _requests
 import pandas as pd
@@ -45,12 +44,30 @@ def _to_float(v) -> float | None:
 
 
 def _aemet_fetch(endpoint: str, api_key: str) -> list | dict:
-    """2-step AEMET fetch: metadata → datos URL → actual data."""
-    url1 = f"{AEMET_BASE}{endpoint}?api_key={api_key}"
+    """2-step AEMET fetch: metadata → datos URL → actual data.
+
+    The api_key is sent both as a query parameter and as an HTTP header
+    to maximise compatibility across AEMET API versions.
+    Dates in path segments are passed raw (colons are valid in URL paths
+    per RFC 3986) to avoid double-encoding issues with requests.
+    """
+    url1 = f"{AEMET_BASE}{endpoint}"
+    headers = {"Cache-Control": "no-cache", "api_key": api_key}
+    params  = {"api_key": api_key}
+
     try:
-        r1 = _requests.get(url1, timeout=30)
+        r1 = _requests.get(url1, headers=headers, params=params, timeout=30)
     except _requests.RequestException as exc:
         raise HTTPException(502, f"Error conectando con AEMET: {exc}")
+
+    # Detect HTML error pages (web-server 404/500) before JSON parsing
+    ctype = r1.headers.get("Content-Type", "")
+    if "html" in ctype.lower() or r1.text.lstrip().startswith("<"):
+        raise HTTPException(
+            502,
+            f"AEMET devolvió una página HTML en lugar de JSON (HTTP {r1.status_code}). "
+            "Comprueba que la API key es válida y que el endpoint existe.",
+        )
 
     if r1.status_code == 401:
         raise HTTPException(401, "API key de AEMET inválida o expirada.")
@@ -60,7 +77,7 @@ def _aemet_fetch(endpoint: str, api_key: str) -> list | dict:
     try:
         meta = r1.json()
     except Exception:
-        raise HTTPException(502, f"AEMET devolvió una respuesta inesperada: {r1.text[:200]}")
+        raise HTTPException(502, f"AEMET: respuesta no-JSON inesperada: {r1.text[:200]}")
 
     estado = int(meta.get("estado", 0))
     if estado == 401:
@@ -125,8 +142,9 @@ def get_data(
     if end_dt < start_dt:
         raise HTTPException(400, "La fecha de fin debe ser posterior a la de inicio.")
 
-    fi = quote(start_dt.strftime("%Y-%m-%dT00:00:00UTC"), safe="")
-    ff = quote(end_dt.strftime("%Y-%m-%dT23:59:59UTC"),   safe="")
+    # Colons are valid in URL path segments (RFC 3986 §3.3) — no quoting needed.
+    fi = start_dt.strftime("%Y-%m-%dT00:00:00UTC")
+    ff = end_dt.strftime("%Y-%m-%dT23:59:59UTC")
 
     if freq == "hourly":
         endpoint = f"/valores/climatologicos/horarios/datos/fechaini/{fi}/fechafin/{ff}/estacion/{station}/"
