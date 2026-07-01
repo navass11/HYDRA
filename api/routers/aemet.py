@@ -211,14 +211,26 @@ def get_data(
             "presMin":  "presMin_hPa",
         }
 
-    cols = {k: v for k, v in keep.items() if k in df.columns}
-    df = df[list(cols)].rename(columns=cols)
+    try:
+        cols = {k: v for k, v in keep.items() if k in df.columns}
+        df = df[list(cols)].rename(columns=cols)
 
-    for col in df.columns:
-        if col not in ("fecha", "hora"):
-            df[col] = df[col].apply(_to_float)
+        for col in df.columns:
+            if col not in ("fecha", "hora"):
+                df[col] = df[col].apply(_to_float)
 
-    df = df.sort_values("fecha").reset_index(drop=True)
+        if "fecha" not in df.columns:
+            raise HTTPException(502, "AEMET no incluyó columna 'fecha' en los datos.")
+
+        df = df.sort_values("fecha").reset_index(drop=True)
+
+        # Replace NaN/None → Python None so JSON serialization never fails
+        df = df.astype(object).where(df.notna(), other=None)
+
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(500, f"Error procesando datos AEMET: {exc}") from exc
 
     if download:
         freq_label = "horario" if freq == "hourly" else "diario"

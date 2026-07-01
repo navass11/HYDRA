@@ -155,8 +155,8 @@ def get_station_data(
 
     for col in df.select_dtypes("float64").columns:
         df[col] = df[col].round(2)
-    # Convert pandas NA / Int64 to float/None so JSON serialization works
-    df = df.where(df.notna(), other=None)
+    # astype(object) then where() → NaN becomes Python None (float NaN is not JSON-serializable)
+    df = df.astype(object).where(df.notna(), other=None)
 
     if download:
         csv_buf = io.StringIO()
