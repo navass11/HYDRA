@@ -55,8 +55,3 @@ The `.github/workflows/azure.yml` workflow builds and publishes the `jupyter`, `
 
 - Python core (pyhydra): Navas Fernández, S. (2026). *pyhydra: a modular Python library for hydrological and climate analysis* (v0.1.0). Zenodo. https://doi.org/10.5281/zenodo.20932555
 - This repository (HYDRA): Navas Fernández, S. (2026). *HYDRA: web platform, notebooks and deployment environment for pyhydra* (v0.1.0). Zenodo. https://doi.org/10.5281/zenodo.21138151
-
-## Related branches
-
-- [`thesis`](https://github.com/navass11/HYDRA/tree/thesis) — LaTeX sources of the doctoral thesis (kept as a separate worktree: `HYDRA-thesis`).
-- [`paper`](https://github.com/navass11/HYDRA/tree/paper) — LaTeX sources of the Besaya Manning-sensitivity paper.
