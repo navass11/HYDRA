@@ -109,7 +109,7 @@ def lmom_fit_gev(data):
     return mu, sigma, xi
 
 
-def bootstrap_bands(data, T_arr, n_boot=600, method="mle", ci=90):
+def bootstrap_bands(data, T_arr, n_boot=600, method="mle", ci=90, y_cap=None):
     """Bootstrap (5th–95th %) confidence bands for return level curve."""
     lo = (100 - ci) / 2
     hi = 100 - lo
@@ -127,6 +127,8 @@ def bootstrap_bands(data, T_arr, n_boot=600, method="mle", ci=90):
             else:
                 raise ValueError
             rl = gev_rl_arr(T_arr, mu, sigma, xi)
+            if y_cap is not None and np.nanmax(rl) > y_cap:
+                continue
             if np.all(np.isfinite(rl)) and np.all(rl > 0):
                 curves.append(rl)
         except Exception:
@@ -155,12 +157,13 @@ def fig_gev_comparacion():
     c_mle, loc_mle, scale_mle = genextreme.fit(data)
     mu_mle, sigma_mle, xi_mle = loc_mle, scale_mle, -c_mle
     rl_mle = gev_rl_arr(T_arr, mu_mle, sigma_mle, xi_mle)
-    lo_mle, hi_mle = bootstrap_bands(data, T_arr, method="mle")
+    y_cap = 650.0
+    lo_mle, hi_mle = bootstrap_bands(data, T_arr, method="mle", y_cap=y_cap)
 
     # — L-moments fit —
     mu_lm, sigma_lm, xi_lm = lmom_fit_gev(data)
     rl_lm = gev_rl_arr(T_arr, mu_lm, sigma_lm, xi_lm)
-    lo_lm, hi_lm = bootstrap_bands(data, T_arr, method="lmom")
+    lo_lm, hi_lm = bootstrap_bands(data, T_arr, method="lmom", y_cap=y_cap)
 
     # — Approximate Bayesian (MCMC approximated via parametric bootstrap) —
     rng2 = np.random.default_rng(99)
@@ -171,6 +174,8 @@ def fig_gev_comparacion():
         try:
             c2, l2, sc2 = genextreme.fit(s)
             rl = gev_rl_arr(T_arr, l2, sc2, -c2)
+            if np.nanmax(rl) > y_cap:
+                continue
             if np.all(np.isfinite(rl)) and np.all(rl > 0):
                 curves_b.append(rl)
         except Exception:
@@ -199,7 +204,7 @@ def fig_gev_comparacion():
     # Fitted curves
     ax.plot(T_arr, rl_mle,  color=BLUE,  lw=1.6, label="Maxima verosimilitud (MLE)")
     ax.plot(T_arr, rl_lm,   color=RED,   lw=1.6, label="L-momentos",            linestyle="--")
-    ax.plot(T_arr, rl_b,    color=GREEN, lw=1.6, label="Bayesiano (MCMC)",       linestyle="-.")
+    ax.plot(T_arr, rl_b,    color=GREEN, lw=1.6, label="Bayesiano (aprox.)",      linestyle="-.")
     ax.plot(T_arr, rl_true, color=GREY,  lw=1.0, label="Distribucion real", linestyle=":")
 
     # Observed data
@@ -212,6 +217,7 @@ def fig_gev_comparacion():
     ax.set_xticks([2, 5, 10, 25, 50, 100, 200, 500, 1000])
     ax.set_xticklabels(["2", "5", "10", "25", "50", "100", "200", "500", "1000"])
     ax.set_xlim(1.5, 1000)
+    ax.set_ylim(0, 700)
     ax.legend(loc="upper left", framealpha=0.85, edgecolor="0.8")
 
     fig.savefig(OUT / "fig_gev_comparacion.pdf")

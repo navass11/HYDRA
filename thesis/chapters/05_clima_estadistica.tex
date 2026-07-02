@@ -41,14 +41,14 @@ El módulo \texttt{time\_series.extremes} implementa el ajuste de distribuciones
   \item[Aproximación de Fisher] La función \texttt{fit\_gev\_fisher} estima la incertidumbre paramétrica mediante la matriz de información de Fisher, produciendo muestras de la distribución asintoticamente gaussiana de los parámetros sin recurrir a MCMC. Es un intermedio entre MLE y la inferencia bayesiana completa.
 \end{description}
 
-La \cref{fig:gev_comparacion} ilustra el comportamiento comparativo de los tres estimadores sobre un conjunto de 40 máximos anuales generados con parámetros GEV conocidos ($\mu=90$, $\sigma=30$, $\xi=0{,}20$). Las bandas de incertidumbre se obtienen por bootstrap no paramétrico (MLE y L-momentos) y por bootstrap paramétrico (tercer método). La figura sirve como referencia operativa para identificar visualmente las diferencias entre métodos antes de aplicarlos sobre datos reales.
+La \cref{fig:gev_comparacion} ilustra el comportamiento comparativo de tres estimadores sobre un conjunto de 40 máximos anuales generados con parámetros GEV conocidos ($\mu=90$, $\sigma=30$, $\xi=0{,}20$). Las bandas de incertidumbre se obtienen por remuestreo: bootstrap no paramétrico para MLE y L-momentos, y remuestreo paramétrico como aproximación visual a la incertidumbre posterior del enfoque bayesiano. La figura no pretende sustituir el diagnóstico sobre datos reales; su función es mostrar que las diferencias entre estimadores se amplifican fuera del rango observado.
 
 La comparación sistemática sobre datos reales se realiza en el caso de la precipitación extrema del 29 de octubre de 2024 en la Comunidad Valenciana (\cref{sec:caso_valencia}), que permite contrastar MLE, L-momentos y MCMC sobre las mismas series observadas, con y sin incluir el evento extraordinario, y documentar el cambio en los niveles de retorno y la incertidumbre de cada método \parencite{navas2025valenciaIA}.
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.88\linewidth]{figures/fig_gev_comparacion}
-  \caption{Comparación ilustrativa de los tres métodos de ajuste GEV sobre 40 máximos anuales sintéticos (parámetros reales: $\mu=90$~mm, $\sigma=30$~mm, $\xi=0{,}20$). MLE y L-momentos usan bootstrap no paramétrico (remuestra de los datos); el tercer método usa bootstrap paramétrico (remuestra de la distribución ajustada por MLE). La curva real punteada sirve de referencia. Los tres métodos convergen en el rango observado y divergen a partir de $T \approx 100$ años. Elaboración propia.}
+  \caption{Comparación ilustrativa de tres métodos de ajuste GEV sobre 40 máximos anuales sintéticos (parámetros reales: $\mu=90$~mm, $\sigma=30$~mm, $\xi=0{,}20$). MLE y L-momentos usan bootstrap no paramétrico; el enfoque bayesiano se representa mediante una banda de incertidumbre paramétrica comparable. La curva real punteada sirve de referencia. Los métodos son similares dentro del rango observado y divergen progresivamente al extrapolar hacia períodos de retorno altos. Elaboración propia.}
   \label{fig:gev_comparacion}
 \end{figure}
 

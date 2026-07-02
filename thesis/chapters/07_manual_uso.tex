@@ -196,32 +196,29 @@ Además de los notebooks funcionales generales, el directorio del caso piloto de
 \subsection{Qué puede ejecutar un tercero}
 \label{sec:reproducibilidad_tercero}
 
-La reproducibilidad de \hydra se entiende en términos concretos: qué puede ejecutar un tercero mañana, con qué datos y en qué tiempo. La siguiente tabla clasifica los elementos reproducibles por tipo de dependencia y resultado esperado.
+La reproducibilidad de \hydra se entiende en términos concretos: qué puede ejecutar un tercero, qué dependencia externa condiciona la ejecución y qué evidencia queda para auditar el resultado. La \cref{tab:reproducibilidad} no es una promesa de tiempos universales, sino una matriz de madurez reproducible de los flujos documentados.
 
 \begin{table}[htbp]
   \centering
-  \small
-  \caption{Elementos reproducibles de \hydra clasificados por disponibilidad, datos y tiempo estimado de ejecución.}
+  \footnotesize
+  \caption{Matriz de reproducibilidad de los flujos documentados en \hydra.}
   \label{tab:reproducibilidad}
-  \begin{tabular}{p{0.23\textwidth}p{0.09\textwidth}p{0.13\textwidth}p{0.13\textwidth}p{0.28\textwidth}}
+  \begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.24\textwidth}>{\raggedright\arraybackslash}p{0.17\textwidth}>{\raggedright\arraybackslash}p{0.24\textwidth}>{\raggedright\arraybackslash}p{0.23\textwidth}@{}}
     \toprule
-    Elemento & Disp. & Datos & Tiempo & Resultado esperado \\
+    Flujo & Nivel reproducible & Dependencia externa & Evidencia auditable \\
     \midrule
-    Ajuste GEV sintético (MLE, L-mom., bayesiano) & Sí & Sintéticos & $<$5 min & Curvas de período de retorno con bandas de incertidumbre (fig.~5.1) \\[3pt]
-    Análisis de inundación compuesta (cópulas) & Sí & Sintéticos & $<$5 min & Isolíneas AND/OR, MPDE (fig.~5.2) \\[3pt]
-    Generación estocástica NEOPRENE (NSRP/STNSRP) & Sí & Sintéticos & $<$15 min & Series de lluvia sintéticas puntuales y multisitio \\[3pt]
-    Corrección de sesgo delta/EQM & Sí & Sintéticos o ERA5, CMIP6 & $<$10 min & NetCDF corregido con señal de cambio preservada \\[3pt]
-    Interpolación espacial y AFR & Sí & Sintéticos o AEMET & $<$10 min & GeoTIFF interpolado, cuantiles regionales \\[3pt]
-    Descarga ERA5 (requiere cuenta CDS) & Sí & API abierta & Horas & NetCDF ERA5 horario/mensual \\[3pt]
-    Descarga CMIP6 (requiere cuenta CDS) & Sí & API abierta & Horas & NetCDF de proyecciones por modelo y escenario \\[3pt]
-    Simulación HEC-HMS (requiere HEC-HMS) & Sí & Modelos de referencia & 10--60 min & Hidrogramas DSS para 200 eventos sintéticos \\[3pt]
-    Flujo hidráulico completo con SFINCS & Parcial & DEM + hidrogramas & Horas--días & Mapas de calado por evento, períodos de retorno por pixel \\[3pt]
-    Caso piloto completo (Corrales de Buelna) & Parcial & Datos abiertos + modelo & Días & Distribución de calados, mapa de período de retorno \\
+    Ajuste GEV y comparación de estimadores & Completo & Ninguna; datos sintéticos incluidos & Figura 5.1, parámetros ajustados e intervalos \\
+    Cópulas e inundación compuesta & Completo & Ninguna; datos sintéticos incluidos & Isolíneas AND/OR y punto de diseño MPDE \\
+    Generación estocástica NEOPRENE/CoSMoS & Completo & Librerías instaladas en el entorno Docker & Series sintéticas, semillas y parámetros \\
+    Corrección de sesgo e interpolación espacial & Completo con datos de ejemplo & ERA5/CMIP6 o estaciones si se usa caso real & NetCDF/GeoTIFF con metadatos de fuente \\
+    Descarga de datos externos & Reproducible bajo credenciales & CDS, NASA Earthdata, AEMET o ESGF según fuente & Ficheros descargados y parámetros de consulta \\
+    HEC-HMS, HEC-RAS, SWAT y SFINCS & Reproducible si existe motor/proyecto & Ejecutable y proyecto calibrado del modelo externo & Hidrogramas, mapas o tablas de salida \\
+    Casos piloto completos & Parcial por tamaño/licencias & Datos, modelos y credenciales del caso & Resultados trazables y notebooks de auditoría \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-Los elementos marcados como ``Parcial'' requieren adicionalmente un modelo calibrado o una licencia de software específica. Los primeros seis ítems pueden ejecutarse sin más requisito que tener instalado \pyhydra o el entorno Docker; son los más adecuados para una primera evaluación del marco.
+Los flujos marcados como completos pueden ejecutarse con el entorno Docker y los datos incluidos o sintéticos. Los flujos condicionados por credenciales, motores externos o proyectos calibrados siguen siendo reproducibles en el sentido de trazabilidad de código, parámetros y salidas, pero no son autocontenidos; esta distinción es esencial para no confundir reproducibilidad computacional con redistribución completa de datos y modelos de terceros.
 
 \section{Referencia de la API}
 \label{sec:manual_wiki_api}

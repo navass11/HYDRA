@@ -345,14 +345,14 @@ La misma separación se mantiene en el despliegue cloud. En el flujo usado para 
   soft/.style={-Stealth, line width=0.55pt, color=tg40}
 ]
 \node[box=blueblock] (github) at (-5.2,2.25) {\textbf{GitHub}\\código, notebooks\\web, API, Docker};
-\node[box=tealblock] (actions) at (-1.75,2.25) {\textbf{GitHub Actions}\\build Linux/amd64};
-\node[box=tealblock] (registry) at (1.75,2.25) {\textbf{Registro}\\hydra-web\\hydra-api\\hydra-jupyter};
+\node[box=tealblock] (actions) at (-1.75,2.25) {\textbf{GitHub Actions}\\construcción\\de imágenes};
+\node[box=tealblock] (registry) at (1.75,2.25) {\textbf{Registro ACR}\\web, api\\y jupyter};
 \node[box=orangeblock] (aca) at (5.2,2.25) {\textbf{Azure}\\Container Apps\\red interna};
 
 \node[service=orangeblock] (web) at (-4.5,0.30) {\textbf{web}\\Astro + nginx\\catálogo y proxy};
 \node[service=orangeblock] (api) at (0,0.30) {\textbf{api}\\FastAPI\\sesiones y utilidades};
 \node[service=orangeblock] (jupyter) at (4.5,0.30) {\textbf{jupyter}\\JupyterLab\\\pyhydra editable};
-\node[wide=blueblock] (files) at (0,-1.55) {\textbf{Azure Files / volumen de datos}\\notebooks de sesión, proyectos externos y resultados};
+\node[wide=blueblock] (files) at (0,-1.55) {\textbf{Azure Files}\\volumen persistente\\notebooks, proyectos y resultados};
 
 \node[box=redstep] (user) at (-4.6,-3.15) {\textbf{Usuario}\\abre notebook};
 \node[box=redstep] (copy) at (0,-3.15) {\textbf{Sesión}\\copia aislada\\del notebook};
