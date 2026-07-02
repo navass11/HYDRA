@@ -264,7 +264,7 @@ from pyhydra.data_sources.river_discharge.grdc import read_grdc
 
 # Lectura de fichero GRDC descargado del portal GRDC
 Q = read_grdc("data/grdc/6335060_Q_Day.Cmd.txt")
-# Q: pd.DataFrame con columnas ["Q"] e índice DatetimeIndex en UTC
+# Q: pd.DataFrame con columnas ["date", "discharge"] (m3/s, NaN si falta/marcado)
 \end{codeblock}
 
 % ============================================================
@@ -280,7 +280,7 @@ El bloque \path{pyhydra.climate} opera sobre las series y campos producidos por 
 
   \item[\texttt{stochastic\_generation}.] Generación estocástica de precipitación con NEOPRENE, tanto puntual (\texttt{NSRPModel}) como multisitio (\texttt{STNSRPModel}), y generación de series hidro-climáticas generales con CoSMoS. Incluye además la generación de campos aleatorios espacialmente coherentes basados en variogramas.
 
-  \item[\texttt{bias\_correction}.] Corrección de sesgo de proyecciones CMIP6: método delta y mapeo cuantil (EQM, DQM, SDM) implementados en la clase \texttt{BiasCorrection}.
+  \item[\texttt{bias\_correction}.] Corrección de sesgo de proyecciones CMIP6: método delta (\texttt{delta\_method}) y mapeo cuantil (EQM, QDM, SDM) implementados en la clase \texttt{BiasCorrection}, con un único punto de entrada \texttt{BiasCorrection.fit\_transform} para las cuatro variantes.
 
   \item[\texttt{hybrid\_downscaling}.] Selección de eventos representativos por máxima disimilitud, reconstrucción de hidrogramas, interpolación de manchas de inundación y estimación del período de retorno por pixel. Las clases principales son \path{FloodEventSelector}, \path{HydrographReconstructor}, \path{FloodMapInterpolator} y \path{pixel_return_period}.
 \end{description}
@@ -300,19 +300,19 @@ ams = extract_block_maxima(precip_series, freq="YE")
 
 # 2. Ajuste GEV por máxima verosimilitud
 params = fit_gev(ams.values, method="mle")
-# params: {"loc": ..., "scale": ..., "shape": ...}
+# params: {"mu": ..., "sigma": ..., "xi": ...}
 
 # 3. Niveles de retorno para T = [10, 25, 50, 100, 200, 500] años
 rl = return_levels(params, T_values=[10, 25, 50, 100, 200, 500])
 
-# 4. Intervalo de confianza al 90% por bootstrap paramétrico
-lower, upper = return_level_ci(
-    ams.values, params, T=100, method="bootstrap",
-    n_bootstrap=500, alpha=0.10,
+# 4. Intervalo de confianza al 90% por bootstrap (MLE + remuestreo)
+point, lower, upper = return_level_ci(
+    ams.values, T=100, method="mle",
+    n_bootstrap=500, ci=0.90,
 )
 
 # 5. Figura de diagnóstico (QQ, PP y curva de retorno)
-plot_return_levels(ams.values, params, T_max=500)
+plot_return_levels(ams.values, params, T_range=(1.5, 500))
 \end{codeblock}
 
 Para la corrección de sesgo de proyecciones CMIP6 con el método delta sobre precipitación:
@@ -321,12 +321,12 @@ Para la corrección de sesgo de proyecciones CMIP6 con el método delta sobre pr
 \begin{codeblock}
 from pyhydra.climate.bias_correction import BiasCorrection
 
-bc = BiasCorrection(method="delta")
-precip_corrected = bc.fit_transform(
+precip_corrected = BiasCorrection.fit_transform(
     obs=precip_obs_monthly,        # pd.Series observada (período histórico)
     hist=precip_cmip6_hist,        # pd.Series modelo histórico
     future=precip_cmip6_ssp585,    # pd.Series modelo futuro
     var="pr",                      # variable ("pr" o "tas")
+    method="delta",                # "delta" | "eqm" | "qdm" | "sdm"
 )
 \end{codeblock}
 }

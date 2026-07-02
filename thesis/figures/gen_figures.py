@@ -354,10 +354,14 @@ def fig_valencia():
 
 def fig_tanganika():
     """
-    Bar chart of projected lake-level INCREMENTS relative to historical baseline.
-    Values constructed to be consistent with the published results:
-    - max increment ~+0.9 m in 2041-2060 for short T (thesis text)
-    - increments stabilize <0.6 m for T100-T500 by 2081-2100
+    DEPRECATED — do not use.
+
+    This function produced a synthetic bar chart with values fabricated to
+    "look consistent" with the published results, instead of the actual
+    figure from the paper. It has been replaced by a real crop of Figura 7
+    from Navas et al. (navas2025tanganicaIA), extracted directly from the
+    source PDF and stored as fig_tanganika_proyecciones.pdf/png. Kept here
+    only for history; must not be called from __main__.
     """
     T_labels = ["T5", "T25", "T100", "T500"]
     horizons = ["2021-2040", "2041-2060", "2081-2100"]
@@ -437,5 +441,7 @@ def fig_tanganika():
 if __name__ == "__main__":
     fig_gev_comparacion()
     fig_valencia()
-    fig_tanganika()
+    # fig_tanganika() intentionally NOT called — see its docstring.
+    # fig_tanganika_proyecciones.pdf/png is now a real crop of Figura 7
+    # from the published paper (navas2025tanganicaIA), not a generated plot.
     print("\nAll figures saved to", OUT)

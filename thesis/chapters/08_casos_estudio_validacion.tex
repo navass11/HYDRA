@@ -20,7 +20,7 @@ Los nueve casos no son una colección heterogénea de trabajos: cada uno valida 
     \toprule
     Grupo & Casos & Qué validan \\
     \midrule
-    \textbf{Núcleo de inundación estocástica basada en impacto} & Besaya, Sant Llorenç des Cardassar, Calle 30 & Cópulas multivariantes, generación de escenarios, selección MaxDiss, adaptadores de modelos hidráulicos (Iber, HEC-HMS, HEC-RAS, SFINCS), reconstrucción k-NN, período de retorno sobre impacto \\[6pt]
+    \textbf{Núcleo de inundación estocástica basada en impacto} & Besaya, Sant Llorenç des Cardassar, Calle 30 & Cópulas multivariantes, generación de escenarios, selección MaxDiss, adaptadores de modelos hidráulicos integrados en \pyhydra (HEC-HMS, HEC-RAS, SFINCS) --- con Iber como motor hidráulico usado manualmente en las aplicaciones iniciales, sin adaptador de automatización ---, reconstrucción k-NN, período de retorno sobre impacto \\[6pt]
     \textbf{Incertidumbre estadística y extremos} & Valencia DANA 2024 & Comparación de estimadores GEV (MLE, L-momentos, bayesiano), análisis de frecuencia regional, comportamiento ante eventos sin precedente histórico \\[6pt]
     \textbf{Cambio climático, datos globales y escalabilidad} & Lago Tanganica, vulnerabilidad hidroeléctrica andina, cuenca atlántica--IAHR 2022, SIMPCCe, Atlas de Panamá & Descarga automática de ERA5/CMIP6, corrección de sesgo, proyecciones multi-modelo, escalabilidad a dominios nacionales y contextos con datos escasos \\
     \bottomrule
@@ -425,7 +425,7 @@ El problema estadístico que plantea el episodio es la estimación del período 
 
 El estudio aplica y compara tres métodos de ajuste de la distribución GEV sobre series de máximos anuales de precipitación diaria acumulada en dos niveles de análisis: individual por estación y regional de frecuencia.
 
-El análisis individual se centra en las estaciones 8137X (Turis) y V103 (Carlet). Se ajusta la distribución GEV mediante máxima verosimilitud (MLE), L-momentos y estimación bayesiana con priors débiles implementada en Stan mediante MCMC hamiltoniano (4 cadenas, 1000 muestras), siguiendo la estructura del módulo \texttt{pyhydra.climate.time\_series}. Para cada método se comparan dos escenarios: con y sin la inclusión del evento de 2024 en la serie.
+El análisis individual se centra en las estaciones 8137X (Turis) y V103 (Carlet). Se ajusta la distribución GEV mediante máxima verosimilitud (MLE), L-momentos y estimación bayesiana con priors débiles mediante MCMC hamiltoniano (4 cadenas, 1000 muestras) con PyMC, siguiendo la estructura del módulo \texttt{pyhydra.climate.time\_series}. Para cada método se comparan dos escenarios: con y sin la inclusión del evento de 2024 en la serie.
 
 El análisis regional de frecuencia se aplica a dos escalas. El RFA local utiliza un grupo de 9 estaciones ubicadas en el entorno de Turis y Carlet, seleccionadas por proximidad espacial y coherencia pluviométrica. El RFA global utiliza una red ampliada de estaciones distribuidas por la Comunidad Valenciana. En ambos casos se emplea el procedimiento de Hosking y Wallis \parencite{hosking1997rfa}: estandarización de series (Z-score por estación), construcción de la muestra regional (máximo anual entre estaciones estandarizadas), y ajuste GEV a la serie regional mediante los tres métodos. La transferencia a escala local se realiza mediante la transformación inversa $z_{T,i} = y_T \cdot s_i + \bar{x}_i$, donde $y_T$ es el cuantil regional adimensional para el período de retorno $T$, y $s_i$ y $\bar{x}_i$ son la desviación típica y la media empíricas de la estación de interés. El conjunto de datos empleado comprende 224 estaciones (30 AEMET, 41 SIAR, 153 AVAMET).
 
@@ -537,14 +537,14 @@ Las proyecciones bajo cambio climático muestran incrementos sistemáticos de lo
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=\linewidth]{figures/fig_tanganika_proyecciones}
-  \caption{Evolución del caudal mensual proyectado de entrada al Lago Tanganica (m$^3$/s), estimado con el modelo AdaBoost bajo condiciones históricas (gris) y bajo los escenarios de cambio climático SSP2-4.5 (azul) y SSP5-8.5 (rojo), con bandas de incertidumbre intermodelo (percentiles 10--90 del ensemble CMIP6). La línea vertical marca el inicio del período de proyección (2020). Ambos escenarios proyectan un incremento sostenido del caudal medio hacia finales del siglo XXI, con mayor variabilidad interanual. Fuente: \parencite{navas2025tanganicaIA}.}
+  \caption{Evolución del caudal mensual proyectado de entrada al Lago Tanganica (m$^3$/s), estimado con el modelo AdaBoost bajo condiciones históricas (gris) y bajo los escenarios de cambio climático SSP2-4.5 (azul) y SSP5-8.5 (rojo), con bandas de incertidumbre intermodelo. La línea vertical marca el inicio del período de proyección (2022). Ambos escenarios proyectan un incremento sostenido del caudal medio hacia finales del siglo XXI, con mayor variabilidad interanual. Figura reproducida de \parencite{navas2025tanganicaIA}.}
   \label{fig:tanganika_proyecciones}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=\linewidth]{figures/fig_tanganika_variaciones_nivel}
-  \caption{Variación máxima de nivel del Lago Tanganica respecto al histórico (m) para períodos de retorno de 5 a 500 años, en cuatro horizontes temporales (2021--2040, 2041--2060, 2061--2080, 2081--2100), bajo los escenarios SSP2-4.5 (azul claro) y SSP5-8.5 (azul oscuro). Las barras de error representan la incertidumbre del ensemble de 19 modelos CMIP6. El mayor incremento proyectado se alcanza en el período 2041--2060 para períodos de retorno cortos (T5--T10, $>$0,9 m); hacia finales del siglo los incrementos se estabilizan por debajo de 0,6 m para T $\geq$ 100 años. Fuente: \parencite{navas2025tanganicaIA}.}
+  \caption{Variación máxima de nivel del Lago Tanganica respecto al histórico (m) para períodos de retorno de 5 a 500 años, en cuatro horizontes temporales (2021--2040, 2041--2060, 2061--2080, 2081--2100), bajo los escenarios SSP2-4.5 (azul claro) y SSP5-8.5 (azul oscuro). Las barras de error representan la incertidumbre del ensemble de 19 modelos CMIP6. El mayor incremento proyectado se alcanza en el período 2041--2060 para períodos de retorno cortos (T5--T10, $>$0,9 m); hacia finales del siglo los incrementos se estabilizan por debajo de 0,6 m para T $\geq$ 100 años. Figura reproducida de \parencite{navas2025tanganicaIA}.}
   \label{fig:tanganika_variaciones_nivel}
 \end{figure}
 
@@ -714,7 +714,7 @@ El atlas publica seis familias de capas de riesgo en un visor web interactivo de
 
 \subsection{Conexión con HYDRA}
 
-El Atlas de Panamá es la aplicación más amplia de \hydra en un contexto de encargo industrial a escala nacional. El proyecto fue el primer banco de pruebas a gran escala del bloque de datos (\texttt{pyhydra.data\_sources}) para la descarga y procesamiento de ERA-5, CMIP6 y datos TRMM; del módulo de corrección de sesgo (\texttt{pyhydra.climate.bias\_correction}) para el procesamiento masivo de 23 modelos y 6 variables; y de la interfaz SFINCS (\texttt{pyhydra.models.sfincs}) para la generación sistemática de manchas de inundación a escala de país. Los patrones de automatización y reutilización de configuración validados en este proyecto se trasladaron directamente a la arquitectura final de \hydra.
+El Atlas de Panamá es la aplicación más amplia de \hydra en un contexto de encargo industrial a escala nacional. El proyecto fue el primer banco de pruebas a gran escala del bloque de datos (\texttt{pyhydra.data\_sources}) para la descarga y procesamiento de ERA-5, CMIP6 y datos TRMM; del módulo de corrección de sesgo (\texttt{pyhydra.climate.bias\_correction}) para el procesamiento masivo de 23 modelos y 6 variables; y de la interfaz SFINCS (\texttt{pyhydra.modeling.hydraulic.sfincs}) para la generación sistemática de manchas de inundación a escala de país. Los patrones de automatización y reutilización de configuración validados en este proyecto se trasladaron directamente a la arquitectura final de \hydra.
 
 \clearpage
 \section{Síntesis de la validación}
@@ -733,13 +733,13 @@ Los nueve casos de estudio cubren conjuntamente todos los módulos de \hydra a d
     \toprule
     Caso & Módulos validados \\
     \midrule
-    Mallorca & SIAR, PERSIANN/TRMM como diagnóstico, kriging espacial, cópulas gaussianas, MaxDiss, Iber (hidrológico + hidráulico), k-NN, downscaling híbrido desde lluvia \\
-    Besaya & Extremos de caudal, cópulas gaussianas, Iber en la aplicación inicial de 2018, HEC-RAS/SFINCS en desarrollos posteriores \parencite{navas2018besaya} \\
+    Mallorca & SIAR, PERSIANN/TRMM como diagnóstico, kriging espacial, cópulas gaussianas, MaxDiss, k-NN, downscaling híbrido desde lluvia; simulación hidráulica con Iber (herramienta externa, sin adaptador en \pyhydra) \\
+    Besaya & Extremos de caudal, cópulas gaussianas, HEC-RAS/SFINCS en desarrollos posteriores \parencite{navas2018besaya}; Iber como motor hidráulico externo en la aplicación inicial de 2018 \\
     Calle 30 & ERA5, extremos precipitación, cópulas multivariantes, HEC-HMS, HEC-RAS 1D, downscaling híbrido, períodos de retorno por pixel \\
-    Valencia 2024 & AEMET/SIAR/AVAMET, GEV (MLE, L-momentos, MCMC/Stan), RFA, cuantificación de incertidumbre \\
+    Valencia 2024 & AEMET/SIAR/AVAMET, GEV (MLE, L-momentos, MCMC con PyMC), RFA, cuantificación de incertidumbre \\
     Tanganica & ERA5, CMIP6, corrección de sesgo delta, regresión ML (AdaBoost), K-means, bootstrap sintético, extremos no paramétricos \\
     Andes (Bolivia, Colombia, Ecuador, Perú) & Kriging Universal con MDT global, CMIP5, corrección de sesgo, modelo VIC \\
-    Cuenca atlántica -- CC (IAHR 2022) & EURO-CORDEX, corrección de sesgo, cópulas gaussianas, MaxDiss, Iber, k-NN, comparación metodologías \\
+    Cuenca atlántica -- CC (IAHR 2022) & EURO-CORDEX, corrección de sesgo, cópulas gaussianas, MaxDiss, k-NN, comparación metodologías; simulación hidráulica con Iber (herramienta externa) \\
     SIMPCCe & SPAIN02, CORDEX-AEMET, corrección de sesgo SDM, ANN, análisis de sequía, informes automáticos \\
     Atlas Panamá & ERA5, TRMM, CMIP6, NEOPRENE (NSRP/STNSRP), kriging 1~km, 414 correcciones SDM/QDM, GEV, SFINCS, inundación costera \\
     \bottomrule

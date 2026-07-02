@@ -94,7 +94,7 @@ La salida del capítulo 4 alimenta tres tipos de procesos posteriores. Las serie
   USGS & EEUU, red completa & Caudal aforado & estación & DataFrame \\[2pt]
   CMIP6 (CDS) & Global, hasta 2100 & Precipitación, temperatura & variable & NetCDF \\[2pt]
   CMIP6 (ESGF) & Global, hasta 2100 & Multivariable & variable & NetCDF \\[2pt]
-  SoilGrids & Global & Textura, carbono orgánico, bulk density & 250 m & GeoTIFF \\[2pt]
+  SoilGrids & Global & Textura (arena, limo, arcilla) & 250 m & GeoTIFF \\[2pt]
   \bottomrule
 \end{longtable}
 }
@@ -159,7 +159,7 @@ La salida CMIP6 no se usa directamente en modelos hidrológicos o hidráulicos. 
 
 \section{Suelos}
 
-El módulo \texttt{soils.soilgrids} descarga mapas globales de propiedades del suelo de la base SoilGrids v2.0 \parencite{poggio2021soilgrids} en formato GeoTIFF. Las propiedades disponibles incluyen densidad aparente (\texttt{bdod}), contenido de arcilla (\texttt{clay}), limo (\texttt{silt}), arena (\texttt{sand}), carbono organico (\texttt{soc}), pH (\texttt{phh2o}) y capacidad de campo (\texttt{awcts}). La descarga se realiza a través de la API REST de ISRIC, especificando una bounding-box y la lista de variables deseadas.
+El módulo \texttt{soils.soilgrids} descarga mapas globales de textura del suelo en formato GeoTIFF a 250~m de resolución desde el archivo estático de la versión 2017 de SoilGrids \parencite{poggio2021soilgrids} (\texttt{files.isric.org/soilgrids/former}), en las siete profundidades estándar del producto. Las variables descargadas son las tres fracciones granulométricas —arena (\texttt{SNDPPT}), limo (\texttt{SLTPPT}) y arcilla (\texttt{CLYPPT})—, suficientes para la clasificación textural USDA que alimenta los flujos de preparación de modelos hidrológicos de \hydra. El pipeline se completa con funciones de clasificación textural (\texttt{find\_usda\_soilclass}) y de agregación modal entre profundidades (\texttt{extract\_mode\_soilclass}) para obtener una única capa de clase de suelo por celda.
 
 La información edafológica es un dato de entrada necesario para SWAT (clasificación de usos y suelos) y para la estimación del número de curva en HEC-HMS. El valor industrial de este módulo no reside solo en la automatización de la descarga, sino en la cadena de transformación desde el raster de propiedad continua hasta el mapa de parámetros hidrológicos, que requiere reclasificaciones, proyecciones y agregaciones específicas del modelo de destino.
 

@@ -20,9 +20,9 @@ El módulo \texttt{time\_series.events} implementa dos estrategias complementari
 \begin{description}
   \item[\texttt{extract\_block\_maxima}] Extrae el máximo de cada bloque temporal definido por una frecuencia (\texttt{YE} para máximos anuales, \texttt{ME} para mensuales). Produce la muestra para el análisis GEV clásico.
 
-  \item[\texttt{extract\_peaks\_over\_threshold}] Extrae picos independientes sobre un umbral con separación mínima entre eventos configurable. La separación mínima es el parámetro crítico para garantizar la independencia de los eventos, y debe ajustarse al tiempo de concentración de la cuenca o al tiempo de decaimiento de la variable analizada.
+  \item[\texttt{extract\_pot}] Extrae picos independientes sobre un umbral con separación mínima entre eventos configurable. La separación mínima es el parámetro crítico para garantizar la independencia de los eventos, y debe ajustarse al tiempo de concentración de la cuenca o al tiempo de decaimiento de la variable analizada.
 
-  \item[\texttt{extract\_flood\_events}] Detecta eventos de crecida completos y extrae, para cada uno, el valor pico, la duración y el volumen. Esta función es el punto de entrada para el análisis multivariante mediante cópulas.
+  \item[\texttt{extract\_discharge\_events}] Detecta eventos de crecida completos por cruce de umbral, con refinamiento en los puntos de inflexión del hidrograma, y extrae para cada uno el valor pico, la duración y el volumen. Esta función es el punto de entrada para el análisis multivariante mediante cópulas. El módulo ofrece variantes equivalentes para precipitación (\texttt{extract\_precipitation\_events}, por rachas húmedas; \texttt{extract\_precipitation\_events\_pot}, por picos sobre umbral; \texttt{extract\_precipitation\_events\_nday}, por acumulación en ventana de $N$ días) y una función unificada de entrada, \texttt{extract\_events}, que selecciona el método según el tipo de variable.
 \end{description}
 
 La detección de eventos es una decisión metodológica, no una operación neutra. La duración mínima entre picos, el umbral POT o la definición de volumen condicionan la muestra que después se ajusta con GEV/GPD o se utiliza en una cópula. Por eso las funciones devuelven no solo valores máximos, sino también fechas, duración, volumen y metadatos de extracción. En estudios de impacto, conservar el evento completo es esencial porque el mismo caudal punta puede producir impactos distintos si cambia la duración o la forma del hidrograma.
@@ -36,7 +36,7 @@ El módulo \texttt{time\_series.extremes} implementa el ajuste de distribuciones
 
   \item[L-momentos] Estimación por L-momentos de primer a cuarto orden \parencite{hosking1997rfa}. Los L-momentos son más robustos que los momentos clásicos ante la presencia de valores extremos, lo que los hace recomendables cuando la muestra es inferior a 30 años. Se usa como método por defecto cuando no se específica ningún otro.
 
-  \item[Inferencia bayesiana por MCMC] La función \texttt{fit\_gev\_mcmc} ajusta el modelo GEV con Stan \parencite{carpenter2017stan} o PyMC \parencite{salvatier2016pymc} mediante muestreo MCMC. La configuración por defecto usa 4 cadenas con 1000 muestras tras 500 de calentamiento, lo que produce estimaciones de la distribución posterior de los tres parámetros y, por tanto, intervalos de credibilidad completos para cualquier nivel de retorno. Este método es el más costoso computacionalmente, pero produce las estimaciones más informativas sobre incertidumbre.
+  \item[Inferencia bayesiana por MCMC] La función \texttt{fit\_gev\_mcmc} ajusta el modelo GEV mediante muestreo MCMC con PyMC \parencite{salvatier2016pymc} y el muestreador NUTS, con una parametrización no centrada. La configuración por defecto usa 4 cadenas con 2000 muestras, lo que produce estimaciones de la distribución posterior de los tres parámetros y, por tanto, intervalos de credibilidad completos para cualquier nivel de retorno. Este método es el más costoso computacionalmente, pero produce las estimaciones más informativas sobre incertidumbre. Para el análisis regional jerárquico (véase más adelante en este capítulo), la clase \texttt{HierarchicalGEV} ofrece además un respaldo alternativo con PyStan \parencite{carpenter2017stan} cuando PyMC no está disponible.
 
   \item[Aproximación de Fisher] La función \texttt{fit\_gev\_fisher} estima la incertidumbre paramétrica mediante la matriz de información de Fisher, produciendo muestras de la distribución asintoticamente gaussiana de los parámetros sin recurrir a MCMC. Es un intermedio entre MLE y la inferencia bayesiana completa.
 \end{description}
@@ -62,15 +62,15 @@ El diseño del módulo evita presentar un único estimador como solución univer
 
 \subsection{Análisis de frecuencia regional}
 
-El módulo \texttt{spatial\_analysis.rfa} implementa el análisis de frecuencia regional (AFR) por el método de Hosking y Wallis \parencite{hosking1997rfa} basado en L-momentos. El procedimiento sigue las etapas estándar:
+El módulo \texttt{spatial\_analysis.rfa} implementa el análisis de frecuencia regional (AFR) mediante el método del índice de avenida (\emph{index-flood}) \parencite{hosking1997rfa} basado en L-momentos. El procedimiento sigue las etapas estándar:
 \begin{enumerate}
-  \item Cálculo de L-momentos en cada estación con \texttt{lmom\_fit}.
-  \item Verificación de homogeneidad regional mediante el estadístico $H$ de Hosking.
-  \item Ajuste de la distribución regional sobre los L-momentos medios ponderados por longitud de registro.
-  \item Estimación de factores de frecuencia regionales y reconversión a cuantiles locales mediante el índice de crecida.
+  \item Ajuste de GEV en cada estación, por máxima verosimilitud (\texttt{fit\_gev\_mle}), L-momentos (\texttt{fit\_gev\_lmom}, requiere \texttt{lmoments3}) o inferencia bayesiana (\texttt{fit\_gev\_bayes}).
+  \item Normalización de cada serie por su índice de avenida —la media de sus máximos anuales— mediante \texttt{regional\_index\_flood}.
+  \item Ajuste de la distribución regional sobre los datos normalizados agrupados (\texttt{fit\_regional\_gev}).
+  \item Reconversión a cuantiles locales por estación mediante el índice de avenida (\texttt{regional\_return\_levels}).
 \end{enumerate}
 
-La función principal \texttt{regional\_frequency\_analysis} acepta un diccionario de series de estación y la distribución objetivo (GEV por defecto) y devuelve los parámetros regionales y los factores de frecuencia. Su aplicación al caso Valencia 2024 \parencite{navas2025valenciaIA} con tres escalas espaciales (individual, regional local con 9 estaciones, regional global para toda la Comunidad Valenciana) ilustra cómo la elección de la escala de pooling modifica sustancialmente los períodos de retorno estimados del evento.
+La función \texttt{fit\_regional\_gev} acepta un diccionario de series de estación y devuelve los parámetros regionales junto con la serie de índices de avenida; \texttt{regional\_return\_levels} aplica el reescalado a cada estación para una lista de períodos de retorno. La implementación actual no incluye un test formal de homogeneidad regional (estadístico $H$ de Hosking-Wallis); la homogeneidad del agrupamiento debe verificarse por criterio hidrológico antes de aplicar el ajuste regional. Su aplicación al caso Valencia 2024 \parencite{navas2025valenciaIA} con tres escalas espaciales (individual, regional local con 9 estaciones, regional global para toda la Comunidad Valenciana) ilustra cómo la elección de la escala de pooling modifica sustancialmente los períodos de retorno estimados del evento.
 
 La implementación conserva explícitamente la relación entre estación, región homogénea y factor local de escala. Esta información es necesaria para auditar si una estación se está beneficiando legítimamente de información regional o si se está mezclando con estaciones de régimen pluviométrico distinto. En regiones mediterráneas o de fuerte gradiente orográfico, esta comprobación es tan importante como el ajuste de la distribución final.
 
@@ -116,13 +116,13 @@ Sobre cada isolínea de período de retorno se calcula el \emph{Evento de Diseñ
 
 \subsection{Interpolación geoestadística}
 
-El módulo de interpolación espacial, \path{spatial_analysis.interpolation}, proporciona la función \path{interpolate_spatial} para interpolar campos de estaciones a malla regular. Soporta dos métodos: inverso de la distancia ponderado (IDW) y kriging ordinario o universal con drift externo (elevación, coordenadas). El kriging universal con elevación como variable auxiliar fue el método utilizado en el caso de Mallorca \parencite{navas2019mallorca} para la asignación de precipitación a subcuencas desde los pluviómetros disponibles.
+El módulo de interpolación espacial, \path{spatial_analysis.interpolation}, proporciona las clases \texttt{IDWInterpolator} y \texttt{KrigingInterpolator} para interpolar campos de estaciones a malla regular, además de \texttt{GaussianProcessInterpolator} para regresión por proceso gaussiano con covariables. Soporta así dos familias de métodos: inverso de la distancia ponderado (IDW) y kriging ordinario o universal con deriva externa (elevación, coordenadas u otra covariable). El kriging universal con elevación como variable auxiliar fue el método utilizado en el caso de Mallorca \parencite{navas2019mallorca} para la asignación de precipitación a subcuencas desde los pluviómetros disponibles.
 
 La interpolación se trata como un módulo de análisis espacial, no como un mero preprocesado gráfico. La elección entre IDW, kriging ordinario y kriging universal depende de la densidad de estaciones, la relación con covariables topográficas y la escala del fenómeno. Cuando se usa elevación o precipitación media satelital como deriva externa, el módulo conserva esa covariable junto al campo interpolado para que el resultado pueda reproducirse.
 
 \subsection{Modelos jerárquicos bayesianos}
 
-El módulo \path{spatial_analysis.bayes_hierarchical} implementa la clase \path{BayesianSpatialModel} para análisis regional con estructura jerárquica. El modelo asume que los parámetros de la distribución de extremos en cada localización son realizaciones de una distribución común de nivel superior, lo que permite transferir información entre estaciones y estimar cuantiles en puntos sin datos. La implementación utiliza PyMC e internamente puede aprovechar la aproximación INLA \parencite{rue2009inla} cuando el tamaño del grafo espacial lo justifica.
+El módulo \path{spatial_analysis.bayes_hierarchical} implementa la clase \texttt{HierarchicalGEV} para análisis regional con estructura jerárquica. El modelo asume que los parámetros de la distribución de extremos en cada localización son realizaciones de una distribución común de nivel superior (hiperpriors poblacionales), lo que permite transferir información entre estaciones y estimar cuantiles en puntos con muestras cortas. La inferencia se realiza mediante MCMC completo, con PyMC como motor por defecto y PyStan \parencite{carpenter2017stan} como alternativa. La clase expone \texttt{.fit(data\_dict)} para calibrar el modelo, \texttt{.posterior\_summary()} para resumir la posterior de los parámetros poblacionales y por estación, y \texttt{.return\_levels(credible=0.95)} para los cuantiles de período de retorno con su intervalo de credibilidad. A diferencia de enfoques basados en aproximaciones de Laplace anidadas (INLA) \parencite{rue2009inla}, la implementación actual no aproxima la posterior: la calcula por muestreo completo, lo que es más costoso computacionalmente pero evita las hipótesis de regularidad que exige INLA.
 
 \section{Generación estocástica}
 
@@ -132,7 +132,7 @@ El submódulo \texttt{stochastic\_generation} integra NEOPRENE como librería ba
 
 La diferencia entre \texttt{NSRPModel} y \texttt{STNSRPModel} es operativa. El primero es adecuado cuando se necesita una serie sintética representativa de un punto o estación; el segundo se utiliza cuando la coherencia espacial entre estaciones es parte del problema, por ejemplo para alimentar subcuencas simultáneamente o reconstruir campos multisitio. En ambos casos, \pyhydra actúa como envoltorio de NEOPRENE y estandariza entradas, salidas y configuración, pero no modifica la formulación estadística del modelo.
 
-La serie temporal de caudal se puede también generar estocásticamente mediante la clase \texttt{CoSMoS} del submódulo \texttt{stochastic\_generation.point}. CoSMoS (\emph{Complete Stochastic Modelling Solution}) genera series sintéticas preservando simultáneamente la distribución marginal, la dependencia temporal y la estacionalidad de la variable simulada \parencite{papalexiou2018storm}. En \pyhydra se utiliza como generador general de series hidrológicas cuando el objetivo es producir realizaciones temporales largas de caudal o precipitación a partir de una estructura estadística calibrada, en contraste con NEOPRENE, que contiene NSRP y STNSRP y representa explícitamente la estructura física de la precipitación mediante tormentas y células.
+La serie temporal de caudal se puede también generar estocásticamente mediante el conjunto de funciones que el submódulo \texttt{stochastic\_generation.point} expone como envoltorio de la librería externa CoSMoS (\emph{Complete Stochastic Modelling Solution}) \parencite{papalexiou2018storm}: \texttt{fit\_distribution} y \texttt{fit\_acs} calibran, respectivamente, la marginal y la estructura de autocorrelación estacional; \texttt{analyze\_ts} encadena ambos ajustes sobre una serie diaria; y \texttt{simulate\_ts}/\texttt{generate\_ts} producen las realizaciones sintéticas. Este enfoque genera series preservando simultáneamente la distribución marginal, la dependencia temporal y la estacionalidad de la variable simulada. En \pyhydra se utiliza como generador general de series hidrológicas cuando el objetivo es producir realizaciones temporales largas de caudal o precipitación a partir de una estructura estadística calibrada, en contraste con NEOPRENE, que contiene NSRP y STNSRP y representa explícitamente la estructura física de la precipitación mediante tormentas y células.
 
 La elección entre NEOPRENE y CoSMoS depende del objeto del estudio. NEOPRENE es preferible cuando interesa representar precipitación como proceso de tormentas y células, especialmente en aplicaciones espaciales de lluvia. CoSMoS es más general cuando la variable puede tratarse como serie temporal con una marginal y una estructura de dependencia temporal objetivo, por ejemplo caudal o variables hidroclimáticas agregadas. Mantener ambos enfoques permite cubrir problemas de inundación por eventos y problemas de recurso hídrico o clima de largo plazo.
 
@@ -144,13 +144,19 @@ Estos campos no sustituyen a un modelo atmosférico regional; son escenarios est
 
 \section{Corrección de sesgo}
 
-El submódulo \texttt{climate.bias\_correction} proporciona dos métodos para corregir las diferencias sistemáticas entre modelos climáticos y observaciones de referencia \parencite{teutschbein2012biascorrection}:
+El submódulo \texttt{climate.bias\_correction} proporciona cuatro variantes para corregir las diferencias sistemáticas entre modelos climáticos y observaciones de referencia \parencite{teutschbein2012biascorrection}, accesibles mediante la función \texttt{delta\_method} y la clase \texttt{BiasCorrection}:
 
 \begin{description}
-  \item[\texttt{delta\_method}] Corrección aditiva (para temperatura) o multiplicativa (para precipitación) que aplica el cambio relativo del modelo climático entre el período histórico de control y el período futuro, preservando el valor medio observado. Es el método más conservador y el preferido cuando se quiere minimizar la interferencia sobre la señal de cambio climático.
+  \item[\texttt{delta\_method}] Corrección aditiva (para temperatura) o multiplicativa (para precipitación) que aplica el cambio relativo del modelo climático mes a mes entre el período histórico de control y el período futuro, preservando el valor medio observado. Es el método más conservador y el preferido cuando se quiere minimizar la interferencia sobre la señal de cambio climático.
 
-  \item[\texttt{quantile\_mapping}] Mapea la distribución empírica del modelo en el período histórico sobre la distribución observada, y aplica la transformación al período futuro. El método EQM (\emph{empirical quantile mapping}) trabaja sobre cuantiles empíricos; DQM (\emph{detrended quantile mapping}) separa previamente la señal de cambio de la variabilidad interanual para preservarla durante la corrección \parencite{cannon2015sdm}; y SDM (\emph{scaled distribution mapping}) preserva explícitamente los cambios proyectados por el modelo climático en variables como precipitación y temperatura \parencite{switanek2017sdm}. Estas variantes son las recomendadas cuando la magnitud del cambio en extremos es relevante.
+  \item[\texttt{BiasCorrection.quantile\_mapping}] Mapeo cuantil empírico aditivo (EQM): mapea la distribución empírica del modelo en el período histórico sobre la distribución observada y aplica la corrección resultante al período de proyección.
+
+  \item[\texttt{BiasCorrection.quantile\_deltamapping}] Variante multiplicativa del mapeo cuantil empírico (QDM), más adecuada para precipitación.
+
+  \item[\texttt{BiasCorrection.scaled\_distribution\_mapping}] SDM paramétrico \parencite{switanek2017sdm}: ajusta distribuciones gamma (precipitación) o normal (temperatura) a las tres series y preserva explícitamente los cambios de frecuencia e intensidad proyectados por el modelo climático. Es la variante recomendada cuando la magnitud del cambio en extremos es relevante.
 \end{description}
+
+El método \texttt{BiasCorrection.fit\_transform(obs, hist, future, var, method=\text{\textquotesingle}delta\text{\textquotesingle})} ofrece un punto de entrada único a las cuatro variantes sin necesidad de instanciar la clase explícitamente.
 
 Ambos métodos fueron aplicados en los estudios de los países andinos \parencite{paz2019idb,deljesus2020andinos} y en SIMPCCe \parencite{navas2025simpce}, con proyecciones CMIP5 y CMIP6 respectivamente.
 
@@ -161,7 +167,7 @@ En \pyhydra, la corrección de sesgo se implementa como transformación explíci
 El submódulo \texttt{climate.hybrid\_downscaling} implementa la cadena metodológica que conecta eventos sintéticos o escenarios seleccionados con mapas de inundación a escala de cuadrícula \parencite{navas2019mallorca,navas2024calle30}. La cadena consta de cuatro pasos:
 
 \begin{enumerate}
-  \item \textbf{Selección de eventos representativos (MaxDiss).} La función \path{maxdiss}, situada en \path{hybrid_downscaling.classification}, selecciona un subconjunto de $n$ escenarios representativos del espacio total de eventos mediante el algoritmo de máxima disimilitud \parencite{camus2011maxdiss}. El algoritmo construye iterativamente un conjunto que maximiza la distancia mínima entre cualquier par de escenarios, cubriendo el espacio de variabilidad con el mínimo número de simulaciones.
+  \item \textbf{Selección de eventos representativos (MaxDiss).} La función \path{maxdiss}, situada en \path{hybrid_downscaling.reconstruction}, selecciona un subconjunto de $n$ escenarios representativos del espacio total de eventos mediante el algoritmo de máxima disimilitud \parencite{camus2011maxdiss}. El algoritmo construye iterativamente un conjunto que maximiza la distancia mínima entre cualquier par de escenarios, cubriendo el espacio de variabilidad con el mínimo número de simulaciones. El submódulo \path{hybrid_downscaling.classification} complementa esta selección con \texttt{HydrographClassifier}, que agrupa formas de hidrograma por PCA y \emph{k}-means para organizar espacialmente los tipos representativos.
 
   \item \textbf{Simulación hidráulica del subconjunto.} Los $n$ eventos seleccionados se simulan con el modelo hidráulico (HEC-RAS, SFINCS) para obtener mapas de calado y velocidad.
 

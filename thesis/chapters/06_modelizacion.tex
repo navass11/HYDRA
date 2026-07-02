@@ -19,7 +19,7 @@ Este capítulo se centra en la parte física de la cadena: la transformación de
     Componente & Herramienta o metodología \\
     \midrule
     Fuentes de datos & ERA5, GPM/IMERG, PERSIANN, AEMET, OGIMET, Meteostat, GloFAS, GRDC, USGS, SoilGrids \\[3pt]
-    Análisis de extremos & GEV/GPD · L-momentos · Inferencia bayesiana (Stan, PyMC) \\[3pt]
+    Análisis de extremos & GEV/GPD · L-momentos · Inferencia bayesiana (PyMC, PyStan opcional) \\[3pt]
     Análisis multivariante & Cópulas gaussianas · Vine cópulas \\[3pt]
     Generación estocástica & NEOPRENE (NSRP puntual y STNSRP multisitio) · CoSMoS \\[3pt]
     Cambio climático & CMIP6 (CDS/ESGF) bajo escenarios SSP \\[3pt]
@@ -55,11 +55,11 @@ En la cadena de \pyhydra, HEC-HMS ocupa el papel de traductor entre lluvia y cau
 El módulo \texttt{modeling.hydrology.hec\_hms} encapsula el acceso a HEC-HMS a través de tres funcionalidades:
 
 \begin{description}
-  \item[Preparación de entradas.] La función \texttt{create\_flow\_series} convierte una \texttt{pandas.Series} de caudal a la estructura interna de HEC-HMS. La clase \texttt{HMSModel} gestiona la escritura de ficheros DSS de precipitación mediante \texttt{pydsstools} y la actualización del fichero de cuenca \texttt{.basin} con los parámetros de la simulación.
+  \item[Preparación de entradas.] Las funciones \texttt{generate\_gage} y \texttt{fill\_gage\_series} escriben las series de precipitación o caudal en formato DSS mediante \texttt{hecdss} (independiente de la versión de \texttt{numpy}, a diferencia de \texttt{pydsstools}); \texttt{generate\_met} y \texttt{generate\_hms} actualizan respectivamente el modelo meteorológico y la estructura principal del proyecto para enlazar pluviómetros, cuenca, control y ejecución.
 
-  \item[Ejecución.] El método \texttt{.run()} lanza HEC-HMS en modo batch desde la línea de comandos, redirecciona la salida estándar y espera a la finalización. Este método admite la ejecución de múltiples simulaciones en bucle, lo que permite la simulación sistemática del conjunto de eventos estocásticos.
+  \item[Ejecución.] La función \texttt{run\_hms\_script} lanza HEC-HMS en modo batch mediante un script generado automáticamente (API Jython en Windows, \texttt{xvfb-run} en Linux) y espera a su finalización; \texttt{read\_hms\_dss\_timeseries} lee después las series de salida del DSS resultante. La clase \texttt{HMSModel} envuelve este ciclo completo: su método \texttt{.run\_hms(*params)} ejecuta el modelo con un vector de parámetros y devuelve el caudal simulado como \texttt{ndarray}, delegando en \texttt{run\_hms\_script} y en la lectura DSS. Este patrón admite la ejecución de múltiples simulaciones en bucle, lo que permite la simulación sistemática del conjunto de eventos estocásticos.
 
-  \item[Calibración automática con spotpy.] La clase \texttt{HMSModel} incorpora soporte nativo para calibración automática de parámetros del modelo hidrológico mediante la librería \texttt{spotpy} \parencite{houska2015spotpy}. Los atributos \texttt{parameter\_names} y \texttt{observed} configuran los parámetros a calibrar y la serie observada de referencia. El método \texttt{run\_hms(*params)} ejecuta el modelo con un vector de parámetros y calcula la función objetivo. Los algoritmos disponibles son PSO (optimización por enjambre de partículas), DREAM (cadenas de Markov diferencial), SCE-UA (barajado complejo evolutivo) y otros implementados por spotpy.
+  \item[Calibración automática con spotpy.] \texttt{HMSModel} por sí sola no calibra: expone la interfaz de ejecución (\texttt{.run\_hms(*params)}, punto de extensión \texttt{.\_write\_params(params)}) que hace de ella una \emph{setup class} compatible con \texttt{spotpy} \parencite{houska2015spotpy}. Su subclase \texttt{TextBasinHMSCalibrationModel} implementa esa escritura de parámetros editando directamente el fichero \texttt{.basin} como factores multiplicativos sobre valores base. La función \texttt{calibrate\_hms\_sceua} invoca internamente el algoritmo SCE-UA (\emph{shuffled complex evolution}) de \texttt{spotpy} sobre un \texttt{TextBasinHMSCalibrationModel}, con la función objetivo (NSE, PBIAS o RMSE) configurable. La integración actual cubre SCE-UA; otros algoritmos de \texttt{spotpy} (PSO, DREAM, etc.) son utilizables sobre la misma \emph{setup class} pero no están envueltos en una función dedicada de \pyhydra.
 \end{description}
 
 La calibración automática fue especialmente relevante en el estudio de los países andinos \parencite{paz2019idb,deljesus2020andinos}, donde la escala territorial y el número de cuencas hizo inviable la calibración manual de los modelos hidrológicos. La integración de esa experiencia en \hydra generaliza la capacidad a cualquier proyecto que use HEC-HMS como motor hidrológico.
@@ -70,13 +70,15 @@ SWAT \parencite{arnold1998swat,gassman2007swat} es un modelo hidrológico semidi
 
 Por esa razón, SWAT se conecta principalmente con el bloque de cambio climático. Las series históricas y futuras corregidas por sesgo se transforman en entradas meteorológicas continuas, se ejecutan por escenario y se comparan salidas agregadas como aportaciones mensuales, caudal medio o indicadores de sequía. El interés industrial no está solo en ejecutar SWAT, sino en repetir el mismo flujo sobre decenas de combinaciones modelo--escenario--horizonte sin perder trazabilidad.
 
-El módulo \texttt{modeling.hydrology.swat} gestiona la integración mediante:
+El módulo \texttt{modeling.hydrology.swat} gestiona la integración mediante un conjunto de funciones, no una clase orientada a objetos:
 
 \begin{description}
-  \item[Preparación de entradas climáticas.] El método \texttt{.prepare\_climate\_inputs} convierte series de precipitación y temperatura (históricas o proyecciones CMIP6 corregidas) al formato de ficheros de texto esperado por SWAT, creando los ficheros \texttt{.pcp} y \texttt{.tmp} con los encabezados correctos para cada punto de la malla o estación.
+  \item[Preparación de entradas climáticas.] Las funciones \texttt{write\_precipitation\_file} y \texttt{write\_temperature\_file} convierten series de precipitación y temperatura (históricas o proyecciones CMIP6 corregidas) al formato clásico de ficheros \texttt{.pcp}/\texttt{.tmp} de SWAT a partir de coordenadas de estación y series diarias; \texttt{write\_swatplus\_precipitation\_files} y \texttt{write\_swatplus\_temperature\_files} generan el equivalente para SWAT+ (ficheros individuales por estación más el índice \texttt{pcp.cli}/\texttt{tmp.cli}); \texttt{edit\_file\_cio} ajusta el período de simulación en \texttt{file.cio}.
 
-  \item[Ejecución por escenarios.] El método \texttt{.run()} lanza el ejecutable de SWAT en el directorio del proyecto, y \texttt{.read\_output} lee los ficheros de salida \texttt{output.rch} (caudal) y \texttt{output.sub} (agua en suelo) y los convierte a \texttt{DataFrames} indexados por fecha y unidad de respuesta hidrológica.
+  \item[Ejecución por escenarios.] La función \texttt{run\_swat} lanza el ejecutable de SWAT+ en el directorio \texttt{TxtInOut} del proyecto y devuelve el código de salida del proceso.
 \end{description}
+
+La lectura de las salidas de SWAT (\texttt{output.rch}, \texttt{output.sub}) no está actualmente automatizada dentro de \pyhydra: se realiza de forma ad-hoc en cada caso de estudio, fuera del paquete. Completar un lector genérico de estos ficheros es trabajo pendiente (\cref{ch:conclusiones}).
 
 SIMPCCe \parencite{navas2025simpce} es el ejemplo más directo de uso de SWAT dentro del ecosistema \hydra para análisis de aportaciones a embalses españoles bajo proyecciones CMIP6.
 
