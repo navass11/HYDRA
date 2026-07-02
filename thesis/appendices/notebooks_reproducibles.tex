@@ -106,8 +106,7 @@ El paso computacionalmente crítico es siempre la simulación hidráulica. La se
 
 El siguiente esquema muestra los imports y llamadas principales de un estudio de inundación estocástica con \pyhydra, desde la descarga de datos hasta la generación de mapas de período de retorno. El código es ilustrativo y debe adaptarse a la configuración del caso de estudio concreto.
 
-{\footnotesize
-\begin{codeblock}
+\begin{codeblock}[fontsize=\scriptsize,baselinestretch=0.92]
 # Esquema mínimo de un flujo completo
 from pyhydra.data_sources.rainfall import download_era5
 from pyhydra.climate.time_series import extract_events, fit_gev
@@ -179,4 +178,3 @@ fmi = FloodMapInterpolator(
 )
 calados, paths = fmi.compute_return_period_maps()
 \end{codeblock}
-}
