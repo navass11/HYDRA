@@ -1,0 +1,616 @@
+%% ============================================================================
+%% References — Manning roughness sensitivity paper
+%% ============================================================================
+
+%% ── Classic Manning references ───────────────────────────────────────────────
+
+@book{chow1959,
+  author    = {Chow, Ven Te},
+  title     = {Open-Channel Hydraulics},
+  publisher = {McGraw-Hill},
+  year      = {1959},
+  address   = {New York}
+}
+
+@book{brater1996,
+  author    = {Brater, E. F. and King, H. W. and Lindell, J. E. and Wei, C. Y.},
+  title     = {Handbook of Hydraulics},
+  edition   = {7th},
+  publisher = {McGraw-Hill},
+  year      = {1996},
+  address   = {New York}
+}
+
+@techreport{barnes1967,
+  author      = {Barnes, H. H.},
+  title       = {Roughness Characteristics of Natural Channels},
+  institution = {U.S. Geological Survey},
+  number      = {1849},
+  year        = {1967},
+  address     = {Washington, D.C.},
+  type        = {Water Supply Paper},
+  doi         = {10.3133/wsp1849},
+  url         = {https://pubs.usgs.gov/publication/wsp1849}
+}
+
+@techreport{arcement1989,
+  author      = {Arcement, G. J. and Schneider, V. R.},
+  title       = {Guide for Selecting Manning's Roughness Coefficients for Natural Channels and Flood Plains},
+  institution = {U.S. Geological Survey},
+  type        = {Water-Supply Paper},
+  number      = {2339},
+  year        = {1989},
+  address     = {Washington, D.C.},
+  doi         = {10.3133/wsp2339},
+  url         = {https://pubs.usgs.gov/publication/wsp2339}
+}
+
+%% ── SFINCS ───────────────────────────────────────────────────────────────────
+
+@article{deltares2023sfincs,
+  author  = {Leijnse, T. and van Ormondt, M. and Nederhoff, K. and van Dongeren, A.},
+  title   = {Modeling compound flooding in coastal systems using a computationally
+             efficient reduced-physics solver: Including fluvial, pluvial,
+             tidal, wind- and wave-driven processes},
+  journal = {Coastal Engineering},
+  volume  = {163},
+  pages   = {103796},
+  year    = {2021},
+  doi     = {10.1016/j.coastaleng.2020.103796}
+}
+
+@article{vanormondt2025sfincs,
+  author  = {van Ormondt, M. and Leijnse, T. and de Goede, R. and Nederhoff, K. and
+             van Dongeren, A.},
+  title   = {Subgrid corrections for the linear inertial equations of a compound
+             flood model -- a case study using {SFINCS} 2.1.1 {Dollerup}
+             release},
+  journal = {Geoscientific Model Development},
+  volume  = {18},
+  number  = {3},
+  pages   = {843--861},
+  year    = {2025},
+  doi     = {10.5194/gmd-18-843-2025}
+}
+
+%% ── HEC-RAS ──────────────────────────────────────────────────────────────────
+
+@techreport{usace2021hecras,
+  author      = {{U.S. Army Corps of Engineers}},
+  title       = {{HEC-RAS} River Analysis System --- {2D} Modelling User's Manual
+                 Version 6.3},
+  institution = {Hydrologic Engineering Center},
+  year        = {2021},
+  address     = {Davis, California},
+  note        = {Simulations in this study were performed with version 6.6; the 6.3 manual is the latest publicly available edition documenting the same governing equations and solver}
+}
+
+@manual{usace2026rasuser,
+  author       = {{U.S. Army Corps of Engineers}},
+  title        = {{HEC-RAS} River Analysis System User's Manual, Version 6.6},
+  organization = {Hydrologic Engineering Center},
+  address      = {Davis, California},
+  year         = {2026},
+  url          = {https://www.hec.usace.army.mil/confluence/rasdocs/rasum/6.6}
+}
+
+@manual{usace2026rastech,
+  author       = {{U.S. Army Corps of Engineers}},
+  title        = {{HEC-RAS} Hydraulic Reference Manual, Version 6.6},
+  organization = {Hydrologic Engineering Center},
+  address      = {Davis, California},
+  year         = {2026},
+  url          = {https://www.hec.usace.army.mil/confluence/rasdocs/ras1dtechref/6.6}
+}
+
+@manual{usace2000hechms,
+  author       = {{U.S. Army Corps of Engineers}},
+  title        = {{HEC-HMS} Hydrologic Modeling System Technical Reference Manual},
+  organization = {Hydrologic Engineering Center},
+  address      = {Davis, California},
+  year         = {2000},
+  url          = {https://www.hec.usace.army.mil/software/hec-hms/documentation.aspx}
+}
+
+%% ── Uncertainty in flood modelling ───────────────────────────────────────────
+
+@article{pappenberger2005,
+  author  = {Pappenberger, F. and Beven, K. and Horritt, M. and Blazkova, S.},
+  title   = {Uncertainty in the calibration of effective roughness parameters
+             in {HEC-RAS} using inundation and downstream level observations},
+  journal = {Journal of Hydrology},
+  volume  = {302},
+  number  = {1--4},
+  pages   = {46--69},
+  year    = {2005},
+  doi     = {10.1016/j.jhydrol.2004.06.036}
+}
+
+@article{aronica2002,
+  author  = {Aronica, G. and Bates, P. D. and Horritt, M. S.},
+  title   = {Assessing the uncertainty in distributed model predictions using
+             observed binary pattern information within {GLUE}},
+  journal = {Hydrological Processes},
+  volume  = {16},
+  number  = {10},
+  pages   = {2001--2016},
+  year    = {2002},
+  doi     = {10.1002/hyp.398}
+}
+
+@article{hall2005,
+  author  = {Hall, J. W. and Tarantola, S. and Bates, P. D. and Horritt, M. S.},
+  title   = {Distributed sensitivity analysis of flood inundation model
+             calibration},
+  journal = {Journal of Hydraulic Engineering},
+  volume  = {131},
+  number  = {2},
+  pages   = {117--126},
+  year    = {2005},
+  doi     = {10.1061/(ASCE)0733-9429(2005)131:2(117)}
+}
+
+@article{apel2008,
+  author  = {Apel, H. and Merz, B. and Thieken, A. H.},
+  title   = {Quantification of uncertainties in flood risk assessments},
+  journal = {International Journal of River Basin Management},
+  volume  = {6},
+  number  = {2},
+  pages   = {149--162},
+  year    = {2008},
+  doi     = {10.1080/15715124.2008.9635344}
+}
+
+@article{domeneghetti2012,
+  author  = {Domeneghetti, A. and Castellarin, A. and Brath, A.},
+  title   = {Assessing rating-curve uncertainty and its effects on hydraulic
+             model calibration},
+  journal = {Hydrology and Earth System Sciences},
+  volume  = {16},
+  number  = {4},
+  pages   = {1191--1202},
+  year    = {2012},
+  doi     = {10.5194/hess-16-1191-2012}
+}
+
+@article{merwade2008,
+  author  = {Merwade, V. and Cook, A. and Coonrod, J.},
+  title   = {{GIS} techniques for creating river terrain models for hydrodynamic
+             modeling and flood inundation mapping},
+  journal = {Environmental Modelling \& Software},
+  volume  = {23},
+  number  = {10--11},
+  pages   = {1300--1311},
+  year    = {2008},
+  doi     = {10.1016/j.envsoft.2008.03.005}
+}
+
+@article{cook2009,
+  author  = {Cook, A. and Merwade, V.},
+  title   = {Effect of topographic data, geometric configuration and modeling
+             approach on flood inundation mapping},
+  journal = {Journal of Hydrology},
+  volume  = {377},
+  number  = {1--2},
+  pages   = {131--142},
+  year    = {2009},
+  doi     = {10.1016/j.jhydrol.2009.08.015}
+}
+
+@article{merz2005,
+  author  = {Merz, B. and Thieken, A. H.},
+  title   = {Separating natural and epistemic uncertainty in flood frequency
+             analysis},
+  journal = {Journal of Hydrology},
+  volume  = {309},
+  number  = {1--4},
+  pages   = {114--132},
+  year    = {2005},
+  doi     = {10.1016/j.jhydrol.2004.11.015}
+}
+
+%% ── Sensitivity analysis ─────────────────────────────────────────────────────
+@article{pianosi2016,
+  title = {Sensitivity analysis of environmental models: A systematic review with practical workflow},
+  author = {Pianosi, Francesca and Beven, Keith and Freer, Jim and Hall, Jim W. and Rougier, Jonathan and Stephenson, David B. and Wagener, Thorsten},
+  journal = {Environmental Modelling \& Software},
+  volume = {79},
+  pages = {214--232},
+  year = {2016},
+  doi = {10.1016/j.envsoft.2016.02.008}
+}
+
+@article{savage2016,
+  author  = {Savage, J. T. S. and Pianosi, F. and Bates, P. and Freer, J. and
+             Wagener, T.},
+  title   = {Quantifying the importance of spatial resolution and other factors
+             through global sensitivity analysis of a flood inundation model},
+  journal = {Water Resources Research},
+  volume  = {52},
+  number  = {11},
+  pages   = {9146--9163},
+  year    = {2016},
+  doi     = {10.1002/2015WR018198}
+}
+
+@article{mcmillan2010,
+  author  = {McMillan, H. K. and Brasington, J.},
+  title   = {Reduced complexity strategies for modelling urban floodplain
+             inundation},
+  journal = {Geomorphology},
+  volume  = {90},
+  number  = {3--4},
+  pages   = {226--243},
+  year    = {2007},
+  doi     = {10.1016/j.geomorph.2006.10.031}
+}
+
+@article{fewtrell2011,
+  author  = {Fewtrell, T. J. and Neal, J. C. and Bates, P. D. and Harrison, P. J.},
+  title   = {Geometric and structural river channel complexity and the prediction
+             of urban inundation},
+  journal = {Hydrological Processes},
+  volume  = {25},
+  number  = {20},
+  pages   = {3173--3186},
+  year    = {2011},
+  doi     = {10.1002/hyp.8035}
+}
+
+@article{saltelli2010,
+  author  = {Saltelli, A. and Annoni, P. and Azzini, I. and Campolongo, F. and
+             Ratto, M. and Tarantola, S.},
+  title   = {Variance based sensitivity analysis of model output. {Design} and
+             estimator for the total sensitivity index},
+  journal = {Computer Physics Communications},
+  volume  = {181},
+  number  = {2},
+  pages   = {259--270},
+  year    = {2010},
+  doi     = {10.1016/j.cpc.2009.09.018}
+}
+
+@article{rousseeuw1993,
+  author  = {Rousseeuw, P. J. and Croux, C.},
+  title   = {Alternatives to the Median Absolute Deviation},
+  journal = {Journal of the American Statistical Association},
+  volume  = {88},
+  number  = {424},
+  pages   = {1273--1283},
+  year    = {1993},
+  doi     = {10.1080/01621459.1993.10476408}
+}
+
+%% ── Hydraulic model comparison and reviews ───────────────────────────────────
+
+@article{horritt2002,
+  author  = {Horritt, M. S. and Bates, P. D.},
+  title   = {Evaluation of {1D} and {2D} numerical models for predicting river
+             flood inundation},
+  journal = {Journal of Hydrology},
+  volume  = {268},
+  number  = {1--4},
+  pages   = {87--99},
+  year    = {2002},
+  doi     = {10.1016/S0022-1694(02)00121-X}
+}
+
+@article{bates2010,
+  author  = {Bates, P. D. and Horritt, M. S. and Fewtrell, T. J.},
+  title   = {A simple inertial formulation of the shallow water equations for
+             efficient two-dimensional flood inundation modelling},
+  journal = {Journal of Hydrology},
+  volume  = {387},
+  number  = {1--2},
+  pages   = {33--45},
+  year    = {2010},
+  doi     = {10.1016/j.jhydrol.2010.03.027}
+}
+
+@article{neal2018,
+  author  = {Neal, J. and Dunne, T. and Sampson, C. and Smith, A. and Bates, P.},
+  title   = {Optimisation of the two-dimensional hydraulic model {LISFOOD-FP}
+             for {CPU} architecture},
+  journal = {Environmental Modelling \& Software},
+  volume  = {107},
+  pages   = {148--157},
+  year    = {2018},
+  doi     = {10.1016/j.envsoft.2018.05.011}
+}
+
+@article{teng2017,
+  author  = {Teng, J. and Jakeman, A. J. and Vaze, J. and Croke, B. F. W. and
+             Dutta, D. and Kim, S.},
+  title   = {Flood inundation modelling: a review of methods, recent advances
+             and uncertainty analysis},
+  journal = {Environmental Modelling \& Software},
+  volume  = {90},
+  pages   = {201--216},
+  year    = {2017},
+  doi     = {10.1016/j.envsoft.2017.01.006}
+}
+
+@article{kumbier2019,
+  author  = {Kumbier, K. and Carvalho, R. C. and Vafeidis, A. T. and
+             Woodroffe, C. D.},
+  title   = {Comparing static and dynamic flood models in estuarine environments:
+             a case study from south-east {Australia}},
+  journal = {Marine and Freshwater Research},
+  volume  = {70},
+  number  = {6},
+  pages   = {781--793},
+  year    = {2019},
+  doi     = {10.1071/MF18239}
+}
+
+@article{shustikova2019,
+  author  = {Shustikova, I. and Domeneghetti, A. and Neal, J. C. and Bates, P. and
+             Castellarin, A.},
+  title   = {Comparing {2D} capabilities of {HEC-RAS} and {LISFLOOD-FP} on
+             complex topography},
+  journal = {Hydrological Sciences Journal},
+  volume  = {64},
+  number  = {14},
+  pages   = {1769--1782},
+  year    = {2019},
+  doi     = {10.1080/02626667.2019.1671982}
+}
+
+@article{dottori2013,
+  author  = {Dottori, F. and Salamon, P. and Bianchi, A. and Alfieri, L. and
+             Hirpa, F. A. and Feyen, L.},
+  title   = {Development and evaluation of a framework for global flood hazard
+             mapping},
+  journal = {Advances in Water Resources},
+  volume  = {94},
+  pages   = {87--102},
+  year    = {2016},
+  doi     = {10.1016/j.advwatres.2016.05.002}
+}
+
+@article{liu2019,
+  author  = {Liu, Z. and Merwade, V.},
+  title   = {Accounting for model structure, parameter and input forcing
+             uncertainty in flood inundation modeling using {Bayesian} model
+             averaging},
+  journal = {Journal of Hydrology},
+  volume  = {565},
+  pages   = {138--149},
+  year    = {2018},
+  doi     = {10.1016/j.jhydrol.2018.08.009}
+}
+
+@article{swimmer2019,
+  author  = {Berm\'udez, M. and Neal, J. C. and Bates, P. D. and Coxon, G. and
+             Freer, J. E. and Cea, L. and Puertas, J.},
+  title   = {Quantifying local rainfall dynamics and uncertain boundary conditions
+             into a nested regional-local flood modelling system},
+  journal = {Water Resources Research},
+  volume  = {53},
+  number  = {4},
+  pages   = {2770--2785},
+  year    = {2017},
+  doi     = {10.1002/2016WR019903}
+}
+
+%% ── GLUE and calibration ─────────────────────────────────────────────────────
+
+@article{beven1992,
+  author  = {Beven, K. and Binley, A.},
+  title   = {The future of distributed models: model calibration and uncertainty
+             prediction},
+  journal = {Hydrological Processes},
+  volume  = {6},
+  number  = {3},
+  pages   = {279--298},
+  year    = {1992},
+  doi     = {10.1002/hyp.3360060305}
+}
+
+%% ── Global flood hazard and risk ─────────────────────────────────────────────
+
+@article{wing2019,
+  author  = {Wing, O. E. J. and Bates, P. D. and Sampson, C. C. and
+             Smith, A. M. and Johnson, K. A. and Erickson, T. A.},
+  title   = {Validation of a 30 m resolution flood hazard model of the
+             conterminous {United States}},
+  journal = {Water Resources Research},
+  volume  = {53},
+  number  = {9},
+  pages   = {7968--7986},
+  year    = {2017},
+  doi     = {10.1002/2017WR020917}
+}
+
+@article{sampson2015,
+  author  = {Sampson, C. C. and Smith, A. M. and Bates, P. D. and Neal, J. C. and
+             Alfieri, L. and Freer, J. E.},
+  title   = {A high-resolution global flood hazard model},
+  journal = {Water Resources Research},
+  volume  = {51},
+  number  = {9},
+  pages   = {7358--7381},
+  year    = {2015},
+  doi     = {10.1002/2015WR016954}
+}
+
+@article{vousdoukas2018,
+  author  = {Vousdoukas, M. I. and Mentaschi, L. and Voukouvalas, E. and
+             Verlaan, M. and Feyen, L.},
+  title   = {Extreme sea levels on the rise along {Europe}'s coasts},
+  journal = {Earth's Future},
+  volume  = {5},
+  number  = {3},
+  pages   = {304--323},
+  year    = {2017},
+  doi     = {10.1002/2016EF000505}
+}
+
+%% ── Copulas and statistical methods ──────────────────────────────────────────
+
+@article{dempster1977,
+  author  = {Dempster, A. P. and Laird, N. M. and Rubin, D. B.},
+  title   = {Maximum Likelihood from Incomplete Data via the {EM} Algorithm},
+  journal = {Journal of the Royal Statistical Society: Series B},
+  volume  = {39},
+  number  = {1},
+  pages   = {1--22},
+  year    = {1977},
+  doi     = {10.1111/j.2517-6161.1977.tb01600.x}
+}
+
+@article{schwarz1978,
+  author  = {Schwarz, G.},
+  title   = {Estimating the Dimension of a Model},
+  journal = {The Annals of Statistics},
+  volume  = {6},
+  number  = {2},
+  pages   = {461--464},
+  year    = {1978}
+}
+
+@article{genest2007,
+  author  = {Genest, C. and Favre, A.-C.},
+  title   = {Everything you always wanted to know about copula modeling but
+             were afraid to ask},
+  journal = {Journal of Hydrologic Engineering},
+  volume  = {12},
+  number  = {4},
+  pages   = {347--368},
+  year    = {2007},
+  doi     = {10.1061/(ASCE)1084-0699(2007)12:4(347)}
+}
+
+@article{shapiro1965,
+  author  = {Shapiro, S. S. and Wilk, M. B.},
+  title   = {An Analysis of Variance Test for Normality (Complete Samples)},
+  journal = {Biometrika},
+  volume  = {52},
+  number  = {3--4},
+  pages   = {591--611},
+  year    = {1965},
+  doi     = {10.1093/biomet/52.3-4.591}
+}
+
+@article{mann1947,
+  author  = {Mann, H. B. and Whitney, D. R.},
+  title   = {On a Test of Whether One of Two Random Variables is
+             Stochastically Larger than the Other},
+  journal = {The Annals of Mathematical Statistics},
+  volume  = {18},
+  number  = {1},
+  pages   = {50--60},
+  year    = {1947},
+  doi     = {10.1214/aoms/1177730491}
+}
+
+@book{kish1965,
+  author    = {Kish, Leslie},
+  title     = {Survey Sampling},
+  publisher = {John Wiley \& Sons},
+  address   = {New York},
+  year      = {1965}
+}
+
+@book{owen2013,
+  author    = {Owen, Art B.},
+  title     = {Monte Carlo Theory, Methods and Examples},
+  publisher = {Art Owen},
+  address   = {Stanford, California},
+  year      = {2013},
+  url       = {https://artowen.su.domains/mc/}
+}
+
+%% ── Tipping points ───────────────────────────────────────────────────────────
+
+@article{lenton2011,
+  author  = {Lenton, T. M.},
+  title   = {Early warning of climate tipping points},
+  journal = {Nature Climate Change},
+  volume  = {1},
+  number  = {4},
+  pages   = {201--209},
+  year    = {2011},
+  doi     = {10.1038/nclimate1143}
+}
+
+@article{navas2018rop,
+  author  = {Navas Fern{\'a}ndez, Salvador and
+             S{\'a}nchez Espeso, Javier Mar{\'i}a and
+             {del Jesus} Pe{\~n}il, Manuel},
+  title   = {Evaluaci{\'o}n y an{\'a}lisis del riesgo de inundaci{\'o}n
+             del {R}{\'i}o {Besaya} a su paso por
+             {Los Corrales de Buelna}, {Cantabria}},
+  journal = {Revista de Obras P{\'u}blicas},
+  year    = {2018},
+  number  = {3598},
+  pages   = {61--72},
+  issn    = {0034-8619},
+  url     = {https://dialnet.unirioja.es/servlet/articulo?codigo=6476731}
+}
+
+@misc{navas2026zenodo,
+  author    = {Navas, Salvador and Gal{\'a}n, {\'A}lvaro and {del Jesus}, Manuel},
+  title     = {Monte {Carlo} {Manning} roughness sensitivity data and code ---
+               {Besaya} {River} flood model comparison ({SFINCS} vs.\ {HEC-RAS})},
+  year      = {2026},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.20672451},
+  url       = {https://doi.org/10.5281/zenodo.20672451},
+  note      = {Dataset deposited and reserved; publicly accessible upon acceptance}
+}
+
+@book{nelsen2006,
+  author    = {Nelsen, Roger B.},
+  title     = {An Introduction to Copulas},
+  edition   = {2},
+  publisher = {Springer},
+  address   = {New York},
+  year      = {2006},
+  doi       = {10.1007/0-387-28678-0}
+}
+
+%% ── Official datasets and institutional sources ──────────────────────────────
+
+@misc{miterd2026saih,
+  author       = {{Ministerio para la Transici{\'o}n Ecol{\'o}gica y el Reto
+                  Demogr{\'a}fico}},
+  title        = {Sistema Autom{\'a}tico de Informaci{\'o}n Hidrol{\'o}gica:
+                  Confederaci{\'o}n Hidrogr{\'a}fica del Cant{\'a}brico},
+  year         = {2026},
+  howpublished = {Online database},
+  url          = {https://www.saih.chcantabrico.es/}
+}
+
+@misc{miterd2026snczi,
+  author       = {{Ministerio para la Transici{\'o}n Ecol{\'o}gica y el Reto
+                  Demogr{\'a}fico}},
+  title        = {Sistema Nacional de Cartograf{\'i}a de Zonas Inundables},
+  year         = {2026},
+  howpublished = {Online database},
+  url          = {https://www.miteco.gob.es/es/cartografia-y-sig/ide/descargas/agua/snczi.html}
+}
+
+@misc{ign2018pnoa,
+  author       = {{Instituto Geogr{\'a}fico Nacional}},
+  title        = {{PNOA} {LiDAR} 2018: datos {LiDAR} y modelo digital del terreno},
+  year         = {2018},
+  howpublished = {Geospatial dataset},
+  url          = {https://centrodedescargas.cnig.es/CentroDescargas/}
+}
+
+@misc{ign2021pnoa,
+  author       = {{Instituto Geogr{\'a}fico Nacional}},
+  title        = {{PNOA} Ortofotograf{\'i}a 2021},
+  year         = {2021},
+  howpublished = {Geospatial dataset},
+  url          = {https://centrodedescargas.cnig.es/CentroDescargas/}
+}
+
+@misc{copernicus2018clc,
+  author       = {{Copernicus Land Monitoring Service}},
+  title        = {{CORINE} Land Cover 2018 (vector/raster 100 m), Europe},
+  year         = {2018},
+  howpublished = {Geospatial dataset},
+  url          = {https://land.copernicus.eu/en/products/corine-land-cover/clc2018}
+}
