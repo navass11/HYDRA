@@ -34,7 +34,8 @@ La \cref{fig:arquitectura_hydra} ilustra la organización en bloques de la herra
     line width=0.55pt, font=\scriptsize
   },
   arr/.style={-Stealth, line width=0.75pt, color=tg55},
-  softarr/.style={-Stealth, line width=0.6pt, color=tg40}
+  softarr/.style={-Stealth, line width=0.6pt, color=tg40},
+  bus/.style={line width=0.55pt, color=tg40}
 ]
 \path[use as bounding box] (-7.0,-3.35) rectangle (7.0,4.95);
 \node[layer=gray] (users) at (0,4.25)
@@ -56,17 +57,23 @@ La \cref{fig:arquitectura_hydra} ilustra la organización en bloques de la herra
 \node[layer=redstep] (impact) at (0,-2.65)
   {\textbf{Productos}: calado, velocidad, extensión, retorno por impacto, incertidumbre y trazabilidad};
 
+\coordinate (sourceBus) at (0,1.58);
 \coordinate (modelBus) at (0,-0.30);
+\coordinate (impactBus) at (0,-1.68);
 \draw[softarr] (users.south) -- (0,3.08);
+\draw[bus] (-5.0,1.58) -- (5.0,1.58);
 \foreach \n in {rain,river,clim,soil} {
-  \draw[softarr] (\n.south) -- ++(0,-0.23);
+  \draw[softarr] (\n.south) -- (\n |- sourceBus);
 }
+\draw[arr] (sourceBus) -- (core.north);
 \draw[arr] (core.south) -- (modelBus);
+\draw[bus] (-4.20,-0.30) -- (4.20,-0.30);
 \foreach \n in {hms,swat,ras,sfincs} {
   \draw[arr] (modelBus) -| (\n.north);
-  \draw[softarr] (\n.south) -- ++(0,-0.22);
+  \draw[softarr] (\n.south) -- (\n |- impactBus);
 }
-\draw[arr] (modelBus) -- (impact.north);
+\draw[bus] (-4.20,-1.68) -- (4.20,-1.68);
+\draw[arr] (impactBus) -- (impact.north);
 \draw[arr, dashed, color=tg40] (impact.east) -- ++(0.55,0) |- (users.east)
   node[pos=0.25, right, font=\tiny, align=left, color=tg55] {validación\\y revisión};
 \end{tikzpicture}
@@ -287,7 +294,8 @@ La \cref{fig:flujo_completo} resume este proceso de forma esquemática.
 \foreach \a/\b in {p1/n1,p2/n2,p3/n3,p4/n4,p5/n5} {
   \draw[arr, dashed] (\a.south) -- (\b.north);
 }
-\draw[ret] (p5.north) to[out=105,in=75] node[above, font=\scriptsize, color=tg55] {diagnóstico y recalibración} (p2.north);
+\draw[ret] (p5.north) to[out=105,in=75, looseness=1.28]
+  node[above, font=\scriptsize, color=tg55] {diagnóstico y recalibración} (p2.north);
 \end{tikzpicture}
 }
 \caption{Flujo conceptual de un estudio de inundación con \hydra. El esquema separa la adquisición de datos, el análisis probabilístico, la simulación con motores externos y la traducción de resultados a indicadores de impacto. Elaboración propia.}
@@ -342,7 +350,8 @@ La misma separación se mantiene en el despliegue cloud. En el flujo usado para 
     line width=0.65pt
   },
   arr/.style={-Stealth, line width=0.75pt, color=tg55},
-  soft/.style={-Stealth, line width=0.55pt, color=tg40}
+  soft/.style={-Stealth, line width=0.55pt, color=tg40},
+  bus/.style={line width=0.55pt, color=tg40}
 ]
 \node[box=blueblock] (github) at (-5.2,2.25) {\textbf{GitHub}\\código, notebooks\\web, API, Docker};
 \node[box=tealblock] (actions) at (-1.75,2.25) {\textbf{GitHub Actions}\\construcción\\de imágenes};
@@ -361,15 +370,18 @@ La misma separación se mantiene en el despliegue cloud. En el flujo usado para 
 \draw[arr] (github) -- (actions);
 \draw[arr] (actions) -- (registry);
 \draw[arr] (registry) -- (aca);
-\draw[soft] (aca.south) |- (web.north);
-\draw[soft] (aca.south) -- (api.north);
-\draw[soft] (aca.south) |- (jupyter.north);
+\coordinate (serviceBus) at (0,1.35);
+\draw[soft] (aca.south) -- (5.2,1.35);
+\draw[bus] (-4.5,1.35) -- (4.5,1.35);
+\foreach \n in {web,api,jupyter} {
+  \draw[soft] (\n |- serviceBus) -- (\n.north);
+}
 \draw[arr] (api) -- (files);
 \draw[arr] (jupyter) -- (files);
 \draw[arr] (user) -- (copy);
 \draw[arr] (copy) -- (run);
-\draw[soft] (copy) -- (files);
-\draw[soft] (run) -- (jupyter);
+\draw[soft] (copy.north) -- (files.south);
+\draw[soft] (run.north) -- (jupyter.south);
 \end{tikzpicture}
 }
 \caption{Infraestructura implementada para la plataforma \hydra. El flujo superior resume la construcción y despliegue de imágenes; el bloque central separa los tres servicios desplegados; y el flujo inferior muestra cómo cada sesión de usuario trabaja sobre una copia aislada del notebook, ejecutada por JupyterLab con \pyhydra sobre datos persistentes compartidos. Elaboración propia.}

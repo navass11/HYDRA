@@ -185,7 +185,7 @@ La \cref{fig:maxdiss_downscaling} resume la lógica operativa del método. El bl
 \begin{tikzpicture}[
   font=\scriptsize,
   node distance=0.78cm and 0.78cm,
-  arr/.style={-Stealth, line width=0.8pt, tg55},
+  arr/.style={-Stealth, line width=0.8pt, color=tg55},
   data/.style={rectangle, rounded corners=3pt, draw=blue!55!black, fill=blue!8,
 	               text width=2.48cm, minimum height=0.78cm, align=center},
   stat/.style={rectangle, rounded corners=3pt, draw=orange!70!black, fill=orange!12,
@@ -212,7 +212,7 @@ La \cref{fig:maxdiss_downscaling} resume la lógica operativa del método. El bl
 \draw[arr] (obs) -- (events);
 \draw[arr] (events) -- (synthetic);
 \draw[arr] (synthetic) -- (maxdiss);
-\draw[arr] (maxdiss) -- (hydraulic);
+\draw[arr] (maxdiss.south) -- (hydraulic.north);
 \draw[arr] (hydraulic) -- (maps);
 \draw[arr] (maps) -- (knn);
 \draw[arr] (knn) -- (risk);
@@ -225,9 +225,9 @@ La \cref{fig:maxdiss_downscaling} resume la lógica operativa del método. El bl
 \node[outputbox, above=0.75cm of events] (audit1) {Tabla de eventos\\y descriptores};
 \node[outputbox, above=0.75cm of maxdiss] (audit2) {Listado de casos\\a simular};
 \node[outputbox, below=0.75cm of maps] (audit3) {GeoTIFF/NetCDF\\intermedios};
-\draw[arr] (events) -- (audit1);
-\draw[arr] (maxdiss) -- (audit2);
-\draw[arr] (maps) -- (audit3);
+\draw[arr] (events.north) -- (audit1.south);
+\draw[arr] (maxdiss.north) -- (audit2.south);
+\draw[arr] (maps.south) -- (audit3.north);
 
 \end{tikzpicture}
 }

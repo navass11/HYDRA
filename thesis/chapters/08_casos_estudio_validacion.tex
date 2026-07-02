@@ -212,7 +212,9 @@ Cada bloque responde a una limitación concreta y después se generaliza en \hyd
 \draw[arr] (lidar) -- (mesh);
 \draw[arr] (mesh) -- (select);
 \draw[arr] (select) -- (hyd);
-\draw[arr] (hyd.south) -- ++(0,-0.45) -| (impact.north);
+\coordinate (besayaHydOut) at (10.35,-0.95);
+\coordinate (besayaImpactIn) at (6.9,-0.95);
+\draw[arr] (hyd.south) -- (besayaHydOut) -- (besayaImpactIn) -- (impact.north);
 \draw[arr] (impact) -- (rp);
 \end{tikzpicture}
 }
@@ -391,10 +393,11 @@ El resultado final son mapas de período de retorno basados en calado hidráulic
 \draw[arr] (rain) -- (sep);
 \draw[arr] (sep) -- (cop);
 \draw[arr] (cop) -- (synt);
-\draw[arr] (synt) -- (selecthms);
-\draw[arr] (selecthms) -- (hms);
-\draw[arr] (hms) -- (maxdiss);
-\draw[arr] (maxdiss.south) -- ++(0,-0.35) -| (ras.north);
+\draw[arr] (synt.south) -- (selecthms.north);
+\draw[arr] (selecthms.west) -- (hms.east);
+\draw[arr] (hms.west) -- (maxdiss.east);
+\coordinate (m30MaxOut) at (3.95,0.35);
+\draw[arr] (maxdiss.south) -- (m30MaxOut) -- (ras.north);
 \draw[arr] (terrain) -- (ras);
 \draw[arr] (ras) -- (knn);
 \draw[arr] (knn) -- (rp);

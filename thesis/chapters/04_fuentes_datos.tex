@@ -39,7 +39,9 @@ La salida del capítulo 4 alimenta tres tipos de procesos posteriores. Las serie
     draw=#1!65!black, fill=#1!12,
     line width=0.65pt
   },
-  arr/.style={-Stealth, line width=0.8pt, color=tg55}
+  arr/.style={-Stealth, line width=0.8pt, color=tg55},
+  soft/.style={-Stealth, line width=0.55pt, color=tg40},
+  bus/.style={line width=0.55pt, color=tg40}
 ]
 \node[source=blueblock] (meteo) at (0,2.35) {\textbf{Lluvia y estación}\\ERA5, GPM, PERSIANN\\AEMET, \mbox{Meteostat}\\OGIMET};
 \node[source=blueblock] (flow) at (0,0.80) {\textbf{Caudal}\\GloFAS, GRDC\\USGS};
@@ -53,14 +55,16 @@ La salida del capítulo 4 alimenta tres tipos de procesos posteriores. Las serie
 \node[product=redstep] (out1) at (12.2,1.45) {Escenarios corregidos\\y eventos sintéticos};
 \node[product=redstep] (out2) at (12.2,-1.45) {Mapas de impacto\\y períodos de retorno};
 
-\coordinate (sourceBus) at (2.55,0);
-\draw[tg40, line width=0.55pt] (2.55,-2.30) -- (2.55,2.35);
+\coordinate (sourceBus) at (2.05,0);
+\draw[bus] (2.05,-2.30) -- (2.05,2.35);
 \foreach \n in {meteo,flow,cmip,phys} {
-  \draw[tg40, line width=0.55pt] (\n.east) -- (sourceBus |- \n.east);
+  \draw[soft] (\n.east) -- (sourceBus |- \n.east);
 }
 \draw[arr] (sourceBus) -- (std.west);
-\draw[arr] (std.east) -- (analysis.west);
-\draw[arr] (std.east) -- (models.west);
+\coordinate (stdSplit) at (5.95,0);
+\draw[arr] (std.east) -- (stdSplit);
+\draw[arr] (stdSplit) |- (analysis.west);
+\draw[arr] (stdSplit) |- (models.west);
 \draw[arr] (analysis.east) -- (out1.west);
 \draw[arr] (analysis.south) -- (models.north);
 \draw[arr] (models.east) -- (out2.west);
