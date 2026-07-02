@@ -1,0 +1,39 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "HYDRA: web platform, notebooks and deployment environment for pyhydra"
+version: 0.1.0
+date-released: "2026-07-02"
+license: MIT
+repository-code: "https://github.com/navass11/HYDRA"
+url: "https://hydra-web.yellowwave-5aaa93b0.spaincentral.azurecontainerapps.io/"
+authors:
+  - family-names: Navas Fernández
+    given-names: Salvador
+    affiliation: "Hidralab S.L."
+    email: "salvador.navas@hidralab.com"
+keywords:
+  - hydrology
+  - flood modelling
+  - climate analysis
+  - reproducible research
+  - JupyterLab
+  - FastAPI
+  - web platform
+  - HEC-RAS
+  - SFINCS
+  - HEC-HMS
+  - Python
+abstract: >
+  HYDRA is the integration platform built around pyhydra, a modular Python
+  library for hydrological and climate analysis. It provides a FastAPI
+  backend, an Astro web frontend, a JupyterLab environment with reproducible
+  notebooks covering the full pipeline (data acquisition, extreme value
+  analysis, stochastic generation, bias correction, hybrid downscaling, and
+  HEC-HMS/HEC-RAS/SFINCS automation), and the Docker/Azure Container Apps
+  deployment configuration used to run it as a hosted demo.
+references:
+  - type: software
+    title: "pyhydra: a modular Python library for hydrological and climate analysis"
+    doi: "10.5281/zenodo.20932555"
+    version: 0.1.0

@@ -1,5 +1,8 @@
 # HYDRA
 
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![pyhydra DOI](https://zenodo.org/badge/doi/10.5281/zenodo.20932555.svg)](https://doi.org/10.5281/zenodo.20932555)
+
 **HYDRA** is the integration platform for **pyhydra**: a modular Python library for hydrological and climate analysis (data download, extreme-value statistics, stochastic generation, bias correction, hybrid downscaling, and automation of hydrological/hydraulic models). This repository adds the execution, API, web, and reproducible-documentation layers on top of pyhydra.
 
 - 🌐 **Live demo:** [hydra-web.yellowwave-5aaa93b0.spaincentral.azurecontainerapps.io](https://hydra-web.yellowwave-5aaa93b0.spaincentral.azurecontainerapps.io/) — a demo instance deployed on Azure Container Apps. This is an ephemeral endpoint for operational validation, not a durable reference (to cite the software, use the Zenodo DOIs below).
