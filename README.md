@@ -1,77 +1,43 @@
-# HYDRA
+# Tesis doctoral — Desarrollo de un modelo automático de inundación estocástica
 
-**HYDRA** es una librería modular de Python para el análisis hidrológico y climático. Integra herramientas de descarga y procesamiento de datos, análisis estadístico del clima, y soporte para modelos hidrológicos e hidráulicos.
+Fuentes LaTeX de la tesis doctoral de **Salvador Navas Fernández**:
 
-## Estructura de la librería
+- **Título (ES):** Desarrollo de un modelo automático de inundación estocástica
+- **Título (EN):** Development of an automatic stochastic flood model
+- **Director:** Manuel del Jesús Peñil · **Tutor:** César Álvarez Díaz
+- **Programa:** Doctorado en Ingeniería de Costas, Hidrobiología y Gestión de Sistemas Acuáticos (IH2O)
+- **Universidad de Cantabria**, en colaboración con IH Cantabria (tesis industrial)
+
+Esta rama contiene únicamente los documentos de la tesis. El software desarrollado (**pyhydra** / **HYDRA**) vive en un repositorio y una rama independientes:
+
+- 🌐 **Demo en vivo de HYDRA:** [hydra-web.yellowwave-5aaa93b0.spaincentral.azurecontainerapps.io](https://hydra-web.yellowwave-5aaa93b0.spaincentral.azurecontainerapps.io/)
+- 📦 **Código:** [github.com/navass11/HYDRA](https://github.com/navass11/HYDRA) (rama `main`) y [github.com/navass11/pyhydra](https://github.com/navass11/pyhydra)
+- 📄 **Citar el software** (no la URL de demo, que es efímera): pyhydra está archivado en Zenodo — https://doi.org/10.5281/zenodo.20932555. HYDRA (repositorio de integración) está pendiente de archivado en Zenodo.
+
+## Estructura
 
 ```
-HYDRA/
-├── Data_Sources/              # Descarga y preprocesado de datos
-│   ├── Climate_Change/        # Proyecciones de cambio climático
-│   │   ├── COPERNICUS/        # Descarga CMIP6 via CDS API (cdsapi + Selenium)
-│   │   ├── ESGF/              # Descarga CMIP6 via ESGF (OPeNDAP / HTTP)
-│   │   └── utils.py           # Utilidades compartidas + clase bias_correction
-│   ├── Rainfall/              # Datos de precipitación
-│   │   ├── GPM/               # IMERG NASA via earthaccess (clase GPMDownloader)
-│   │   ├── PERSSIAN/          # PERSIANN-CCS via FTP (clase PERSSIANDownloader)
-│   │   ├── ERA-5/             # ERA5 via CDS API (función download_era5)
-│   │   ├── AEMET/             # Red AEMET Spain via API OpenData + widget Jupyter
-│   │   └── OGIMET/            # Estaciones SYNOP globales via scraping + widget Jupyter
-│   ├── River_Discharge/       # Caudal fluvial (GloFAS, RivDIS, NCAR)
-│   └── Soils/                 # Texturas de suelo SoilGrids → clase USDA
-│
-├── Climate/                   # Análisis estadístico del clima
-│   ├── Time_Series_Analysis/
-│   │   ├── Extremes/          # Análisis de valores extremos [pendiente código]
-│   │   └── Discretization/   # Separación de eventos + generación sintética (flood_methodology)
-│   ├── Spatial_Analysis/
-│   │   ├── RFA/               # Análisis de frecuencia regional
-│   │   ├── Bayes_Hierarchical/# Modelos jerárquicos bayesianos [extraer código]
-│   │   ├── Interpolation/     # Interpolación + Gaussian Processes (NEOPRENE/gaup)
-│   │   └── Copulas/           # Dependencia multivariante [pendiente]
-│   ├── Stochastic_Generation/ # Generación estocástica (NEOPRENE, CoSMoS_py)
-│   │   ├── Point/
-│   │   └── Spatial/
-│   ├── Bias_Correction/
-│   │   ├── Delta/             # Método Delta (función delta_method)
-│   │   └── QQ_Mapping/        # QM, QDM y SDM (clase bias_correction)
-│   └── Hybrid_Downscaling/    # Downscaling estadístico [pendiente código]
-│
-└── Modeling/                  # Modelos hidrológicos e hidráulicos
-    ├── Hydrology/
-    │   ├── SWAT/              # Automatización SWAT+
-    │   └── HEC-HMS/           # Automatización HEC-HMS
-    └── Hydraulic/
-        ├── SFINCS/            # Automatización SFINCS
-        └── HEC-RAS/           # Automatización HEC-RAS
+thesis/
+├── main.tex              # Documento raíz
+├── frontmatter/          # Portada, metadatos, acrónimos
+├── chapters/              # Capítulos 00-09
+├── appendices/             # Apéndices (API práctica, convenciones, notebooks)
+├── figures/                # Figuras (generadas y reproducidas de publicaciones propias)
+├── assets/                  # Plantilla y estilos
+└── references.bib          # Bibliografía
 ```
 
-## Ejecución con Docker
+## Compilar
 
-La carpeta `docker/` contiene todo lo necesario para levantar un entorno reproducible con JupyterLab y todas las dependencias instaladas.
-
-**Requisitos:** [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado y en ejecución.
+Requiere una distribución LaTeX completa (TeX Live 2026 o equivalente) con `latexmk` y `biber`.
 
 ```bash
-# 1. Clonar el repositorio
-git clone https://github.com/navass11/HYDRA.git
-cd HYDRA
-
-# 2. Construir la imagen y lanzar JupyterLab
-docker compose -f docker/docker-compose.yml up --build
-
-# 3. Abrir en el navegador
-#    http://localhost:8888
+cd thesis
+latexmk -pdf -interaction=nonstopmode main.tex
 ```
 
-Los notebooks se sirven desde la carpeta `notebooks/`. Los cambios realizados en el navegador se guardan directamente en el repositorio local gracias al volumen montado.
+El PDF resultante es `thesis/main.pdf`.
 
-Para parar el contenedor:
+## Generar figuras
 
-```bash
-docker compose -f docker/docker-compose.yml down
-```
-
-## Contribución
-
-Cada módulo tiene su propio `README.md` describiendo el código real existente. Los módulos sin código aún están marcados como `[pendiente]`. Consulta el PDF `Organización_HYDRA_MdJ.pdf` para la visión global de la arquitectura.
+Algunas figuras del capítulo 5 y 8 se generan con `thesis/figures/gen_figures.py` (Python: numpy, matplotlib, scipy). El resto son reproducciones directas de las publicaciones propias citadas en cada caso de estudio.
