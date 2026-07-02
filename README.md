@@ -1,6 +1,7 @@
 # HYDRA
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![HYDRA DOI](https://zenodo.org/badge/doi/10.5281/zenodo.21138151.svg)](https://doi.org/10.5281/zenodo.21138151)
 [![pyhydra DOI](https://zenodo.org/badge/doi/10.5281/zenodo.20932555.svg)](https://doi.org/10.5281/zenodo.20932555)
 
 **HYDRA** is the integration platform for **pyhydra**: a modular Python library for hydrological and climate analysis (data download, extreme-value statistics, stochastic generation, bias correction, hybrid downscaling, and automation of hydrological/hydraulic models). This repository adds the execution, API, web, and reproducible-documentation layers on top of pyhydra.
@@ -53,7 +54,7 @@ The `.github/workflows/azure.yml` workflow builds and publishes the `jupyter`, `
 ## Citing this work
 
 - Python core (pyhydra): Navas Fernández, S. (2026). *pyhydra: a modular Python library for hydrological and climate analysis* (v0.1.0). Zenodo. https://doi.org/10.5281/zenodo.20932555
-- This repository (HYDRA): archival on Zenodo is in progress — until then, cite the GitHub repository: https://github.com/navass11/HYDRA
+- This repository (HYDRA): Navas Fernández, S. (2026). *HYDRA: web platform, notebooks and deployment environment for pyhydra* (v0.1.0). Zenodo. https://doi.org/10.5281/zenodo.21138151
 
 ## Related branches
 

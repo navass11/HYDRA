@@ -7,6 +7,11 @@ date-released: "2026-07-02"
 license: MIT
 repository-code: "https://github.com/navass11/HYDRA"
 url: "https://hydra-web.yellowwave-5aaa93b0.spaincentral.azurecontainerapps.io/"
+doi: "10.5281/zenodo.21138151"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.21138151"
+    description: "Zenodo archive of HYDRA v0.1.0"
 authors:
   - family-names: Navas Fernández
     given-names: Salvador
