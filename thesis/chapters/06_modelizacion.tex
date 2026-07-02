@@ -27,7 +27,7 @@ Este capítulo se centra en la parte física de la cadena: la transformación de
     Downscaling híbrido & MaxDiss · k-NN \\[3pt]
     Emulación & Gaussian Process Regression (GPR) \\[3pt]
     Modelización hidrológica & HEC-HMS · SWAT \\[3pt]
-    Modelización hidráulica & SFINCS · HEC-RAS · Iber \\[3pt]
+    Modelización hidráulica & SFINCS · HEC-RAS; Iber como motor histórico sin adaptador propio en \pyhydra \\[3pt]
     \bottomrule
   \end{tabular}
 \end{table}
@@ -127,7 +127,7 @@ Su uso en Calle 30 \parencite{navas2024calle30} y en desarrollos posteriores sob
 
 \subsection{Iber}
 
-Iber \parencite{blade2014iber} es un modelo hidráulico bidimensional de superficie libre desarrollado por el CEDEX y la Universidad de A Coruña. Su integración en el flujo de trabajo de \hydra se limita en la versión actual a la preparación de entradas (hidrogramas de entrada en el formato de ficheros de texto de Iber) y a la lectura de resultados exportados a GeoTIFF desde la interfaz gráfica. No se ha implementado un adaptador de automatización completo porque Iber no dispone de una API de línea de comandos documentada que permita la ejecución en modo \textit{batch} sin interacción con la interfaz gráfica, lo que hace inviable su uso en flujos estocásticos con cientos o miles de simulaciones. Esta limitación es la razón técnica por la que HEC-RAS y SFINCS, que sí admiten ejecución automatizada mediante subproceso o controlador externo, sustituyeron progresivamente a Iber en los desarrollos posteriores. La integración parcial es coherente con su papel en los trabajos iniciales de la línea, especialmente el Besaya \parencite{navas2018besaya} y Mallorca \parencite{navas2019mallorca}, donde se empleó para las simulaciones individuales del subconjunto representativo antes de que los adaptadores de HEC-RAS y SFINCS estuvieran disponibles.
+Iber \parencite{blade2014iber} es un modelo hidráulico bidimensional de superficie libre desarrollado por el CEDEX y la Universidad de A Coruña. En la versión actual de \pyhydra no existe un adaptador propio para Iber: los trabajos iniciales de la línea prepararon hidrogramas y leyeron resultados exportados desde la interfaz gráfica, pero esas operaciones no están expuestas como funciones públicas del paquete. No se ha implementado un adaptador de automatización completo porque Iber no dispone de una API de línea de comandos documentada que permita la ejecución en modo \textit{batch} sin interacción con la interfaz gráfica, lo que hace inviable su uso en flujos estocásticos con cientos o miles de simulaciones. Esta limitación es la razón técnica por la que HEC-RAS y SFINCS, que sí admiten ejecución automatizada mediante subproceso o controlador externo, sustituyeron progresivamente a Iber en los desarrollos posteriores. Su papel en esta memoria es histórico y metodológico, especialmente en el Besaya \parencite{navas2018besaya} y Mallorca \parencite{navas2019mallorca}, donde se empleó para las simulaciones individuales del subconjunto representativo antes de que los adaptadores de HEC-RAS y SFINCS estuvieran disponibles.
 
 \section{Análisis de sensibilidad}
 \label{sec:sensibilidad}
