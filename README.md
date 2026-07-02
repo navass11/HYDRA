@@ -23,7 +23,7 @@ HYDRA combines four layers:
 
 | Layer | Contents |
 | --- | --- |
-| Python core | Local working copy of `pyhydra`, consumed by the API and notebook images. The canonical source is [`navass11/pyhydra`](https://github.com/navass11/pyhydra). |
+| Python core | External dependency installed from [`navass11/pyhydra`](https://github.com/navass11/pyhydra) during Docker builds. |
 | API | FastAPI backend for interactive tools, notebook sessions and selected pyhydra operations. |
 | Web interface | Astro/nginx frontend for module pages, pilot cases, notebook access and browser-based tools. |
 | Execution environment | Docker, Azure Container Apps configuration, notebooks, data workspace conventions and deployment documentation. |
@@ -34,7 +34,6 @@ HYDRA combines four layers:
 HYDRA/
 |-- api/                 FastAPI application and tool routers
 |-- web/                 Astro frontend and nginx-served static build
-|-- pyhydra/             Working copy used by the HYDRA containers
 |-- notebooks/           Tutorials, module notebooks and pilot cases
 |-- data/                Local data workspace mounted into containers
 |-- docker/              Dockerfiles, docker-compose and nginx configuration
@@ -110,10 +109,10 @@ pip install -r api/requirements.txt
 uvicorn api.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-When running outside Docker, make sure `pyhydra/` is importable, for example:
+When running outside Docker, install the canonical `pyhydra` package, for example:
 
 ```bash
-export PYTHONPATH="$PWD"
+pip install git+https://github.com/navass11/pyhydra.git
 ```
 
 ## Deployment
@@ -135,9 +134,11 @@ the Zenodo releases.
 
 ## Relationship With pyhydra
 
-`pyhydra` is the installable Python package. HYDRA is the platform that exposes
-selected pyhydra capabilities through notebooks, API endpoints and a web
-interface.
+`pyhydra` is the installable Python package maintained in its own repository.
+HYDRA is the platform that exposes selected pyhydra capabilities through
+notebooks, API endpoints and a web interface. The HYDRA Docker images install
+pyhydra directly from [`navass11/pyhydra`](https://github.com/navass11/pyhydra)
+instead of tracking a local package copy.
 
 Use the standalone pyhydra repository when you need the Python library as a
 dependency:

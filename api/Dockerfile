@@ -21,9 +21,11 @@ RUN pip install --no-cache-dir "setuptools<80" && \
 COPY docker/cosmos_py-0.1.0-py3-none-any.whl /tmp/
 RUN pip install --no-cache-dir /tmp/cosmos_py-0.1.0-py3-none-any.whl
 
-# Copy project and install pyhydra
+# Install the canonical pyhydra package from its own repository.
+RUN pip install --no-cache-dir git+https://github.com/navass11/pyhydra.git
+
+# Copy HYDRA API and support files.
 COPY . .
-RUN pip install --no-cache-dir -e .
 
 EXPOSE 8000
 CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]

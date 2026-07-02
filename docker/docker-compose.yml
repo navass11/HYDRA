@@ -12,9 +12,8 @@ services:
       - JUPYTER_BASE_URL=/jupyter/
     volumes:
       # Mount notebooks and source code so executions/edits happen against the
-      # working tree, while the container still provides the full environment.
+      # working tree, while pyhydra itself comes from the canonical package.
       - ../notebooks:/workspace/notebooks
-      - ../pyhydra:/workspace/pyhydra
       # Mount the HYDRA data workspace. By default this is the local repo data/
       # directory, but it can point to a host-mounted Azure Files share:
       #
@@ -38,7 +37,6 @@ services:
       - PYTHONPATH=/app
       - JUPYTER_INTERNAL_URL=http://jupyter:8888
     volumes:
-      - ../pyhydra:/app/pyhydra
       - ${HYDRA_DATA_PATH:-../data}:/workspace/data
 
   # ── Astro landing page + nginx reverse proxy ──────────────────────────────

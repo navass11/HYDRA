@@ -39,6 +39,9 @@ thesis/build
 # Python packaging artifacts
 *.egg-info
 
+# pyhydra is installed from https://github.com/navass11/pyhydra in Docker builds.
+pyhydra/
+
 # Large/generated model data. Keep the setup script and small project stubs.
 data/*
 !data/README.md

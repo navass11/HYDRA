@@ -52,9 +52,11 @@ RUN pip install --no-cache-dir jupyterlab nbconvert ipykernel ipywidgets ipyleaf
 COPY docker/cosmos_py-0.1.0-py3-none-any.whl /tmp/
 RUN pip install --no-cache-dir /tmp/cosmos_py-0.1.0-py3-none-any.whl
 
-# Copy project and install pyhydra as package
+# Install the canonical pyhydra package from its own repository.
+RUN pip install --no-cache-dir git+https://github.com/navass11/pyhydra.git
+
+# Copy HYDRA notebooks, web/API support files and runtime scripts.
 COPY . .
-RUN pip install --no-cache-dir -e .
 
 # Release builds can bake executed notebooks into the image:
 #   docker buildx build --build-arg EXECUTE_NOTEBOOKS=true ...

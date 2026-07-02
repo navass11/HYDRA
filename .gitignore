@@ -155,6 +155,10 @@ notebooks/climate/spatial_analysis/build/
 
 # Runtime directories
 **/.hydra_runtime/
+
+# pyhydra is maintained in https://github.com/navass11/pyhydra.
+# HYDRA installs it from that repository instead of tracking a local copy.
+pyhydra/
 outputs/manual-20260625-hydra-seminario/presentations/seminario-hydra-tesis/output/seminario-hydra-tesis.pptx
 outputs/manual-20260625-hydra-visual/presentations/seminario-hydra-visual/claim-spine.txt
 outputs/manual-20260625-hydra-visual/presentations/seminario-hydra-visual/design-system.txt
