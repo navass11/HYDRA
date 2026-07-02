@@ -12,7 +12,7 @@ Esta rama contiene únicamente los documentos de la tesis. El software desarroll
 
 - 🌐 **Demo en vivo de HYDRA:** [hydra-web.yellowwave-5aaa93b0.spaincentral.azurecontainerapps.io](https://hydra-web.yellowwave-5aaa93b0.spaincentral.azurecontainerapps.io/)
 - 📦 **Código:** [github.com/navass11/HYDRA](https://github.com/navass11/HYDRA) (rama `main`) y [github.com/navass11/pyhydra](https://github.com/navass11/pyhydra)
-- 📄 **Citar el software** (no la URL de demo, que es efímera): pyhydra está archivado en Zenodo — https://doi.org/10.5281/zenodo.20932555. HYDRA (repositorio de integración) está pendiente de archivado en Zenodo.
+- 📄 **Citar el software** (no la URL de demo, que es efímera): pyhydra — https://doi.org/10.5281/zenodo.20932555 · HYDRA (repositorio de integración) — https://doi.org/10.5281/zenodo.21138151
 
 ## Estructura
 
