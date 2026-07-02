@@ -57,23 +57,13 @@ La \cref{fig:arquitectura_hydra} ilustra la organización en bloques de la herra
 \node[layer=redstep] (impact) at (0,-2.65)
   {\textbf{Productos}: calado, velocidad, extensión, retorno por impacto, incertidumbre y trazabilidad};
 
-\coordinate (sourceBus) at (0,1.58);
-\coordinate (modelBus) at (0,-0.30);
-\coordinate (impactBus) at (0,-1.68);
-\draw[softarr] (users.south) -- (0,3.08);
-\draw[bus] (-5.0,1.58) -- (5.0,1.58);
-\foreach \n in {rain,river,clim,soil} {
-  \draw[softarr] (\n.south) -- (\n |- sourceBus);
+\foreach \n/\x in {rain/-5.0,river/-1.65,clim/1.65,soil/5.0} {
+  \draw[softarr] (\n.south) -- ([xshift=\x cm]core.north);
 }
-\draw[arr] (sourceBus) -- (core.north);
-\draw[arr] (core.south) -- (modelBus);
-\draw[bus] (-4.20,-0.30) -- (4.20,-0.30);
-\foreach \n in {hms,swat,ras,sfincs} {
-  \draw[arr] (modelBus) -| (\n.north);
-  \draw[softarr] (\n.south) -- (\n |- impactBus);
+\foreach \n/\x in {hms/-4.20,swat/-1.40,ras/1.40,sfincs/4.20} {
+  \draw[arr] ([xshift=\x cm]core.south) -- (\n.north);
+  \draw[softarr] (\n.south) -- ([xshift=\x cm]impact.north);
 }
-\draw[bus] (-4.20,-1.68) -- (4.20,-1.68);
-\draw[arr] (impactBus) -- (impact.north);
 \draw[arr, dashed, color=tg40] (impact.east) -- ++(0.55,0) |- (users.east)
   node[pos=0.25, right, font=\tiny, align=left, color=tg55] {validación\\y revisión};
 \end{tikzpicture}
