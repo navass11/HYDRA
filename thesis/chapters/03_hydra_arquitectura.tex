@@ -1,0 +1,428 @@
+\chapter{Arquitectura de HYDRA}
+\label{ch:arquitectura}
+
+\section{Visión general}
+
+\hydra es la plataforma de integración para la automatización de estudios hidrológicos y climáticos orientados al riesgo de inundación. Su núcleo central es \pyhydra, la librería Python instalable que concentra la lógica metodológica y constituye el principal desarrollo técnico de la tesis. Sobre ese núcleo, el repositorio \hydra agrupa la interfaz web, los notebooks, el entorno Docker y los servicios auxiliares que permiten ejecutar y documentar los flujos de trabajo. La arquitectura organiza el cálculo en tres bloques funcionales: fuentes de datos, análisis climático-estadístico y modelización hidrológica e hidráulica.
+
+La \cref{fig:arquitectura_hydra} ilustra la organización en bloques de la herramienta y el flujo de datos entre ellos. La herramienta no parte de cero. Sintetiza una línea de trabajos previos sobre análisis estocástico de impactos hidráulicos, generación sintética de precipitación y caudal, cambio climático y transferencia a herramientas técnicas. El artículo de la \textit{Revista de Obras Públicas} sobre el Besaya \parencite{navas2018besaya} constituye el antecedente fundacional de la metodología basada en impactos; NEOPRENE \parencite{diezsierra2023neoprene}, Calle 30 \parencite{navas2024calle30}, SIMPCCe \parencite{navas2025simpce} y los trabajos recientes de extremos y cambio climático completan la línea que se integra en \pyhydra \parencite{navas2025valenciaIA,navas2025tanganicaIA}. En este sentido, \pyhydra actúa como núcleo de integración metodológica, mientras que \hydra actúa como infraestructura de transferencia que hace esos desarrollos reproducibles, auditables y accesibles a nuevos usuarios o territorios.
+
+\begin{figure}[p]
+\centering
+\resizebox{0.98\textwidth}{!}{%
+\begin{tikzpicture}[
+  font=\scriptsize,
+  layer/.style={
+    rectangle, rounded corners=6pt,
+    minimum width=13.2cm, minimum height=0.82cm,
+    text width=12.7cm, align=center,
+    draw=#1!60!black, fill=#1!9,
+    line width=0.75pt
+  },
+  module/.style={
+    rectangle, rounded corners=4pt,
+    minimum width=3.0cm, minimum height=1.04cm,
+    text width=2.78cm, align=center,
+    draw=#1!60!black, fill=#1!12,
+    line width=0.65pt
+  },
+  smallmod/.style={
+    rectangle, rounded corners=3pt,
+    minimum width=2.42cm, minimum height=0.70cm,
+    text width=2.18cm, align=center,
+    draw=#1!55!black, fill=#1!8,
+    line width=0.55pt, font=\scriptsize
+  },
+  arr/.style={-Stealth, line width=0.75pt, color=tg55},
+  softarr/.style={-Stealth, line width=0.6pt, color=tg40}
+]
+\path[use as bounding box] (-7.0,-3.35) rectangle (7.0,4.95);
+\node[layer=gray] (users) at (0,4.25)
+  {\textbf{Acceso}: notebooks, ejecución local y Docker};
+
+\node[module=blueblock] (rain) at (-5.0,2.35) {\textbf{Meteorología}\\ERA5, GPM, PERSIANN\\AEMET, OGIMET, Meteostat};
+\node[module=blueblock] (river) at (-1.65,2.35) {\textbf{Caudal}\\GloFAS, GRDC\\USGS};
+\node[module=blueblock] (clim) at (1.65,2.35) {\textbf{Clima futuro}\\CMIP6\\CDS/ESGF};
+\node[module=blueblock] (soil) at (5.0,2.35) {\textbf{Territorio}\\DEM, suelos\\usos};
+
+\node[layer=tealblock] (core) at (0,0.65)
+  {\textbf{Núcleo \pyhydra}: extremos, cópulas, RFA, NEOPRENE, CoSMoS, sesgo, MaxDiss y k-NN};
+
+\node[smallmod=orangeblock] (hms) at (-4.20,-1.05) {HEC-HMS\\lluvia--caudal};
+\node[smallmod=orangeblock] (swat) at (-1.40,-1.05) {SWAT\\simulación continua};
+\node[smallmod=orangeblock] (ras) at (1.40,-1.05) {HEC-RAS\\1D/2D};
+\node[smallmod=orangeblock] (sfincs) at (4.20,-1.05) {SFINCS\\ejecución masiva};
+
+\node[layer=redstep] (impact) at (0,-2.65)
+  {\textbf{Productos}: calado, velocidad, extensión, retorno por impacto, incertidumbre y trazabilidad};
+
+\coordinate (modelBus) at (0,-0.30);
+\draw[softarr] (users.south) -- (0,3.08);
+\foreach \n in {rain,river,clim,soil} {
+  \draw[softarr] (\n.south) -- ++(0,-0.23);
+}
+\draw[arr] (core.south) -- (modelBus);
+\foreach \n in {hms,swat,ras,sfincs} {
+  \draw[arr] (modelBus) -| (\n.north);
+  \draw[softarr] (\n.south) -- ++(0,-0.22);
+}
+\draw[arr] (modelBus) -- (impact.north);
+\draw[arr, dashed, color=tg40] (impact.east) -- ++(0.55,0) |- (users.east)
+  node[pos=0.25, right, font=\tiny, align=left, color=tg55] {validación\\y revisión};
+\end{tikzpicture}
+}
+\caption{Arquitectura de tres bloques de \pyhydra dentro de la plataforma \hydra y flujo de información entre módulos. Cada bloque se comunica a través de estructuras de datos estandarizadas (\texttt{pandas.DataFrame}, \texttt{xarray.Dataset}, GeoTIFF) y el conjunto produce métricas de impacto para el análisis de riesgo. Elaboración propia.}
+\label{fig:arquitectura_hydra}
+\end{figure}
+
+\section{Estructura del paquete}
+
+El paquete \pyhydra está disponible como repositorio propio en \href{https://github.com/navass11/pyhydra}{GitHub: \texttt{navass11/pyhydra}} e instalable mediante \texttt{pip install -e .} desde su raíz. La versión 0.1.0 se ha archivado como software en Zenodo \parencite{navas2026pyhydra}, que constituye la referencia durable del núcleo Python. Su estructura sigue el patrón estándar de paquetes Python modernos: módulos temáticos con \texttt{\_\_init\_\_.py} que exponen la API pública de cada subpaquete, y un fichero \texttt{utils.py} en la raíz con funciones transversales. El repositorio de integración \hydra, disponible en \href{https://github.com/navass11/HYDRA}{GitHub: \texttt{navass11/HYDRA}} \parencite{navas2026hydrarepo}, consume ese paquete como núcleo y añade las capas de ejecución, web y documentación reproducible. La instancia desplegada durante la tesis en \href{https://hydra-web.yellowwave-5aaa93b0.spaincentral.azurecontainerapps.io/}{Azure Container Apps} se trata únicamente como endpoint efímero de demostración y validación operativa; no se usa como referencia durable.
+
+La \cref{tab:estructura_modulos} describe los 14 módulos sustantivos agrupados en los tres bloques de la herramienta:
+
+\begin{longtable}{p{0.42\textwidth}p{0.12\textwidth}p{0.32\textwidth}}
+  \caption{Módulos de \pyhydra organizados por bloque funcional.}
+  \label{tab:estructura_modulos} \\
+  \toprule
+  Módulo & Bloque & Función principal \\
+  \midrule
+  \endfirsthead
+  \toprule
+  Módulo & Bloque & Función principal \\
+  \midrule
+  \endhead
+  \texttt{data\_sources.rainfall} & Datos & ERA5, GPM, PERSIANN-CCS, AEMET, OGIMET, Meteostat \\[2pt]
+  \texttt{data\_sources.river\_discharge} & Datos & GloFAS, GRDC, USGS \\[2pt]
+  \texttt{data\_sources.climate\_change} & Datos & CMIP6 vía CDS y ESGF \\[2pt]
+  \texttt{data\_sources.soils} & Datos & SoilGrids \\[2pt]
+  \texttt{climate.time\_series} & Clima & Extremos GEV/GPD, detección de eventos \\[2pt]
+  \texttt{climate.spatial\_analysis} & Clima & RFA, cópulas, modelos bayesianos, interpolación \\[2pt]
+  \texttt{climate.stochastic\_generation} & Clima & NEOPRENE (NSRP puntual y STNSRP espacial), CoSMoS \\[2pt]
+  \texttt{climate.bias\_correction} & Clima & Delta method, quantile mapping (EQM, DQM) \\[2pt]
+  \texttt{climate.hybrid\_downscaling} & Clima & MaxDiss, k-NN, mapas de período de retorno \\[2pt]
+  \texttt{modeling.hydrology.hec\_hms} & Modelos & Interfaz HEC-HMS + calibración automática (spotpy) \\[2pt]
+  \texttt{modeling.hydrology.swat} & Modelos & Interfaz SWAT, preparación de entradas CMIP6 \\[2pt]
+  \texttt{modeling.hydraulic.sfincs} & Modelos & Configuración, ejecución y lectura de SFINCS \\[2pt]
+  \texttt{modeling.hydraulic.hec\_ras} & Modelos & Automatización de HEC-RAS 1D/2D \\[2pt]
+  \texttt{modeling.hydraulic.sensitivity} & Modelos & Análisis de sensibilidad de modelos hidráulicos \\[2pt]
+  \bottomrule
+\end{longtable}
+
+La librería \pyhydra se organiza en 14 submódulos temáticos agrupados en los tres bloques funcionales. La plataforma \hydra incorpora un conjunto de notebooks generales de ejemplo que ilustran esas funcionalidades reutilizables con datos reales, sintéticos controlados y modelos de referencia. La interfaz web cataloga 26 notebooks generales y añade 23 entradas de casos piloto para recorrer flujos completos. Los notebooks internos empleados para preparar artículos en desarrollo no forman parte del catálogo general de ejemplos de uso. \hydra incluye además la configuración del entorno Docker con todas las dependencias instaladas, de modo que los notebooks pueden ejecutarse sin configuración adicional del entorno de usuario.
+
+\begin{figure}[p]
+\centering
+\resizebox{0.96\textwidth}{!}{%
+\begin{tikzpicture}[
+  font=\scriptsize,
+  root/.style={
+    rectangle, rounded corners=5pt,
+    minimum width=11.9cm, minimum height=0.85cm,
+    text width=11.4cm, align=center,
+    draw=tg55, fill=tg5,
+    line width=0.7pt
+  },
+  block/.style={
+    rectangle, rounded corners=5pt,
+    minimum width=3.9cm, minimum height=4.55cm,
+    text width=3.28cm, align=left,
+    draw=#1!65!black, fill=#1!7,
+    line width=0.7pt
+  },
+  head/.style={font=\bfseries\footnotesize, align=center},
+  arr/.style={-Stealth, line width=0.85pt, color=tg55}
+]
+\node[block=blueblock] (data) at (-4.35,0)
+  {{\centering\textbf{Fuentes de datos}\par}
+   \vspace{0.15cm}
+   Lluvia: ERA5, GPM, PERSIANN-CCS\\
+   Estaciones: AEMET, OGIMET, Meteostat\\[3pt]
+   Caudal: GloFAS, GRDC, USGS\\[3pt]
+   Cambio climático: CMIP6 vía CDS/ESGF\\[3pt]
+   Suelos: SoilGrids};
+
+\node[block=tealblock] (climate) at (0,0)
+  {{\centering\textbf{Clima y estadística}\par}
+   \vspace{0.15cm}
+   Series temporales: eventos, GEV/GPD\\[3pt]
+   Análisis espacial: RFA, cópulas, interpolación\\[3pt]
+   Generación: NEOPRENE, CoSMoS\\[3pt]
+   Corrección de sesgo y downscaling: delta, cuantiles, MaxDiss, k-NN};
+
+\node[block=orangeblock] (modeling) at (4.35,0)
+  {{\centering\textbf{Modelización}\par}
+   \vspace{0.15cm}
+   HEC-HMS: lluvia--caudal y calibración\\[3pt]
+   SWAT: simulación continua\\[3pt]
+   SFINCS: ejecución masiva\\[3pt]
+   HEC-RAS: automatización 1D/2D\\[3pt]
+   Sensibilidad hidráulica: ensembles y rugosidad};
+\end{tikzpicture}
+}
+\caption{Esquema funcional simplificado de los módulos de \pyhydra. La figura resume el material de presentación en tres bloques legibles para la memoria: fuentes de datos, análisis climático-estadístico y modelización hidrológica e hidráulica. Los conectores de caudal y suelos se recogen ya como módulos estables dentro de \texttt{pyhydra.data\_sources}.}
+\label{fig:organizacion_modulos_presentacion}
+\end{figure}
+
+\subsection{Organización del repositorio}
+\label{subsec:estructura_repo}
+
+La separación entre repositorios evita confundir el núcleo metodológico con su capa de despliegue. El repositorio \texttt{navass11/pyhydra} contiene el paquete Python instalable; el repositorio \href{https://github.com/navass11/HYDRA}{\texttt{navass11/HYDRA}} contiene la web, notebooks, Docker, API y material de demostración. En entornos de desarrollo o despliegue, \pyhydra puede instalarse en modo editable dentro de \hydra para que los notebooks y servicios ejecuten siempre la versión activa del núcleo.
+
+La estructura conceptual de ambos repositorios es:
+
+\begin{codeblock}
+pyhydra/
++-- pyhydra/                     # paquete Python instalable
+|   +-- data_sources/            # fuentes hidroclimáticas
+|   +-- climate/                 # estadística y clima
+|   `-- modeling/                # adaptadores de modelos
++-- pyproject.toml               # metadatos y dependencias del paquete
+
+HYDRA/
++-- notebooks/                   # ejemplos y casos piloto
++-- docker/                      # imágenes y compose
+|   +-- Dockerfile.jupyter       # entorno JupyterLab con pyhydra
+|   +-- Dockerfile.web           # web Astro + nginx
+|   +-- docker-compose.yml       # orquestación de los tres servicios
+|   `-- requirements.txt        # dependencias extendidas del entorno
++-- web/                         # interfaz web (Astro)
++-- api/                         # backend de herramientas (FastAPI)
+`-- docs/                        # documentación y material auxiliar
+\end{codeblock}
+
+Cada submódulo de \pyhydra expone su API pública a través de su \texttt{\_\_init\_\_.py}, de modo que el patrón de importación es siempre \texttt{from pyhydra.\allowbreak<bloque>.\allowbreak<módulo> import <clase>}. El fichero \texttt{utils.py} en la raíz del paquete agrupa funciones de visualización y utilidades compartidas entre bloques (mapas interactivos Leaflet, escritura de GeoTIFFs con plantilla, etc.).
+
+\subsection{Dependencias del paquete}
+\label{subsec:dependencias}
+
+La \cref{tab:dependencias} distingue tres niveles de dependencias: el núcleo instalable con \texttt{pip}, las dependencias extendidas que activa el entorno Docker con la suite completa de funcionalidades, y los motores de simulación externos que se instalan en el sistema operativo del host.
+
+\begin{table}[htbp]
+  \centering
+  \small
+  \caption{Dependencias de \pyhydra según nivel de instalación.}
+  \label{tab:dependencias}
+  \begin{tabular}{p{0.21\textwidth}p{0.36\textwidth}p{0.31\textwidth}}
+    \toprule
+    Nivel & Paquetes principales & Función \\
+    \midrule
+    Núcleo (\texttt{pip install}) & NumPy, pandas, xarray, dask, SciPy, statsmodels, scikit-learn, matplotlib, openturns, requests & Stack científico base; suficiente para análisis estadístico sin modelización \\[4pt]
+    Extendido (Docker) & PyMC, pyvinecopulib, NEOPRENE, CoSMoS\_py, pykrige, lmoments3, GeoPandas, rasterio, earthaccess, hydromt\_sfincs, hecdss, pySWATPlus, spotpy & Inferencia bayesiana, vine cópulas, generación estocástica espacial, datos geoespaciales y adaptadores de modelización \\[4pt]
+    Motores externos & HEC-HMS, HEC-RAS, SFINCS, SWAT+ & Simulación física; se instalan en el host o se montan como volumen desde el entorno de datos \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Esta separación tiene una consecuencia práctica directa: un usuario que solo necesita análisis de extremos o corrección de sesgo puede instalar \pyhydra con \texttt{pip} y acceder al bloque \texttt{climate} sin instalar GeoPandas, PyMC ni ningún motor hidráulico. Las importaciones opcionales se evalúan de forma diferida dentro de cada función, de modo que los módulos se cargan sin error incluso si la dependencia extendida no está presente, y solo lanzan una excepción en el momento de uso efectivo.
+
+\section{Principios de diseño}
+
+La arquitectura de \hydra se apoya en cuatro principios que han guiado todas las decisiones de implementación:
+
+\begin{description}
+  \item[Modularidad.] Cada componente puede utilizarse de forma independiente. Un usuario que solo necesita análisis de extremos puede importar \texttt{climate.time\_series} sin cargar dependencias de modelización. Esta separación facilita la adopción parcial de la herramienta y su integración en flujos ya existentes.
+
+  \item[Reproducibilidad.] Los notebooks, los formatos estandarizados y las convenciones de nomenclatura permiten regenerar los resultados que no dependen de credenciales, servicios externos o motores con instalación específica a partir de los mismos datos de entrada. La trazabilidad es especialmente crítica en estudios de riesgo, donde los resultados pueden ser objeto de auditoría técnica o validación regulatoria.
+
+  \item[Interoperabilidad.] Los módulos utilizan formatos ampliamente adoptados: NetCDF y \texttt{xarray.Dataset} para datos multidimensionales, GeoTIFF para rasters, \texttt{pandas.DataFrame} para series temporales y tablas, y GeoJSON o \texttt{geopandas.GeoDataFrame} para geometrías. Esta elección permite conectar directamente con herramientas de análisis como QGIS, Python científico (NumPy, SciPy, scikit-learn) y motores de modelización externos.
+
+  \item[Transferencia industrial.] La herramienta se ha concebido desde el principio como un producto transferible a equipos no necesariamente especializados en su desarrollo. La documentación, los notebooks y el entorno Docker reproducible son parte del valor entregable, no accesorios opcionales. Esta orientación diferencia \hydra de otros paquetes de investigación que exponen código sin acompañarlo de una capa de usabilidad.
+\end{description}
+
+\section{Flujo conceptual del análisis de inundación}
+\label{sec:flujo_conceptual}
+
+El flujo conceptual de un estudio de inundación con \hydra parte de la definición del caso: dominio espacial, variables de interés, período histórico de referencia, escenarios futuros y modelos hidrofísicos disponibles. A partir de esa definición, la herramienta organiza cuatro etapas sucesivas:
+
+\begin{enumerate}
+  \item \textbf{Adquisición y homogeneización de datos.} Descarga de precipitación, caudal, proyecciones climáticas y propiedades del suelo desde las fuentes disponibles. Transformación a formatos internos estandarizados con metadatos de trazabilidad.
+
+  \item \textbf{Análisis estadístico y generación de escenarios.} Ajuste de distribuciones de extremos, construcción de dependencias espaciales mediante cópulas, generación de eventos sintéticos o selección de escenarios representativos, y corrección de sesgo de modelos climáticos.
+
+  \item \textbf{Simulación hidrofísica.} Preparación automática de entradas, ejecución por lotes de modelos hidrológicos e hidráulicos, y extracción sistemática de resultados.
+
+  \item \textbf{Análisis de impactos y períodos de retorno.} Transformación de resultados de simulación en indicadores de riesgo: hidrogramas, calados máximos, velocidades, extensión de inundación y mapas de período de retorno sobre impactos.
+\end{enumerate}
+
+La \cref{fig:flujo_completo} resume este proceso de forma esquemática.
+
+\begin{figure}[!htbp]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  font=\footnotesize,
+  proc/.style={
+    rectangle, rounded corners=4pt,
+    minimum width=2.6cm, minimum height=1.0cm,
+    text width=2.35cm, align=center,
+    draw=#1!60!black, fill=#1!11,
+    line width=0.65pt
+  },
+  note/.style={
+    rectangle, rounded corners=3pt,
+    minimum width=2.55cm, minimum height=0.8cm,
+    text width=2.35cm, align=center,
+    draw=tg40, fill=tg5,
+    line width=0.5pt, font=\scriptsize
+  },
+  arr/.style={-Stealth, line width=0.8pt, color=tg55},
+  ret/.style={-Stealth, line width=0.65pt, color=tg40, dashed}
+]
+\node[proc=bluestep] (p1) at (0,0) {\textbf{1}\\Datos y dominio};
+\node[proc=tealstep] (p2) at (3.05,0) {\textbf{2}\\Eventos y escenarios};
+\node[proc=tealstep] (p3) at (6.1,0) {\textbf{3}\\Selección estadística};
+\node[proc=orangeblock] (p4) at (9.15,0) {\textbf{4}\\Simulación física};
+\node[proc=redstep] (p5) at (12.2,0) {\textbf{5}\\Impacto y retorno};
+
+\node[note] (n1) at (0,-1.45) {observación, reanálisis, CMIP6, DEM};
+\node[note] (n2) at (3.05,-1.45) {GEV/GPD, cópulas, generadores};
+\node[note] (n3) at (6.1,-1.45) {MaxDiss, k-NN};
+\node[note] (n4) at (9.15,-1.45) {HEC-HMS, SWAT, HEC-RAS, SFINCS};
+\node[note] (n5) at (12.2,-1.45) {calado, velocidad, retorno};
+
+\foreach \a/\b in {p1/p2,p2/p3,p3/p4,p4/p5} {
+  \draw[arr] (\a) -- (\b);
+}
+\foreach \a/\b in {p1/n1,p2/n2,p3/n3,p4/n4,p5/n5} {
+  \draw[arr, dashed] (\a.south) -- (\b.north);
+}
+\draw[ret] (p5.north) to[out=105,in=75] node[above, font=\scriptsize, color=tg55] {diagnóstico y recalibración} (p2.north);
+\end{tikzpicture}
+}
+\caption{Flujo conceptual de un estudio de inundación con \hydra. El esquema separa la adquisición de datos, el análisis probabilístico, la simulación con motores externos y la traducción de resultados a indicadores de impacto. Elaboración propia.}
+\label{fig:flujo_completo}
+\end{figure}
+
+Este flujo no es rígidamente secuencial. Dependiendo del caso de estudio, el punto de entrada puede ser la precipitación, el caudal o directamente proyecciones climáticas. La modularidad de \hydra permite iniciar el análisis en cualquier etapa y combinar componentes según las necesidades y los datos disponibles.
+
+\section{Entorno de ejecución reproducible}
+\label{sec:entorno_despliegue}
+
+La reproducibilidad del entorno de cálculo es un requisito operativo en estudios de riesgo donde los resultados son auditables o transferibles a terceros. \hydra se distribuye con una configuración Docker que incluye \pyhydra con todas sus dependencias científicas instaladas. La imagen de JupyterLab arranca con los notebooks de ejemplo directamente accesibles y el directorio de datos montado desde el almacenamiento del host, sin necesidad de configuración manual del entorno de usuario.
+
+\subsection{Arquitectura de despliegue}
+
+El repositorio incluye un fichero \texttt{docker-compose.yml} que orquesta tres servicios complementarios:
+
+\begin{description}
+  \item[jupyter.] Contenedor basado en Python~3.12 con \pyhydra instalado en modo editable, JupyterLab y todas las dependencias extendidas (PyMC, NEOPRENE, CoSMoS, HydroMT, hecdss, pySWATPlus, etc.). Arranca en el puerto~8888 y monta el directorio de datos del host, lo que permite que los notebooks accedan a proyectos HEC-HMS, HEC-RAS, SFINCS y SWAT ubicados en el almacenamiento local o en un recurso compartido de red.
+
+  \item[api.] Backend FastAPI que expone herramientas de utilidad (gestión de proyectos, estadísticas de uso, estado de los notebooks) al frontend web. Se comunica internamente con el servicio \texttt{jupyter} a través de la red Docker y monta el directorio de datos del mismo volumen, lo que garantiza acceso coherente a los ficheros sin duplicación.
+
+  \item[web.] Servidor nginx con el frontend estático compilado con el \emph{framework} Astro. Actúa como proxy inverso que expone el acceso a JupyterLab y al backend bajo un único dominio y puerto~80, y sirve la interfaz web de \hydra con el catálogo de notebooks navegable.
+\end{description}
+
+La misma separación se mantiene en el despliegue cloud. En el flujo usado para la plataforma \hydra, el repositorio de GitHub actúa como fuente versionada de código, notebooks, web, API y configuración Docker; GitHub Actions construye las imágenes Linux/amd64; el registro de contenedores almacena las imágenes \texttt{hydra-web}, \texttt{hydra-api} y \texttt{hydra-jupyter}; y Azure Container Apps ejecuta los tres servicios coordinados en una red interna. Los datos persistentes no viajan dentro de las imágenes, sino que se montan desde Azure Files bajo \texttt{/workspace/data}. Esta decisión separa claramente tres planos: código versionado, imágenes desplegables y datos de proyecto.
+
+\begin{figure}[p]
+\centering
+\resizebox{0.98\textwidth}{!}{%
+\begin{tikzpicture}[
+  font=\scriptsize,
+  box/.style={
+    rectangle, rounded corners=4pt,
+    minimum width=2.7cm, minimum height=0.78cm,
+    text width=2.45cm, align=center,
+    draw=#1!65!black, fill=#1!9,
+    line width=0.6pt
+  },
+  wide/.style={
+    rectangle, rounded corners=5pt,
+    minimum width=4.8cm, minimum height=0.86cm,
+    text width=4.45cm, align=center,
+    draw=#1!65!black, fill=#1!9,
+    line width=0.65pt
+  },
+  service/.style={
+    rectangle, rounded corners=5pt,
+    minimum width=3.55cm, minimum height=0.86cm,
+    text width=3.2cm, align=center,
+    draw=#1!65!black, fill=#1!9,
+    line width=0.65pt
+  },
+  arr/.style={-Stealth, line width=0.75pt, color=tg55},
+  soft/.style={-Stealth, line width=0.55pt, color=tg40}
+]
+\node[box=blueblock] (github) at (-5.2,2.25) {\textbf{GitHub}\\código, notebooks\\web, API, Docker};
+\node[box=tealblock] (actions) at (-1.75,2.25) {\textbf{GitHub Actions}\\build Linux/amd64};
+\node[box=tealblock] (registry) at (1.75,2.25) {\textbf{Registro}\\hydra-web\\hydra-api\\hydra-jupyter};
+\node[box=orangeblock] (aca) at (5.2,2.25) {\textbf{Azure}\\Container Apps\\red interna};
+
+\node[service=orangeblock] (web) at (-4.5,0.30) {\textbf{web}\\Astro + nginx\\catálogo y proxy};
+\node[service=orangeblock] (api) at (0,0.30) {\textbf{api}\\FastAPI\\sesiones y utilidades};
+\node[service=orangeblock] (jupyter) at (4.5,0.30) {\textbf{jupyter}\\JupyterLab\\\pyhydra editable};
+\node[wide=blueblock] (files) at (0,-1.55) {\textbf{Azure Files / volumen de datos}\\notebooks de sesión, proyectos externos y resultados};
+
+\node[box=redstep] (user) at (-4.6,-3.15) {\textbf{Usuario}\\abre notebook};
+\node[box=redstep] (copy) at (0,-3.15) {\textbf{Sesión}\\copia aislada\\del notebook};
+\node[box=redstep] (run) at (4.6,-3.15) {\textbf{Ejecución}\\\pyhydra sobre\\datos compartidos};
+
+\draw[arr] (github) -- (actions);
+\draw[arr] (actions) -- (registry);
+\draw[arr] (registry) -- (aca);
+\draw[soft] (aca.south) |- (web.north);
+\draw[soft] (aca.south) -- (api.north);
+\draw[soft] (aca.south) |- (jupyter.north);
+\draw[arr] (api) -- (files);
+\draw[arr] (jupyter) -- (files);
+\draw[arr] (user) -- (copy);
+\draw[arr] (copy) -- (run);
+\draw[soft] (copy) -- (files);
+\draw[soft] (run) -- (jupyter);
+\end{tikzpicture}
+}
+\caption{Infraestructura implementada para la plataforma \hydra. El flujo superior resume la construcción y despliegue de imágenes; el bloque central separa los tres servicios desplegados; y el flujo inferior muestra cómo cada sesión de usuario trabaja sobre una copia aislada del notebook, ejecutada por JupyterLab con \pyhydra sobre datos persistentes compartidos. Elaboración propia.}
+\label{fig:despliegue_azure_hydra}
+\end{figure}
+
+La gestión de sesiones de notebooks sigue el mismo criterio de preservación de datos. Cuando un usuario abre un notebook desde la web, la API crea o reutiliza una cookie anónima \texttt{hydra\_jupyter\_session}, copia el notebook base a \path{/workspace/data/jupyter_sessions/<session_id>/notebooks/} y redirige JupyterLab hacia esa copia. Así, cada navegador trabaja sobre su propio espacio editable y los notebooks originales incluidos en la imagen permanecen inalterados.
+
+El arranque completo del entorno se realiza con un único comando desde el directorio raíz del repositorio:
+
+\begin{codeblock}
+docker compose -f docker/docker-compose.yml up -d
+\end{codeblock}
+
+Para apuntar el volumen de datos a un directorio distinto del repositorio (por ejemplo, un recurso compartido con proyectos de modelización):
+
+\begin{codeblock}
+HYDRA_DATA_PATH="/ruta/a/datos" \
+  docker compose -f docker/docker-compose.yml up -d
+\end{codeblock}
+
+\subsection{Instalación directa sin Docker}
+
+Para instalación directa en el entorno Python del usuario, sin los servicios de frontend ni backend:
+
+\begin{codeblock}
+pip install -e .
+\end{codeblock}
+
+Esta vía es la recomendada para desarrollo de módulos propios e iteración rápida sobre el código fuente. Las dependencias extendidas (PyMC, pyvinecopulib, etc.) pueden instalarse selectivamente según los módulos que se necesiten.
+
+El entorno Docker fija las versiones principales del entorno Python y reduce la variabilidad asociada al sistema operativo o a las dependencias del usuario. Los resultados que dependen de servicios externos, credenciales, datos actualizados o motores hidráulicos instalados en el host siguen requiriendo registrar la versión y la configuración empleadas.
+
+\section{Trazabilidad con el plan de investigación}
+
+La arquitectura de \hydra no se define de forma abstracta, sino como respuesta directa a las tareas del plan de investigación. Por eso este apartado se sitúa al final del capítulo de arquitectura: una vez descritos el paquete, los módulos, el flujo conceptual y el entorno reproducible, la trazabilidad con el plan permite justificar que la estructura software responde a objetivos de investigación concretos y no a una agregación oportunista de funciones. Cada tarea genera un conjunto de capacidades software y un conjunto de evidencias en la memoria: módulos implementados, notebooks de ejemplo, casos de estudio y publicaciones asociadas. Esta trazabilidad es importante porque evita presentar \hydra como una colección de funciones independientes; la herramienta es la formalización software de una línea metodológica que comienza con la evaluación estocástica de impactos hidráulicos y se extiende hacia datos climáticos, modelización, corrección de sesgo y despliegue operativo.
+
+La \cref{tab:pi_hidra_cap} resume esta correspondencia. Las tareas T1 y T2 contienen el núcleo científico de la tesis: generación estocástica, análisis multivariante, selección de escenarios y estimación de períodos de retorno sobre impactos. Las tareas T3 y T4 incorporan las capacidades necesarias para aplicar ese núcleo en proyectos reales, donde la obtención de datos, la corrección de sesgo y la automatización de modelos suelen consumir la mayor parte del esfuerzo técnico. La tarea T5 agrupa la integración, documentación, validación y transferencia industrial del sistema.
+
+\begin{table}[p]
+  \centering
+  \small
+  \caption{Correspondencia entre tareas del plan de investigación, módulos de \hydra y capítulos de la memoria.}
+  \label{tab:pi_hidra_cap}
+  \begin{tabular}{>{\raggedright\arraybackslash}p{0.09\textwidth}>{\raggedright\arraybackslash}p{0.39\textwidth}>{\raggedright\arraybackslash}p{0.38\textwidth}}
+  \toprule
+  Tarea & Resultado & Módulos y capítulos \\
+  \midrule
+  T1 & Generación estocástica de precipitaciones y análisis de extremos & \path{climate.time_series}, \path{climate.stochastic_generation} --- Caps.~5 y 8 \\[4pt]
+  T2 & Eventos de caudal, downscaling híbrido y reconstrucción de inundación & \path{climate.hybrid_downscaling} --- Caps.~5, 6 y 8 \\[4pt]
+  T3 & Descarga y corrección de sesgo de datos climáticos & \path{data_sources}, \path{climate.bias_correction} --- Caps.~4, 5 y 7 \\[4pt]
+  T4 & Configuración y ejecución automática de modelos hidrológicos e hidráulicos & \path{modeling.hydrology}, \path{modeling.hydraulic} --- Caps.~6 y 7 \\[4pt]
+  T5 & Integración, validación, documentación y transferencia & todos los módulos --- Caps.~3, 7, 8 y 9 \\
+  \bottomrule
+  \end{tabular}
+\end{table}

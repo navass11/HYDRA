@@ -1,0 +1,118 @@
+\chapter{Convenciones de datos y reproducibilidad}
+\label{app:convenciones}
+
+Este apéndice define las convenciones de nombres, formatos, metadatos y estructura de ficheros que \pyhydra aplica de forma consistente en todos los módulos. Su propósito es doble: documentar las decisiones de diseño del paquete y proporcionar una referencia práctica para que un usuario externo pueda reproducir o auditar cualquier caso de estudio sin acceso al equipo que lo realizó.
+
+\section{Formatos de datos y tipos internos}
+
+Todos los módulos de \pyhydra siguen un contrato de tipos que garantiza la interoperabilidad entre bloques sin conversiones manuales:
+
+\begin{table}[htbp]
+  \centering
+  \caption{Tipos de datos internos de \pyhydra y su correspondencia con formatos de archivo.}
+  \label{tab:tipos_internos}
+  \small
+  \begin{tabular}{>{\raggedright\arraybackslash}p{0.28\textwidth}>{\raggedright\arraybackslash}p{0.24\textwidth}>{\raggedright\arraybackslash}p{0.36\textwidth}}
+    \toprule
+    Tipo Python & Formato de archivo & Uso \\
+    \midrule
+    \texttt{pandas.Series} con \texttt{DatetimeIndex} & CSV con columna de fecha & Series temporales de estación (precipitación, caudal) \\[3pt]
+    \texttt{pandas.DataFrame} con \texttt{DatetimeIndex} & CSV o Parquet & Tablas multivariable de eventos, parámetros, resultados \\[3pt]
+    \texttt{xarray.Dataset} & NetCDF (CF-1.8) & Datos multidimensionales climáticos, reanálisis, CMIP6 \\[3pt]
+    \texttt{numpy.ndarray} 2D & GeoTIFF (EPSG:4326) & Rasters de precipitación, DEM, suelos, mapas de calado \\[3pt]
+    \path{geopandas.GeoDataFrame} & GeoJSON o GeoPackage & Geometrías de cuenca, red fluvial, zonas de inundación \\[3pt]
+    \texttt{dict} & JSON & Parámetros de distribución, configuración de escenarios \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Las coordenadas se expresan siempre en WGS84 (EPSG:4326) salvo indicación explícita del caso de estudio. Los índices temporales se almacenan en UTC en todos los \texttt{DataFrame} y \texttt{Dataset}. Los rasters GeoTIFF con resultados de períodos de retorno se guardan con \texttt{float32} para reducir el tamaño de archivo, con valor NoData igual a \texttt{-9999.0}.
+
+\section{Estructura recomendada de proyecto}
+
+Para cada caso de estudio se recomienda la siguiente estructura de carpetas, que separa datos originales de productos derivados y permite reproducir el flujo de forma parcial o completa:
+
+{\footnotesize
+\begin{codeblock}
+caso_estudio/
++-- config/
+|   +-- study_params.yaml      # dominio, período, umbrales, semillas
+|   +-- model_params.json      # parámetros de los adaptadores de modelo
+|   `-- download_log.txt       # registro de descargas con fecha y versión
++-- data/
+|   +-- raw/                   # datos originales sin modificar
+|   |   +-- era5/              # NetCDF ERA5 descargados
+|   |   +-- aemet/             # CSV de estaciones AEMET
+|   |   `-- grdc/              # ficheros GRDC en formato nativo
+|   `-- processed/             # datos transformados o corregidos
+|       +-- events.csv         # tabla de eventos extraídos
+|       +-- params_gev.json    # parámetros GEV ajustados
+|       `-- precip_bc_ssp585.nc # precipitación CMIP6 corregida
++-- models/
+|   +-- hms/                   # proyecto HEC-HMS (.hms, .basin, .met)
+|   +-- sfincs/                # mallas y configuración SFINCS
+|   `-- hecras/                # proyecto HEC-RAS (.prj, .g01, .u01)
++-- results/
+|   +-- hydrographs/           # hidrogramas sintéticos representativos
+|   +-- flood_maps/            # mapas de calado simulados por evento
+|   `-- return_periods/        # GeoTIFF de períodos de retorno por pixel
++-- figures/                   # figuras exportadas para informes
++-- notebooks/                 # notebooks de análisis y visualización
+`-- logs/                      # registros de ejecución
+\end{codeblock}
+}
+
+La carpeta \texttt{data/raw/} nunca debe modificarse una vez descargados los datos originales. Todos los productos derivados van a \texttt{data/processed/} o a \texttt{results/}, lo que permite identificar de forma inmediata qué puede regenerarse automáticamente y qué constituye información original costosa de recuperar.
+
+\section{Metadatos mínimos de trazabilidad}
+
+Cada producto relevante debe conservar los siguientes metadatos para que sea auditable o reproducible por un tercero:
+
+\begin{table}[htbp]
+  \centering
+  \caption{Metadatos mínimos requeridos por tipo de producto en \hydra.}
+  \label{tab:metadatos}
+  \begin{tabular}{p{0.22\textwidth}p{0.60\textwidth}}
+    \toprule
+    Producto & Metadatos mínimos \\
+    \midrule
+    Descarga de datos & Fuente, fecha de descarga, versión del producto (p.ej.\ ERA5 v5.1), bounding-box, rango temporal, credenciales usadas (tipo, no valor). \\[3pt]
+    Evento extraído & Umbral, método de separación, duración mínima, índice de inicio y fin en la serie original. \\[3pt]
+    Ajuste estadístico & Distribución, método de estimación, parámetros ajustados, tamaño muestral, semilla de bootstrap. \\[3pt]
+    Corrección de sesgo & Método (delta, EQM, DQM), variable, escenario, modelos usados, período histórico de referencia. \\[3pt]
+    Selección de eventos & Algoritmo (MaxDiss), número de representativos, columnas de caracterización, índices seleccionados en la matriz sintética. \\[3pt]
+    Simulación hidráulica & Motor (SFINCS, HEC-RAS), versión del ejecutable, proyecto, evento de entrada, estado (válida / descartada). \\[3pt]
+    Mapa de período de retorno & Período de retorno (años), método de reconstrucción (k-NN), $k$, tasa de ocurrencia $\lambda$, plantilla GeoTIFF usada. \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+En la práctica, \pyhydra propaga estos metadatos como atributos del \texttt{xarray.Dataset} devuelto por cada descargador, y como campos del \texttt{dict} devuelto por \texttt{fit\_gev} y \texttt{fit\_gpd}. El usuario es responsable de conservar los ficheros de proyecto de los modelos externos y los ficheros de configuración (\texttt{.yaml}/\texttt{.json}) que reconstruyen las decisiones metodológicas.
+
+\section{Nomenclatura de ficheros y escenarios}
+
+Los ficheros de resultados se nombran de forma que codifiquen de forma legible el contenido, el escenario y el período. La convención aplicada en los nueve casos de estudio es:
+
+\begin{codeblock}
+<variable>_<fuente>_<escenario>_<periodo>_<metodo>.<ext>
+
+Ejemplos:
+  precip_era5_hist_1979-2023_raw.nc
+  precip_cmip6_ssp585_2041-2060_deltabc.nc
+  flood_map_T100_knn_k6.tif
+  events_q_grdc_threshold200_min3d.csv
+\end{codeblock}
+
+Para los escenarios de cambio climático, la convención distingue fuente (\texttt{era5}, \texttt{cmip6}), experimento (\texttt{hist}, \texttt{ssp245}, \texttt{ssp585}), período (\texttt{2021-2040}, \texttt{2041-2060}, etc.) y método de corrección (\texttt{deltabc}, \texttt{eqmbc}). Esta nomenclatura ha sido aplicada consistentemente en los casos de estudio del lago Tanganica, el caso andino, SIMPCCe y el Atlas de Panamá, donde se manejan simultáneamente múltiples modelos CMIP6 y horizontes temporales.
+
+\section{Reproducibilidad de resultados estadísticos}
+
+Los resultados estocásticos (generación de series sintéticas, bootstrap de incertidumbre, selección MaxDiss) dependen de semillas aleatorias que deben registrarse para garantizar la reproducibilidad exacta. \pyhydra sigue las siguientes convenciones:
+
+\begin{itemize}
+  \item Todas las funciones que generan números aleatorios aceptan un parámetro \texttt{seed} con valor por defecto \texttt{None} (aleatorio) y valor documentado en los notebooks de ejemplo.
+  \item Las funciones de bootstrap (\texttt{return\_level\_ci}) registran la semilla usada en el \texttt{dict} de resultados para que pueda replicarse la banda de incertidumbre exacta.
+  \item Las matrices sintéticas generadas por \texttt{FloodEventSelector} se pueden guardar como \texttt{.npy} o \texttt{.parquet} para evitar regenerarlas en cada ejecución, ya que su generación puede tardar varios minutos para 5000 eventos.
+\end{itemize}
+
+La reproducibilidad bit-a-bit no siempre es posible cuando se usan modelos MCMC (PyMC) con múltiples cadenas paralelas en hardware distinto, o cuando los modelos hidráulicos externos producen pequeñas variaciones numéricas entre versiones. En estos casos, la reproducibilidad se entiende como equivalencia estadística del resultado, documentada mediante las métricas de convergencia (R-hat, ESS para MCMC) o los controles de calidad de la simulación hidráulica (balance de masa, estabilidad numérica).

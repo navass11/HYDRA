@@ -1,0 +1,82 @@
+\chapter{Introducción}
+\label{ch:introduccion}
+
+\section{Motivación}
+
+Las inundaciones constituyen el riesgo natural con mayor impacto social, económico y territorial a escala global. La exposición acumulada en llanuras de inundación, la aceleración del ciclo hidrológico bajo el cambio climático y el aumento de la impermeabilización urbana configuran un escenario de riesgo creciente en el que los estudios convencionales basados en un único escenario de diseño resultan insuficientes \parencite{najibi2018global,hirabayashi2013climate}. En el contexto español, la guía metodológica nacional para la cartografía de zonas inundables \parencite{marm2011guia} establece la necesidad de trabajar con períodos de retorno de referencia que solo pueden estimarse correctamente cuando se dispone de metodologías estadísticas robustas y cadenas de cálculo reproducibles.
+
+La práctica profesional ha avanzado hacia enfoques estocásticos y probabilísticos, pero su aplicación sigue exigiendo una elevada carga técnica: descarga de datos, homogeneización, análisis estadístico, generación de eventos, preparación de modelos, ejecución masiva de simulaciones y postprocesado espacial. La generación de escenarios compuestos, donde precipitación, caudal, nivel del mar y condiciones antecedentes interactúan de forma dependiente, introduce una dimensión adicional que los flujos manuales no pueden gestionar eficientemente \parencite{zscheischler2020compound}. Esta tesis parte de la idea de que gran parte de ese flujo puede automatizarse si se define una arquitectura modular, reproducible y orientada al usuario.
+
+La motivación central no es sustituir el criterio experto del ingeniero, sino liberar ese criterio de tareas repetitivas y frágiles. En muchos estudios aplicados, una parte significativa del tiempo se consume en adaptar formatos, reconstruir cadenas de cálculo, preparar escenarios equivalentes o repetir configuraciones con pequeñas variaciones. Esta situación dificulta la trazabilidad y hace que dos estudios técnicamente parecidos puedan depender en exceso de decisiones manuales no documentadas.
+
+En estudios de inundación bajo incertidumbre, este problema se amplifica. La evaluación estocástica no requiere una única simulación representativa, sino centenares o miles de combinaciones plausibles de lluvia, caudal, condiciones iniciales, parámetros y escenarios climáticos. Sin una herramienta que organice ese proceso, la metodología resulta difícil de transferir fuera de equipos altamente especializados.
+
+En esta memoria, el \textit{modelo automático de inundación estocástica} que recoge el título se entiende en sentido amplio: no como un único motor hidráulico o algoritmo aislado, sino como una arquitectura reproducible de cálculo. Su núcleo central es \pyhydra, la librería Python donde se implementan los módulos científicos y técnicos; \hydra\footnote{El nombre evoca a la hidra de la mitología griega: una criatura de múltiples cabezas que actúan de forma coordinada como un único organismo. La analogía refleja la arquitectura modular de la herramienta, cuyos módulos operan de manera autónoma pero integrada dentro de un flujo de cálculo unificado.} designa la plataforma que integra ese núcleo con web, notebooks, Docker y servicios de apoyo. La arquitectura resultante integra adquisición automática de datos, análisis estadístico de extremos, generación probabilística de escenarios, automatización de modelos hidrológicos e hidráulicos, y postprocesado de impactos. Es la automatización de esa cadena completa, y no de un componente particular, lo que constituye el objeto central de la investigación.
+
+\section{Punto de partida}
+
+El punto de partida de esta tesis se encuentra en trabajos previos de modelado estocástico de inundaciones desarrollados en IHCantabria. En ellos se han explorado metodologías basadas en generación sintética de caudales y precipitaciones, selección de eventos representativos, simulación hidrológica e hidráulica, y reconstrucción probabilística de impactos. El caso fundacional de esta línea es el estudio del río Besaya en Los Corrales de Buelna \parencite{navas2018besaya}, en el que se evidenció, para el caso analizado, que el período de retorno del forzamiento meteorológico no coincide necesariamente con el del impacto hidráulico simulado. Esta observación ---el principio $T_{\mathrm{forzante}} \neq T_{\mathrm{impacto}}$--- justifica que la frecuencia de inundación deba estimarse directamente sobre los impactos y no sobre la variable forzante, y constituye el fundamento metodológico de \hydra. Estas experiencias han demostrado el potencial del enfoque, pero también han puesto de manifiesto la necesidad de automatizarlo y documentarlo de forma sistemática.
+
+La evolución natural de esa línea de trabajo es pasar de metodologías implementadas para casos concretos a una librería modular que pueda reutilizarse en distintos ámbitos. Este cambio es relevante para una tesis de carácter industrial: el conocimiento no se materializa solo en publicaciones o resultados de caso, sino en una herramienta que puede instalarse, ejecutarse, auditarse y ampliarse.
+
+\section{Pregunta de investigación}
+
+La pregunta de investigación que articula esta tesis es:
+
+\begin{quote}
+\textit{¿Es posible automatizar de forma reproducible la cadena completa del análisis probabilístico del riesgo de inundación bajo incertidumbre hidrológica y climática, integrando metodologías avanzadas previamente desarrolladas en un marco operativo transferible a proyectos reales de ingeniería?}
+\end{quote}
+
+Esta pregunta se descompone en dos elementos. El primero es si las metodologías existentes ---generación estocástica de eventos, análisis multivariante de extremos, corrección de sesgo climático, downscaling híbrido, automatización de modelos físicos--- pueden integrarse en una arquitectura común sin sacrificar su solidez individual. El segundo es si esa integración puede articularse de forma suficientemente modular y documentada para ser transferida a nuevos casos, equipos o territorios sin reconstruir toda la cadena.
+
+\section{Hipótesis de partida}
+
+La hipótesis central de la tesis es que la principal barrera para la adopción operativa de metodologías avanzadas de análisis del riesgo de inundación no reside en la ausencia de conocimiento científico, sino en la dificultad para integrarlas dentro de flujos de trabajo reproducibles. Las metodologías existen, están publicadas y permiten representar de forma más completa la variabilidad e incertidumbre asociadas al riesgo de inundación que los enfoques clásicos; lo que limita su adopción es la infraestructura que las conecte, documente y haga transferibles a equipos técnicos en proyectos reales de ingeniería.
+
+Esta hipótesis se articula en tres enunciados complementarios:
+
+\begin{description}
+  \item[Hipótesis 1.] La automatización del flujo completo para estudios de inundación, desde la adquisición de datos y la generación de eventos estocásticos hasta la ejecución de modelos hidrológicos e hidráulicos, mejora la eficiencia, reproducibilidad y aplicabilidad práctica del análisis del riesgo.
+  \item[Hipótesis 2.] La integración de análisis estocástico, procesamiento climático y simulación hidrofísica en una librería modular reduce barreras técnicas y facilita la incorporación sistemática del cambio climático y la incertidumbre.
+  \item[Hipótesis 3.] La integración coordinada de metodologías avanzadas dentro de un flujo reproducible permite representar de forma más consistente la incertidumbre hidrológica y climática que los enfoques convencionales basados en escenarios únicos de diseño, facilitando además su aplicación sistemática en contextos reales de ingeniería.
+\end{description}
+
+\section{Objetivos}
+
+El objetivo general es desarrollar y validar \pyhydra como núcleo modular para operacionalizar el análisis probabilístico de inundaciones bajo incertidumbre climática e hidrológica, y demostrar su transferencia mediante la plataforma \hydra.
+
+\pyhydra no pretende ser un modelo hidrológico o hidráulico nuevo, ni propone técnicas estadísticas originales de forma aislada. Su novedad reside en la integración, la automatización y la documentación reproducible de un flujo completo que conecta fuentes de datos globales, metodologías estadísticas avanzadas, generadores estocásticos y motores físicos de simulación. \hydra aporta la capa industrial de acceso, ejecución y documentación de ese núcleo.
+
+Los objetivos específicos son:
+
+\begin{enumerate}
+  \item Integrar datos y modelos de cambio climático en flujos estocásticos de evaluación de inundaciones.
+  \item Implementar y conectar herramientas para la generación estocástica de eventos de precipitación y caudal.
+  \item Automatizar la configuración, ejecución y postprocesado de modelos hidrológicos e hidráulicos.
+  \item Consolidar, documentar y validar el núcleo \pyhydra y su despliegue en \hydra mediante casos de estudio reproducibles.
+\end{enumerate}
+
+\section{Contribuciones de la tesis}
+
+Las contribuciones de esta tesis se articulan en tres niveles diferenciados: metodologías incorporadas (con base científica preexistente), desarrollos implementados (integración y automatización realizada en el marco de la tesis) y contribución original (la arquitectura \pyhydra como núcleo reutilizable, desplegada en la plataforma \hydra). Esta distinción es necesaria en una memoria de doctorado industrial donde la novedad reside en la integración y no en la creación aislada de métodos. El detalle completo de cada nivel, con referencias explícitas y delimitación precisa, se presenta en la \cref{sec:contribuciones_originales}.
+
+\section{Carácter industrial de la memoria}
+
+El resultado principal de la tesis es doble y jerárquico: \pyhydra, como paquete Python que constituye el núcleo central de la investigación, y \hydra, como repositorio de integración que reúne web, notebooks, Docker y servicios auxiliares para convertir ese núcleo en un producto técnico utilizable. Por ello, esta memoria no se plantea solo como un documento académico clásico, sino también como la documentación técnica de la herramienta. Cada bloque metodológico se documenta con su propósito, sus entradas, sus salidas, su posición dentro del flujo completo y sus criterios de validación.
+
+Este planteamiento permite que la memoria funcione simultáneamente como:
+
+\begin{itemize}
+  \item justificación científica del marco de análisis probabilístico de inundación estocástica;
+  \item documentación técnica de una herramienta transferible;
+  \item guía de uso para investigadores, ingenieros y gestores del riesgo;
+  \item base reproducible para casos de estudio y futuras extensiones.
+\end{itemize}
+
+La decisión de redactar la memoria como documento híbrido condiciona su estructura. Los capítulos teóricos se orientan a justificar decisiones de diseño y no a construir una revisión bibliográfica desconectada de la herramienta. Los capítulos técnicos describen la arquitectura de \hydra y sus módulos con un nivel de detalle suficiente para que otro usuario pueda reproducir la metodología o adaptar partes de ella a un nuevo caso.
+
+\section{Organización de la memoria}
+
+La memoria se estructura en capítulos académicos y capítulos de documentación técnica. El estado del arte y la metodología justifican las decisiones científicas; los capítulos centrales describen la arquitectura de \hydra y sus módulos; el manual de uso y los anexos convierten la tesis en una referencia práctica para aplicar la herramienta en estudios reales.
+
+El documento puede leerse de dos formas. Una primera lectura, académica, sigue la secuencia problema, pregunta de investigación, estado del arte, metodología, validación y conclusiones. Una segunda lectura, técnica, permite consultar directamente los capítulos de arquitectura, fuentes de datos, módulos climáticos, modelización y manual de uso. Esta doble lectura es coherente con el objetivo de que la tesis sea defendible como investigación doctoral y utilizable como documentación avanzada de \hydra.

@@ -1,0 +1,182 @@
+\chapter{Notebooks y ejemplos reproducibles}
+\label{app:notebooks}
+
+Los 26 notebooks generales de ejemplo del catálogo de \hydra constituyen guías ejecutables de las funcionalidades de \pyhydra. Son ejemplos funcionales autocontenidos, basados en datos reales, datos sintéticos controlados o proyectos oficiales de referencia. Este recuento corresponde a las entradas no clasificadas como \emph{Caso piloto} en \path{web/src/data/notebooks.json} y excluye expresamente los notebooks de casos piloto y el material interno de \path{modeling/hydraulic/manning\_sensitivity/}, creados para preparar un artículo en desarrollo y no como ejemplos generales de uso de \hydra.
+
+\section{Alcance de los ejemplos}
+
+Los notebooks demostrativos permiten verificar aisladamente contratos de entrada y salida, comportamiento estadístico e integración con modelos externos. Por ejemplo, \path{extreme_value_analysis.ipynb} compara GEV y GPD; \path{compound_flooding.ipynb} calcula períodos de retorno conjuntos bivariantes y trivariantes; y los notebooks generales de HEC-HMS, HEC-RAS, SWAT y SFINCS emplean proyectos de referencia para comprobar los adaptadores sin depender de datos confidenciales de un proyecto.
+
+Estos notebooks permiten explicar y comprobar funcionalidades aisladas, pero no sustituyen la validación territorial aportada por los casos de estudio y sus publicaciones. La web de \hydra añade además 23 entradas de casos piloto que encadenan flujos completos de Besaya, M-30, Manning y Valencia; esas entradas documentan transferencia y trazabilidad de caso, pero se contabilizan separadamente del catálogo general. En particular, el material interno empleado para preparar artículos puede aportar figuras o resultados científicos al capítulo de casos, pero no se contabiliza como documentación general reproducible de uso de \hydra.
+
+\section{Inventario de notebooks}
+
+La \cref{tab:notebooks_inv} lista los 26 notebooks generales de ejemplo con su localización dentro del repositorio, el módulo al que corresponden y los productos principales que generan.
+
+\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.43\textwidth}>{\raggedright\arraybackslash}p{0.28\textwidth}>{\raggedright\arraybackslash}p{0.19\textwidth}@{}}
+  \caption{Inventario de notebooks de ejemplo de \pyhydra.}
+  \label{tab:notebooks_inv} \\
+  \toprule
+  Ruta en repositorio & Módulo & Productos principales \\
+  \midrule
+  \endfirsthead
+  \toprule
+  Ruta en repositorio & Módulo & Productos principales \\
+  \midrule
+  \endhead
+  \midrule
+  \multicolumn{3}{r}{\textit{Continúa en la página siguiente}} \\
+  \endfoot
+  \bottomrule
+  \endlastfoot
+  \path{data_sources/rainfall/ERA5_download.ipynb} & \path{data_sources.rainfall} & NetCDF ERA5 \\
+  \path{data_sources/rainfall/GPM_download.ipynb} & \path{data_sources.rainfall} & NetCDF GPM \\
+  \path{data_sources/rainfall/PERSSIAN_download.ipynb} & \path{data_sources.rainfall} & NetCDF PERSIANN-CCS \\
+  \path{data_sources/rainfall/AEMET_download.ipynb} & \path{data_sources.rainfall} & CSV estaciones AEMET \\
+  \path{data_sources/rainfall/OGIMET_download.ipynb} & \path{data_sources.rainfall} & CSV estaciones OGIMET \\
+  \path{data_sources/rainfall/Meteostat_download.ipynb} & \path{data_sources.rainfall} & DataFrame diario/horario Meteostat, ranking de estaciones \\
+  \path{data_sources/river_discharge/GloFAS_download.ipynb} & \path{data_sources.river_discharge} & NetCDF GloFAS \\
+  \path{data_sources/river_discharge/GRDC_download.ipynb} & \path{data_sources.river_discharge} & DataFrame GRDC \\
+  \path{data_sources/river_discharge/USGS_download.ipynb} & \path{data_sources.river_discharge} & DataFrame USGS \\
+  \path{data_sources/climate_change/CDS_download.ipynb} & \path{data_sources.climate_change} & NetCDF CMIP6 vía CDS \\
+  \path{data_sources/climate_change/ESGF_download.ipynb} & \path{data_sources.climate_change} & NetCDF CMIP6 vía ESGF \\
+  \path{data_sources/soils/SoilGrids_download.ipynb} & \path{data_sources.soils} & GeoTIFF SoilGrids \\
+  \path{climate/event_extraction.ipynb} & \path{climate.time_series} & DataFrame eventos \\
+  \path{climate/extreme_value_analysis.ipynb} & \path{climate.time_series} & Parámetros GEV/GPD, niveles de retorno \\
+  \path{climate/stochastic_generation.ipynb} & \path{climate.stochastic_generation} & Series sintéticas NSRP \\
+  \path{climate/spatial_field_generation.ipynb} & \path{climate.stochastic_generation} & Campos espaciales sintéticos \\
+  \path{climate/bias_correction.ipynb} & \path{climate.bias_correction} & NetCDF corregido \\
+  \path{climate/spatial_analysis/interpolation.ipynb} & \path{climate.spatial_analysis} & GeoTIFF interpolado \\
+  \path{climate/spatial_analysis/regional_frequency_analysis.ipynb} & \path{climate.spatial_analysis} & Cuantiles regionales, curvas L-momento \\
+  \path{climate/spatial_analysis/copulas.ipynb} & \path{climate.spatial_analysis} & Muestras sintéticas cópula \\
+  \path{climate/spatial_analysis/compound_flooding.ipynb} & \path{climate.spatial_analysis} & Períodos conjuntos OR/AND, MPDE y contornos condicionales \\
+  \path{climate/spatial_analysis/bayes_hierarchical.ipynb} & \path{climate.spatial_analysis} & Posterior bayesiano espacial \\
+  \path{modeling/hydrology/HEC_HMS.ipynb} & \path{modeling.hydrology} & Hidrogramas DSS \\
+  \path{modeling/hydrology/SWAT.ipynb} & \path{modeling.hydrology} & Caudales SWAT \\
+  \path{modeling/hydraulic/SFINCS.ipynb} & \path{modeling.hydraulic} & Mapas calado SFINCS \\
+  \path{modeling/hydraulic/HEC_RAS.ipynb} & \path{modeling.hydraulic} & Calados y extensiones HEC-RAS \\
+\end{longtable}
+\normalsize
+
+\section{Requisitos de ejecución}
+
+Cada notebook indica en su primera celda los requisitos específicos de datos, credenciales y software. La siguiente tabla resume los requisitos no triviales que afectan a varios notebooks:
+
+\begin{table}[htbp]
+  \centering
+  \caption{Requisitos de ejecución no triviales por grupo de notebooks.}
+  \label{tab:requisitos_notebooks}
+  \begin{tabular}{p{0.32\textwidth}p{0.55\textwidth}}
+    \toprule
+    Grupo & Requisito \\
+    \midrule
+    ERA5, CMIP6 vía CDS & Cuenta CDS y credenciales \texttt{\~{}/.cdsapirc} \\
+    CMIP6 vía ESGF & Cuenta ESGF y nodo activo disponible \\
+    GPM & Credenciales NASA Earthdata \\
+    PERSIANN-CCS & Acceso FTP público; requiere conectividad externa para descargas completas \\
+    AEMET & API key AEMET OpenData \\
+    HEC-HMS & HEC-HMS 4.x instalado y en \texttt{PATH} \\
+    SWAT & Ejecutable SWAT compilado o binario disponible \\
+    SFINCS & Ejecutable SFINCS compilado o imagen Docker \\
+    HEC-RAS & HEC-RAS 6.x con RAS Controller o API JSON \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Los notebooks de análisis estadístico (\path{climate/}), descarga de GRDC, USGS, GloFAS y SoilGrids pueden ejecutarse sin dependencias externas de modelos ni credenciales especiales, y son los más adecuados para una primera exploración de \pyhydra.
+
+\section{Tiempos de ejecución orientativos}
+
+Los tiempos de ejecución dependen del hardware, la resolución de los datos y el número de simulaciones. Como referencia orientativa:
+
+\begin{itemize}
+  \item Notebooks de descarga de datos: 1-20 minutos según el volumen solicitado.
+  \item Análisis de extremos y generación estocástica NSRP: 5-30 minutos con datos de una cuenca.
+  \item Simulación con HEC-HMS para 200 eventos: 10-60 minutos según el tamaño de la cuenca.
+  \item Simulación con SFINCS para 200 eventos: 1-12 horas según la resolución de malla y el número de escenarios.
+  \item Simulación con HEC-RAS para 50 escenarios: 2-8 horas en un PC de escritorio.
+  \item Reconstrucción k-NN de 10.000 escenarios: menos de 5 minutos una vez disponibles las simulaciones de referencia.
+\end{itemize}
+
+El paso computacionalmente crítico es siempre la simulación hidráulica. La selección de escenarios representativos mediante máxima disimilitud reduce el número de simulaciones completas necesarias y es la técnica clave para mantener los tiempos de cálculo dentro de límites operativos.
+
+\section{Esquema de flujo completo en \texttt{pyhydra}}
+\label{app:flujo_completo}
+
+El siguiente esquema muestra los imports y llamadas principales de un estudio de inundación estocástica con \pyhydra, desde la descarga de datos hasta la generación de mapas de período de retorno. El código es ilustrativo y debe adaptarse a la configuración del caso de estudio concreto.
+
+{\footnotesize
+\begin{codeblock}
+# Esquema mínimo de un flujo completo
+from pyhydra.data_sources.rainfall import download_era5
+from pyhydra.climate.time_series import extract_events, fit_gev
+from pyhydra.climate.hybrid_downscaling import (
+    FloodEventSelector, HydrographReconstructor,
+    FloodMapInterpolator,
+)
+from pyhydra.modeling.hydraulic.sfincs import setup_sfincs_model, run_sfincs
+from pyhydra.modeling.hydraulic.sensitivity import load_sfincs_ensemble
+
+# 1. Datos
+download_era5(
+    folder_out="data/era5/",
+    api_key="UID:API_KEY",
+    url="https://cds.climate.copernicus.eu/api",
+    área=[44, -10, 35, 5],
+    variables_list=["total_precipitation"],
+    years=range(1979, 2024),
+)
+
+# 2. Eventos históricos y extremos
+stats, bounds = extract_events(Q_daily, threshold=200, variable="discharge")
+params = fit_gev(stats["peak"].values, method="mle")
+
+# 3. Clasificación de hidrogramas y generación sintetica
+selector = FloodEventSelector(
+    discharge=Q_daily,
+    threshold=200.0,
+    threshold2=350.0,
+    n_types=25,
+    n_synthetic=5000,
+)
+synthetic = selector.run(seed=42)
+classified_events = selector.classified
+
+# 4. MaxDiss y reconstrucción de hidrogramas
+reconstructor = HydrographReconstructor(
+    discharge=Q_daily,
+    synthetic_matrix=synthetic,
+    classified_events=classified_events,
+    n_types=25,
+    n_representatives=200,
+    output_dir="results/hydrographs/",
+)
+centroids, synthetic_clusters = reconstructor.run()
+
+# 5. Simulación hidráulica de los casos seleccionados
+for i in range(200):
+    hydrograph_csv = f"results/hydrographs/Hidrograma_{i}.csv"
+    setup_sfincs_model(..., output_dir=f"sfincs/event_{i}/")
+    run_sfincs(model_dir=f"sfincs/event_{i}/",
+               sfincs_exe="/opt/sfincs/sfincs")
+
+# 6. Reconstrucción y períodos de retorno
+sfincs_ensemble = load_sfincs_ensemble(
+    results_dir="sfincs/",
+    subdir_pattern="event_{n}",
+    nc_filename="sfincs_map.nc",
+)
+
+fmi = FloodMapInterpolator(
+    synthetic_matrix=synthetic_clusters,
+    centroids=centroids,
+    simulations_dir="results/simulated_maps/",
+    n_simulations=200,
+    k_neighbors=6,
+    landa=4.943,
+    output_dir="results/return_periods/",
+)
+calados, paths = fmi.compute_return_period_maps()
+\end{codeblock}
+}

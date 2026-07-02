@@ -1,0 +1,232 @@
+\chapter{Análisis climático y estadístico}
+\label{ch:clima_estadistica}
+
+\section{Papel del bloque dentro de HYDRA}
+
+El bloque climático-estadístico constituye el núcleo metodológico de \hydra. Transforma datos históricos y proyecciones climáticas en información directamente útil para simulación, selección de eventos, evaluación probabilística y generación de escenarios. Esta capa actúa como puente entre los datos adquiridos por el bloque de fuentes y los modelos físicos del bloque de modelización.
+
+El bloque se divide en cinco submódulos: \texttt{climate.time\_series} para análisis de extremos y detección de eventos, \texttt{climate.spatial\_analysis} para dependencia espacial y análisis regional, \texttt{climate.stochastic\_generation} para generación sintética de precipitación y caudal, \texttt{climate.bias\_correction} para ajuste de modelos climáticos, y \texttt{climate.hybrid\_downscaling} para reconstrucción masiva de impactos hidráulicos. En conjunto, estos cinco submódulos dan soporte a las cuatro primeras tareas del plan de investigación.
+
+La función de este capítulo es separar tres niveles que a menudo se mezclan en aplicaciones prácticas. El primero es estadístico: estimar distribuciones, dependencias e incertidumbre a partir de series limitadas. El segundo es generativo: producir eventos o series sintéticas que amplían el espacio de escenarios plausibles. El tercero es operacional: reducir el número de simulaciones físicas sin perder cobertura del espacio de impactos. \pyhydra organiza estos niveles en submódulos separados para que cada decisión sea auditable: qué datos entran, qué hipótesis se ajustan, qué escenarios se generan y qué parte se simula explícitamente.
+
+Las salidas del bloque no son resultados finales por sí mismas. Un cuantil de precipitación, una muestra de cópula o una serie CMIP6 corregida solo adquieren significado dentro de una cadena completa que incluye modelización hidrológica/hidráulica y métricas de impacto. Esta es la razón por la que el capítulo insiste en la trazabilidad de parámetros, semillas, tasas de ocurrencia y metadatos de origen.
+
+\section{Análisis temporal y extremos}
+
+\subsection{Detección de eventos}
+
+El módulo \texttt{time\_series.events} implementa dos estrategias complementarias para identificar eventos hidrológicos extremos en series temporales:
+
+\begin{description}
+  \item[\texttt{extract\_block\_maxima}] Extrae el máximo de cada bloque temporal definido por una frecuencia (\texttt{YE} para máximos anuales, \texttt{ME} para mensuales). Produce la muestra para el análisis GEV clásico.
+
+  \item[\texttt{extract\_peaks\_over\_threshold}] Extrae picos independientes sobre un umbral con separación mínima entre eventos configurable. La separación mínima es el parámetro crítico para garantizar la independencia de los eventos, y debe ajustarse al tiempo de concentración de la cuenca o al tiempo de decaimiento de la variable analizada.
+
+  \item[\texttt{extract\_flood\_events}] Detecta eventos de crecida completos y extrae, para cada uno, el valor pico, la duración y el volumen. Esta función es el punto de entrada para el análisis multivariante mediante cópulas.
+\end{description}
+
+La detección de eventos es una decisión metodológica, no una operación neutra. La duración mínima entre picos, el umbral POT o la definición de volumen condicionan la muestra que después se ajusta con GEV/GPD o se utiliza en una cópula. Por eso las funciones devuelven no solo valores máximos, sino también fechas, duración, volumen y metadatos de extracción. En estudios de impacto, conservar el evento completo es esencial porque el mismo caudal punta puede producir impactos distintos si cambia la duración o la forma del hidrograma.
+
+\subsection{Ajuste de distribuciones de extremos}
+
+El módulo \texttt{time\_series.extremes} implementa el ajuste de distribuciones GEV (Generalized Extreme Value) y GPD (Generalized Pareto Distribution) \parencite{coles2001extremes} con tres métodos:
+
+\begin{description}
+  \item[Máxima verosimilitud (MLE)] Estimación clásica por máxima verosimilitud con ajuste de los tres parámetros GEV ($\mu$, $\sigma$, $\xi$). Se calcula mediante \texttt{scipy.stats.genextreme}. Es el método más rápido pero sensible a muestras pequeñas.
+
+  \item[L-momentos] Estimación por L-momentos de primer a cuarto orden \parencite{hosking1997rfa}. Los L-momentos son más robustos que los momentos clásicos ante la presencia de valores extremos, lo que los hace recomendables cuando la muestra es inferior a 30 años. Se usa como método por defecto cuando no se específica ningún otro.
+
+  \item[Inferencia bayesiana por MCMC] La función \texttt{fit\_gev\_mcmc} ajusta el modelo GEV con Stan \parencite{carpenter2017stan} o PyMC \parencite{salvatier2016pymc} mediante muestreo MCMC. La configuración por defecto usa 4 cadenas con 1000 muestras tras 500 de calentamiento, lo que produce estimaciones de la distribución posterior de los tres parámetros y, por tanto, intervalos de credibilidad completos para cualquier nivel de retorno. Este método es el más costoso computacionalmente, pero produce las estimaciones más informativas sobre incertidumbre.
+
+  \item[Aproximación de Fisher] La función \texttt{fit\_gev\_fisher} estima la incertidumbre paramétrica mediante la matriz de información de Fisher, produciendo muestras de la distribución asintoticamente gaussiana de los parámetros sin recurrir a MCMC. Es un intermedio entre MLE y la inferencia bayesiana completa.
+\end{description}
+
+La \cref{fig:gev_comparacion} ilustra el comportamiento comparativo de los tres estimadores sobre un conjunto de 40 máximos anuales generados con parámetros GEV conocidos ($\mu=90$, $\sigma=30$, $\xi=0{,}20$). Las bandas de incertidumbre se obtienen por bootstrap no paramétrico (MLE y L-momentos) y por bootstrap paramétrico (tercer método). La figura sirve como referencia operativa para identificar visualmente las diferencias entre métodos antes de aplicarlos sobre datos reales.
+
+La comparación sistemática sobre datos reales se realiza en el caso de la precipitación extrema del 29 de octubre de 2024 en la Comunidad Valenciana (\cref{sec:caso_valencia}), que permite contrastar MLE, L-momentos y MCMC sobre las mismas series observadas, con y sin incluir el evento extraordinario, y documentar el cambio en los niveles de retorno y la incertidumbre de cada método \parencite{navas2025valenciaIA}.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.88\linewidth]{figures/fig_gev_comparacion}
+  \caption{Comparación ilustrativa de los tres métodos de ajuste GEV sobre 40 máximos anuales sintéticos (parámetros reales: $\mu=90$~mm, $\sigma=30$~mm, $\xi=0{,}20$). MLE y L-momentos usan bootstrap no paramétrico (remuestra de los datos); el tercer método usa bootstrap paramétrico (remuestra de la distribución ajustada por MLE). La curva real punteada sirve de referencia. Los tres métodos convergen en el rango observado y divergen a partir de $T \approx 100$ años. Elaboración propia.}
+  \label{fig:gev_comparacion}
+\end{figure}
+
+Los resultados muestran que ninguna técnica elimina la sensibilidad producida por una observación situada muy lejos del rango histórico. La ventaja específica de la inferencia bayesiana es que representa explícitamente la incertidumbre paramétrica y permite incorporar información previa justificable; no debe interpretarse como una garantía automática de estabilidad. Esta distinción es relevante para el diseño de \hydra: el módulo ofrece varios estimadores para facilitar el diagnóstico y la comparación, no para seleccionar uno de ellos sin evaluar los datos y los supuestos del caso.
+
+La función \texttt{return\_levels} calcula los cuantiles para una lista de períodos de retorno a partir de los parámetros ajustados, con intervalos de confianza calculados por bootstrap o por la distribución posterior según el método empleado.
+
+El diseño del módulo evita presentar un único estimador como solución universal. MLE es útil para diagnóstico rápido y muestras largas; L-momentos suele ser más estable en muestras cortas; MCMC permite comunicar incertidumbre paramétrica de forma explícita, pero exige revisar convergencia y sensibilidad a priors. La comparación entre métodos, más que la elección automática de uno, es el valor operativo de \pyhydra en episodios extremos como Valencia 2024.
+
+\section{Análisis espacial}
+
+\subsection{Análisis de frecuencia regional}
+
+El módulo \texttt{spatial\_analysis.rfa} implementa el análisis de frecuencia regional (AFR) por el método de Hosking y Wallis \parencite{hosking1997rfa} basado en L-momentos. El procedimiento sigue las etapas estándar:
+\begin{enumerate}
+  \item Cálculo de L-momentos en cada estación con \texttt{lmom\_fit}.
+  \item Verificación de homogeneidad regional mediante el estadístico $H$ de Hosking.
+  \item Ajuste de la distribución regional sobre los L-momentos medios ponderados por longitud de registro.
+  \item Estimación de factores de frecuencia regionales y reconversión a cuantiles locales mediante el índice de crecida.
+\end{enumerate}
+
+La función principal \texttt{regional\_frequency\_analysis} acepta un diccionario de series de estación y la distribución objetivo (GEV por defecto) y devuelve los parámetros regionales y los factores de frecuencia. Su aplicación al caso Valencia 2024 \parencite{navas2025valenciaIA} con tres escalas espaciales (individual, regional local con 9 estaciones, regional global para toda la Comunidad Valenciana) ilustra cómo la elección de la escala de pooling modifica sustancialmente los períodos de retorno estimados del evento.
+
+La implementación conserva explícitamente la relación entre estación, región homogénea y factor local de escala. Esta información es necesaria para auditar si una estación se está beneficiando legítimamente de información regional o si se está mezclando con estaciones de régimen pluviométrico distinto. En regiones mediterráneas o de fuerte gradiente orográfico, esta comprobación es tan importante como el ajuste de la distribución final.
+
+\subsection{Cópulas}
+
+El módulo \texttt{spatial\_analysis.copulas} implementa la clase \texttt{FloodEventCopula} para modelización multivariante de eventos de crecida \parencite{genest2007copulas,salvadori2007extremes}. La arquitectura separa el ajuste de marginales del ajuste de la estructura de dependencia:
+\begin{enumerate}
+  \item Las marginales se ajustan de forma independiente para cada variable (pico, duración, volumen) mediante GEV o GPD.
+  \item La estructura de dependencia se representa mediante una cópula gaussiana ajustada sobre los rangos de los datos transformados a escala uniforme.
+  \item El método \texttt{.sample(n)} genera $n$ realizaciones sintéticas del vector multivariante respetando las marginales y la dependencia observada.
+\end{enumerate}
+
+Este generador de eventos multivariantes es el núcleo del flujo estocástico para inundaciones \parencite{navas2018besaya,navas2019mallorca,navas2024calle30}. Su ventaja respecto a generadores univariantes es que conserva la estructura de dependencia entre pico, duración y volumen del hidrograma, lo que es determinante para la evaluación de obras de regulación y sistemas complejos.
+
+La arquitectura de \texttt{FloodEventCopula} está concebida para admitir distintas familias de cópulas como estructura de dependencia. Las vine cópulas \parencite{aas2009vines} extienden el modelo gaussiano descomponiendo la densidad multivariante en un producto de cópulas bivariantes condicionadas que siguen una estructura jerárquica de árboles (R-vine o C-vine). Esta descomposición permite incluir familias asimétricas como la Gumbel o Joe, capaces de representar dependencias de cola superior que las cópulas elípticas no pueden capturar. La aplicación al río Besaya con cinco estaciones y 70 años de registros diarios \parencite{urrea2026vine} confirma esta superioridad de forma cuantitativa: la vine flexible obtiene un AIC mediano de $-5{,}04$ frente a $3{,}91$ de la vine gaussiana y $3{,}94$ de la cópula gaussiana con agrupación, con un RMSE de reproducción de la dependencia de cola superior de 0,11 frente a 0,30 de los enfoques gaussianos. El nivel crítico de Kendall para el JRP de 100 años es $t = 0{,}993$ para vine flexible frente a $t = 0{,}778$ para la cópula gaussiana sin agrupación, diferencia que se traduce en una tormenta de diseño multivariante un 36\% más intensa (63,45~mm frente a 46,49~mm de precipitación media areal). Para hacer viable el cálculo de la JCDF en cinco dimensiones, ese trabajo introduce además un emulador GPR con núcleo Racional Cuadrático que reduce el coste computacional en un 94\% respecto al cálculo directo por Monte Carlo, con MAE de $9{,}25 \times 10^{-4}$ y una incertidumbre propagada a las tormentas de diseño de $\pm 1{,}44$~mm. Estos avances representan la línea de extensión natural del módulo \texttt{spatial\_analysis.copulas} de \hydra para análisis multivariante en alta dimensión.
+
+\paragraph{Análisis de eventos compuestos bivariantes.}
+El módulo implementa además la clase \texttt{BivariateCopula} para el análisis de eventos compuestos formados por dos variables de naturaleza distinta ---por ejemplo, caudal máximo y nivel del mar, precipitación y oleaje, o caudal y precipitación en cuencas con régimen mixto---. A diferencia de \texttt{FloodEventCopula}, que caracteriza un evento de crecida en sus dimensiones de pico, duración y volumen, \texttt{BivariateCopula} está diseñada para cuantificar la dependencia entre dos \emph{drivers} de peligrosidad independientes que pueden concurrir y amplificar mutuamente el impacto, el caso típico de la inundación costera compuesta \parencite{zscheischler2020compound}.
+
+La clase admite tres familias paramétricas: \emph{Gumbel} (dependencia de cola superior, apropiada cuando los extremos conjuntos son más frecuentes de lo que implicaría la independencia), \emph{Clayton} (dependencia de cola inferior) y \emph{Frank} (simétrica). El ajuste comprende la estimación de las marginales paramétricas de cada variable y la estimación del parámetro de la cópula por máxima verosimilitud. El grado de dependencia se cuantifica mediante la $\tau$ de Kendall, que es función del parámetro de cópula y permite comparar familias entre sí.
+
+El producto principal del análisis es el diagrama de períodos de retorno conjuntos, que distingue dos definiciones complementarias:
+\begin{description}
+  \item[$T_{\mathrm{OR}}$] Período de retorno de un evento que supera los umbrales de $X$ \emph{o} $Y$. Define la región de excedencia más amplia y es el criterio relevante cuando el impacto se produce si \emph{cualquiera} de las dos variables es extrema.
+  \item[$T_{\mathrm{AND}}$] Período de retorno de un evento que supera los umbrales de $X$ \emph{y} $Y$ simultáneamente. Produce isolíneas más conservadoras y corresponde al criterio de diseño cuando ambos \emph{drivers} deben actuar de forma conjunta para generar un impacto.
+\end{description}
+
+Sobre cada isolínea de período de retorno se calcula el \emph{Evento de Diseño de Máxima Probabilidad} (\textsc{mpde}, \emph{Maximum Probability Design Event}): el punto de la isolínea con mayor densidad de probabilidad conjunta, estimado como el máximo del producto de la densidad de la cópula por las densidades marginales \parencite{salvadori2007extremes}. El \textsc{mpde} es el escenario de diseño más probable entre todos los que comparten un mismo período de retorno conjunto y constituye el candidato natural cuando se necesita un único vector de variables de entrada para el modelo hidráulico. La herramienta web de \hydra expone este análisis de forma interactiva mediante la aplicación \emph{Eventos Compuestos} disponible en el módulo \texttt{/tools/compound}.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{figures/fig_copula_joint_ret}
+  \caption{Diagrama de períodos de retorno conjuntos AND y OR para un dataset sintético de caudal máximo ($Q_{\max}$, m$^3$/s) y nivel del mar (m) con cópula de Gumbel ajustada ($\tau_K \approx 0{,}52$). Las isolíneas AND (rojo) representan la condición de excedencia simultánea de ambas variables; las isolíneas OR (azul) la excedencia de al menos una de ellas. Los marcadores $\times$ señalan el \textsc{mpde} para cada período de retorno. Las distribuciones marginales ajustadas se muestran en los ejes superior y derecho. Elaboración propia a partir del notebook \texttt{compound\_flooding.ipynb}.}
+  \label{fig:copula_joint_ret}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{figures/fig_copula_familias}
+  \caption{Comparación de las isolíneas AND de período de retorno $T=100$ años para tres familias de cópulas (Gumbel, Clayton y Frank) ajustadas sobre el mismo dataset. La familia Gumbel concentra la probabilidad conjunta en la cola superior (dependencia extrema simultánea), Clayton en la cola inferior y Frank produce isolíneas simétricas. La elección de familia modifica significativamente la región de diseño para el mismo período de retorno. Elaboración propia a partir del notebook \texttt{compound\_flooding.ipynb}.}
+  \label{fig:copula_familias}
+\end{figure}
+
+\subsection{Interpolación geoestadística}
+
+El módulo de interpolación espacial, \path{spatial_analysis.interpolation}, proporciona la función \path{interpolate_spatial} para interpolar campos de estaciones a malla regular. Soporta dos métodos: inverso de la distancia ponderado (IDW) y kriging ordinario o universal con drift externo (elevación, coordenadas). El kriging universal con elevación como variable auxiliar fue el método utilizado en el caso de Mallorca \parencite{navas2019mallorca} para la asignación de precipitación a subcuencas desde los pluviómetros disponibles.
+
+La interpolación se trata como un módulo de análisis espacial, no como un mero preprocesado gráfico. La elección entre IDW, kriging ordinario y kriging universal depende de la densidad de estaciones, la relación con covariables topográficas y la escala del fenómeno. Cuando se usa elevación o precipitación media satelital como deriva externa, el módulo conserva esa covariable junto al campo interpolado para que el resultado pueda reproducirse.
+
+\subsection{Modelos jerárquicos bayesianos}
+
+El módulo \path{spatial_analysis.bayes_hierarchical} implementa la clase \path{BayesianSpatialModel} para análisis regional con estructura jerárquica. El modelo asume que los parámetros de la distribución de extremos en cada localización son realizaciones de una distribución común de nivel superior, lo que permite transferir información entre estaciones y estimar cuantiles en puntos sin datos. La implementación utiliza PyMC e internamente puede aprovechar la aproximación INLA \parencite{rue2009inla} cuando el tamaño del grafo espacial lo justifica.
+
+\section{Generación estocástica}
+
+\subsection{Precipitación estocástica: NEOPRENE y CoSMoS}
+
+El submódulo \texttt{stochastic\_generation} integra NEOPRENE como librería backend para generación estocástica de precipitación \parencite{diezsierra2023neoprene}. La clase \texttt{NSRPModel} envuelve la implementación puntual del proceso de Neyman-Scott de pulsos rectangulares \parencite{rodriguezituribe1987,rodriguezituribe1988}. El proceso NSRP es un modelo de eventos clusterizados donde cada tormenta madre genera un número aleatorio de células de lluvia con inicio, intensidad y duración extraidas de distribuciones paramétricas. La calibración ajusta los parámetros del proceso para reproducir estadísticos observados de la serie horaria o diaria: media, varianza, probabilidad de precipitación nula, correlación lag-1 y coeficiente de variación. La clase \texttt{STNSRPModel} envuelve la implementación multisitio de NEOPRENE, que extiende NSRP a estaciones correlacionadas y permite la generación de campos de precipitación espacialmente coherentes.
+
+La diferencia entre \texttt{NSRPModel} y \texttt{STNSRPModel} es operativa. El primero es adecuado cuando se necesita una serie sintética representativa de un punto o estación; el segundo se utiliza cuando la coherencia espacial entre estaciones es parte del problema, por ejemplo para alimentar subcuencas simultáneamente o reconstruir campos multisitio. En ambos casos, \pyhydra actúa como envoltorio de NEOPRENE y estandariza entradas, salidas y configuración, pero no modifica la formulación estadística del modelo.
+
+La serie temporal de caudal se puede también generar estocásticamente mediante la clase \texttt{CoSMoS} del submódulo \texttt{stochastic\_generation.point}. CoSMoS (\emph{Complete Stochastic Modelling Solution}) genera series sintéticas preservando simultáneamente la distribución marginal, la dependencia temporal y la estacionalidad de la variable simulada \parencite{papalexiou2018storm}. En \pyhydra se utiliza como generador general de series hidrológicas cuando el objetivo es producir realizaciones temporales largas de caudal o precipitación a partir de una estructura estadística calibrada, en contraste con NEOPRENE, que contiene NSRP y STNSRP y representa explícitamente la estructura física de la precipitación mediante tormentas y células.
+
+La elección entre NEOPRENE y CoSMoS depende del objeto del estudio. NEOPRENE es preferible cuando interesa representar precipitación como proceso de tormentas y células, especialmente en aplicaciones espaciales de lluvia. CoSMoS es más general cuando la variable puede tratarse como serie temporal con una marginal y una estructura de dependencia temporal objetivo, por ejemplo caudal o variables hidroclimáticas agregadas. Mantener ambos enfoques permite cubrir problemas de inundación por eventos y problemas de recurso hídrico o clima de largo plazo.
+
+\subsection{Campos espaciales}
+
+El módulo \texttt{stochastic\_generation.fields} genera campos de precipitación en malla a partir de campos analíticos parametrizados o por interpolación de realizaciones puntuales del STNSRP. Sus salidas son \texttt{DataArray} con dimensiones \texttt{(realización, tiempo, lat, lon)}, compatibles directamente con los módulos de downscaling híbrido y de modelización hidrológica.
+
+Estos campos no sustituyen a un modelo atmosférico regional; son escenarios estadísticos espacialmente coherentes para alimentar modelos hidrológicos o explorar sensibilidad. Por ello, el módulo registra la semilla, la malla, los parámetros de variograma o interpolación y las estaciones de origen. Sin esos metadatos, un campo sintético sería difícilmente auditable.
+
+\section{Corrección de sesgo}
+
+El submódulo \texttt{climate.bias\_correction} proporciona dos métodos para corregir las diferencias sistemáticas entre modelos climáticos y observaciones de referencia \parencite{teutschbein2012biascorrection}:
+
+\begin{description}
+  \item[\texttt{delta\_method}] Corrección aditiva (para temperatura) o multiplicativa (para precipitación) que aplica el cambio relativo del modelo climático entre el período histórico de control y el período futuro, preservando el valor medio observado. Es el método más conservador y el preferido cuando se quiere minimizar la interferencia sobre la señal de cambio climático.
+
+  \item[\texttt{quantile\_mapping}] Mapea la distribución empírica del modelo en el período histórico sobre la distribución observada, y aplica la transformación al período futuro. El método EQM (\emph{empirical quantile mapping}) trabaja sobre cuantiles empíricos; DQM (\emph{detrended quantile mapping}) separa previamente la señal de cambio de la variabilidad interanual para preservarla durante la corrección \parencite{cannon2015sdm}; y SDM (\emph{scaled distribution mapping}) preserva explícitamente los cambios proyectados por el modelo climático en variables como precipitación y temperatura \parencite{switanek2017sdm}. Estas variantes son las recomendadas cuando la magnitud del cambio en extremos es relevante.
+\end{description}
+
+Ambos métodos fueron aplicados en los estudios de los países andinos \parencite{paz2019idb,deljesus2020andinos} y en SIMPCCe \parencite{navas2025simpce}, con proyecciones CMIP5 y CMIP6 respectivamente.
+
+En \pyhydra, la corrección de sesgo se implementa como transformación explícita entre una serie o campo del modelo climático y una referencia observacional. El módulo conserva el período de calibración, la fuente observada, el modelo, el escenario y la variante de corrección. Esta trazabilidad es crítica porque dos estudios con el mismo modelo CMIP6 pueden producir resultados distintos si cambian el período histórico, la fuente observacional o la variante de mapeo cuantil.
+
+\section{Downscaling híbrido}
+
+El submódulo \texttt{climate.hybrid\_downscaling} implementa la cadena metodológica que conecta eventos sintéticos o escenarios seleccionados con mapas de inundación a escala de cuadrícula \parencite{navas2019mallorca,navas2024calle30}. La cadena consta de cuatro pasos:
+
+\begin{enumerate}
+  \item \textbf{Selección de eventos representativos (MaxDiss).} La función \path{maxdiss}, situada en \path{hybrid_downscaling.classification}, selecciona un subconjunto de $n$ escenarios representativos del espacio total de eventos mediante el algoritmo de máxima disimilitud \parencite{camus2011maxdiss}. El algoritmo construye iterativamente un conjunto que maximiza la distancia mínima entre cualquier par de escenarios, cubriendo el espacio de variabilidad con el mínimo número de simulaciones.
+
+  \item \textbf{Simulación hidráulica del subconjunto.} Los $n$ eventos seleccionados se simulan con el modelo hidráulico (HEC-RAS, SFINCS) para obtener mapas de calado y velocidad.
+
+  \item \textbf{Reconstrucción por vecinos próximos (k-NN).}\par
+  La clase \path{FloodMapInterpolator} forma parte del submódulo de interpolación del downscaling híbrido. Entrena un modelo k-NN sobre los descriptores de evento y los mapas simulados. Una vez entrenado, reconstruye el mapa de inundación de cualquier evento del conjunto completo a partir de la interpolación ponderada de sus $k$ vecinos más próximos en el espacio de descriptores. En el caso de Calle 30 \parencite{navas2024calle30}, este enfoque permitió reconstruir miles de escenarios de inundación a partir de un conjunto de simulaciones explícitas mucho menor.
+
+  \item \textbf{Mapas de período de retorno.} La función \texttt{pixel\_return\_period} en \texttt{hybrid\_downscaling.return\_period} calcula, para cada pixel de la malla, la distribución de calado máximo sobre el conjunto de escenarios y sus tasas de ocurrencia anuales, produciendo un mapa de nivel de retorno para cada período de retorno solicitado. La función \texttt{save\_return\_period\_geotiffs} exporta estos mapas en formato GeoTIFF georreferenciado.
+\end{enumerate}
+
+La \cref{fig:maxdiss_downscaling} resume la lógica operativa del método. El bloque superior representa la cadena estadística: datos históricos, extracción y descripción de eventos, generación sintética de $N$ realizaciones y selección MaxDiss del subconjunto representativo $n$. El bloque inferior representa la cadena física: preparación del dominio hidráulico, simulación explícita de los $n$ eventos seleccionados, construcción de una biblioteca de mapas de calado y reconstrucción k-NN de los mapas del conjunto completo. Las salidas de auditoría intermedias (tabla de eventos, listado de casos a simular, GeoTIFF intermedios) garantizan la trazabilidad de cada resultado.
+
+\begin{figure}[!htbp]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  font=\scriptsize,
+  node distance=0.78cm and 0.78cm,
+  arr/.style={-Stealth, line width=0.8pt, tg55},
+  data/.style={rectangle, rounded corners=3pt, draw=blue!55!black, fill=blue!8,
+	               text width=2.48cm, minimum height=0.78cm, align=center},
+  stat/.style={rectangle, rounded corners=3pt, draw=orange!70!black, fill=orange!12,
+	               text width=2.48cm, minimum height=0.78cm, align=center},
+  model/.style={rectangle, rounded corners=3pt, draw=teal!65!black, fill=teal!10,
+	                text width=2.48cm, minimum height=0.78cm, align=center},
+  outputbox/.style={rectangle, rounded corners=3pt, draw=red!55!black, fill=red!8,
+	              text width=2.48cm, minimum height=0.78cm, align=center},
+  group/.style={rectangle, rounded corners=5pt, draw=tg40, dashed, inner sep=0.18cm},
+  dot/.style={circle, fill=#1, minimum size=0.16cm, inner sep=0}
+]
+
+% Main methodological chain
+\node[data] (obs) {Datos históricos\\caudal o lluvia};
+\node[stat, right=of obs] (events) {Extracción y\\descripción de eventos};
+\node[stat, right=of events] (synthetic) {Generación sintética\\$N$ eventos};
+\node[stat, right=of synthetic] (maxdiss) {MaxDiss\\$n \ll N$ eventos};
+
+\node[model, below=1.05cm of maxdiss] (hydraulic) {Simulación hidráulica\\eventos $n$};
+\node[model, left=of hydraulic] (maps) {Biblioteca\\calado/velocidad};
+\node[model, left=of maps] (knn) {Reconstrucción k-NN\\resto de eventos};
+\node[outputbox, left=of knn] (risk) {Mapas finales\\período de retorno};
+
+\draw[arr] (obs) -- (events);
+\draw[arr] (events) -- (synthetic);
+\draw[arr] (synthetic) -- (maxdiss);
+\draw[arr] (maxdiss) -- (hydraulic);
+\draw[arr] (hydraulic) -- (maps);
+\draw[arr] (maps) -- (knn);
+\draw[arr] (knn) -- (risk);
+
+% Inputs from hydraulic domain
+\node[data, below=0.85cm of hydraulic] (terrain) {MDE, rugosidad,\\malla y contornos};
+\draw[arr] (terrain.north) -- (hydraulic.south);
+
+% Audit products
+\node[outputbox, above=0.75cm of events] (audit1) {Tabla de eventos\\y descriptores};
+\node[outputbox, above=0.75cm of maxdiss] (audit2) {Listado de casos\\a simular};
+\node[outputbox, below=0.75cm of maps] (audit3) {GeoTIFF/NetCDF\\intermedios};
+\draw[arr] (events) -- (audit1);
+\draw[arr] (maxdiss) -- (audit2);
+\draw[arr] (maps) -- (audit3);
+
+\end{tikzpicture}
+}
+\caption{Esquema operativo del downscaling híbrido implementado en \hydra. La metodología separa la generación estadística masiva de eventos ($N$ escenarios) de la simulación hidráulica completa: MaxDiss selecciona un subconjunto representativo $n \ll N$ que cubre el espacio de variabilidad, ese subconjunto se simula con el modelo físico, y los mapas del conjunto restante se reconstruyen por k-NN. Las salidas de auditoría intermedias permiten trazar cada resultado hasta su configuración de datos y simulación. Elaboración propia.}
+\label{fig:maxdiss_downscaling}
+\end{figure}
+
+Este flujo, denominado \emph{downscaling híbrido} porque combina selección estadística con reconstrucción por aprendizaje automático, reduce el coste computacional de la metodología estocástica en varios órdenes de magnitud respecto a simular el conjunto completo de eventos \parencite{deljesus2024downscaling}. Su validez depende de que los descriptores de evento capturen suficientemente las variables de control del modelo hidráulico, y de que el subconjunto MaxDiss sea representativo del espacio completo de variabilidad.

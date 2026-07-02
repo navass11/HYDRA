@@ -1,0 +1,576 @@
+\chapter{Referencia rápida de la API de \pyhydra}
+\label{app:api}
+
+Este anexo es una referencia rápida de las funciones y clases principales de \pyhydra organizadas por módulo. Para cada componente se indica el propósito, los parámetros principales con sus tipos y valores por defecto, y el tipo de retorno. La relación se ha revisado contra el árbol de código de \pyhydra incluido con la tesis; por tanto, describe funciones y clases presentes en el paquete, no una interfaz idealizada ni funcionalidades planificadas. La documentación completa se encuentra en el capítulo de manual de uso (\cref{ch:manual}) y en los notebooks correspondientes (\cref{app:notebooks}).
+
+\newcommand{\apisig}[1]{%
+  \begingroup
+  \setlength{\fboxsep}{3pt}%
+  \colorbox{codebg}{\parbox{0.96\linewidth}{\raggedright\ttfamily\footnotesize #1}}%
+  \endgroup
+}
+
+% ============================================================
+\section{\texttt{pyhydra.data\_sources}}
+% ============================================================
+
+\subsection{Precipitación (\texttt{rainfall})}
+
+\begin{description}[style=nextline,font=\ttfamily]
+  \item[\apisig{download\_era5(folder\_out, api\_key, url, area, variables\_list, years,\\ months=range(1,13), max\_workers=5,\\ file\_format=\textquotesingle{}netcdf\textquotesingle{}, frequency=\textquotesingle{}hourly\textquotesingle{})}]
+  Descarga ERA5 mediante la API CDS en paralelo por año y mes. \texttt{area} sigue el formato \texttt{[N, W, S, E]}. \texttt{frequency} acepta \texttt{\textquotesingle{}hourly\textquotesingle{}} o \texttt{\textquotesingle{}monthly\textquotesingle{}}. Sin valor de retorno (guarda ficheros NetCDF en \texttt{folder\_out}).
+
+  \item[\apisig{GPMDownloader(folder\_out)}]
+  Clase para descarga y apertura de productos GPM-IMERG vía \texttt{earthaccess}. Incluye \path{.set_region(lat_min,lat_max,lon_min,lon_max)}, \path{.search(start_date,end_date)} y \path{.open_dataset()}. Devuelve \texttt{xarray.Dataset}.
+
+  \item[\apisig{PERSSIANDownloader(folder\_out)}]
+  Clase para descarga de PERSIANN-CCS diario desde el servidor FTP de UCI. Método principal: \texttt{.download\_daily(start, end)}. Sin valor de retorno.
+
+  \item[\apisig{download\_aemet\_daily\_data(path\_output, api\_key, start\_date\_str,\\ end\_date\_str, interval\_days=15)}]
+  Descarga observaciones diarias de todas las estaciones AEMET OpenData. \texttt{interval\_days} controla el tamaño del bloque de descarga (límite de la API). Sin valor de retorno.
+
+  \item[\apisig{AEMETDownloader(netcdf\_folder, stations\_shapefile=None)}]
+  Widget Jupyter interactivo para selección y descarga de estaciones AEMET. Devuelve el widget ipyvuetify.
+
+  \item[\apisig{AemetCSVLoader(csv\_path)}]
+  Carga y filtra de calidad series descargadas por \texttt{AEMETDownloader}. Método \texttt{.load()} devuelve \texttt{pd.DataFrame}.
+
+  \item[\apisig{download\_synop(station\_id, start\_date, end\_date, progress=None,\\ cancel\_flag=None)}]
+  Descarga datos SYNOP de OGIMET para una estación y un período. Devuelve \texttt{pd.DataFrame} con variables meteorológicas.
+
+  \item[\apisig{OGIMETDownloader(folder\_out)}]
+  Widget interactivo para descarga por lotes desde OGIMET.
+
+  \item[\apisig{OgimetCSVLoader(csv\_path)}]
+  Carga y consolida series descargadas por \texttt{OGIMETDownloader}. Método \texttt{.load()} devuelve \texttt{pd.DataFrame}.
+
+  \item[\apisig{download\_meteostat\_series(station\_id, start\_date, end\_date,\\ frequency=\textquotesingle{}daily\textquotesingle{}, variables=None)}]
+  Descarga series de una estación Meteostat por su código identificador. \texttt{frequency} acepta \texttt{\textquotesingle{}daily\textquotesingle{}} u \texttt{\textquotesingle{}hourly\textquotesingle{}}. Devuelve \texttt{pd.DataFrame} con columnas de temperatura, precipitación, humedad, viento y presión.
+
+  \item[\apisig{download\_best\_meteostat\_series(lat, lon, start\_date, end\_date,\\ radius=50, frequency=\textquotesingle{}daily\textquotesingle{}, variables=None)}]
+  Combina búsqueda, puntuación y descarga en una sola llamada. Seleccióna la estación con mejor cobertura de datos dentro del radio. Devuelve tupla \texttt{(series, station\_id, ranking\_df)}.
+
+  \item[\apisig{get\_meteostat\_stations\_nearby(lat, lon, radius=50, limit=100)}]
+  Lista estaciones Meteostat próximas a un punto. Devuelve \texttt{pd.DataFrame} con metadatos de estaciones.
+
+  \item[\apisig{score\_meteostat\_stations(stations\_df, start\_date, end\_date,\\ frequency=\textquotesingle{}daily\textquotesingle{}, variables=None)}]
+  Puntúa estaciones según fracción de datos disponibles en el período. Devuelve \texttt{pd.DataFrame} con columna \texttt{score}.
+
+  \item[\apisig{find\_station\_by\_wmo(wmo\_code)}]
+  Busca una estación Meteostat por su código WMO. Devuelve \texttt{pd.DataFrame}.
+
+  \item[\apisig{MeteostatDownloader(lat, lon, radius=50)}]
+  Widget JupyterLab con mapa Leaflet para exploración y descarga interactiva de series Meteostat.
+\end{description}
+
+\subsection{Caudal (\texttt{river\_discharge})}
+
+\begin{description}[style=nextline,font=\ttfamily]
+  \item[\apisig{download\_glofas(area, years, output\_dir,\\ dataset=\textquotesingle{}cems-glofas-historical\textquotesingle{}, system\_version=\textquotesingle{}version\_4\_0\textquotesingle{},\\ hydrological\_model=\textquotesingle{}lisflood\textquotesingle{}, product\_type=\textquotesingle{}consolidated\textquotesingle{},\\ months=None, variable=\textquotesingle{}river\_discharge\_in\_the\_last\_24\_hours\textquotesingle{},\\ file\_format=\textquotesingle{}netcdf4\textquotesingle{}, api\_key=None)}]
+  Descarga reanálisis de caudal GloFAS desde el CDS de Copernicus. \texttt{area} en formato \texttt{[N, W, S, E]}. \texttt{dataset} puede ser \texttt{\textquotesingle{}cems-glofas-historical\textquotesingle{}}, \texttt{\textquotesingle{}cems-glofas-reforecast\textquotesingle{}} o \texttt{\textquotesingle{}cems-glofas-forecast\textquotesingle{}}. Devuelve lista de rutas a ficheros descargados.
+
+  \item[\apisig{read\_glofas\_nc(filepath, lat, lon, lat\_col=\textquotesingle{}latitude\textquotesingle{},\\ lon\_col=\textquotesingle{}longitude\textquotesingle{})}]
+  Lee un fichero NetCDF de GloFAS y extrae la serie temporal en el punto más próximo a \texttt{(lat, lon)}. Devuelve \texttt{pd.Series}.
+
+  \item[\apisig{read\_grdc(filepath)}]
+  Lee un fichero de texto GRDC en formato estándar. Devuelve \texttt{pd.DataFrame} con índice de fechas.
+
+  \item[\apisig{read\_grdc\_metadata(filepath)}]
+  Extrae los metadatos del encabezado de un fichero GRDC. Devuelve \texttt{dict}.
+
+  \item[\apisig{read\_grdc\_folder(folder, pattern=\textquotesingle{}*.day\textquotesingle{})}]
+  Lee todos los ficheros GRDC de un directorio. Devuelve \texttt{dict} mapeando nombre de estación a \texttt{pd.DataFrame}.
+
+  \item[\apisig{analyze\_grdc\_quality(df)}]
+  Calcula estadísticos de calidad de una serie GRDC: fracción de datos válidos, saltos, valores fuera de rango. Devuelve \texttt{dict}.
+
+  \item[\apisig{download\_usgs(site\_no, start\_date, end\_date,\\ parameter\_code=\textquotesingle{}00060\textquotesingle{}, service=\textquotesingle{}iv\textquotesingle{})}]
+  Descarga datos de aforos USGS mediante la API NWIS. \texttt{site\_no} puede ser cadena o lista. \texttt{parameter\_code=\textquotesingle{}00060\textquotesingle{}} corresponde a caudal en pies cúbicos por segundo. Devuelve \texttt{pd.DataFrame}.
+
+  \item[\apisig{get\_usgs\_site\_info(site\_no)}]
+  Obtiene metadatos de una o varias estaciones USGS. Devuelve \texttt{pd.DataFrame}.
+
+  \item[\apisig{search\_usgs\_sites(bbox, parameter\_code=\textquotesingle{}00060\textquotesingle{})}]
+  Busca estaciones USGS dentro de un bounding box \texttt{(lat\_min, lon\_min, lat\_max, lon\_max)}. Devuelve \texttt{pd.DataFrame}.
+\end{description}
+
+\subsection{Cambio climático y suelos}
+
+\begin{description}[style=nextline,font=\ttfamily]
+  \item[\apisig{download\_CDS\_CMIP6(url, api\_key, start\_date, end\_date,\\ temporal\_resolution, model, experiments, variables,\\ download\_base\_dir, area, combinations\_csv=None,\\ max\_workers=5, max\_retries=3)}]
+  Descarga proyecciones CMIP6 del CDS para una combinación de modelo, experimento, variable, período y dominio. \texttt{experiments} puede incluir \texttt{\textquotesingle{}historical\textquotesingle{}}, \texttt{\textquotesingle{}ssp245\textquotesingle{}}, \texttt{\textquotesingle{}ssp585\textquotesingle{}}, etc. Sin valor de retorno (guarda ficheros en \texttt{download\_base\_dir}).
+
+  \item[\apisig{get\_dataset\_metadata(filters, limit=5000)}]
+  Busca datasets CMIP6 disponibles en ESGF mediante filtros. Devuelve \texttt{pd.DataFrame} con metadatos.
+
+  \item[\apisig{get\_all\_urls(dataset\_id)}]
+  Obtiene la lista de URLs de descarga para un dataset ESGF. Devuelve lista de cadenas.
+
+  \item[\apisig{get\_combination\_if\_complete(model, experiment, varíant, variables)}]
+  Verifica que todos los ficheros de una combinación están disponibles en ESGF. Devuelve \texttt{pd.DataFrame} o \texttt{None}.
+
+  \item[\apisig{download\_file(url, local\_path, chunk\_size=1024*1024, max\_retries=3)}]
+  Descarga un fichero desde una URL HTTP/OPeNDAP con reintentos. Devuelve \texttt{bool} indicando éxito.
+
+  \item[\apisig{download\_soilgrids(output\_dir, max\_retries=10, include\_metadata=False)}]
+  Descarga las capas SoilGrids utilizadas por \hydra (arcilla, arena, limo, materia orgánica). Sin valor de retorno.
+
+  \item[\apisig{open\_soilgrids\_geotif(file)}]
+  Lee un GeoTIFF de SoilGrids. Devuelve tupla \texttt{(array, transform, crs)}.
+
+  \item[\apisig{find\_usda\_soilclass(sand, silt, clay, no\_data\_value=255)}]
+  Clasifica textura USDA a partir de fracciónes de arena, limo y arcilla. Devuelve \texttt{ndarray} de clases USDA.
+
+  \item[\apisig{create\_new\_tif(template\_file, data, output\_file)}]
+  Crea un nuevo GeoTIFF copiando la georreferencia de un fichero plantilla. Sin valor de retorno.
+
+  \item[\apisig{extract\_mode\_soilclass(input\_dir, output\_path)}]
+  Calcula la clase de suelo modal entre varias capas de profundidad. Sin valor de retorno.
+\end{description}
+
+% ============================================================
+\section{\texttt{pyhydra.climate.time\_series}}
+% ============================================================
+
+\subsection{Extracción de eventos (\texttt{events})}
+
+\begin{description}[style=nextline,font=\ttfamily]
+  \item[\apisig{extract\_events(series, threshold, variable=\textquotesingle{}discharge\textquotesingle{},\\ method=\textquotesingle{}spell\textquotesingle{}, threshold2=None, min\_duration=1, min\_gap=1,\\ min\_sep=7, n\_days=3, plot=False)}]
+  Punto de entrada unificado para extracción de eventos. \texttt{variable} acepta \texttt{\textquotesingle{}discharge\textquotesingle{}} o \texttt{\textquotesingle{}precipitation\textquotesingle{}}. \texttt{method} para precipitación: \texttt{\textquotesingle{}spell\textquotesingle{}} (rachas húmedas), \texttt{\textquotesingle{}pot\textquotesingle{}} (picos sobre umbral) o \texttt{\textquotesingle{}nday\textquotesingle{}} (acumulación en $N$ días). Devuelve tupla \texttt{(stats\_df, bounds\_df)}.
+
+  \item[\apisig{extract\_discharge\_events(series, threshold,\\ threshold2=None, plot=False)}]
+  Identifica eventos de crecida por cruce de umbral con refinamiento en puntos de inflexión. \texttt{threshold2} es el umbral mínimo de pico para retener un evento. Devuelve tupla \texttt{(stats\_df, bounds\_df)} donde \texttt{stats\_df} tiene columnas \texttt{peak}, \texttt{mean}, \texttt{duration}, \texttt{volume}, \texttt{date\_peak}.
+
+  \item[\apisig{extract\_precipitation\_events(series, threshold=0.0, min\_duration=1,\\ min\_gap=1)}]
+  Extrae rachas húmedas continuas. Pasos secos menores que \texttt{min\_gap} se fusionan con los eventos adyacentes. Devuelve tupla \texttt{(stats\_df, bounds\_df)} con columnas \texttt{peak}, \texttt{total}, \texttt{duration}, \texttt{mean\_intensity}, \texttt{date\_start}.
+
+  \item[\apisig{extract\_precipitation\_events\_pot(series, threshold, min\_sep=7)}]
+  Extrae eventos extremos por picos sobre umbral con declustering. Expande cada pico a su racha húmeda completa. Devuelve tupla \texttt{(stats\_df, bounds\_df)}.
+
+  \item[\apisig{extract\_precipitation\_events\_nday(series, n\_days=3, threshold=None,\\ min\_sep=None)}]
+  Extrae eventos de acumulación en ventana de $N$ días. Útil para cuencas donde la inundación responde a acumulaciones multidia. Devuelve tupla \texttt{(stats\_df, bounds\_df)}.
+
+  \item[\apisig{extract\_concurrent\_events(event\_bounds, series\_dict, buffer\_days=0,\\ stats=(\textquotesingle{}max\textquotesingle{}, \textquotesingle{}mean\textquotesingle{}, \textquotesingle{}total\textquotesingle{}))}]
+  Extrae estadísticos en múltiples estaciones durante las ventanas de eventos detectados en una estación objetivo. Útil para análisis de extremos compuestos y coherencia espacial. Devuelve \texttt{pd.DataFrame} con una fila por evento.
+\end{description}
+
+\subsection{Análisis de extremos (\texttt{extremes})}
+
+\begin{description}[style=nextline,font=\ttfamily]
+  \item[\apisig{extract\_block\_maxima(series, freq=\textquotesingle{}YE\textquotesingle{})}]
+  Extrae máximos por bloque temporal. \texttt{freq=\textquotesingle{}YE\textquotesingle{}} para máximos anuales, \texttt{\textquotesingle{}QE\textquotesingle{}} estacionales, \texttt{\textquotesingle{}ME\textquotesingle{}} mensuales. Devuelve \texttt{pd.Series}.
+
+  \item[\apisig{extract\_pot(series, threshold, min\_gap=7)}]
+  Extrae picos independientes sobre umbral. \texttt{min\_gap} es el número mínimo de pasos entre picos independientes. Devuelve \texttt{pd.Series} de picos indexada por fecha.
+
+  \item[\apisig{threshold\_stability\_plot(series, thresholds=None, min\_peaks=10)}]
+  Diagrama de estabilidad de umbral GPD: exceso medio y parámetro de forma frente al umbral. Devuelve \texttt{pd.DataFrame} con columnas \texttt{threshold}, \texttt{n\_exceed}, \texttt{mean\_excess}, \texttt{gpd\_shape}, \texttt{gpd\_scale}.
+
+  \item[\apisig{fit\_gev(data, method=\textquotesingle{}mle\textquotesingle{}, xi\_bounds=(-0.5, 0.8))}]
+  Ajusta una distribución GEV. \texttt{method} acepta \texttt{\textquotesingle{}mle\textquotesingle{}} (robusto con arranque por L-momentos), \texttt{\textquotesingle{}lmom\textquotesingle{}} o \texttt{\textquotesingle{}both\textquotesingle{}}. Devuelve \texttt{dict} con claves \texttt{mu}, \texttt{sigma}, \texttt{xi} (convenio: $\xi > 0$ = cola pesada Fréchet).
+
+  \item[\apisig{fit\_gpd(series, threshold, method=\textquotesingle{}mle\textquotesingle{}, min\_gap=7,\\ xi\_bounds=(-0.5, 1.0))}]
+  Ajusta una GPD a los excesos sobre \texttt{threshold}. Devuelve \texttt{dict} con claves \texttt{scale}, \texttt{shape}, \texttt{threshold}, \texttt{n\_exceed}, \texttt{lambda\_rate}.
+
+  \item[\apisig{fit\_gev\_map(data, mu\_prior\_mean=None, sigma\_prior\_scale=0.5,\\ xi\_prior\_std=0.3)}]
+  Estimación bayesiana MAP de una GEV. No requiere MCMC; rápido y estable con priores poco informativos. Devuelve \texttt{dict} con claves \texttt{mu}, \texttt{sigma}, \texttt{xi}, \texttt{map\_logpost}.
+
+  \item[\apisig{fit\_gev\_fisher(data, n\_samples=1000)}]
+  Incertidumbre paramétrica por aproximación de la información de Fisher (covarianza asintótica). Válido cuando $n \geq 20$ máximos anuales. Devuelve \texttt{pd.DataFrame} con columnas \texttt{mu}, \texttt{sigma}, \texttt{xi}.
+
+  \item[\apisig{fit\_gev\_mcmc(data, n\_samples=2000, n\_chains=4, adapt\_delta=0.95)}]
+  Inferencia bayesiana completa GEV mediante MCMC con PyMC y el muestreador NUTS. Parameterización no centrada. Requiere \texttt{pip install pymc}. Devuelve \texttt{pd.DataFrame} con muestras posteriores de \texttt{mu}, \texttt{sigma}, \texttt{xi}.
+
+  \item[\apisig{return\_level\_gev(params, T)}]
+  Cuantil GEV para período de retorno $T$ (años). Devuelve \texttt{float}.
+
+  \item[\apisig{return\_level\_gpd(params, T)}]
+  Cuantil GPD bajo modelo de proceso de Poisson para período de retorno $T$. Devuelve \texttt{float}.
+
+  \item[\apisig{return\_levels(params, T\_values, dist=\textquotesingle{}gev\textquotesingle{})}]
+  Calcula cuantiles para múltiples períodos de retorno. \texttt{dist} acepta \texttt{\textquotesingle{}gev\textquotesingle{}} o \texttt{\textquotesingle{}gpd\textquotesingle{}}. Devuelve \texttt{pd.Series} indexada por período de retorno.
+
+  \item[\apisig{return\_level\_ci(data, T, dist=\textquotesingle{}gev\textquotesingle{}, method=\textquotesingle{}mle\textquotesingle{},\\ n\_bootstrap=500, ci=0.95, threshold=None)}]
+  Intervalo de confianza bootstrap para un cuantil de período de retorno. Devuelve tupla \texttt{(estimación, límite\_inferior, límite\_superior)}.
+
+  \item[\apisig{plot\_return\_levels(data, params, dist=\textquotesingle{}gev\textquotesingle{}, T\_range=(1.5, 1000),\\ n\_bootstrap=200, ci=0.95, ax=None)}]
+  Gráfico de niveles de retorno con banda de confianza bootstrap. Devuelve \texttt{matplotlib.Axes}.
+
+  \item[\apisig{plot\_diagnostic(data, params, dist=\textquotesingle{}gev\textquotesingle{}, title=None, axes=None)}]
+  Panel diagnóstico $2 \times 2$: niveles de retorno, ajuste de densidad, Q-Q y P-P. Devuelve \texttt{matplotlib.Figure}.
+\end{description}
+
+\subsection{Métricas de calibración e indicadores de calidad (\texttt{stats})}
+
+\begin{description}[style=nextline,font=\ttfamily]
+  \item[\apisig{compute\_nse(obs, sim)}]
+  Nash--Sutcliffe Efficiency (NSE) entre series observada y simulada. $\text{NSE} = 1$ indica ajuste perfecto; $\text{NSE} < 0$ indica que la media de la observación es mejor predictor que el modelo. Acepta \texttt{numpy.ndarray} o \texttt{pd.Series} alineadas en tiempo. Devuelve \texttt{float}.
+
+  \item[\apisig{compute\_kge(obs, sim)}]
+  Kling--Gupta Efficiency (KGE), métrica compuesta que descompone el error en correlación, sesgo y variabilidad relativa. $\text{KGE} = 1$ indica ajuste perfecto; valores $>0$ son generalmente aceptables. Devuelve \texttt{float}.
+
+  \item[\apisig{compute\_pbias(obs, sim)}]
+  Sesgo porcentual (PBIAS) entre observado y simulado. Valores positivos indican subestimación del modelo; negativos, sobreestimación. Devuelve \texttt{float} en porcentaje.
+\end{description}
+
+% ============================================================
+\section{\texttt{pyhydra.climate.spatial\_analysis}}
+% ============================================================
+
+\subsection{Análisis regional de frecuencias (\texttt{rfa})}
+
+\begin{description}[style=nextline,font=\ttfamily]
+  \item[\apisig{fit\_gev\_mle(data, xi\_bounds=(-0.5, 0.8))}]
+  Ajuste GEV por MML con arranque por L-momentos y parámetro de forma acotado. Devuelve \texttt{dict} con \texttt{mu}, \texttt{sigma}, \texttt{xi}.
+
+  \item[\apisig{fit\_gev\_lmom(data)}]
+  Ajuste GEV por el método de L-momentos (requiere \texttt{lmoments3}). Devuelve \texttt{dict} con \texttt{mu}, \texttt{sigma}, \texttt{xi}.
+
+  \item[\apisig{fit\_gev\_bayes(data, n\_chains=4, n\_samples=1000)}]
+  Inferencia bayesiana GEV mediante MCMC. Envoltorio de \texttt{fit\_gev\_mcmc} de \texttt{time\_series.extremes}. Devuelve \texttt{pd.DataFrame} con columnas \texttt{mu}, \texttt{sigma}, \texttt{xi}.
+
+  \item[\apisig{return\_level(params, T)}]
+  Cuantil GEV para período de retorno $T$ (escalar o array). Devuelve valor(es) de retorno.
+
+  \item[\apisig{return\_level\_bayes(posterior, T, credible=0.95)}]
+  Distribución posterior del cuantil de período $T$ a partir de muestras MCMC. Devuelve \texttt{dict} con \texttt{median}, \texttt{lower}, \texttt{upper}.
+
+  \item[\apisig{regional\_index\_flood(data\_dict)}]
+  Normaliza cada serie por su índice de avenida (media de máximos anuales). Devuelve tupla \texttt{(normalised\_dict, index\_floods\_series)}.
+
+  \item[\apisig{fit\_regional\_gev(data\_dict, method=\textquotesingle{}lmom\textquotesingle{})}]
+  Ajusta una GEV regional sobre datos agrupados normalizados (formulación index-flood). Devuelve tupla \texttt{(regional\_params\_dict, index\_floods\_series)}.
+
+  \item[\apisig{regional\_return\_levels(data\_dict, T\_values=(2,5,10,20,50,100),\\ method=\textquotesingle{}lmom\textquotesingle{})}]
+  Calcula cuantiles de período de retorno por estación aplicando escalado por índice de avenida. Devuelve \texttt{pd.DataFrame} (estaciones × períodos de retorno).
+
+  \item[\apisig{HierarchicalGEV(T\_values=(2,10,50,100), n\_chains=4, n\_samples=1000,\\ warmup=1000, adapt\_delta=0.99)}]
+  Modelo GEV jerárquico bayesiano para análisis regional. Combina datos de varias estaciones compartiendo parámetros a través de hiperpriors poblacionales. Requiere \texttt{pymc} (o \texttt{pystan} como alternativa). Métodos:
+
+  \begin{itemize}
+    \item \texttt{.fit(data\_dict)} — Calibra el modelo (PyMC por defecto, PyStan como fallback). \texttt{data\_dict}: dict de nombre de estación a array de máximos anuales. Devuelve \texttt{self}.
+    \item \texttt{.posterior\_summary()} — Resumen de la posterior de parámetros poblacionales y por estación. Devuelve \texttt{pd.DataFrame} con media, desviación típica e IC~95\%.
+    \item \texttt{.return\_levels(credible=0.95)} — Cuantiles de período de retorno para cada estación. Devuelve \texttt{pd.DataFrame} con columnas \texttt{T\{T\}\_median}, \texttt{T\{T\}\_lower}, \texttt{T\{T\}\_upper}.
+  \end{itemize}
+\end{description}
+
+\subsection{Cópulas (\texttt{copulas})}
+
+\begin{description}[style=nextline,font=\ttfamily]
+  \item[\apisig{fit\_marginal(data, variable\_name=\textquotesingle{}\textquotesingle{})}]
+  Seleccióna la mejor distribución univaríante por BIC (requiere \texttt{openturns}). Devuelve tupla \texttt{(distribución\_ot, muestra\_ot)}.
+
+  \item[\apisig{fit\_discrete\_marginal(data)}]
+  Ajusta una distribución empírica discreta a datos de tipo entero. Devuelve tupla \texttt{(distribución\_ot, muestra\_ot)}.
+
+  \item[\apisig{FloodEventCopula(continuous\_vars, discrete\_vars)}]
+  Modelización multivariante de eventos de crecida mediante cópula Normal (requiere \texttt{openturns}). Métodos:
+  \begin{itemize}
+    \item \texttt{.fit(data)} — Ajusta marginales por BIC y cópula Normal. Devuelve \texttt{self}.
+    \item \texttt{.sample(n\_samples)} — Genera eventos sintéticos. Devuelve \texttt{pd.DataFrame}.
+    \item \texttt{.plot\_marginals()} — Gráficos ECDF vs distribución ajustada.
+    \item \texttt{.plot\_dependence(observed, synthetic)} — Scatter plots de pares de variables.
+  \end{itemize}
+
+  \item[\apisig{BivariateCopula(x, y, family=\textquotesingle{}auto\textquotesingle{})}]
+  Análisis de eventos compuestos bivariantes. \texttt{family} acepta \texttt{\textquotesingle{}gumbel\textquotesingle{}}, \texttt{\textquotesingle{}clayton\textquotesingle{}}, \texttt{\textquotesingle{}frank\textquotesingle{}} o \texttt{\textquotesingle{}auto\textquotesingle{}} (selección por AIC). Métodos principales:
+  \begin{itemize}
+    \item \texttt{.fit()} — Ajusta marginales paramétricas y cópula. Devuelve \texttt{self}.
+    \item \texttt{.joint\_return\_period(t, kind=\textquotesingle{}or\textquotesingle{})} — Isolínea AND u OR para período $t$. Devuelve \texttt{(x\_vals, y\_vals)}.
+    \item \texttt{.mpde(t)} — Evento de Diseño de Máxima Probabilidad sobre la isolínea de período $t$. Devuelve \texttt{(x\_mpde, y\_mpde)}.
+  \end{itemize}
+
+  \item[\apisig{TrivariateCopula(x, y, z, family=\textquotesingle{}auto\textquotesingle{})}]
+  Extensión a tres variables del análisis de cópulas Archimedanas. Misma interfaz que \texttt{BivariateCopula}.
+
+  \item[\apisig{VineCopula(data, vine\_type=\textquotesingle{}cvine\textquotesingle{})}]
+  Vine cópulas para dependencia multivariante flexible (requiere \texttt{pyvinecopulib}). Permite modelizar dependencia de cola asimétrica entre variables.
+
+  \item[\apisig{GaussianCopulaSampler(data)}]
+  Muestreo desde una cópula Gaussiana ajustada a los datos de entrada. Método \texttt{.sample(n)} devuelve \texttt{pd.DataFrame}.
+\end{description}
+
+\subsection{Interpolación espacial (\texttt{interpolation})}
+
+\begin{description}[style=nextline,font=\ttfamily]
+  \item[\apisig{IDWInterpolator(power=2.0)}]
+  Interpolación por distancia inversa ponderada. Sin dependencias externas. Métodos:
+  \begin{itemize}
+    \item \texttt{.fit(data, x\_col=\textquotesingle{}lon\textquotesingle{}, y\_col=\textquotesingle{}lat\textquotesingle{}, value\_col=\textquotesingle{}value\textquotesingle{})} — Almacena coordenadas y valores. Devuelve \texttt{self}.
+    \item \texttt{.predict(grid\_data, x\_col, y\_col)} — Interpola en nuevas localizaciones. Devuelve \texttt{ndarray}.
+    \item \texttt{.predict\_timeseries(grid\_data, timeseries\_df, x\_col, y\_col)} — Reconstruye el campo diario para todos los pasos temporales. Devuelve \texttt{pd.DataFrame}.
+  \end{itemize}
+
+  \item[\apisig{KrigingInterpolator(variogram\_model=\textquotesingle{}spherical\textquotesingle{}, drift\_terms=None,\\ nlags=6, weight=False)}]
+  Kriging universal (requiere \texttt{pykrige}). Métodos:
+  \begin{itemize}
+    \item \texttt{.fit(data, x\_col, y\_col, value\_col, external\_drift=None)} — Ajusta variograma. Devuelve \texttt{self}.
+    \item \texttt{.predict(grid\_data, x\_col, y\_col)} — Devuelve tupla \texttt{(media, varianza)}.
+  \end{itemize}
+
+  \item[\apisig{GaussianProcessInterpolator(covariates=None, kernel=None,\\ n\_restarts\_optimizer=5, test\_size=0.2, random\_state=42)}]
+  Regresión GP con covariables (requiere \texttt{scikit-learn}). Covariables por defecto: \texttt{['lon', 'lat']}. Métodos:
+  \begin{itemize}
+    \item \texttt{.fit(data, target\_col)} — Ajusta el GP con validación cruzada. Devuelve \texttt{dict} con \texttt{r2} y \texttt{rmse}.
+    \item \texttt{.predict(grid\_data)} — Devuelve tupla \texttt{(media, desviación\_típica)}.
+    \item \texttt{.predict\_timeseries(grid\_data, timeseries\_df)} — Ajusta un GP por paso temporal. Devuelve \texttt{pd.DataFrame}.
+  \end{itemize}
+
+  \item[\apisig{NeopreneGPReconstructor(gp\_covariates=None,\\ temporal\_resolution=\textquotesingle{}d\textquotesingle{}, seasonality=\textquotesingle{}monthly\textquotesingle{},\\ n\_restarts\_optimizer=3)}]
+  Reconstrucción de campo de precipitación diario combinando NEOPRENE y GP. Calibra un modelo NSRP monopuntual por estación y luego interpola los campos sintéticos con GP. Métodos:
+  \begin{itemize}
+    \item \texttt{.fit(station\_obs, verbose=False)} — Calibra un NSRP por estación.
+    \item \texttt{.simulate\_stations(year\_ini, year\_fin)} — Simula series en cada estación.
+    \item \texttt{.simulate\_spatial(station\_meta, grid\_meta, year\_ini, year\_fin)} — Genera campo diario espacialmente coherente. Devuelve \texttt{pd.DataFrame} (fechas × celdas de malla).
+  \end{itemize}
+
+  \item[\apisig{CopulaCDFEmulator(n\_mc\_samples=1\_000\_000, batch\_size=50\_000)}]
+  Emulador GP para la CDF de una cópula multivariante compleja. Permite evaluar la CDF a coste reducido tras un entrenamiento inicial. Métodos:
+  \begin{itemize}
+    \item \texttt{.fit(copula\_model, n\_dims)} — Entrena el emulador sobre muestras Monte Carlo. Requiere \texttt{openturns}.
+    \item \texttt{.predict(query\_points)} — Evalúa la CDF emulada. Devuelve \texttt{ndarray}.
+  \end{itemize}
+\end{description}
+
+% ============================================================
+\section{\texttt{pyhydra.climate.stochastic\_generation}}
+% ============================================================
+
+\subsection{Modelos monopuntuales (\texttt{point})}
+
+\begin{description}[style=nextline,font=\ttfamily]
+  \item[\apisig{analyze\_ts(series, season=\textquotesingle{}month\textquotesingle{}, dist=\textquotesingle{}gengamma\textquotesingle{},\\ acs\_id=\textquotesingle{}weibull\textquotesingle{}, norm\_type=\textquotesingle{}N1\textquotesingle{}, n\_points=30, lag\_max=30)}]
+  Ajusta un modelo estocástico estacional (CoSMoS\_py) a una serie diaria. Para precipitación se recomienda \texttt{NSRPModel}. Devuelve \texttt{dict} del modelo ajustado.
+
+  \item[\apisig{report\_ts(analyzed, method=\textquotesingle{}stat\textquotesingle{})}]
+  Resume el modelo ajustado. \texttt{method=\textquotesingle{}stat\textquotesingle{}} devuelve \texttt{pd.DataFrame} con estadísticos estacionales; \texttt{\textquotesingle{}dist\textquotesingle{}} y \texttt{\textquotesingle{}acs\textquotesingle{}} generan gráficos.
+
+  \item[\apisig{simulate\_ts(analyzed, from\_date=None, to\_date=None)}]
+  Genera una serie sintética diaria a partir del modelo ajustado. Devuelve \texttt{pd.DataFrame} con columnas \texttt{date} y \texttt{value}.
+
+  \item[\apisig{generate\_ts(n, dist, dist\_params, acs\_values, p0=0.0, n\_series=1)}]
+  Generación de bajo nivel a partir de parámetros conocidos. Devuelve lista de \texttt{ndarray}.
+
+  \item[\apisig{fit\_distribution(values, dist=\textquotesingle{}gengamma\textquotesingle{}, norm\_type=\textquotesingle{}N1\textquotesingle{},\\ n\_points=30)}]
+  Ajusta una distribución marginal a valores positivos. Devuelve \texttt{dict} con \texttt{dist}, \texttt{params\_dict}, \texttt{edf}, \texttt{objective}.
+
+  \item[\apisig{fit\_acs(series, acs\_id=\textquotesingle{}weibull\textquotesingle{}, season=\textquotesingle{}month\textquotesingle{}, lag\_max=30)}]
+  Ajusta la estructura de autocorrelación estacional. Devuelve lista de \texttt{dict} de ajuste ACS, uno por temporada.
+
+  \item[\apisig{NSRPModel(temporal\_resolution=\textquotesingle{}d\textquotesingle{}, seasonality=\textquotesingle{}monthly\textquotesingle{},\\ process=\textquotesingle{}normal\textquotesingle{}, statistics=None, weights=None,\\ n\_iterations=100, n\_bees=100, n\_initializations=1,\\ model\_bounds=None, seasonality\_user=None,\\ calibration\_yaml=None)}]
+  Generador estocástico monopuntual NSRP (Neyman-Scott de pulsos rectangulares) mediante NEOPRENE. Métodos:
+  \begin{itemize}
+    \item \texttt{.compute\_statistics(series)} — Calcula estadísticos observados de una \texttt{pd.Series}.
+    \item \texttt{.calibrate(series\_or\_stats=None, verbose=False)} — Calibra mediante PSO. Devuelve resultado de calibración NEOPRENE.
+    \item \texttt{.fit(series, verbose=False)} — Atajo: calcula estadísticos y calibra en un solo paso.
+    \item \texttt{.simulate(year\_ini, year\_fin, simulation\_yaml=None)} — Genera serie sintética. Devuelve resultado de simulación NEOPRENE con atributo \texttt{Daily\_Simulation}.
+    \item \texttt{.summary()} — Compara estadísticos observados y ajustados. Devuelve \texttt{pd.DataFrame} o \texttt{None}.
+  \end{itemize}
+\end{description}
+
+\subsection{Modelos espaciales (\texttt{spatial})}
+
+\begin{description}[style=nextline,font=\ttfamily]
+  \item[\apisig{STNSRPModel(temporal\_resolution=\textquotesingle{}d\textquotesingle{}, seasonality=\textquotesingle{}monthly\textquotesingle{},\\ process=\textquotesingle{}normal\textquotesingle{}, statistics=None, weights=None,\\ n\_iterations=100, n\_bees=100, n\_initializations=1,\\ model\_bounds=None, seasonality\_user=None,\\ coordinates=\textquotesingle{}geographical\textquotesingle{}, cell\_radius=None,\\ calibration\_yaml=None)}]
+  Generador estocástico multisitio STNSRP. Preserva estadísticos puntuales y correlaciones cruzadas espaciales. El argumento \texttt{statistics} debe incluir \texttt{\textquotesingle{}crosscorr\_1\textquotesingle{}} para el ajuste espacial. \texttt{cell\_radius} son los límites de búsqueda PSO del radio de celda en km (por defecto \texttt{[1.0, 50.0]}). Métodos:
+  \begin{itemize}
+    \item \texttt{.compute\_statistics(series, attributes)} — Calcula estadísticos y correlaciones.
+    \item \path{.calibrate(series_or_stats=None, attributes=None, verbose=False)} — Calibra STNSRP.
+    \item \texttt{.fit(series, attributes, verbose=False)} — Calcula estadísticos y calibra en un paso.
+    \item \path{.simulate(year_ini, year_fin, attributes, simulation_yaml=None)} — Genera lluvia multisitio espacialmente coherente.
+    \item \texttt{.summary()} — Compara estadísticos observados y ajustados.
+  \end{itemize}
+\end{description}
+
+\subsection{Campos aleatorios (\texttt{fields})}
+
+\begin{description}[style=nextline,font=\ttfamily]
+  \item[\apisig{fit\_spatial\_model(spacepoints, p, dist, dist\_params, p0=0.0)}]
+  Ajusta un modelo de campo aleatorio espacial (CoSMoS\_py). Devuelve objeto modelo.
+
+  \item[\apisig{generate\_random\_field(n\_steps, model)}]
+  Genera $n$ pasos temporales de un campo aleatorio espacial. Devuelve \texttt{ndarray}.
+
+  \item[\apisig{generate\_random\_field\_fast(n\_steps, model)}]
+  Versión vectorizada de \texttt{generate\_random\_field} para conjuntos de datos de gran tamaño.
+
+  \item[\apisig{check\_random\_field(field, model)}]
+  Verifica que el campo generado reproduce los estadísticos objetivo. Devuelve \texttt{dict} de métricas de validación.
+
+  \item[\apisig{SpatialFieldModel}]
+  Clase que encapsula el flujo completo: ajuste, simulación y validación del campo aleatorio espacial.
+\end{description}
+
+% ============================================================
+\section{\texttt{pyhydra.climate.bias\_correction}}
+% ============================================================
+
+\begin{description}[style=nextline,font=\ttfamily]
+  \item[\apisig{delta\_method(serie\_raw, serie\_hist, serie\_mod, var, stat)}]
+  Corrección de sesgo por método delta. \texttt{var=\textquotesingle{}pr\textquotesingle{}} aplica delta multiplicativo mensual (precipitación); cualquier otro valor aplica delta aditivo (temperatura y otras variables). \texttt{stat} controla la agregación multimodelo: \texttt{\textquotesingle{}mean\textquotesingle{}} o \texttt{\textquotesingle{}median\textquotesingle{}}. Devuelve \texttt{pd.Series} con índice desplazado al período futuro.
+
+  \item[\apisig{BiasCorrection(obs, mod, sce)}]
+  Clase con tres métodos de corrección de sesgo:
+  \begin{itemize}
+    \item \texttt{.quantile\_mapping()} — Mapeado cuantil empírico aditivo.
+    \item \texttt{.quantile\_deltamapping()} — Mapeado cuantil empírico multiplicativo (adecuado para precipitación).
+    \item \texttt{.scaled\_distribution\_mapping(variable, **kwargs)} — SDM paramétrico: \texttt{variable=\textquotesingle{}precipitation\textquotesingle{}} usa distribución gamma; \texttt{variable=\textquotesingle{}temperature\textquotesingle{}} usa normal.
+  \end{itemize}
+  Todos los métodos devuelven \texttt{ndarray} con los valores corregidos.
+\end{description}
+
+% ============================================================
+\section{\texttt{pyhydra.climate.hybrid\_downscaling}}
+% ============================================================
+
+\begin{description}[style=nextline,font=\ttfamily]
+  \item[\apisig{HydrographClassifier(n\_types, n\_components=None)}]
+  Clasifica formas de hidrograma mediante remuestreo a longitud fija, PCA y \textit{k}-means. \texttt{n\_types} debe ser un cuadrado perfecto (e.g.\ 9, 16, 25) para disposición en rejilla. Método \texttt{.fit\_predict(events\_df, discharge\_series)} devuelve \texttt{pd.DataFrame} con columna de tipo de hidrograma.
+
+  \item[\apisig{find\_spatial\_arrangement(n\_rows, n\_cols, centers, iters=200000,\\ method=\textquotesingle{}D8\textquotesingle{})}]
+  Organiza los centroides de hidrograma en una rejilla minimizando la distancia entre vecinos. Devuelve rejilla de índices de tipo.
+
+  \item[\apisig{FloodEventSelector(discharge, threshold, threshold2=None,\\ n\_types=25, n\_synthetic=5000, plot=False, output\_dir=None)}]
+  Pipeline completo de selección de eventos para downscaling híbrido. Integra extracción de eventos, clasificación de hidrogramas, ajuste de cópula gaussiana y generación de eventos sintéticos. Métodos:
+  \begin{itemize}
+    \item \texttt{.extract\_events()} — Extrae eventos por cruce de umbral con refinamiento en inflexiones.
+    \item \texttt{.classify\_events()} — Clasifica formas de hidrograma.
+    \item \texttt{.fit\_copula()} — Ajusta marginales y cópula Gaussiana multivariante.
+    \item \texttt{.generate\_synthetic()} — Genera el ensemble sintético.
+    \item \texttt{.run(seed=None)} — Ejecuta el pipeline completo en secuencia.
+  \end{itemize}
+
+  \item[\apisig{maxdiss(data, n\_select, scalar\_cols, seed\_positions)}]
+  Selección de escenarios representativos por máxima disimilitud (MaxDiss). Devuelve tupla \texttt{(submatriz\_seleccionada, posiciones\_elegidas)}.
+
+  \item[\apisig{HydrographReconstructor(centroids, events\_synthetic, discharge\_series,\\ output\_dir=None)}]
+  Asigna cada evento sintético a su centroide más próximo y escribe los hidrogramas de entrada para el modelo hidráulico. Método \texttt{.run()} genera ficheros \texttt{Hidrograma\_*.csv}.
+
+  \item[\apisig{FloodMapInterpolator(simulated\_maps, centroids\_sim, k=5,\\ method=\textquotesingle{}knn\textquotesingle{})}]
+  Reconstruye mapas de inundación para todos los eventos sintéticos por interpolación k-NN o RBF a partir de las simulaciones de los centroides. Métodos:
+  \begin{itemize}
+    \item \texttt{.interpolate()} — Reconstruye el ensemble completo de mapas.
+    \item \texttt{.compute\_return\_period\_maps(landa, return\_periods)} — Calcula mapas de período de retorno. Devuelve \texttt{dict} de \texttt{T → ndarray}.
+  \end{itemize}
+
+  \item[\apisig{FloodMapInterpolatorCC(simulated\_maps, centroids\_sim, k=5,\\ method=\textquotesingle{}knn\textquotesingle{})}]
+  Extensión de \texttt{FloodMapInterpolator} para conjuntos con múltiples escenarios climáticos.
+
+  \item[\apisig{pixel\_return\_period(events\_block, landa,\\ return\_periods=(5,10,25,50,100,200,500,1000))}]
+  Calcula mapas de período de retorno pixel a pixel. \texttt{events\_block} es un \texttt{ndarray} de forma \texttt{(nrows, ncols, n\_events)} con el ensemble ordenado en el eje 2. \texttt{landa} es la tasa anual de eventos. Devuelve \texttt{dict} mapeando $T$ a \texttt{ndarray(nrows, ncols)}.
+
+  \item[\apisig{save\_return\_period\_geotiffs(calados, template\_tif, output\_dir)}]
+  Guarda un GeoTIFF por período de retorno copiando la referencia espacial de la plantilla. Devuelve lista de rutas escritas.
+\end{description}
+
+% ============================================================
+\section{\texttt{pyhydra.modeling.hydrology}}
+% ============================================================
+
+\begin{description}[style=nextline,font=\ttfamily]
+  \item[\apisig{generate\_gage(path\_model, name\_gage, file\_gage, names\_gage, ...) }]
+  Genera o actualiza el fichero de pluviómetros de HEC-HMS a partir de series temporales. Es una función de escritura de entrada: no ejecuta el modelo y no devuelve datos.
+
+  \item[\apisig{fill\_gage\_series(path\_model, name\_gage, df, variable, ...) }]
+  Escribe series de precipitación o caudal en DSS para su uso por HEC-HMS. Se usa como paso previo a \texttt{generate\_met}, \texttt{generate\_run} y la ejecución batch.
+
+  \item[\apisig{generate\_met(path\_model, name\_met, file\_met, names\_gage, ...) }]
+  Construye el modelo meteorológico de HEC-HMS enlazando pluviómetros DSS con subcuencas. Sin valor de retorno; modifica ficheros de proyecto.
+
+  \item[\apisig{generate\_hms(path\_model, name\_model, name\_basin, name\_met, ...) }]
+  Actualiza la estructura principal del proyecto HEC-HMS y sus referencias a cuenca, meteorología, control y ejecución.
+
+  \item[\apisig{run\_hms\_script(path\_model, name\_model, names\_run, hms\_dir=None)}]
+  Ejecuta HEC-HMS por lotes mediante script generado automáticamente. La función encapsula la llamada externa al motor, por lo que la reproducibilidad depende de la versión instalada de HEC-HMS.
+
+  \item[\apisig{read\_hms\_dss\_timeseries(dss\_path, pathname, ...) }]
+  Lee series de salida desde ficheros DSS de HEC-HMS y las devuelve como \texttt{pd.Series} o \texttt{pd.DataFrame} según la consulta.
+
+  \item[\apisig{HMSModel(path\_model, name\_model, name\_run, name\_basin,\\ name\_control, time\_interval, pathname, name\_precip,\\ start\_date, end\_date, path\_output, observed=None,\\ parameter\_names=None, hms\_dir=None)}]
+  Clase base para ejecutar un proyecto HEC-HMS y devolver el caudal simulado. No calibra por sí sola: actúa como envoltorio de ejecución y lectura de DSS. Métodos principales:
+  \begin{itemize}
+    \item \texttt{.run\_hms(*params)} — Ejecuta el modelo y devuelve un array de caudal simulado.
+    \item \texttt{.\_write\_params(params)} — Punto de extensión para escribir parámetros de calibración.
+  \end{itemize}
+
+  \item[\apisig{TextBasinHMSCalibrationModel(..., subbasin, parameters,\\ output\_pathname\_prefix, flow\_unit\_factor=0.028316846592)}]
+  Subclase real de \texttt{HMSModel} que calibra parámetros editando texto en el fichero \texttt{.basin}. Se emplea cuando los parámetros HMS pueden modificarse como factores multiplicativos sobre valores base.
+
+  \item[\apisig{calibrate\_hms\_sceua(model, observed, dbname, n\_evals=120,\\ objective=\textquotesingle{}nse\textquotesingle{}, ngs=None)}]
+  Calibra un \texttt{TextBasinHMSCalibrationModel} mediante SCE-UA de \texttt{spotpy}. Devuelve el sampler tras la ejecución.
+
+  \item[\apisig{write\_precipitation\_file(df\_coords, df\_series, output\_path,\\ missing\_value=-99.0)}]
+  Escribe un fichero de precipitación SWAT clásico \texttt{.pcp} a partir de coordenadas de estación y series diarias.
+
+  \item[\apisig{write\_temperature\_file(df\_coords, df\_tmax, df\_tmin, output\_path,\\ missing\_value=-99.0)}]
+  Escribe un fichero de temperatura SWAT clásico \texttt{.tmp} con máximas y mínimas diarias.
+
+  \item[\apisig{edit\_file\_cio(file\_cio\_path, start\_year, end\_year)}]
+  Modifica el período de simulación en \texttt{file.cio}. Sin valor de retorno.
+
+  \item[\apisig{write\_swatplus\_precipitation\_files(df\_stations, df\_series,\\ txtinout\_dir, missing\_value=-99.0)}]
+  Genera ficheros \texttt{.pcp} individuales y el índice \texttt{pcp.cli} para SWAT+.
+
+  \item[\apisig{write\_swatplus\_temperature\_files(df\_stations, df\_tmax, df\_tmin,\\ txtinout\_dir, missing\_value=-99.0)}]
+  Genera ficheros \texttt{.tmp} individuales y el índice \texttt{tmp.cli} para SWAT+.
+
+  \item[\apisig{run\_swat(model\_dir, swat\_exe, timeout=3600)}]
+  Ejecuta el binario de SWAT+ en el directorio \texttt{TxtInOut}. Devuelve el código de salida del proceso.
+\end{description}
+
+% ============================================================
+\section{\texttt{pyhydra.modeling.hydraulic}}
+% ============================================================
+
+\begin{description}[style=nextline,font=\ttfamily]
+  \item[\apisig{setup\_sfincs\_model(basin\_geom, dem\_path, output\_dir,\\ discharge\_series, src\_points, crs=32630, resolution=100.0,\\ manning=0.04, tref=\textquotesingle{}20200101 000000\textquotesingle{}, ...)}]
+  Configura un modelo SFINCS a partir de una geometría de cuenca, un MDE y puntos de entrada de caudal. Devuelve un objeto \texttt{SfincsModel} configurado; el usuario debe llamar a \texttt{mod.write()} para persistir los ficheros.
+
+  \item[\apisig{write\_manning\_wl\_boundary(model\_dir, discharge\_series, ch\_w,\\ ch\_zb, mann\_n=0.035, slope=2e-4, tref=\textquotesingle{}20240101 000000\textquotesingle{})}]
+  Añade condición de contorno de nivel de agua y rugosidad al proyecto SFINCS. Escribe ficheros \texttt{sfincs.bnd}, \texttt{sfincs.bzs} y actualiza \texttt{sfincs.inp}.
+
+  \item[\apisig{run\_sfincs(model\_dir, sfincs\_exe, timeout=7200)}]
+  Ejecuta el binario SFINCS para el proyecto configurado. Devuelve el código de salida del proceso.
+
+  \item[\apisig{modify\_unsteady\_file(path\_project, name\_project, file\_number,\\ rainfall\_plan\_name, flow\_series, bc\_pathnames)}]
+  Crea un nuevo fichero de flujo no permanente HEC-RAS \texttt{.u\#\#} sustituyendo las series de contorno por los datos de \texttt{flow\_series}.
+
+  \item[\apisig{modify\_plan\_file(path\_project, name\_project, plan\_number,\\ rainfall\_plan\_name)}]
+  Actualiza un plan HEC-RAS \texttt{.p\#\#} para que apunte al nuevo fichero de flujo no permanente.
+
+  \item[\apisig{modify\_project\_file(path\_project, name\_project, plan\_number,\\ rainfall\_plan\_name)}]
+  Cambia el plan activo en el fichero de proyecto \texttt{.prj}.
+
+  \item[\apisig{create\_flow\_series(df, col, window=5)}]
+  Suaviza una columna de caudal mediante máximo móvil centrado. Devuelve \texttt{pd.Series}.
+
+  \item[\apisig{run\_hec\_ras(path\_project, name\_project, ras\_version=641)}]
+  Ejecuta el plan activo de HEC-RAS mediante \texttt{rascontrol}. Requiere instalación local de HEC-RAS en Windows.
+
+  \item[\apisig{generate\_manning\_combinations(distributions, n\_samples, ...)}]
+  Genera combinaciones Monte Carlo de coeficientes de Manning para análisis de sensibilidad hidráulica.
+
+  \item[\apisig{load\_flood\_ensemble(paths, variable=\textquotesingle{}water\_depth\textquotesingle{}, ...)}]
+  Carga un ensemble de mapas de inundación como \texttt{xarray.DataArray} para análisis estadístico espacial.
+
+  \item[\apisig{load\_sfincs\_ensemble(results\_dir, subdir\_pattern=\textquotesingle{}tmp\_sfincs\_compound\_\{n\}\textquotesingle{},\\ nc\_filename=\textquotesingle{}sfincs\_map.nc\textquotesingle{}, hmax\_var=\textquotesingle{}hmax\textquotesingle{},\\ hmax\_tidx=0, threshold=0.05, crs=32630)}]
+  Lee resultados brutos de SFINCS desde subdirectorios de simulación, extrae la variable \texttt{hmax} de cada \texttt{sfincs\_map.nc}, georreferencia las coordenadas \texttt{x}/\texttt{y} y devuelve un \texttt{xarray.DataArray} con dimensión \texttt{simulation}. Esta es la función de lectura de resultados SFINCS disponible actualmente en \pyhydra.
+
+  \item[\apisig{spatial\_stats(ensemble)}]
+  Calcula estadísticos espaciales de un ensemble hidráulico, incluyendo área inundada, máximos y métricas resumidas.
+
+  \item[\apisig{manning\_flood\_regression(df, target, predictors)}]
+  Ajusta modelos de regresión para relacionar parámetros de Manning y métricas de inundación.
+
+  \item[\apisig{filter\_anomalous\_simulations(ensemble, ...)}]
+  Identifica y filtra simulaciones anómalas dentro de un ensemble hidráulico.
+\end{description}
+
+% ============================================================
+\section{\texttt{pyhydra.utils}}
+% ============================================================
+
+\begin{description}[style=nextline,font=\ttfamily]
+  \item[\apisig{interactive\_map(zoom=2, center=(0, 0))}]
+  Crea un mapa interactivo Leaflet dentro de JupyterLab mediante \texttt{ipyleaflet}. Útil para visualización exploratoria de geometrías de cuenca, puntos de descarga y mallas de simulación antes de configurar un caso de estudio. Devuelve objeto \texttt{ipyleaflet.Map}.
+\end{description}

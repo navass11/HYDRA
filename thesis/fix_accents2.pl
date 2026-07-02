@@ -1,0 +1,117 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use utf8;
+binmode(STDIN,  ':encoding(UTF-8)');
+binmode(STDOUT, ':encoding(UTF-8)');
+binmode(STDERR, ':encoding(UTF-8)');
+
+# === -CION words not in first pass ===
+s/\bcirculacion\b/circulación/g;      s/\bCirculacion\b/Circulación/g;
+s/\bexpansion\b/expansión/g;          s/\bExpansion\b/Expansión/g;
+s/\bdelimitacion\b/delimitación/g;    s/\bDelimitacion\b/Delimitación/g;
+s/\bverificacion\b/verificación/g;    s/\bVerificacion\b/Verificación/g;
+s/\bacumulacion\b/acumulación/g;      s/\bAcumulacion\b/Acumulación/g;
+s/\bdireccion\b/dirección/g;          s/\bDireccion\b/Dirección/g;
+s/\bproyeccion\b/proyección/g;        s/\bProyeccion\b/Proyección/g;
+s/\bproyecciones\b/proyecciones/g;
+s/\breconstruccion\b/reconstrucción/g; s/\bReconstruccion\b/Reconstrucción/g;
+s/\bdiscusion\b/discusión/g;          s/\bDiscusion\b/Discusión/g;
+s/\bmitigacion\b/mitigación/g;
+s/\binclusion\b/inclusión/g;          s/\bInclusion\b/Inclusión/g;
+s/\bdivision\b/división/g;            s/\bDivision\b/División/g;
+s/\bgestion\b/gestión/g;              s/\bGestion\b/Gestión/g;
+s/\bcuestion\b/cuestión/g;            s/\bCuestion\b/Cuestión/g;
+s/\binversion\b/inversión/g;          s/\bInversion\b/Inversión/g;
+s/\bconversion\b/conversión/g;        s/\bConversion\b/Conversión/g;
+s/\bversion\b/versión/g;              s/\bVersion\b/Versión/g;
+s/\bproduccion\b/producción/g;        s/\bProduccion\b/Producción/g;
+s/\bsolucion\b/solución/g;            s/\bSolucion\b/Solución/g;
+s/\bsecciones\b/secciones/g;
+s/\bseccion\b/sección/g;              s/\bSeccion\b/Sección/g;
+s/\bpoblacion\b/población/g;
+s/\bretencion\b/retención/g;
+s/\bprovision\b/provisión/g;
+s/\bcontribucion\b/contribución/g;
+s/\btransicion\b/transición/g;        s/\bTransicion\b/Transición/g;
+s/\bcontaminacion\b/contaminación/g;
+
+# === ADJECTIVE PLURAL/VARIANT FORMS missed in pass 1 ===
+s/\bgeoestadisticas\b/geoestadísticas/g;
+s/\bgeoestadisticos\b/geoestadísticos/g;
+s/\bestocastica\b/estocástica/g;      s/\bEstocastica\b/Estocástica/g;
+s/\bestocastico\b/estocástico/g;      s/\bEstocastico\b/Estocástico/g;
+s/\bestocasticas\b/estocásticas/g;
+s/\bestocasticos\b/estocásticos/g;
+s/\bclimatico\b/climático/g;          s/\bclimatica\b/climática/g;
+s/\bclimaticos\b/climáticos/g;        s/\bclimaticas\b/climáticas/g;
+s/\bClimatico\b/Climático/g;          s/\bClimatica\b/Climática/g;
+s/\batmosferica\b/atmosférica/g;      s/\batmosfericas\b/atmosféricas/g;
+s/\batmosferico\b/atmosférico/g;      s/\batmosfericos\b/atmosféricos/g;
+s/\bAtmosferica\b/Atmosférica/g;
+s/\bhidrologico\b/hidrológico/g;      s/\bhidrologica\b/hidrológica/g;
+s/\bhidrologicos\b/hidrológicos/g;    s/\bhidrologicas\b/hidrológicas/g;
+s/\bHidrologico\b/Hidrológico/g;
+s/\bhidrografico\b/hidrográfico/g;    s/\bhidrografica\b/hidrográfica/g;
+s/\bhidrograficos\b/hidrográficos/g;  s/\bhidrograficas\b/hidrográficas/g;
+s/\bnumerico\b/numérico/g;            s/\bnumerica\b/numérica/g;
+s/\bnumericos\b/numéricos/g;          s/\bnumericas\b/numéricas/g;
+s/\beconomico\b/económico/g;          s/\beconomica\b/económica/g;
+s/\beconomicos\b/económicos/g;        s/\beconomicas\b/económicas/g;
+s/\btipico\b/típico/g;                s/\btipica\b/típica/g;
+s/\btipicos\b/típicos/g;              s/\btipicas\b/típicas/g;
+s/\banalogico\b/analógico/g;          s/\banalogica\b/analógica/g;
+s/\banalogicos\b/analógicos/g;        s/\banalogos\b/análogos/g;
+s/\banalogo\b/análogo/g;
+
+# === COMMON NOUNS STILL MISSING ACCENT ===
+s/\bcelulas\b/células/g;              s/\bcelula\b/célula/g;
+s/\bfreatico\b/freático/g;            s/\bfreatica\b/freática/g;
+s/\bdecadas\b/décadas/g;              s/\bdecada\b/década/g;
+s/\bDecadas\b/Décadas/g;
+s/\bmineria\b/minería/g;              s/\bMineria\b/Minería/g;
+s/\benergia\b/energía/g;              s/\bEnergia\b/Energía/g;
+s/\bIngenieria\b/Ingeniería/g;        s/\bingenieria\b/ingeniería/g;
+s/\bamazonica\b/amazónica/g;          s/\bamazonicas\b/amazónicas/g;
+s/\bamazonicos\b/amazónicos/g;        s/\bamazonico\b/amazónico/g;
+s/\bcategoria\b/categoría/g;          s/\bCategoria\b/Categoría/g;
+s/\bcategorias\b/categorías/g;        s/\bCategorias\b/Categorías/g;
+s/\bcodigo\b/código/g;                s/\bCodigo\b/Código/g;
+s/\bcodigos\b/códigos/g;
+s/\banalisis\b/análisis/g;            s/\bAnalisis\b/Análisis/g;
+s/\bmultiples\b/múltiples/g;          s/\bMultiples\b/Múltiples/g;
+s/\bmultiple\b/múltiple/g;
+s/\bobstaculo\b/obstáculo/g;          s/\bObstaculo\b/Obstáculo/g;
+s/\bobstaculos\b/obstáculos/g;
+s/\bApendice\b/Apéndice/g;            s/\bapendice\b/apéndice/g;
+s/\bapendices\b/apéndices/g;
+s/\bcapitulo\b/capítulo/g;            s/\bCapitulo\b/Capítulo/g;
+s/\bcapitulos\b/capítulos/g;
+s/\bIndice\b/Índice/g;                s/\bindice\b/índice/g;
+s/\bindices\b/índices/g;
+s/\bdiagnostico\b/diagnóstico/g;      s/\bDiagnostico\b/Diagnóstico/g;
+s/\bdiagnosticos\b/diagnósticos/g;
+s/\bpronostico\b/pronóstico/g;        s/\bPronostico\b/Pronóstico/g;
+s/\bhipotesis\b/hipótesis/g;          s/\bHipotesis\b/Hipótesis/g;
+s/\bmetodo\b/método/g;                s/\bMetodo\b/Método/g;
+s/\bmetodos\b/métodos/g;              s/\bMetodos\b/Métodos/g;
+s/\benfasis\b/énfasis/g;              s/\bEnfasis\b/Énfasis/g;
+s/\bmodulo\b/módulo/g;                s/\bModulo\b/Módulo/g;
+s/\bmodulos\b/módulos/g;              s/\bModulos\b/Módulos/g;
+s/\bsubmodulo\b/submódulo/g;          s/\bSubmodulo\b/Submódulo/g;
+s/\bsubmodulos\b/submódulos/g;
+s/\bsimbolos\b/símbolos/g;            s/\bsimbolo\b/símbolo/g;
+s/\btamano\b/tamaño/g;                s/\bTamano\b/Tamaño/g;
+s/\btamanos\b/tamaños/g;
+s/\bareas\b/áreas/g;                  s/\bAreas\b/Áreas/g;
+s/\bPeru\b/Perú/g;
+s/\bexplicitamente\b/explícitamente/g;
+s/\bexplicito\b/explícito/g;          s/\bexplicita\b/explícita/g;
+s/\bexplicitos\b/explícitos/g;        s/\bexplicitas\b/explícitas/g;
+
+# === PAST-TENSE VERB FORMS (third person, unambiguous in context) ===
+s/\bdescribio\b/describió/g;
+s/\bpresento\b([^s])/presentó$1/g;
+s/\bintrodujeron\b/introdujeron/g;
+
+1;

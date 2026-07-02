@@ -1,0 +1,133 @@
+\chapter{Conclusiones y trabajo futuro}
+\label{ch:conclusiones}
+
+La contribución doctoral original de esta tesis no es la formulación matemática de nuevos modelos hidrológicos, hidráulicos o estadísticos, sino la concepción, implementación, validación y documentación de \pyhydra como núcleo metodológico reutilizable, y de \hydra como plataforma de integración industrial. Esta arquitectura reproducible permite operacionalizar de forma integrada metodologías probabilísticas avanzadas en problemas reales de ingeniería del riesgo de inundación. La novedad reside en la integración funcional y en la transferibilidad demostrada, no en reatribuir como propios métodos estadísticos o modelos físicos preexistentes.
+
+\section{Sobre la metodología estocástica de inundación}
+
+La tesis ha demostrado que la generación estocástica de eventos y el análisis probabilístico de impactos hidráulicos constituyen una alternativa viable al uso exclusivo de eventos de diseño deterministas. La aplicación fundacional al Besaya \parencite{navas2018besaya} estableció el principio de estimar la frecuencia sobre calados y extensiones simuladas con Iber. Mallorca \parencite{navas2019mallorca} introdujo la primera formulación de downscaling híbrido desde lluvia, apoyada en diagnóstico PERSIANN/TRMM, reconstrucción pluviométrica por kriging, selección MaxDiss y reconstrucción k-NN. Calle 30 \parencite{navas2024calle30} consolidó posteriormente la cadena urbana con precipitación multisitio, HEC-HMS, HEC-RAS 1D y reconstrucción masiva de impactos, permitiendo obtener distribuciones de calado sin simular exhaustivamente todos los escenarios posibles.
+
+La distinción entre el período de retorno del forzamiento meteorológico y el período de retorno del impacto hidráulico es una de las conclusiones metodológicas más relevantes. En sistemas fluviales con regulación, atenuación o efectos de confluencia, estos dos valores pueden diferir de forma significativa, lo que invalida el enfoque convencional que traslada directamente el período de retorno de la precipitación al calado de inundación. \hydra permite cuantificar esta discrepancia de forma sistemática.
+
+El bloque de generación estocástica integra dos familias complementarias: NEOPRENE como librería que contiene los generadores NSRP puntual y STNSRP multisitio para precipitación basada en modelos de Neyman-Scott \parencite{rodriguezituribe1987,rodriguezituribe1988,diezsierra2023neoprene}, y CoSMoS como librería para generación general de series hidrológicas con dependencia temporal y marginales controladas \parencite{papalexiou2018storm}. Estas herramientas amplían el alcance de \pyhydra respecto a los primeros trabajos de inundación, en los que la generación estocástica se basaba en eventos y cópulas, no en NEOPRENE.
+
+\section{Sobre el cambio climático y la corrección de sesgo}
+
+La integración de proyecciones CMIP6 \parencite{eyring2016cmip6} bajo escenarios SSP \parencite{oneill2016ssp} en flujos estocásticos de inundación requiere una etapa de corrección de sesgo que preserve la señal de cambio sin introducir artefactos estadísticos. Los métodos implementados en \hydra, delta y quantile mapping \parencite{teutschbein2012biascorrection}, satisfacen este requisito para las variables de precipitación y temperatura con las que operan los modelos hidrológicos continuos.
+
+La herramienta SIMPCCe \parencite{navas2025simpce}, desarrollada en paralelo a \hydra, ilustra como la arquitectura del bloque de cambio climático puede aplicarse a la planificación de recursos hídricos a largo plazo. Su validación en cuencas españolas confirma que el flujo CMIP6 corrección de sesgo SWAT produce proyecciones de aportación coherentes con las tendencias esperadas y con incertidumbre cuantificable entre modelos y escenarios.
+
+El análisis del episodio de Valencia de 2024 \parencite{navas2025valenciaIA} ha evidenciado que los métodos de análisis de extremos implementados en \hydra son aplicables en contextos de urgencia post-evento, donde la rapidez del cálculo y la transparencia en la cuantificación de incertidumbre tienen valor operacional directo. La disponibilidad de estimadores bayesianos junto con los frecuentistas en \texttt{pyhydra.climate.time\_series} es una ventaja práctica que facilita la comparación entre enfoques en cuencas con registros cortos.
+
+\section{Sobre la arquitectura y el entregable industrial de HYDRA}
+
+La tesis entrega un sistema funcional completo, no un prototipo de investigación. El entregable comprende dos repositorios conceptualmente separados pero integrados en uso:
+
+\begin{description}
+  \item[\pyhydra (núcleo Python).] Librería Python modular con cobertura completa de los tres bloques funcionales ---datos, clima y modelización--- mantenida como repositorio propio e integrada con formatos estándar del ecosistema científico Python. Es el núcleo central de la tesis: concentra las APIs, los módulos científicos y los adaptadores que permiten reutilizar la metodología fuera de un despliegue concreto.
+
+  \item[\hydra (plataforma de integración).] Repositorio de producto que agrupa la interfaz web, los notebooks generales y de casos piloto, el entorno Docker, la API y la documentación operativa. El contenedor Docker incluye \pyhydra con todas sus dependencias instaladas y arranca JupyterLab con los notebooks de ejemplo directamente accesibles. Esta capa elimina las dependencias de entorno que han sido históricamente la mayor barrera para la transferencia de herramientas de investigación a equipos profesionales.
+\end{description}
+
+La decisión de estructurar \pyhydra como núcleo de librería modular e interfaces de datos estandarizadas, y \hydra como capa de ejecución y documentación, ha demostrado ser correcta. Los casos de estudio cubren conjuntamente todos los módulos principales y en ningún caso ha sido necesario modificar la arquitectura central para adaptar la herramienta a un nuevo contexto. La extensibilidad ha funcionado en la práctica: modelos externos tan distintos como SWAT (largo plazo, parámetros edáficos y meteorológicos globales), SFINCS (bidimensional costero) y HEC-RAS 1D/2D se han integrado siguiendo el mismo patrón de adaptador sin modificar los módulos estadísticos. El análisis de sensibilidad Monte Carlo con SFINCS y HEC-RAS 2D en el Besaya \parencite{navas2025roughness} ha puesto además de manifiesto que la incertidumbre estructural del modelo hidráulico supera a la variabilidad paramétrica de Manning, una conclusión que solo es accesible mediante ejecución masiva automatizada.
+
+La reproducibilidad favorecida por los notebooks de ejemplo y el entorno Docker permite reutilizar configuraciones entre casos sin reconstruir toda la cadena desde cero. Esta transferibilidad operativa es la contribución industrial principal de la tesis.
+
+\section{Limitaciones}
+
+Las limitaciones de \hydra son de tres tipos: de datos, computacionales y metodológicas. Ninguna invalida la arquitectura, pero todas deben documentarse en cada aplicación para que el usuario pueda evaluar la robustez de los resultados. La tabla~\ref{tab:limitaciones} las sistematiza indicando su impacto en los resultados, las mitigaciones que \hydra incorpora y lo que queda fuera del alcance del marco.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Limitaciones del marco \hydra, impacto en los resultados y mitigaciones disponibles.}
+  \label{tab:limitaciones}
+  \small
+  \begin{tabular}{p{0.20\textwidth}p{0.21\textwidth}p{0.24\textwidth}p{0.22\textwidth}}
+    \toprule
+    Limitación & Impacto & Mitigación en \hydra & Qué queda fuera \\
+    \midrule
+    Series cortas o extremos raros & Incertidumbre elevada en la cola distribucional & Bootstrap, inferencia bayesiana, análisis de frecuencia regional (AFR) & No elimina la falta de información; el AFR requiere homogeneidad regional comprobada \\[4pt]
+    Dependencia de motores externos (HEC-RAS, SFINCS, SWAT, Iber) & Reproducibilidad condicionada a disponibilidad de licencias e instalación & Adaptadores normalizados y entorno Docker con motores libres o compilables & Licencias comerciales y versiones específicas fuera del control de \hydra \\[4pt]
+    Hipótesis de estacionariedad en generadores estocásticos & Posible sesgo en escenarios futuros con tendencia hidrológica & Corrección de sesgo de proyecciones CMIP6 y generación condicionada a escenario & No resuelve la no estacionariedad completa; requiere modelos no estacionarios específicos \\[4pt]
+    Coste computacional de la simulación hidráulica & Limita el número de simulaciones físicas posibles en una campaña & Selección MaxDiss, reconstrucción k-NN, emulación GPR & No sustituye la validación física; los mapas reconstruidos dependen de la representatividad de los casos simulados \\[4pt]
+    Calidad de datos de fuentes globales (ERA5, CMIP6, GRDC, GloFAS) & Errores sistemáticos heredados afectan a todos los productos derivados & Corrección de sesgo, diagnóstico de calidad integrado, trazabilidad de fuente & No corrige errores de representación en cuencas con topografía compleja o escasez severa de datos \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+La reproducibilidad completa de las simulaciones hidráulicas queda condicionada por la disponibilidad, versión y configuración de los motores externos. \hydra conserva la trazabilidad de entradas, salidas y adaptadores, y proporciona un entorno Docker para el entorno Python y los componentes abiertos, pero no elimina las dependencias propias de software como HEC-RAS, cuya ejecución requiere instalación específica. Esta limitación es inherente a cualquier marco de integración y no afecta a los módulos estadísticos ni a la cadena de análisis de extremos, que pueden reproducirse con \pyhydra y los notebooks de ejemplo siempre que se conserven los datos, credenciales y semillas de ejecución.
+
+La automatización no sustituye el juicio experto; lo hace más eficiente y trazable.
+
+\section{Trabajo futuro}
+
+Las líneas de trabajo futuro se organizan en tres ámbitos, distinguiendo las extensiones metodológicas de corto plazo de las mejoras técnicas e infraestructurales a medio plazo.
+
+\paragraph{Extensiones metodológicas.}
+La incorporación de vine cópulas flexibles en \texttt{spatial\_analysis.copulas}, siguiendo la metodología de \textcite{urrea2026vine}, es la extensión más inmediata y directamente apoyada en evidencia empírica: el módulo actual implementa la cópula gaussiana como estructura de referencia y la arquitectura admite sustituirla por una vine con cambios localizados. El emulador GPR para el cálculo de períodos de retorno conjuntos, validado con un coste computacional un 94\% inferior al cálculo directo y errores del orden de $10^{-3}$, es el complemento computacional natural de esa extensión.
+
+La incorporación de no estacionariedad en los generadores estocásticos mediante covariables climáticas (tendencias de temperatura, humedad o patrones de circulación atmosférica) es la segunda prioridad metodológica. La extensión del análisis multivariante a eventos compuestos \parencite{zscheischler2020compound} ---precipitación simultánea, mareas altas y nivel freático elevado--- es especialmente relevante para aplicaciones costeras, como ilustran los trabajos del grupo sobre inundación compuesta en estuarios \parencite{gomezrave2025compound}.
+
+\paragraph{Extensiones técnicas e infraestructurales.}
+La ejecución distribuida de flujos estocásticos en entornos HPC o cloud es el siguiente paso para estudios con miles de simulaciones hidráulicas. La incorporación de un sistema de configuración declarativa que permita describir un estudio completo en un fichero YAML sin modificar código Python reduciría aún más la barrera de adopción para equipos no especializados.
+
+\paragraph{Documentación y transferencia.}
+La producción de materiales de formación con casos guiados paso a paso, la extensión de la suite de tests automáticos con cobertura de integración entre bloques, y la publicación de versiones estables con DOI en Zenodo y PyPI son las tareas pendientes que consolidarán la sostenibilidad del proyecto más allá del equipo de desarrollo actual.
+
+\section{Verificación de las hipótesis de partida}
+\label{sec:verificacion_hipotesis}
+
+Las tres hipótesis formuladas en el \cref{ch:introduccion} pueden cerrarse a partir de la evidencia acumulada en los capítulos anteriores.
+
+La \textbf{Hipótesis~1} ---que la automatización del flujo completo mejora la eficiencia, reproducibilidad y aplicabilidad práctica del análisis del riesgo--- queda respaldada por el conjunto de los nueve casos de estudio. En todos ellos, la configuración, ejecución y postprocesado de cientos o miles de simulaciones se realizó sin intervención manual entre etapas, algo que habría sido operativamente inviable con los flujos disponibles antes de \hydra. El caso del Atlas de Panamá (414 correcciones de sesgo, 200--300 subcuencas, miles de simulaciones SFINCS) y el de Calle 30 (generación, selección, simulación y reconstrucción k-NN de impactos sobre toda la red de túneles M-30) ilustran el alcance de esa automatización en entornos industriales reales.
+
+La \textbf{Hipótesis~2} ---que la integración en una librería modular reduce barreras técnicas y facilita la incorporación sistemática del cambio climático y la incertidumbre--- queda respaldada por la reutilización efectiva de los módulos entre casos. SIMPCCe, el Atlas de Panamá, el caso andino y el IAHR~2022 emplean el mismo módulo de corrección de sesgo y los mismos adaptadores de descarga de CMIP6 sin modificaciones, lo que demuestra que la arquitectura modular es suficientemente general para operar en regímenes hidrológicos, escalas espaciales y contextos institucionales muy distintos.
+
+La \textbf{Hipótesis~3} ---que la integración coordinada permite representar la incertidumbre de forma más consistente que los enfoques convencionales--- queda respaldada de forma cuantitativa. El caso IAHR~2022 demuestra que la metodología estándar basada en curvas IDF subestima los caudales de diseño entre un 30\% y un 37\% respecto a la estocástica en todos los escenarios y horizontes analizados, con una diferencia mayor que la propia incertidumbre intermodelo de los escenarios climáticos. El caso de Valencia~2024 cuantifica la ventaja de la inferencia bayesiana sobre MLE y L-momentos en términos de estabilidad de las estimaciones ante un evento sin precedente histórico.
+
+\section{Contribuciones originales de la tesis}
+\label{sec:contribuciones_originales}
+
+Esta sección delimita de forma explícita las contribuciones de la tesis, distinguiendo las metodologías incorporadas de los desarrollos implementados y de la contribución original. Esta distinción es necesaria en una tesis doctoral industrial donde la novedad reside en la integración y no en la creación aislada de métodos.
+
+\subsection*{Metodologías incorporadas}
+
+\hydra integra las siguientes metodologías con base científica consolidada, previamente publicadas y validadas en la literatura:
+
+\begin{itemize}
+  \item Generación estocástica de precipitación y caudal: NEOPRENE como librería que contiene NSRP/STNSRP \parencite{diezsierra2023neoprene} y generación general de series con CoSMoS \parencite{papalexiou2018storm}.
+  \item Análisis de extremos: distribuciones GEV y GPD, estimación por L-momentos \parencite{hosking1997rfa} e inferencia bayesiana con Stan \parencite{carpenter2017stan} y PyMC \parencite{salvatier2016pymc}.
+  \item Análisis multivariante: cópulas gaussianas \parencite{genest2007copulas,salvadori2007extremes} y vine cópulas \parencite{aas2009vines}.
+  \item Escenarios de cambio climático: proyecciones CMIP6 bajo escenarios SSP \parencite{eyring2016cmip6,oneill2016ssp}.
+  \item Corrección de sesgo: delta method y quantile mapping \parencite{teutschbein2012biascorrection}.
+  \item Downscaling híbrido: MaxDiss para selección de escenarios y k-NN para reconstrucción de impactos.
+  \item Motores de simulación externos: HEC-HMS, SWAT, SFINCS y HEC-RAS (e Iber en las aplicaciones fundacionales anteriores a los adaptadores de automatización batch).
+\end{itemize}
+
+\subsection*{Desarrollos implementados}
+
+En el marco de la tesis se han realizado los siguientes desarrollos que no existían previamente de forma integrada:
+
+\begin{itemize}
+  \item Implementación Python modular de los bloques de acceso a datos, análisis estadístico, generación estocástica y automatización de modelos, integrados en la librería \pyhydra.
+  \item Adaptadores de automatización para HEC-HMS, SWAT, SFINCS y HEC-RAS que traducen datos internos de la librería a los formatos esperados por cada motor físico y homogeneizan sus salidas.
+  \item Flujos automatizados de descarga, corrección de sesgo, generación de escenarios y postprocesado, documentados en notebooks de ejemplo reproducibles con datos reales y sintéticos.
+\end{itemize}
+
+\subsection*{Contribución original}
+
+La contribución original de la tesis es \hydra: una arquitectura reproducible para la operacionalización integrada de metodologías avanzadas de análisis probabilístico del riesgo de inundación bajo incertidumbre hidrológica y climática. La originalidad se sustenta en tres aspectos:
+
+\begin{enumerate}
+  \item \textbf{Integración extremo a extremo.} Las metodologías de generación estocástica, análisis de extremos con incertidumbre, corrección de sesgo climático, downscaling híbrido y automatización de modelos físicos se integran por primera vez en una única arquitectura con interfaces de datos estandarizadas, sin que ninguna de ellas deba modificar su comportamiento individual.
+  \item \textbf{Reproducibilidad sistemática.} Cada resultado puede trazarse hasta su fuente de datos, su método estadístico y su configuración de simulación. Los módulos estadísticos y los notebooks de ejemplo pueden reproducirse con los mismos datos e infraestructura por un tercero sin acceso al equipo que los realizó; en las simulaciones hidráulicas, la reproducibilidad queda condicionada por la disponibilidad de datos, licencias y versiones de los motores externos, tal como se recoge en las limitaciones.
+  \item \textbf{Transferibilidad operativa demostrada.} \hydra ha sido aplicada en nueve casos de estudio con escalas, contextos y objetivos complementarios, demostrando que la arquitectura soporta problemas reales de ingeniería sin modificaciones en los módulos centrales.
+\end{enumerate}
+
+\section{Cierre}
+
+\hydra materializa una década de experiencia en metodologías estocásticas de inundación en un sistema funcional completo: \pyhydra, la librería Python modular, y un entorno de ejecución reproducible basado en Docker. El conjunto es instalable, ejecutable y transferible, sin dependencias de entornos de desarrollo o configuraciones manuales específicas.
+
+La memoria demuestra que es posible construir un flujo completo, desde la descarga automática de datos hasta la generación de mapas de período de retorno basados en impacto hidráulico, que sea reproducible, auditable y extensible. Cada resultado puede ser trazado hasta su fuente de datos, su método estadístico y su configuración de simulación. Cada módulo puede ser adoptado de forma independiente por un equipo que solo necesite una parte de la cadena.
+
+El carácter industrial de la tesis no reside únicamente en los resultados de los casos de estudio, sino en que esos mismos resultados son reproducibles por terceros con los mismos datos y la misma infraestructura. El reto que queda abierto es que \hydra deje de ser la herramienta de su equipo de desarrollo y se convierta en la herramienta de su comunidad. Eso requiere documentación sostenida, estabilidad de la API, apertura del código y casos de uso suficientemente diversos para que otros profesionales e investigadores encuentren en ella una base fiable para sus propios proyectos de riesgo de inundación.

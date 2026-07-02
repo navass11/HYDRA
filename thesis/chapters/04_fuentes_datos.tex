@@ -1,0 +1,175 @@
+\chapter{Fuentes de datos}
+\label{ch:fuentes_datos}
+
+\section{Papel del bloque dentro de HYDRA}
+
+El bloque de fuentes de datos agrupa los módulos responsables de la adquisición, lectura y estandarización de información necesaria para estudios hidrológicos, climáticos e hidráulicos. En \pyhydra, estos componentes se organizan bajo \texttt{pyhydra.data\_sources}, con cuatro submódulos: \texttt{rainfall}, \texttt{river\_discharge}, \texttt{climate\_change} y \texttt{soils}.
+
+El principio de diseño de este bloque es la interoperabilidad hacia el interior del paquete. Cada descargador devuelve estructuras \texttt{pandas.DataFrame}, \texttt{xarray.Dataset} o rutas a ficheros NetCDF y GeoTIFF, según corresponda, con índices temporales en UTC y coordenadas en WGS84. Esta convención permite que las salidas del bloque de datos se pasen directamente a los módulos de análisis climático sin transformaciones intermedias.
+
+La selección de fuentes responde a dos criterios técnicos. El primero es la trazabilidad: se priorizan productos con documentación científica o institucional estable, como ERA5 \parencite{hersbach2020era5}, GPM-IMERG \parencite{huffman2020gpm}, PERSIANN-CCS \parencite{hong2004persiannccs}, GloFAS \parencite{alfieri2013glofas}, CMIP6 \parencite{eyring2016cmip6,oneill2016ssp} y SoilGrids \parencite{poggio2021soilgrids}. El segundo es la utilidad operativa: se incluyen portales y librerías de observación como AEMET, OGIMET, Meteostat \parencite{zippenfenig2023meteostat}, GRDC y USGS porque permiten contrastar o sustituir productos de reanálisis y satélite cuando existen registros locales de calidad. La \cref{tab:fuentes} resume las fuentes implementadas, su cobertura y el formato de salida.
+
+El bloque no decide por sí solo qué fuente es ``mejor'' para un caso; proporciona una interfaz homogénea para comparar fuentes. Esta distinción es importante porque la elección de dato de entrada depende del objetivo técnico. En una cuenca instrumentada, una estación AEMET o Meteostat puede ser la referencia para ajustar extremos; en una cuenca internacional sin red local, ERA5 o GPM-IMERG pueden ser la única base continua; en un estudio de cambio climático, CMIP6 solo es utilizable tras seleccionar modelos, escenarios y aplicar una corrección de sesgo trazable. Por ello, cada descargador conserva metadatos de origen, fecha de descarga, coordenadas, período y parámetros de consulta.
+
+La salida del capítulo 4 alimenta tres tipos de procesos posteriores. Las series de estación pasan al análisis de extremos, RFA, cópulas y generadores estocásticos; los campos de reanálisis y satélite sirven para reconstrucción espacial, validación y forzamiento hidrológico; y los productos de suelo y territorio se transforman en parámetros de modelos físicos. La responsabilidad del bloque de datos termina cuando la información queda normalizada y auditable; las decisiones estadísticas se documentan en el capítulo 5 y la transformación a entradas de modelo en el capítulo 6.
+
+\begin{figure}[!htbp]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  font=\scriptsize,
+  source/.style={
+    rectangle, rounded corners=4pt,
+    minimum width=3.05cm, minimum height=0.95cm,
+    text width=2.82cm, align=center,
+    draw=#1!60!black, fill=#1!10,
+    line width=0.55pt
+  },
+  process/.style={
+    rectangle, rounded corners=5pt,
+    minimum width=3.25cm, minimum height=1.00cm,
+    text width=3.00cm, align=center,
+    draw=#1!60!black, fill=#1!12,
+    line width=0.65pt
+  },
+  product/.style={
+    rectangle, rounded corners=5pt,
+    minimum width=3.05cm, minimum height=0.95cm,
+    text width=2.78cm, align=center,
+    draw=#1!65!black, fill=#1!12,
+    line width=0.65pt
+  },
+  arr/.style={-Stealth, line width=0.8pt, color=tg55}
+]
+\node[source=blueblock] (meteo) at (0,2.35) {\textbf{Precipitación y estación}\\ERA5, GPM, PERSIANN\\AEMET, OGIMET, Meteostat};
+\node[source=blueblock] (flow) at (0,0.80) {\textbf{Caudal}\\GloFAS, GRDC\\USGS};
+\node[source=blueblock] (cmip) at (0,-0.75) {\textbf{Clima futuro}\\CMIP6 CDS/ESGF\\SSP};
+\node[source=blueblock] (phys) at (0,-2.30) {\textbf{Territorio}\\DEM, SoilGrids\\usos};
+
+\node[process=tealblock] (std) at (4.0,0.0) {\textbf{Estandarización}\\UTC, WGS84\\metadatos y control de calidad};
+\node[process=tealblock] (analysis) at (8.0,1.45) {\textbf{Análisis climático}\\extremos, cópulas\\RFA y generación};
+\node[process=orangeblock] (models) at (8.0,-1.45) {\textbf{Modelización}\\HEC-HMS, SWAT\\HEC-RAS, SFINCS};
+
+\node[product=redstep] (out1) at (12.2,1.45) {Escenarios corregidos\\y eventos sintéticos};
+\node[product=redstep] (out2) at (12.2,-1.45) {Mapas de impacto\\y períodos de retorno};
+
+\coordinate (sourceBus) at (2.55,0);
+\draw[tg40, line width=0.55pt] (2.55,-2.30) -- (2.55,2.35);
+\foreach \n in {meteo,flow,cmip,phys} {
+  \draw[tg40, line width=0.55pt] (\n.east) -- (sourceBus |- \n.east);
+}
+\draw[arr] (sourceBus) -- (std.west);
+\draw[arr] (std.east) -- (analysis.west);
+\draw[arr] (std.east) -- (models.west);
+\draw[arr] (analysis.east) -- (out1.west);
+\draw[arr] (analysis.south) -- (models.north);
+\draw[arr] (models.east) -- (out2.west);
+\draw[arr, dashed, color=tg40] (out2.south) -- ++(0,-0.55) -| node[pos=0.25, below, font=\scriptsize, color=tg55] {revisión de datos y supuestos} (std.south);
+\end{tikzpicture}
+}
+\caption{Papel de las fuentes de datos dentro del flujo de \hydra. Las descargas no se tratan como un paso auxiliar: se homogeneizan, documentan y conectan directamente con el análisis climático y con la preparación de modelos hidrológicos e hidráulicos. Elaboración propia.}
+\label{fig:fuentes_datos_flujo}
+\end{figure}
+
+{\small
+\begin{longtable}{p{0.16\textwidth}p{0.20\textwidth}p{0.18\textwidth}p{0.12\textwidth}p{0.20\textwidth}}
+  \caption{Fuentes de datos implementadas en \texttt{pyhydra.data\_sources}.}
+  \label{tab:fuentes} \\
+  \toprule
+  Fuente & Cobertura & Variable principal & Resolución & Formato salida \\
+  \midrule
+  \endfirsthead
+  \toprule
+  Fuente & Cobertura & Variable principal & Resolución & Formato salida \\
+  \midrule
+  \endhead
+  ERA5 & Global, 1940--hoy & Precipitación, temperatura, viento & 0.25\textdegree{}, 1 h & NetCDF \\[2pt]
+  GPM-IMERG & 60\textdegree N/S, 2000--hoy & Precipitación & 0.1\textdegree{}, 30 min & NetCDF \\[2pt]
+  PERSIANN-CCS & 60\textdegree N/S, 2003--hoy & Precipitación & $\sim$0.04\textdegree{}, 1 h & NetCDF \\[2pt]
+  AEMET & España, red completa & Precipitación, temperatura & estación & DataFrame \\[2pt]
+  OGIMET & Europa, sinópticos & Datos horarios SYNOP & estación & DataFrame \\[2pt]
+  Meteostat & Global, $\sim$70\,000 estaciones & Precipitación, temperatura, viento, humedad & diaria y horaria & DataFrame \\[2pt]
+  GloFAS-ERA5 & Global, 1979--hoy & Caudal simulado & 0.1\textdegree{} & DataFrame \\[2pt]
+  GRDC & Global, red histórica & Caudal aforado & estación & DataFrame \\[2pt]
+  USGS & EEUU, red completa & Caudal aforado & estación & DataFrame \\[2pt]
+  CMIP6 (CDS) & Global, hasta 2100 & Precipitación, temperatura & variable & NetCDF \\[2pt]
+  CMIP6 (ESGF) & Global, hasta 2100 & Multivariable & variable & NetCDF \\[2pt]
+  SoilGrids & Global & Textura, carbono orgánico, bulk density & 250 m & GeoTIFF \\[2pt]
+  \bottomrule
+\end{longtable}
+}
+
+\section{Precipitación}
+
+\subsection{ERA5}
+
+ERA5 \parencite{hersbach2020era5} es el reanálisis atmosférico de referencia del Centro Europeo de Previsiones Meteorológicas a Medio Plazo (ECMWF). Con cobertura global desde 1940, resolución horizontal de 0.25\textdegree{} y temporal de una hora, proporciona la base de precipitación para estudios en regiones con escasa red de observación y para la corrección de sesgo de proyecciones climáticas. El módulo \texttt{era5.py} encapsula la descarga mediante la API CDS (\texttt{cdsapi}), acepta una caja bounding-box, un rango temporal y una lista de variables CDS, y devuelve el fichero NetCDF descargado junto con el \texttt{Dataset} xarray listo para análisis.
+
+Su uso principal en esta tesis es como referencia observacional para calibrar generadores estocásticos, como dato de entrada para modelos hidrológicos en cuencas sin aforos, y como campo observado de referencia para la corrección de sesgo de CMIP6. En el caso del lago Tanganica \parencite{navas2025tanganicaIA}, ERA5 fue la única fuente de precipitación disponible para una reconstrucción hidrológica de la cuenca del Congo desde 1979.
+
+La principal limitación de ERA5 en estudios de inundación es su resolución espacial y la suavización de extremos convectivos locales. Por esa razón, en \pyhydra se trata como fuente robusta de continuidad temporal, no como sustituto automático de estaciones. Cuando existen observaciones locales, el flujo recomendado es comparar ERA5 frente a estaciones, cuantificar sesgo y decidir si se usa como campo espacial, como referencia climática o como dato auxiliar para completar huecos.
+
+\subsection{GPM-IMERG}
+
+La constelación GPM (Global Precipitation Measurement) y su producto IMERG \parencite{huffman2020gpm} ofrecen precipitación semiglobal a 0.1\textdegree{} y 30 minutos desde 2000. Su resolución espacial y temporal superior a ERA5 lo convierte en la fuente satelital preferente para análisis de tormentas convectivas y eventos de corta duración en cuencas medias y pequeñas. El módulo \texttt{gpm.py} implementa la descarga desde el sistema Earthdata de la NASA mediante autenticación con usuario y contraseña, acepta coordenadas y rango temporal, y guarda los ficheros HDF5 originales con conversión automática a NetCDF.
+
+GPM-IMERG se utiliza principalmente como fuente de diagnóstico espacial: permite comprobar si el patrón de lluvia de un episodio es compatible con la red de estaciones disponible, identificar máximos no capturados por pluviómetros aislados y construir campos iniciales para interpolación o validación. En eventos locales extremos debe usarse con cautela, porque el sesgo puede variar con la intensidad, la orografía y el tipo de precipitación.
+
+\subsection{PERSIANN-CCS}
+
+PERSIANN-CCS \parencite{hong2004persiannccs} proporciona estimaciones de precipitación a partir de imágenes infrarrojas de satélite con resolución espacial fina y frecuencia subdiaria. Su ventaja principal es la disponibilidad operativa de campos horarios con cobertura semiglobal, útiles para diagnóstico de episodios convectivos y comparación con otras fuentes satelitales como GPM-IMERG. El módulo \texttt{persiann.py} implementa el descargador \texttt{PERSSIANDownloader}, que accede al servidor FTP de la Universidad de California, Irvine, y exporta los campos seleccionados a NetCDF. En los casos históricos de la línea se citan también productos de la familia PERSIANN-CDR \parencite{ashouri2015persiann}, pero el conector actual de \pyhydra y el notebook de la web documentan PERSIANN-CCS.
+
+En el flujo de la tesis, PERSIANN no se interpreta como una verdad observacional independiente, sino como una fuente remota de apoyo. Su valor aparece especialmente cuando la red pluviométrica es escasa o cuando interesa contrastar la localización de núcleos convectivos. La metodología mantiene separada la descarga del producto, su validación frente a estaciones y su eventual uso como covariable o campo de referencia.
+
+\subsection{AEMET, OGIMET y Meteostat}
+
+Para estudios en España, el módulo \texttt{aemet.py} utiliza la API REST pública de AEMET OpenData para descargar observaciones diarias de cualquier estación de la red oficial, retornando un \texttt{DataFrame} con índice de fechas y columnas por variable. La autenticación requiere una clave de API gratuita del portal AEMET.
+
+El módulo \texttt{ogimet.py} accede a los mensajes SYNOP horarios del portal Ogimet, que agrega información de la red meteorológica internacional bajo el convenio WMO. Permite recuperar datos horarios de estaciones europeas con registros en ocasiones superiores a 50 años, y es especialmente útil cuando se necesita frecuencia subdiaria o los mensajes SYNOP en bruto, por ejemplo para desagregación temporal.
+
+El módulo \texttt{meteostat.py} \parencite{zippenfenig2023meteostat} integra la librería Meteostat, que agrega datos históricos de estaciones meteorológicas procedentes de múltiples fuentes institucionales (NOAA ISD, DWD CDC, AEMET, Environment Canada, entre otras) en una única API Python oficial. Cubre cerca de 70\,000 estaciones a escala global con resolución diaria y horaria, e incluye variables de temperatura (media, mínima y máxima), precipitación, humedad relativa, presión y velocidad del viento. Las estaciones se identifican mediante códigos WMO, coincidentes con los de OGIMET, lo que facilita la validación cruzada entre fuentes. Meteostat es la fuente preferente para descargas largas de datos diarios y horarios de estación por su API estable, sin limitaciones de tasa y sin acceso por \textit{scraping}; OGIMET se reserva para casos en que se requieren mensajes SYNOP subhorarios en bruto. El módulo incluye un widget interactivo (\texttt{MeteostatDownloader}) que permite explorar y descargar estaciones cercanas a un punto mediante un mapa Leaflet en JupyterLab, y funciones de selección automática de la mejor estación para un punto y período dados (\texttt{download\_best\_meteostat\_series}).
+
+La convivencia de AEMET, OGIMET y Meteostat responde a una necesidad práctica: no todos los estudios requieren el mismo equilibrio entre oficialidad, longitud de registro, resolución temporal y facilidad de descarga. AEMET es la referencia administrativa en España; OGIMET facilita acceso a mensajes horarios y subdiarios cuando se necesita trabajar con SYNOP; Meteostat ofrece una API estable y global para exploración rápida y series largas. \pyhydra no fusiona automáticamente estas fuentes, pero conserva identificadores y coordenadas para que el usuario pueda cruzarlas y documentar la selección final.
+
+\section{Caudales fluviales}
+
+\subsection{GloFAS-ERA5}
+
+GloFAS \parencite{alfieri2013glofas} es el sistema global de previsión de caudales del Copernicus Emergency Management Service. Su reanálisis GloFAS-ERA5, generado con el modelo hidrológico de routing H-TESSEL sobre precipitación ERA5, proporciona series de caudal simulado en cualquier punto de la red fluvial global desde 1979. El módulo \texttt{glofas.py} descarga la serie correspondiente al punto de la malla más próximo a las coordenadas indicadas. Aunque no sustituye a mediciones de aforo, es la única fuente de longitud temporal suficiente en cuencas sin instrumentación.
+
+En aplicaciones de riesgo, GloFAS se trata como una fuente de contexto hidrológico o como referencia preliminar. Su resolución y naturaleza modelada impiden usarlo directamente como aforo local calibrado, pero resulta útil para estimar estacionalidad, detectar años húmedos o secos y proporcionar una primera aproximación en regiones sin datos.
+
+\subsection{GRDC y USGS}
+
+El módulo \texttt{grdc.py} lee ficheros de texto descargados del Global Runoff Data Centre, homogeneizando el formato de cabecera y generando \texttt{DataFrame} con índice temporal. El módulo \texttt{usgs.py} descarga datos de caudal del sistema NWIS de la USGS mediante la API REST, con el parámetro estándar 00060 para caudal en ft$^3$/s. Ambas fuentes son la referencia para estudios de calibración y validación de modelos en cuencas con red de aforos.
+
+\section{Datos climáticos y proyecciones}
+
+\subsection{CMIP6 vía Copernicus CDS}
+
+El submódulo \texttt{climate\_change.copernicus} utiliza la API CDS para descargar proyecciones del conjunto CMIP6 \parencite{eyring2016cmip6} bajo los escenarios SSP \parencite{oneill2016ssp}. Acepta variable, modelo, experimento, resolución temporal, rango de años y bounding-box, y descarga los ficheros NetCDF directamente al directorio de salida indicado. Esta vía es la recomendada para variables de superficie (precipitación y temperatura en 2 m) de los modelos más utilizados en estudios europeos.
+
+\subsection{CMIP6 vía ESGF}
+
+Para variables o modelos no disponibles en CDS, el submódulo \path{climate_change.esgf} accede al Earth System Grid Federation mediante \texttt{pyesgf}. Esta vía requiere cuenta en un nodo ESGF y permite acceder a la colección completa de CMIP6, incluyendo variables atmosféricas de nivel superior o modelos de menor difusión. El módulo gestiona la autenticación, la búsqueda de ficheros por facetas (variable, modelo, experimento, frecuencia) y la descarga ordenada.
+
+La elección del escenario (SSP2-4.5 para trayectoria intermedia, SSP5-8.5 para alta emisión), el número de modelos y el período de análisis son decisiones metodológicas que \hydra no impone, pero sí registra en los metadatos del Dataset para garantizar la trazabilidad de los resultados.
+
+La salida CMIP6 no se usa directamente en modelos hidrológicos o hidráulicos. Antes debe recortarse al dominio, armonizar calendarios y unidades, comparar período histórico frente a observaciones y corregir sesgo. Esta cadena se implementa entre \texttt{data\_sources.climate\_change} y \texttt{climate.bias\_correction}; separar ambas responsabilidades evita mezclar descarga de datos con decisión estadística.
+
+\section{Suelos}
+
+El módulo \texttt{soils.soilgrids} descarga mapas globales de propiedades del suelo de la base SoilGrids v2.0 \parencite{poggio2021soilgrids} en formato GeoTIFF. Las propiedades disponibles incluyen densidad aparente (\texttt{bdod}), contenido de arcilla (\texttt{clay}), limo (\texttt{silt}), arena (\texttt{sand}), carbono organico (\texttt{soc}), pH (\texttt{phh2o}) y capacidad de campo (\texttt{awcts}). La descarga se realiza a través de la API REST de ISRIC, especificando una bounding-box y la lista de variables deseadas.
+
+La información edafológica es un dato de entrada necesario para SWAT (clasificación de usos y suelos) y para la estimación del número de curva en HEC-HMS. El valor industrial de este módulo no reside solo en la automatización de la descarga, sino en la cadena de transformación desde el raster de propiedad continua hasta el mapa de parámetros hidrológicos, que requiere reclasificaciones, proyecciones y agregaciones específicas del modelo de destino.
+
+\section{Convenciones generales}
+
+Todos los módulos de \texttt{data\_sources} siguen las convenciones siguientes:
+\begin{itemize}
+  \item coordenadas en sistema WGS84 (EPSG:4326), salvo que el producto nativo utilice una proyección específica que sea relevante conservar para el módulo de modelización destino;
+  \item índices temporales en UTC;
+  \item datos multidimensionales devueltos como \texttt{xarray.Dataset} con atributos de fuente, fecha de descarga y parámetros de peticion;
+  \item series temporales de estación devueltas como \texttt{pandas.DataFrame} con columna de fecha como índice;
+  \item productos raster guardados como GeoTIFF con \texttt{rasterio}.
+\end{itemize}
