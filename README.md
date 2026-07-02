@@ -1,77 +1,58 @@
 # HYDRA
 
-**HYDRA** es una librería modular de Python para el análisis hidrológico y climático. Integra herramientas de descarga y procesamiento de datos, análisis estadístico del clima, y soporte para modelos hidrológicos e hidráulicos.
+**HYDRA** is the integration platform for **pyhydra**: a modular Python library for hydrological and climate analysis (data download, extreme-value statistics, stochastic generation, bias correction, hybrid downscaling, and automation of hydrological/hydraulic models). This repository adds the execution, API, web, and reproducible-documentation layers on top of pyhydra.
 
-## Estructura de la librería
+- 🌐 **Live demo:** [hydra-web.yellowwave-5aaa93b0.spaincentral.azurecontainerapps.io](https://hydra-web.yellowwave-5aaa93b0.spaincentral.azurecontainerapps.io/) — a demo instance deployed on Azure Container Apps. This is an ephemeral endpoint for operational validation, not a durable reference (to cite the software, use the Zenodo DOIs below).
+- 📦 **Python core:** [github.com/navass11/pyhydra](https://github.com/navass11/pyhydra) — installable with `pip install -e .`
+- 📖 **Documentation:** built with MkDocs and published to GitHub Pages from `docs/` (workflow `.github/workflows/docs.yml`)
+
+## Repository structure
 
 ```
 HYDRA/
-├── Data_Sources/              # Descarga y preprocesado de datos
-│   ├── Climate_Change/        # Proyecciones de cambio climático
-│   │   ├── COPERNICUS/        # Descarga CMIP6 via CDS API (cdsapi + Selenium)
-│   │   ├── ESGF/              # Descarga CMIP6 via ESGF (OPeNDAP / HTTP)
-│   │   └── utils.py           # Utilidades compartidas + clase bias_correction
-│   ├── Rainfall/              # Datos de precipitación
-│   │   ├── GPM/               # IMERG NASA via earthaccess (clase GPMDownloader)
-│   │   ├── PERSSIAN/          # PERSIANN-CCS via FTP (clase PERSSIANDownloader)
-│   │   ├── ERA-5/             # ERA5 via CDS API (función download_era5)
-│   │   ├── AEMET/             # Red AEMET Spain via API OpenData + widget Jupyter
-│   │   └── OGIMET/            # Estaciones SYNOP globales via scraping + widget Jupyter
-│   ├── River_Discharge/       # Caudal fluvial (GloFAS, RivDIS, NCAR)
-│   └── Soils/                 # Texturas de suelo SoilGrids → clase USDA
-│
-├── Climate/                   # Análisis estadístico del clima
-│   ├── Time_Series_Analysis/
-│   │   ├── Extremes/          # Análisis de valores extremos [pendiente código]
-│   │   └── Discretization/   # Separación de eventos + generación sintética (flood_methodology)
-│   ├── Spatial_Analysis/
-│   │   ├── RFA/               # Análisis de frecuencia regional
-│   │   ├── Bayes_Hierarchical/# Modelos jerárquicos bayesianos [extraer código]
-│   │   ├── Interpolation/     # Interpolación + Gaussian Processes (NEOPRENE/gaup)
-│   │   └── Copulas/           # Dependencia multivariante [pendiente]
-│   ├── Stochastic_Generation/ # Generación estocástica (NEOPRENE, CoSMoS_py)
-│   │   ├── Point/
-│   │   └── Spatial/
-│   ├── Bias_Correction/
-│   │   ├── Delta/             # Método Delta (función delta_method)
-│   │   └── QQ_Mapping/        # QM, QDM y SDM (clase bias_correction)
-│   └── Hybrid_Downscaling/    # Downscaling estadístico [pendiente código]
-│
-└── Modeling/                  # Modelos hidrológicos e hidráulicos
-    ├── Hydrology/
-    │   ├── SWAT/              # Automatización SWAT+
-    │   └── HEC-HMS/           # Automatización HEC-HMS
-    └── Hydraulic/
-        ├── SFINCS/            # Automatización SFINCS
-        └── HEC-RAS/           # Automatización HEC-RAS
+├── pyhydra/          # Working copy of the Python core (canonical repo: navass11/pyhydra)
+├── api/               # FastAPI backend: serves the web app, proxies JupyterLab, notebooks
+├── web/               # Astro frontend (hydra-web)
+├── notebooks/         # Example notebooks and reproducible pilot cases
+├── docker/            # Dockerfiles and docker-compose for jupyter/api/web
+├── deploy/, infra/    # Azure Container Apps deployment
+├── docs/              # Documentation source (MkDocs → GitHub Pages)
+├── examples/          # Minimal example scripts per module
+├── tests/             # pyhydra test suite
+└── scripts/           # Notebook execution utilities, smoke tests, etc.
 ```
 
-## Ejecución con Docker
+The canonical source for `pyhydra/` lives in its own repository ([navass11/pyhydra](https://github.com/navass11/pyhydra)); the copy here is the one consumed by HYDRA's Docker/Azure image.
 
-La carpeta `docker/` contiene todo lo necesario para levantar un entorno reproducible con JupyterLab y todas las dependencias instaladas.
-
-**Requisitos:** [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado y en ejecución.
+## Running with Docker
 
 ```bash
-# 1. Clonar el repositorio
 git clone https://github.com/navass11/HYDRA.git
 cd HYDRA
 
-# 2. Construir la imagen y lanzar JupyterLab
+# Starts jupyter + api + web
 docker compose -f docker/docker-compose.yml up --build
-
-# 3. Abrir en el navegador
-#    http://localhost:8888
 ```
 
-Los notebooks se sirven desde la carpeta `notebooks/`. Los cambios realizados en el navegador se guardan directamente en el repositorio local gracias al volumen montado.
+- JupyterLab: `http://localhost:8888`
+- Web: see the port exposed by the `web` service in `docker/docker-compose.yml`
 
-Para parar el contenedor:
+To stop:
 
 ```bash
 docker compose -f docker/docker-compose.yml down
 ```
 
-## Contribución
+## Deployment
 
-Cada módulo tiene su propio `README.md` describiendo el código real existente. Los módulos sin código aún están marcados como `[pendiente]`. Consulta el PDF `Organización_HYDRA_MdJ.pdf` para la visión global de la arquitectura.
+The `.github/workflows/azure.yml` workflow builds and publishes the `jupyter`, `api`, and `web` images to Azure Container Registry; deployment to Azure Container Apps is triggered manually with `az containerapp update` (see the workflow comments).
+
+## Citing this work
+
+- Python core (pyhydra): Navas Fernández, S. (2026). *pyhydra: a modular Python library for hydrological and climate analysis* (v0.1.0). Zenodo. https://doi.org/10.5281/zenodo.20932555
+- This repository (HYDRA): archival on Zenodo is in progress — until then, cite the GitHub repository: https://github.com/navass11/HYDRA
+
+## Related branches
+
+- [`thesis`](https://github.com/navass11/HYDRA/tree/thesis) — LaTeX sources of the doctoral thesis (kept as a separate worktree: `HYDRA-thesis`).
+- [`paper`](https://github.com/navass11/HYDRA/tree/paper) — LaTeX sources of the Besaya Manning-sensitivity paper.
