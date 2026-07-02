@@ -73,7 +73,12 @@ Por esa razón, SWAT se conecta principalmente con el bloque de cambio climátic
 El módulo \texttt{modeling.hydrology.swat} gestiona la integración mediante un conjunto de funciones, no una clase orientada a objetos:
 
 \begin{description}
-  \item[Preparación de entradas climáticas.] Las funciones \texttt{write\_precipitation\_file} y \texttt{write\_temperature\_file} convierten series de precipitación y temperatura (históricas o proyecciones CMIP6 corregidas) al formato clásico de ficheros \texttt{.pcp}/\texttt{.tmp} de SWAT a partir de coordenadas de estación y series diarias; \texttt{write\_swatplus\_precipitation\_files} y \texttt{write\_swatplus\_temperature\_files} generan el equivalente para SWAT+ (ficheros individuales por estación más el índice \texttt{pcp.cli}/\texttt{tmp.cli}); \texttt{edit\_file\_cio} ajusta el período de simulación en \texttt{file.cio}.
+  \item[Preparación de entradas climáticas.] El módulo cubre tres tareas diferenciadas:
+  \begin{itemize}
+    \item \texttt{write\_precipitation\_file} y \texttt{write\_temperature\_file} convierten series diarias de precipitación y temperatura al formato clásico \texttt{.pcp}/\texttt{.tmp} de SWAT.
+    \item \texttt{\seqsplit{write\_swatplus\_precipitation\_files}} y \texttt{\seqsplit{write\_swatplus\_temperature\_files}} generan el equivalente para SWAT+: ficheros por estación e índices \texttt{pcp.cli}/\texttt{tmp.cli}.
+    \item \texttt{edit\_file\_cio} ajusta el período de simulación en \texttt{file.cio}.
+  \end{itemize}
 
   \item[Ejecución por escenarios.] La función \texttt{run\_swat} lanza el ejecutable de SWAT+ en el directorio \texttt{TxtInOut} del proyecto y devuelve el código de salida del proceso.
 \end{description}

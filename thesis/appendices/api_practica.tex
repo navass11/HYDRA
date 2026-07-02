@@ -42,7 +42,9 @@ Este anexo es una referencia rápida de las funciones y clases principales de \p
   Función (no clase) que construye un widget interactivo con mapa Leaflet para descarga por lotes desde OGIMET.
 
   \item[\apisig{OgimetCSVLoader(folder\_path=None, create=True)}]
-  Carga y consolida series descargadas por \texttt{OGIMETDownloader}. Métodos: \texttt{.load\_station\_data()}, \texttt{.load\_series\_data(variable)} y \texttt{.analyze\_series\_quality()} (mismo patrón que \texttt{AemetCSVLoader}).
+  Carga y consolida series descargadas por \texttt{OGIMETDownloader}. Métodos principales:
+  \texttt{.load\_station\_data()}, \texttt{.load\_series\_data(variable)}
+  y \texttt{.analyze\_series\_quality()}. Sigue el mismo patrón que \texttt{AemetCSVLoader}.
 
   \item[\apisig{download\_meteostat\_series(station\_id, start\_date, end\_date,\\ frequency=\textquotesingle{}daily\textquotesingle{}, normalize=True, station\_name=None)}]
   Descarga series de una estación Meteostat por su código identificador. \texttt{frequency} acepta \texttt{\textquotesingle{}daily\textquotesingle{}} u \texttt{\textquotesingle{}hourly\textquotesingle{}}. Devuelve \texttt{pd.DataFrame} con columnas de temperatura, precipitación, humedad, viento y presión.
@@ -560,7 +562,7 @@ Este anexo es una referencia rápida de las funciones y clases principales de \p
   Calcula estadísticos espaciales de un ensemble hidráulico, incluyendo área inundada, máximos y métricas resumidas.
 
   \item[\apisig{manning\_flood\_regression(flood\_ensemble, manning\_ensemble,\\ cell\_area\_m2=25.0, threshold=0.05)}]
-  Ajusta modelos de regresión para relacionar parámetros de Manning (ensemble) y métricas de inundación (ensemble) derivadas de \texttt{load\_flood\_ensemble}/\texttt{load\_sfincs\_ensemble}. Devuelve \texttt{pd.DataFrame}.
+  Ajusta modelos de regresión para relacionar parámetros de Manning y métricas de inundación derivadas de los ensembles hidráulicos cargados con \texttt{load\_flood\_ensemble} o \texttt{load\_sfincs\_ensemble}. Devuelve \texttt{pd.DataFrame}.
 
   \item[\apisig{filter\_anomalous\_simulations(*results, metrics=None,\\ z\_threshold=3.0)}]
   Identifica y filtra simulaciones anómalas comparando una o más tablas de resultados por z-score. Devuelve tupla \texttt{(máscara, resumen)}.
