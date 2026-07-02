@@ -52,10 +52,11 @@ La selección evita duplicar el contenido completo de los artículos ya publicad
   \bottomrule
 \end{longtable}
 
+\begin{landscape}
 \begingroup
-\scriptsize
-\setlength{\tabcolsep}{3pt}
-\begin{longtable}{>{\raggedright\arraybackslash}p{0.13\textwidth}>{\raggedright\arraybackslash}p{0.18\textwidth}>{\raggedright\arraybackslash}p{0.22\textwidth}>{\raggedright\arraybackslash}p{0.23\textwidth}>{\raggedright\arraybackslash}p{0.10\textwidth}}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.12\linewidth}>{\raggedright\arraybackslash}p{0.20\linewidth}>{\raggedright\arraybackslash}p{0.24\linewidth}>{\raggedright\arraybackslash}p{0.26\linewidth}>{\raggedright\arraybackslash}p{0.12\linewidth}}
   \caption{Matriz de validación de \hydra por caso de estudio, módulo, evidencia reproducible y criterio de aceptación.}
   \label{tab:matriz_validacion_hydra} \\
   \toprule
@@ -110,7 +111,7 @@ La selección evita duplicar el contenido completo de los artículos ya publicad
 
   SIMPCCe &
   Descarga climática nacional, corrección de sesgo SDM, ANN, análisis de sequía e informes automáticos &
-  Comunicaciones JIA/IAHR Europe \parencite{navas2023simpce,navas2024iahrsimpcce}, artículo \parencite{navas2025simpce} y herramienta operativa para Fundación Canal &
+  Comunicaciones JIA/IAHR Europe \parencite{navas2023simpce,navas2024iahrsimpcce}, artículo \parencite{navas2025simpce}, herramienta operativa encargada por Fundación Canal y reconocimiento de transferencia en el entorno de la Fundación Botín &
   Reutilización de módulos climáticos en una aplicación industrial; generación sistemática de 60 series corregidas por variable y síntesis automática para toma de decisiones &
   Orientado a recursos hídricos, no a inundación hidráulica directa \\[5pt]
 
@@ -128,6 +129,7 @@ La selección evita duplicar el contenido completo de los artículos ya publicad
   \bottomrule
 \end{longtable}
 \endgroup
+\end{landscape}
 
 La \cref{tab:matriz_validacion_hydra} separa tres tipos de evidencia. Las publicaciones y comunicaciones proporcionan contraste científico externo; los proyectos industriales demuestran transferencia a contextos reales de ingeniería; y la web de \hydra, junto con los notebooks reproducibles, muestra que los módulos no solo existen en el código, sino que pueden ejecutarse siguiendo flujos documentados. Esta última capa es especialmente relevante en una tesis industrial: la validación no se limita al resultado científico de cada caso, sino que incluye la capacidad de convertir esos métodos en un producto técnico navegable, ejecutable y mantenible.
 

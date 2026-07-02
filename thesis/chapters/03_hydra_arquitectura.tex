@@ -40,7 +40,7 @@ La \cref{fig:arquitectura_hydra} ilustra la organización en bloques de la herra
 \node[layer=gray] (users) at (0,4.25)
   {\textbf{Acceso}: notebooks, ejecución local y Docker};
 
-\node[module=blueblock] (rain) at (-5.0,2.35) {\textbf{Meteorología}\\ERA5, GPM, PERSIANN\\AEMET, OGIMET, Meteostat};
+\node[module=blueblock] (rain) at (-5.0,2.35) {\textbf{Meteorología}\\ERA5, GPM, PERSIANN\\AEMET, Meteostat\\OGIMET};
 \node[module=blueblock] (river) at (-1.65,2.35) {\textbf{Caudal}\\GloFAS, GRDC\\USGS};
 \node[module=blueblock] (clim) at (1.65,2.35) {\textbf{Clima futuro}\\CMIP6\\CDS/ESGF};
 \node[module=blueblock] (soil) at (5.0,2.35) {\textbf{Territorio}\\DEM, suelos\\usos};
@@ -103,7 +103,7 @@ La \cref{tab:estructura_modulos} describe los 14 módulos sustantivos agrupados 
   \texttt{climate.hybrid\_downscaling} & Clima & MaxDiss, k-NN, mapas de período de retorno \\[2pt]
   \texttt{modeling.hydrology.hec\_hms} & Modelos & Interfaz HEC-HMS + calibración automática (spotpy) \\[2pt]
   \texttt{modeling.hydrology.swat} & Modelos & Interfaz SWAT, preparación de entradas CMIP6 \\[2pt]
-  \texttt{modeling.hydraulic.sfincs} & Modelos & Configuración, ejecución y lectura de SFINCS \\[2pt]
+  \texttt{modeling.hydraulic.sfincs} & Modelos & Configuración y ejecución de SFINCS \\[2pt]
   \texttt{modeling.hydraulic.hec\_ras} & Modelos & Automatización de HEC-RAS 1D/2D \\[2pt]
   \texttt{modeling.hydraulic.sensitivity} & Modelos & Análisis de sensibilidad de modelos hidráulicos \\[2pt]
   \bottomrule
@@ -147,7 +147,7 @@ La librería \pyhydra se organiza en 14 submódulos temáticos agrupados en los 
    \vspace{0.15cm}
    Series temporales: eventos, GEV/GPD\\[3pt]
    Análisis espacial: RFA, cópulas, interpolación\\[3pt]
-   Generación: NEOPRENE, CoSMoS\\[3pt]
+   Generación: \mbox{NEOPRENE}, CoSMoS\\[3pt]
    Corrección de sesgo y downscaling: delta, cuantiles, MaxDiss, k-NN};
 
 \node[block=orangeblock] (modeling) at (4.35,0)
@@ -160,7 +160,7 @@ La librería \pyhydra se organiza en 14 submódulos temáticos agrupados en los 
    Sensibilidad hidráulica: ensembles y rugosidad};
 \end{tikzpicture}
 }
-\caption{Esquema funcional simplificado de los módulos de \pyhydra. La figura resume el material de presentación en tres bloques legibles para la memoria: fuentes de datos, análisis climático-estadístico y modelización hidrológica e hidráulica. Los conectores de caudal y suelos se recogen ya como módulos estables dentro de \texttt{pyhydra.data\_sources}.}
+\caption{Esquema funcional simplificado de los módulos de \pyhydra. La figura resume la organización funcional en tres bloques legibles para la memoria: fuentes de datos, análisis climático-estadístico y modelización hidrológica e hidráulica. Los conectores de caudal y suelos se recogen ya como módulos estables dentro de \texttt{pyhydra.data\_sources}.}
 \label{fig:organizacion_modulos_presentacion}
 \end{figure}
 
