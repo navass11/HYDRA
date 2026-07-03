@@ -77,13 +77,15 @@ El módulo \texttt{modeling.hydrology.swat} gestiona la integración mediante un
   \begin{itemize}
     \item \texttt{write\_precipitation\_file} y \texttt{write\_temperature\_file} convierten series diarias de precipitación y temperatura al formato clásico \texttt{.pcp}/\texttt{.tmp} de SWAT.
     \item \texttt{\seqsplit{write\_swatplus\_precipitation\_files}} y \texttt{\seqsplit{write\_swatplus\_temperature\_files}} generan el equivalente para SWAT+: ficheros por estación e índices \texttt{pcp.cli}/\texttt{tmp.cli}.
-    \item \texttt{edit\_file\_cio} ajusta el período de simulación en \texttt{file.cio}.
+    \item \texttt{edit\_file\_cio} conserva el nombre histórico de la función, pero en proyectos SWAT+ recientes localiza y modifica \texttt{time.sim}, que es donde SWAT+ Editor almacena el período de simulación.
   \end{itemize}
 
   \item[Ejecución por escenarios.] La función \texttt{run\_swat} lanza el ejecutable de SWAT+ en el directorio \texttt{TxtInOut} del proyecto y devuelve el código de salida del proceso.
+
+  \item[Lectura de resultados.] \texttt{read\_channel\_sd} lee los ficheros \texttt{channel\_sd} de SWAT+ para frecuencias diaria, mensual, anual y media anual, y normaliza sus cabeceras repetidas; \texttt{read\_swat\_discharge} extrae la serie \texttt{flo\_out} de una unidad de canal concreta.
 \end{description}
 
-La lectura de las salidas de SWAT (\texttt{output.rch}, \texttt{output.sub}) no está actualmente automatizada dentro de \pyhydra: se realiza de forma ad-hoc en cada caso de estudio, fuera del paquete. Completar un lector genérico de estos ficheros es trabajo pendiente (\cref{ch:conclusiones}).
+La lectura implementada se centra en el formato SWAT+ \texttt{channel\_sd}; no debe interpretarse como un lector universal de todas las salidas históricas de SWAT/SWAT+. Otros ficheros de balance o formatos heredados (\texttt{output.rch}, \texttt{output.sub}) pueden seguir requiriendo postprocesado específico del caso.
 
 SIMPCCe \parencite{navas2025simpce} es el ejemplo más directo de uso de SWAT dentro del ecosistema \hydra para análisis de aportaciones a embalses españoles bajo proyecciones CMIP6.
 
@@ -91,7 +93,7 @@ SIMPCCe \parencite{navas2025simpce} es el ejemplo más directo de uso de SWAT de
 
 \subsection{SFINCS}
 
-SFINCS \parencite{leijnse2021sfincs} (Super-Fast INundation of CoastS) es un modelo hidráulico bidimensional de física reducida desarrollado por Deltares. Su formulación simplificada de las ecuaciones de Saint-Venant reduce drasticamente el tiempo de computo manteniendo una precisión aceptable para inundación urbana y costera, lo que lo convierte en el motor preferente para flujos estocásticos con alto número de escenarios.
+SFINCS \parencite{leijnse2021sfincs} (Super-Fast INundation of CoastS) es un modelo hidráulico bidimensional de física reducida desarrollado por Deltares. Su formulación simplificada de las ecuaciones de Saint-Venant reduce drásticamente el tiempo de cómputo manteniendo una precisión aceptable para inundación urbana y costera, lo que lo convierte en el motor preferente para flujos estocásticos con alto número de escenarios.
 
 La ventaja de SFINCS dentro de \hydra es su escalabilidad. Al usar mallas regulares o cuasi-regulares y ficheros de configuración simples, se presta bien a la generación automática de proyectos y a la ejecución masiva. Esto lo convierte en una opción adecuada para atlas nacionales, análisis de sensibilidad o cribados iniciales donde el número de escenarios pesa más que el detalle hidráulico local.
 
@@ -110,7 +112,7 @@ La lectura de resultados SFINCS se concentra actualmente en \path{modeling.hydra
 
 HEC-RAS \parencite{brunner2016hecras} es la referencia profesional más extendida para modelización hidráulica 1D/2D en administraciones y consultoría española. La memoria del MITECO para cartografía de zonas inundables \parencite{marm2011guia} referencia HEC-RAS como herramienta principal, lo que hace que una fracción significativa de los modelos hidráulicos calibrados en España estén en este formato.
 
-En \hydra, HEC-RAS cubre dos necesidades distintas. En modelos 1D, como Calle 30, permite representar redes de conducción, tramos canalizados o sistemas lineales donde la geometría hidráulica está definida por secciones y conectividad. En modelos 2D, como los análisis posteriores del Besaya, permite obtener campos espaciales de calado y velocidad comparables con SFINCS. El adaptador actual se centra en preparar escenarios, modificar ficheros de proyecto y lanzar ejecuciones; la extracción espacial de resultados 2D se realiza en los flujos de postproceso de los casos, pero no está expuesta como función pública independiente en \texttt{pyhydra.modeling.hydraulic.hec\_ras}.
+En \hydra, HEC-RAS cubre dos necesidades distintas. En modelos 1D, como Calle 30, permite representar redes de conducción, tramos canalizados o sistemas lineales donde la geometría hidráulica está definida por secciones y conectividad. En modelos 2D, como los análisis posteriores del Besaya, permite obtener campos espaciales de calado y velocidad comparables con SFINCS. El adaptador actual prepara escenarios, modifica ficheros de proyecto, lanza ejecuciones y lee series temporales de salida desde DSS mediante \texttt{hecdss}; la extracción espacial completa de resultados 2D se realiza en los flujos de postproceso de los casos, pero no está expuesta como función pública independiente en \texttt{pyhydra.modeling.hydraulic.hec\_ras}.
 
 El módulo \texttt{modeling.hydraulic.hec\_ras} automatiza cuatro operaciones:
 \begin{description}
@@ -121,6 +123,8 @@ El módulo \texttt{modeling.hydraulic.hec\_ras} automatiza cuatro operaciones:
   \item[\texttt{create\_flow\_series}] Suaviza series de caudal mediante máximo móvil centrado antes de escribirlas como condición de contorno.
 
   \item[\texttt{run\_hec\_ras}] Lanza el plan activo de HEC-RAS mediante \texttt{rascontrol}, condicionado a disponer de una instalación local compatible.
+
+  \item[\texttt{read\_ras\_dss\_timeseries} y \texttt{read\_ras\_max\_wsel}] Leen series temporales de resultados HEC-RAS almacenadas en DSS y extraen, en su caso, el valor máximo de una variable como nivel de agua (\texttt{WSEL}). Estas funciones cubren la lectura tabular de series, no la extracción espacial completa de mallas 2D.
 \end{description}
 
 Su uso en Calle 30 \parencite{navas2024calle30} y en desarrollos posteriores sobre el entorno del Besaya demuestra la viabilidad de la automatización incluso en proyectos de complejidad industrial. La limitación principal es que HEC-RAS no dispone de una API pública documentada y estable para todos los modos de control externo, por lo que la integración se basa en la modificación de ficheros de texto, la ejecución del ejecutable vía subproceso o controlador disponible y la lectura sistemática de salidas.

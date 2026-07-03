@@ -240,11 +240,20 @@ Este anexo es una referencia rápida de las funciones y clases principales de \p
   \item[\apisig{regional\_index\_flood(data\_dict)}]
   Normaliza cada serie por su índice de avenida (media de máximos anuales). Devuelve tupla \texttt{(normalised\_dict, index\_floods\_series)}.
 
-  \item[\apisig{fit\_regional\_gev(data\_dict, method=\textquotesingle{}lmom\textquotesingle{})}]
-  Ajusta una GEV regional sobre datos agrupados normalizados (formulación index-flood). Devuelve tupla \texttt{(regional\_params\_dict, index\_floods\_series)}.
+  \item[\apisig{fit\_regional\_gev(data\_dict, method=\textquotesingle{}lmom\textquotesingle{},\\ n\_chains=4, n\_samples=1000)}]
+  Ajusta una GEV regional sobre datos agrupados normalizados (formulación index-flood). \texttt{method} acepta \texttt{\textquotesingle{}mle\textquotesingle{}}, \texttt{\textquotesingle{}lmom\textquotesingle{}} o \texttt{\textquotesingle{}bayes\textquotesingle{}}. Devuelve tupla \texttt{(regional\_params, index\_floods\_series)}; para \texttt{method=\textquotesingle{}bayes\textquotesingle{}}, \texttt{regional\_params} es un \texttt{pd.DataFrame} de muestras posteriores.
 
-  \item[\apisig{regional\_return\_levels(data\_dict, T\_values=(2,5,10,20,50,100),\\ method=\textquotesingle{}lmom\textquotesingle{})}]
-  Calcula cuantiles de período de retorno por estación aplicando escalado por índice de avenida. Devuelve \texttt{pd.DataFrame} (estaciones × períodos de retorno).
+  \item[\apisig{regional\_return\_levels(data\_dict, T\_values=(2,5,10,20,50,100),\\ method=\textquotesingle{}lmom\textquotesingle{}, credible=0.90, n\_chains=4, n\_samples=1000)}]
+  Calcula cuantiles de período de retorno por estación aplicando escalado por índice de avenida. Con \texttt{method=\textquotesingle{}mle\textquotesingle{}} o \texttt{\textquotesingle{}lmom\textquotesingle{}} devuelve un \texttt{pd.DataFrame}; con \texttt{method=\textquotesingle{}bayes\textquotesingle{}} devuelve la tupla \texttt{(median, lower, upper)} de \texttt{DataFrame}.
+
+  \item[\apisig{discordancy\_critical\_value(n\_sites)}]
+  Valor crítico tabulado del estadístico de discordancia de Hosking--Wallis para una región con \texttt{n\_sites} estaciones.
+
+  \item[\apisig{regional\_discordancy(data\_dict)}]
+  Calcula el estadístico de discordancia $D_i$ por estación a partir de ratios de L-momentos. Devuelve \texttt{pd.DataFrame} con \texttt{Di}, \texttt{critical} y \texttt{discordant}.
+
+  \item[\apisig{regional\_heterogeneity(data\_dict, n\_sim=1000, seed=None)}]
+  Calcula el estadístico de heterogeneidad regional $H_1$ mediante simulación Monte Carlo de regiones homogéneas. Devuelve \texttt{dict} con \texttt{H}, \texttt{V\_obs}, \texttt{V\_sim\_mean} y \texttt{V\_sim\_std}. Requiere \texttt{lmoments3}.
 
   \item[\apisig{HierarchicalGEV(T\_values=(2,10,50,100), n\_chains=4, n\_samples=1000,\\ warmup=1000, adapt\_delta=0.99)}]
   Modelo GEV jerárquico bayesiano para análisis regional. Combina datos de varias estaciones compartiendo parámetros a través de hiperpriors poblacionales. Requiere \texttt{pymc} (o \texttt{pystan} como alternativa). Métodos:
@@ -419,6 +428,9 @@ Este anexo es una referencia rápida de las funciones y clases principales de \p
     \item \texttt{.scaled\_distribution\_mapping(variable, **kwargs)} — SDM paramétrico: \texttt{variable=\textquotesingle{}precipitation\textquotesingle{}} usa distribución gamma; \texttt{variable=\textquotesingle{}temperature\textquotesingle{}} usa normal.
   \end{itemize}
   Todos los métodos devuelven \texttt{ndarray} con los valores corregidos.
+
+  \item[\apisig{BiasCorrection.fit\_transform(obs, hist, future, var, method=\textquotesingle{}delta\textquotesingle{}, **kwargs)}]
+  Atajo de alto nivel para construir la corrección y aplicarla en una sola llamada. \texttt{method} acepta \texttt{\textquotesingle{}delta\textquotesingle{}}, \texttt{\textquotesingle{}eqm\textquotesingle{}}, \texttt{\textquotesingle{}qdm\textquotesingle{}} o \texttt{\textquotesingle{}sdm\textquotesingle{}}.
 \end{description}
 
 % ============================================================
@@ -508,7 +520,7 @@ Este anexo es una referencia rápida de las funciones y clases principales de \p
   Escribe un fichero de temperatura SWAT clásico \texttt{.tmp} con máximas y mínimas diarias.
 
   \item[\apisig{edit\_file\_cio(file\_cio\_path, start\_year, end\_year)}]
-  Modifica el período de simulación en \texttt{file.cio}. Sin valor de retorno.
+  Modifica el período de simulación de un proyecto SWAT+ localizando \texttt{time.sim} junto a \texttt{file.cio}. El nombre de la función se conserva por compatibilidad con llamadas anteriores. Sin valor de retorno.
 
   \item[\apisig{write\_swatplus\_precipitation\_files(df\_stations, df\_series,\\ txtinout\_dir, missing\_value=-99.0)}]
   Genera ficheros \texttt{.pcp} individuales y el índice \texttt{pcp.cli} para SWAT+.
@@ -518,6 +530,12 @@ Este anexo es una referencia rápida de las funciones y clases principales de \p
 
   \item[\apisig{run\_swat(model\_dir, swat\_exe, timeout=3600)}]
   Ejecuta el binario de SWAT+ en el directorio \texttt{TxtInOut}. Devuelve el código de salida del proceso.
+
+  \item[\apisig{read\_channel\_sd(output\_dir, freq=\textquotesingle{}day\textquotesingle{}, unit=None)}]
+  Lee ficheros SWAT+ \texttt{channel\_sd\_\{day,mon,yr,aa\}.txt}, normaliza cabeceras repetidas y, opcionalmente, filtra una unidad de canal. Devuelve \texttt{pd.DataFrame}; para frecuencias diaria, mensual y anual el índice es temporal.
+
+  \item[\apisig{read\_swat\_discharge(output\_dir, unit, freq=\textquotesingle{}day\textquotesingle{})}]
+  Extrae la serie \texttt{flo\_out} de una unidad de canal SWAT+ a partir de \texttt{read\_channel\_sd}. Devuelve \texttt{pd.Series}.
 \end{description}
 
 % ============================================================
@@ -548,6 +566,12 @@ Este anexo es una referencia rápida de las funciones y clases principales de \p
 
   \item[\apisig{run\_hec\_ras(path\_project, name\_project, ras\_version=641)}]
   Ejecuta el plan activo de HEC-RAS mediante \texttt{rascontrol}. Requiere instalación local de HEC-RAS en Windows.
+
+  \item[\apisig{read\_ras\_dss\_timeseries(dss\_path, pathname\_prefix, plan\_name=None)}]
+  Lee una serie temporal de salida de HEC-RAS desde DSS mediante \texttt{hecdss}, filtrando por prefijo de pathname y, opcionalmente, por plan. Devuelve \texttt{pd.DataFrame} con columnas \texttt{datetime} y \texttt{value}.
+
+  \item[\apisig{read\_ras\_max\_wsel(dss\_path, pathname\_prefix, plan\_name=None)}]
+  Atajo para obtener el máximo de una serie DSS de HEC-RAS, por ejemplo el nivel máximo de agua \texttt{WSEL}. Devuelve \texttt{float}.
 
   \item[\apisig{generate\_manning\_combinations(manning\_dist\_csv, n\_samples=1000,\\ mc\_size=10\_000, seed=None)}]
   Genera combinaciones Monte Carlo de coeficientes de Manning para análisis de sensibilidad hidráulica a partir de un CSV de distribuciones bibliográficas por clase de uso del suelo. Devuelve \texttt{pd.DataFrame}.

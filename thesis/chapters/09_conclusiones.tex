@@ -15,7 +15,7 @@ El bloque de generación estocástica integra dos familias complementarias: NEOP
 
 La integración de proyecciones CMIP6 \parencite{eyring2016cmip6} bajo escenarios SSP \parencite{oneill2016ssp} en flujos estocásticos de inundación requiere una etapa de corrección de sesgo que preserve la señal de cambio sin introducir artefactos estadísticos. Los métodos implementados en \hydra, delta y quantile mapping \parencite{teutschbein2012biascorrection}, satisfacen este requisito para las variables de precipitación y temperatura con las que operan los modelos hidrológicos continuos.
 
-La herramienta SIMPCCe \parencite{navas2025simpce}, desarrollada en paralelo a \hydra, ilustra como la arquitectura del bloque de cambio climático puede aplicarse a la planificación de recursos hídricos a largo plazo. Su validación en cuencas españolas confirma que el flujo CMIP6 corrección de sesgo SWAT produce proyecciones de aportación coherentes con las tendencias esperadas y con incertidumbre cuantificable entre modelos y escenarios.
+La herramienta SIMPCCe \parencite{navas2025simpce}, desarrollada en paralelo a \hydra, ilustra cómo la arquitectura del bloque de cambio climático puede aplicarse a la planificación de recursos hídricos a largo plazo. Su validación en cuencas españolas confirma que el flujo CMIP6--corrección de sesgo--SWAT produce proyecciones de aportación coherentes con las tendencias esperadas y con incertidumbre cuantificable entre modelos y escenarios.
 
 El análisis del episodio de Valencia de 2024 \parencite{navas2025valenciaIA} ha evidenciado que los métodos de análisis de extremos implementados en \hydra son aplicables en contextos de urgencia post-evento, donde la rapidez del cálculo y la transparencia en la cuantificación de incertidumbre tienen valor operacional directo. La disponibilidad de estimadores bayesianos junto con los frecuentistas en \texttt{pyhydra.climate.time\_series} es una ventaja práctica que facilita la comparación entre enfoques en cuencas con registros cortos.
 
@@ -110,7 +110,7 @@ En el marco de la tesis se han realizado los siguientes desarrollos que no exist
 
 \begin{itemize}
   \item Implementación Python modular de los bloques de acceso a datos, análisis estadístico, generación estocástica y automatización de modelos, integrados en la librería \pyhydra.
-  \item Adaptadores de automatización para HEC-HMS, SWAT, SFINCS y HEC-RAS que traducen datos internos de la librería a los formatos esperados por cada motor físico y homogeneizan sus salidas.
+  \item Adaptadores de automatización para HEC-HMS, SWAT, SFINCS y HEC-RAS que traducen datos internos de la librería a los formatos esperados por cada motor físico y recuperan salidas mediante los lectores implementados en cada flujo.
   \item Flujos automatizados de descarga, corrección de sesgo, generación de escenarios y postprocesado, documentados en notebooks de ejemplo reproducibles con datos reales y sintéticos.
 \end{itemize}
 

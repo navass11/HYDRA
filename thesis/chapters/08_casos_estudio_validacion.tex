@@ -87,7 +87,7 @@ La selección evita duplicar el contenido completo de los artículos ya publicad
 
   Valencia DANA 2024 &
   Descarga de observaciones, GEV por MLE/L-momentos/MCMC, análisis de frecuencia regional, cuantificación de incertidumbre &
-  Comunicación JIA \parencite{deljesus2025jia}, resumen EGU \parencite{deljesus2025valencia}, artículo enviado \parencite{navas2025valenciaIA} y notebook de extremos &
+  Comunicación JIA \parencite{deljesus2025jia}, resumen EGU \parencite{deljesus2025valencia}, artículo enviado \parencite{navas2025valenciaIA} y notebook de extremos del caso Valencia &
   Comparación reproducible de estimadores con y sin el evento; sensibilidad explícita de los períodos de retorno; intervalos bayesianos y contraste regional frente a estaciones próximas &
   Evento reciente y series con cola distribucional poco informada \\[5pt]
 
@@ -422,7 +422,7 @@ En Calle 30, el uso de \hydra se justifica por la combinación de tres fuentes d
 
 \subsection{Contexto y problema}
 
-El 29 de octubre de 2024 una depresión aislada en niveles altos (DANA) generó precipitaciones extremas en la Comunidad Valenciana. La estación 8137X en Turis registró 710,8 mm en 24 horas, estableciendo un récord nacional. La estación V103 en Carlet registró 265,1 mm en el mismo período. Ambas estaciones están separadas aproximadamente 21,7 km. El evento causó más de 220 víctimas y daños materiales de magnitud excepcional en el área metropolitana de Valencia.
+El 29 de octubre de 2024 una depresión aislada en niveles altos (DANA) generó precipitaciones extremas en la Comunidad Valenciana. La estación 8337X en Turís registró 710,8 mm en 24 horas, estableciendo un récord nacional. La estación V103 en Carlet registró 265,1 mm en el mismo período. Ambas estaciones están separadas aproximadamente 21,7 km. El evento causó más de 220 víctimas y daños materiales de magnitud excepcional en el área metropolitana de Valencia.
 
 El problema estadístico que plantea el episodio es la estimación del período de retorno de precipitación extrema de corta duración en una región con alta variabilidad interanual, series pluviométricas de longitud limitada y registros históricos que no habían incluido jamás un evento de esta magnitud. En estas condiciones, los métodos clásicos de estimación muestran una sensibilidad extrema a la inclusión o exclusión del evento en la serie, con estimaciones de período de retorno que varían en órdenes de magnitud dependiendo del enfoque utilizado \parencite{deljesus2025jia}.
 
@@ -430,17 +430,17 @@ El problema estadístico que plantea el episodio es la estimación del período 
 
 El estudio aplica y compara tres métodos de ajuste de la distribución GEV sobre series de máximos anuales de precipitación diaria acumulada en dos niveles de análisis: individual por estación y regional de frecuencia.
 
-El análisis individual se centra en las estaciones 8137X (Turis) y V103 (Carlet). Se ajusta la distribución GEV mediante máxima verosimilitud (MLE), L-momentos y estimación bayesiana con priors débiles mediante MCMC hamiltoniano (4 cadenas, 1000 muestras) con PyMC, siguiendo la estructura del módulo \texttt{pyhydra.climate.time\_series}. Para cada método se comparan dos escenarios: con y sin la inclusión del evento de 2024 en la serie.
+El análisis individual se centra en las estaciones 8337X (Turís) y V103 (Carlet). Se ajusta la distribución GEV mediante máxima verosimilitud (MLE), L-momentos y estimación bayesiana con priors débiles mediante MCMC hamiltoniano (4 cadenas, 1000 muestras) con PyMC, siguiendo la estructura del módulo \texttt{pyhydra.climate.time\_series}. Para cada método se comparan dos escenarios: con y sin la inclusión del evento de 2024 en la serie.
 
-El análisis regional de frecuencia se aplica a dos escalas. El RFA local utiliza un grupo de 9 estaciones ubicadas en el entorno de Turis y Carlet, seleccionadas por proximidad espacial y coherencia pluviométrica. El RFA global utiliza una red ampliada de estaciones distribuidas por la Comunidad Valenciana. En ambos casos se emplea el procedimiento de Hosking y Wallis \parencite{hosking1997rfa}: estandarización de series (Z-score por estación), construcción de la muestra regional (máximo anual entre estaciones estandarizadas), y ajuste GEV a la serie regional mediante los tres métodos. La transferencia a escala local se realiza mediante la transformación inversa $z_{T,i} = y_T \cdot s_i + \bar{x}_i$, donde $y_T$ es el cuantil regional adimensional para el período de retorno $T$, y $s_i$ y $\bar{x}_i$ son la desviación típica y la media empíricas de la estación de interés. El conjunto de datos empleado comprende 224 estaciones (30 AEMET, 41 SIAR, 153 AVAMET).
+El análisis regional de frecuencia se aplica a dos escalas. El RFA local utiliza un grupo de 9 estaciones ubicadas en el entorno de Turís y Carlet, seleccionadas por proximidad espacial y coherencia pluviométrica. El RFA global utiliza una red ampliada de estaciones distribuidas por la Comunidad Valenciana. En ambos casos se emplea el procedimiento de Hosking y Wallis \parencite{hosking1997rfa}: estandarización de series (Z-score por estación), construcción de la muestra regional (máximo anual entre estaciones estandarizadas), y ajuste GEV a la serie regional mediante los tres métodos. La transferencia a escala local se realiza mediante la transformación inversa $z_{T,i} = y_T \cdot s_i + \bar{x}_i$, donde $y_T$ es el cuantil regional adimensional para el período de retorno $T$, y $s_i$ y $\bar{x}_i$ son la desviación típica y la media empíricas de la estación de interés. El conjunto de datos empleado comprende 224 estaciones (30 AEMET, 41 SIAR, 153 AVAMET).
 
 \subsection{Resultados}
 
-Los resultados del análisis individual muestran una sensibilidad extrema de los métodos clásicos a la inclusión del evento. Sin incluir la DANA, el método bayesiano estima para Turis un nivel de precipitación de 260 mm para un período de retorno de 100 años y 417,6 mm para 500 años. Al incluir el evento, las mismas estimaciones ascienden a 952 mm y 3004 mm respectivamente (Tabla~\ref{tab:results_valencia_individual}). Para los L-momentos la variación es menos pronunciada pero mantiene la misma tendencia.
+Los resultados del análisis individual muestran una sensibilidad extrema de los métodos clásicos a la inclusión del evento. Sin incluir la DANA, el método bayesiano estima para Turís un nivel de precipitación de 260 mm para un período de retorno de 100 años y 417,6 mm para 500 años. Al incluir el evento, las mismas estimaciones ascienden a 952 mm y 3004 mm respectivamente (Tabla~\ref{tab:results_valencia_individual}). Para los L-momentos la variación es menos pronunciada pero mantiene la misma tendencia.
 
 \begin{table}[htbp]
   \centering
-  \caption{Niveles de precipitación estimados (mm) para distintos períodos de retorno en Turis y Carlet. Análisis individual. El valor bayesiano se expresa en mm; MLE y L-momentos como porcentaje de cambio respecto al bayesiano.}
+  \caption{Niveles de precipitación estimados (mm) para distintos períodos de retorno en Turís y Carlet. Análisis individual. El valor bayesiano se expresa en mm; MLE y L-momentos como porcentaje de cambio respecto al bayesiano.}
   \label{tab:results_valencia_individual}
   \resizebox{\textwidth}{!}{%
   \begin{tabular}{llrrrrrrr}
@@ -449,8 +449,8 @@ Los resultados del análisis individual muestran una sensibilidad extrema de los
     \cmidrule(lr){3-5}\cmidrule(lr){6-8}
     Estación & T & Bayes (mm) & MLE (\%) & L-mom (\%) & Bayes (mm) & MLE (\%) & L-mom (\%) \\
     \midrule
-    Turis & 10  & 126,0 & -5,5 & -5,1 & 195,2 & -4,9 & -15,3 \\
-    (8137X) & 100 & 260,2 & -12,7 & -16,2 & 952,0 & -13,7 & -20,6 \\
+    Turís & 10  & 126,0 & -5,5 & -5,1 & 195,2 & -4,9 & -15,3 \\
+    (8337X) & 100 & 260,2 & -12,7 & -16,2 & 952,0 & -13,7 & -20,6 \\
            & 500 & 417,6 & -18,6 & -25,3 & 3004,1 & -21,0 & -24,0 \\
     \midrule
     Carlet & 10  & 125,5 & -3,7 & -2,6 & 146,3 & -3,9 & -3,3 \\
@@ -460,7 +460,7 @@ Los resultados del análisis individual muestran una sensibilidad extrema de los
   \end{tabular}}
 \end{table}
 
-El período de retorno estimado para los valores observados el 29 de octubre de 2024 (710,8 mm en Turis, 265,1 mm en Carlet) es especialmente revelador. Sin incluir el evento en la serie, los métodos clásicos estiman períodos de retorno superiores a 11.000 años en Turis (MLE) y de más de 31.000 años (L-momentos), mientras que el método bayesiano estima 3.069 años. Al incluir el evento, las estimaciones descienden bruscamente a valores coherentes: entre 66 y 91 años en Turis y entre 70 y 95 años en Carlet (Tabla~\ref{tab:returns_valencia}).
+El período de retorno estimado para los valores observados el 29 de octubre de 2024 (710,8 mm en Turís, 265,1 mm en Carlet) es especialmente revelador. Sin incluir el evento en la serie, los métodos clásicos estiman períodos de retorno superiores a 11.000 años en Turís (MLE) y de más de 31.000 años (L-momentos), mientras que el método bayesiano estima 3.069 años. Al incluir el evento, las estimaciones descienden bruscamente a valores coherentes: entre 66 y 91 años en Turís y entre 70 y 95 años en Carlet (Tabla~\ref{tab:returns_valencia}).
 
 \begin{table}[htbp]
   \centering
@@ -473,18 +473,18 @@ El período de retorno estimado para los valores observados el 29 de octubre de 
     \cmidrule(lr){2-4}\cmidrule(lr){5-7}
     Estación & Bayes & MLE & L-mom & Bayes & MLE & L-mom \\
     \midrule
-    Turis (710,8 mm)  & 3069 & 11453 & 31345 & 66 & 80 & 91 \\
+    Turís (710,8 mm)  & 3069 & 11453 & 31345 & 66 & 80 & 91 \\
     Carlet (265,1 mm) & 536  & 1616  & 1329  & 70 & 95 & 75 \\
     \bottomrule
   \end{tabular}}
 \end{table}
 
-El análisis RFA local (9 estaciones próximas) produce estimaciones más estables que el análisis individual: el período de retorno del evento en Turis, sin incluir la DANA, se estima entre 581.741 y 7.549.328 años (valores sin sentido práctico), mientras que al incluirlo desciende a 34-41 años. El RFA global tiende a suavizar los efectos del evento extremo, produciendo períodos de retorno de 10-19 años en Turis con la DANA incluida.
+El análisis RFA local (9 estaciones próximas) produce estimaciones más estables que el análisis individual: el período de retorno del evento en Turís, sin incluir la DANA, se estima entre 581.741 y 7.549.328 años (valores sin sentido práctico), mientras que al incluirlo desciende a 34-41 años. El RFA global tiende a suavizar los efectos del evento extremo, produciendo períodos de retorno de 10-19 años en Turís con la DANA incluida.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\linewidth]{figures/fig_valencia_curvas_retorno}
-  \caption{Análisis comparativo de los métodos de ajuste GEV en la estación 8137X (Turís) para el período de retorno de 100 años, excluyendo (izquierda) e incluyendo (derecha) el episodio DANA del 29 de octubre de 2024. La distribución posterior bayesiana completa se representa como área verde; las líneas discontinuas señalan la mediana bayesiana, el cuantil MLE y el cuantil por L-momentos. La inclusión del evento desplaza la mediana de 126 mm (sin evento) a 195 mm (con evento) y amplía significativamente la dispersión, evidenciando la superioridad del enfoque bayesiano para representar la incertidumbre ante eventos extremos sin precedente histórico. Fuente: \parencite{navas2025valenciaIA}.}
+  \includegraphics[width=\linewidth]{figures/fig_valencia_curvas_retorno_pre_dana_notebook.png}
+  \caption[Curvas de nivel de retorno GEV pre-DANA en Turís]{Curvas de nivel de retorno GEV para la estación 8337X (Turís), obtenidas con la serie de máximos anuales previa al episodio de 2024 en el notebook \texttt{pilot\_cases/valencia\_dana/02\_extreme\_value\_analysis.ipynb}. La curva azul corresponde al ajuste por máxima verosimilitud y la curva verde al ajuste por L-momentos; los puntos representan las posiciones empíricas de los máximos anuales disponibles hasta 2023. Salida computada del notebook del caso Valencia.}
   \label{fig:valencia_curvas_retorno}
 \end{figure}
 
@@ -492,7 +492,7 @@ El análisis RFA local (9 estaciones próximas) produce estimaciones más establ
   \centering
   \begin{subfigure}{0.94\textwidth}
     \includegraphics[width=\textwidth]{figures/fig_valencia_return_levels_8337X_clean.png}
-    \caption{Turís (8137X).}
+    \caption{Turís (8337X).}
     \label{fig:valencia_rl_turis}
   \end{subfigure}
   \vspace{0.8em}
@@ -501,7 +501,7 @@ El análisis RFA local (9 estaciones próximas) produce estimaciones más establ
     \caption{Carlet (V103).}
     \label{fig:valencia_rl_carlet}
   \end{subfigure}
-  \caption{Comparación de niveles de retorno para $T=100$ años en las estaciones de Turís y Carlet, con y sin inclusión del episodio DANA del 29 de octubre de 2024. La figura procede del análisis del caso Valencia \parencite{navas2025valenciaIA}; se reproduce como evidencia de contraste metodológico, no como salida directa de un notebook general de \hydra.}
+  \caption{Comparación de niveles de retorno para $T=100$ años en las estaciones de Turís y Carlet, con y sin inclusión del episodio DANA del 29 de octubre de 2024. La figura procede del análisis reproducible del caso Valencia \parencite{navas2025valenciaIA} y se incorpora como evidencia de contraste metodológico.}
   \label{fig:valencia_return_levels}
 \end{figure}
 
@@ -519,7 +519,7 @@ La conclusión principal del estudio \parencite{navas2025valenciaIA} es que el m
 
 El Lago Tanganica, en la región de los Grandes Lagos de África, es una masa de agua compartida por Burundi, República Democrática del Congo, Tanzania y Zambia, con una cuenca de más de 230.000 km\textsuperscript{2}. La variabilidad creciente de sus niveles, atribuida al cambio climático, plantea riesgos directos sobre infraestructuras costeras como el puerto de Kalundu (Burundi). El diseño de la nueva infraestructura portuaria requiere definir cotas de nivel para distintos períodos de retorno bajo escenarios futuros de emisión, en un contexto donde los registros instrumentales continuos son muy limitados \parencite{navas2025tanganika}.
 
-Este caso ilustra como la metodología de \hydra puede extenderse a sistemas lacustres en regiones con escasa instrumentación, combinando datos de teledetección, reanálisis climático y proyecciones CMIP6.
+Este caso ilustra cómo la metodología de \hydra puede extenderse a sistemas lacustres en regiones con escasa instrumentación, combinando datos de teledetección, reanálisis climático y proyecciones CMIP6.
 
 \subsection{Metodología aplicada}
 
