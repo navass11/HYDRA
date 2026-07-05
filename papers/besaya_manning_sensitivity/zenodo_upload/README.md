@@ -79,7 +79,7 @@ zenodo_upload/
 ## Data file descriptions
 
 ### `data/manning_roughness_coefficients.csv`
-Bibliographic Manning *n* values per land-use class (9 classes, 4–9 values each)
+Bibliographic Manning *n* values per land-use class (9 classes, 7 values each)
 together with the preferred parametric distribution selected by KS test
 (normal, log-normal, or gamma) and its fitted parameters.
 Used as input to the Monte Carlo sampler.
