@@ -14,6 +14,7 @@ SFINCS and HEC-RAS, and forms part of the validation case studies for the
 
 - **Code and tools used:** [github.com/navass11/HYDRA](https://github.com/navass11/HYDRA) (`main` branch) and [github.com/navass11/pyhydra](https://github.com/navass11/pyhydra)
 - **Live HYDRA demo:** [hydra-web.yellowwave-5aaa93b0.spaincentral.azurecontainerapps.io](https://hydra-web.yellowwave-5aaa93b0.spaincentral.azurecontainerapps.io/)
+- **Article data and code archive on Zenodo:** https://doi.org/10.5281/zenodo.20672451 *(reserved; public release upon acceptance)*
 - **pyhydra on Zenodo:** https://doi.org/10.5281/zenodo.20932555
 
 ## Repository structure
