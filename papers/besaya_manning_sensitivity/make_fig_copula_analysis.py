@@ -11,6 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
+sys.path.insert(0, "/Users/salvadornavasfernandez/Desktop/Github/HYDRA")
 import numpy as np
 import pandas as pd
 import matplotlib
@@ -23,16 +24,16 @@ from scipy.stats import norm, pearsonr
 from sklearn.mixture import GaussianMixture
 from pyhydra.modeling.hydraulic.sensitivity import (
     generate_manning_combinations_correlated,
-    _best_distribution,
+    best_distribution,
 )
 
 # ── Paths ────────────────────────────────────────────────────────────────────
-NB_DIR = ROOT / "notebooks" / "modeling" / "hydraulic" / "manning_sensitivity"
-BASE = NB_DIR / "data"
-DIST_CSV = BASE / "manning_roughness_coefficients_dist.csv"
-REF_CSV = BASE / "combinaciones_rugosidad.csv"
-RESULTS_CSV = NB_DIR / "comparison_sfincs_hecras_clean.csv"
-OUT_DIR = ROOT / "papers" / "besaya_manning_sensitivity" / "figures"
+HERE = Path(__file__).resolve().parent
+DATA_DIR = HERE / "zenodo_upload" / "data"
+DIST_CSV = DATA_DIR / "manning_roughness_coefficients.csv"
+REF_CSV = DATA_DIR / "monte_carlo_combinations.csv"
+RESULTS_CSV = DATA_DIR / "comparison_clean_995.csv"
+OUT_DIR = HERE / "figures"
 
 # REMOVE already applied in the clean CSV — do not drop again
 
@@ -71,7 +72,7 @@ for _, row in df_dist.iterrows():
     if str(row["N"]) == "-999":
         continue
     values = np.array([float(v) for v in str(row["N"]).split(",")])
-    dist_name, params = _best_distribution(values)
+    dist_name, params = best_distribution(values)
     dist = getattr(stats, dist_name)
     mu, sigma = dist.stats(*params[:-2], loc=params[-2], scale=params[-1], moments="mv")
     class_means[row["Descripción"]]  = float(mu)
@@ -110,9 +111,9 @@ r_all, p_all = pearsonr(nbar_sim, area)
 COLORS = ["#1f77b4", "#ff7f0e", "#2ca02c"]   # blue, orange, green  (rho=0,0.5,1)
 RHO_LABELS = [r"$\rho=0$", r"$\rho=0.5$", r"$\rho=1$"]
 
-fig = plt.figure(figsize=(11, 3.8))
+fig = plt.figure(figsize=(11, 4.55))
 gs  = gridspec.GridSpec(1, 3, figure=fig, wspace=0.42, left=0.07, right=0.97,
-                        top=0.88, bottom=0.30)
+                        top=0.86, bottom=0.39)
 
 # ── (a) CV amplification ──────────────────────────────────────────────────────
 ax_a = fig.add_subplot(gs[0])
@@ -128,7 +129,9 @@ for rho_num, lbl, col, arr in zip(emp_rhos, RHO_LABELS, COLORS,
 ax_a.set_xlabel("Inter-class correlation " + r"$\rho$", fontsize=9)
 ax_a.set_ylabel(r"CV$(\bar{n})$  [%]", fontsize=9)
 ax_a.set_title(r"(a) CV amplification of $\bar{n}$", fontsize=9, fontweight="bold")
-ax_a.legend(fontsize=7.5, framealpha=0.9)
+ax_a.legend(fontsize=6.9, framealpha=0.9, loc="upper center",
+            bbox_to_anchor=(0.5, -0.30), ncol=3,
+            borderpad=0.55, columnspacing=0.75, handlelength=1.45)
 ax_a.set_xlim(-0.05, 1.05)
 ax_a.grid(True, alpha=0.35)
 
@@ -143,7 +146,9 @@ ax_b.axvline(np.mean([nbar[k].mean() for k in RHO_LABELS]),
 ax_b.set_xlabel(r"Area-weighted mean Manning $\bar{n}$", fontsize=9)
 ax_b.set_ylabel("Density", fontsize=9)
 ax_b.set_title(r"(b) Distribution of $\bar{n}$ by scenario", fontsize=9, fontweight="bold")
-ax_b.legend(fontsize=8, framealpha=0.9)
+ax_b.legend(fontsize=6.9, framealpha=0.9, loc="upper center",
+            bbox_to_anchor=(0.5, -0.30), ncol=3,
+            borderpad=0.55, columnspacing=0.75, handlelength=1.45)
 ax_b.grid(True, alpha=0.35)
 
 # ── (c) n̄ vs flood output ────────────────────────────────────────────────────
@@ -179,8 +184,9 @@ ax_c.grid(True, alpha=0.35)
 
 # Legend below the axes to avoid overlap
 ax_c.legend(fontsize=7, loc="upper center",
-            bbox_to_anchor=(0.5, -0.28), ncol=2,
-            framealpha=0.9, borderpad=0.6, columnspacing=0.8)
+            bbox_to_anchor=(0.5, -0.30), ncol=3,
+            framealpha=0.9, borderpad=0.55, columnspacing=0.65,
+            handlelength=1.45)
 
 # ── Suptitle ──────────────────────────────────────────────────────────────────
 fig.suptitle("Effect of inter-class Manning correlation on spatial-mean roughness "

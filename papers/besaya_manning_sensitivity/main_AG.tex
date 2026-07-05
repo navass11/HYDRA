@@ -77,12 +77,12 @@
                 country={Spain}}
 
 \author[3]{Manuel del Jesus}
+\ead[orcid]{0000-0003-0703-8960}
 \credit{Resources, Supervision, Funding acquisition, Writing -- review \& editing}
 
-\affiliation[3]{organization={Escuela T\'ecnica Superior de Ingenieros de Caminos, Canales y Puertos, Universidad de Cantabria},
-                addressline={Avda. de los Castros s/n},
+% ROR Universidad de Cantabria: https://ror.org/046ffzj20
+\affiliation[3]{organization={Departamento de Ciencias y T\'ecnicas del Agua y del Medio Ambiente, Universidad de Cantabria},
                 city={Santander},
-                postcode={39005},
                 country={Spain}}
 
 \cortext[1]{Corresponding author}
@@ -90,25 +90,19 @@
 %% ---------------------------------------------------------------------------
 \begin{abstract}
 Manning roughness uncertainty in 2D flood models is usually assessed within a
-single model structure. We compare SFINCS and HEC-RAS --- configurations that
-differ in governing-equation approximation, mesh design and numerical
-implementation --- using a paired Monte Carlo ensemble of 995 valid roughness
-realisations for a $T=500$-year design flood in the Besaya River floodplain,
-northern Spain. Spatially averaged Manning values explain less than 2\% of
-domain-scale flood-output variance in either model, yet the same inputs produce
-contrasting uncertainty structures. HEC-RAS shows larger ensemble variability
-than SFINCS and a bimodal flooded-area distribution, whereas SFINCS remains
-narrow and unimodal. Spatial inundation-frequency maps link the HEC-RAS regimes
-to a 60.1~m topographic saddle controlling access to a 7.4~ha secondary
+single model structure. We compare SFINCS and HEC-RAS, two configurations
+differing in governing equations, mesh design and numerical implementation,
+using 995 valid paired roughness realisations for a $T=500$-year design flood
+in the Besaya River floodplain, northern Spain. Spatially averaged Manning
+values explain less than 2\% of domain-scale flood-output variance in both
+models, yet the same inputs produce contrasting uncertainty structures:
+HEC-RAS shows larger ensemble variability and a bimodal flooded-area
+distribution, whereas SFINCS remains unimodal. Inundation-frequency maps link
+the HEC-RAS regimes to a 60.1~m saddle controlling access to a 7.4~ha secondary
 floodplain compartment. The bimodality persists under alternative metrics and
-correlated-roughness robustness checks, indicating that the complete modelling
-configuration, not only the governing equations, can alter the shape of
+correlated-roughness checks, indicating that modelling configuration can alter
 probabilistic flood-hazard distributions near threshold-controlled topographic
-features. This finding is based on a single site and a single return period;
-whether threshold-controlled bimodal responses are a general feature of
-full-momentum models in floodplains with saddle-controlled secondary compartments
-remains an open question requiring testing across additional sites and event
-magnitudes.
+features. Generalisation requires additional sites and event magnitudes.
 \end{abstract}
 
 \begin{highlights}
@@ -116,12 +110,12 @@ magnitudes.
 \item Mean Manning explains less than 2\% of output variance in both models.
 \item HEC-RAS yields a bimodal area response; SFINCS remains unimodal.
 \item A 60.1 m saddle controls access to a secondary floodplain compartment.
-\item Model configuration --- not governing equations alone --- determines the shape of the uncertainty distribution.
+\item Model configuration, not equations alone, shapes the uncertainty structure.
 \end{highlights}
 
 \begin{keywords}
 Manning roughness \sep Monte Carlo simulation \sep 2D flood modelling \sep
-SFINCS \sep HEC-RAS \sep model-structure uncertainty \sep flood hazard
+SFINCS \sep HEC-RAS \sep model-structure uncertainty
 \end{keywords}
 
 \maketitle
@@ -141,7 +135,7 @@ This distinction matters because model structure is itself a source of uncertain
 
 This is a relevant gap because flood-risk practice increasingly relies on ensembles of models spanning different complexity levels \citep{teng2017,liu2019,shustikova2019}. \sfincs{} \citep{deltares2023sfincs} and \hecras{} \citep{usace2026rasuser,usace2026rastech} represent two widely used but hydraulically distinct approaches to 2D flood modelling. \sfincs{} solves the simplified inertial approximation, retaining local acceleration and pressure-gradient terms while neglecting the advective acceleration term $\mathbf{u}\cdot\nabla\mathbf{u}$. This simplification provides an efficient solver suitable for real-time and large-scale applications \citep{bates2010,neal2018}, but may be less suited to situations where inertial momentum transport controls local floodplain connectivity. \hecras{}, in the configuration used here, solves the full 2D Saint-Venant equations, retaining advective momentum terms at the cost of greater computational demand. Previous studies have compared models of different complexity for mean-state predictions in riverine, estuarine or data-scarce settings \citep{horritt2002,kumbier2019,shustikova2019}, but their differential response to the same stochastic Manning ensemble remains insufficiently explored.
 
-This paper uses Manning roughness uncertainty as an entry point to examine model-structure effects in 2D flood inundation modelling. We compare \sfincs{} and \hecras{} for the Besaya River floodplain at Corrales de Buelna, northern Spain, under a $T = 500$-year design flood. Nine land-use classes are assigned probabilistic Manning ranges from bibliographic sources. A Monte Carlo ensemble of \num{1000} roughness combinations is generated and applied to both models under identical hydrological forcing and boundary conditions. After excluding five simulations affected by numerical non-convergence, \num{995} paired simulations are analysed using aggregated flood metrics, inter-model comparison statistics, mixture-based regime classification and spatial inundation-frequency maps. The post-processing workflow is implemented in the open-source \texttt{pyhydra} Python package.
+This paper uses Manning roughness uncertainty as an entry point to examine model-structure effects in 2D flood inundation modelling. We compare \sfincs{} and \hecras{} for the Besaya River floodplain at Corrales de Buelna, northern Spain, under a $T = 500$-year design flood. Nine land-use classes are assigned probabilistic Manning ranges from bibliographic sources. A Monte Carlo ensemble of \num{1000} roughness combinations is generated and applied to both models under identical hydrological forcing and boundary conditions. After excluding five simulations affected by numerical non-convergence, \num{995} paired simulations are analysed using aggregated flood metrics, inter-model comparison statistics, mixture-based regime classification and spatial inundation-frequency maps. The complete workflow --- ensemble generation, model automation and post-processing --- is implemented in \texttt{pyhydra}, an open-source Python package developed by the authors for this study and presented in this article (Section \emph{Software and data availability}).
 
 The study addresses four questions:
 \begin{enumerate}
@@ -157,21 +151,21 @@ The contribution of the paper is threefold. First, it provides a paired Monte Ca
 
 %% ===========================================================================
 \section{Study area}\label{sec:area}
-The study area is located in the Besaya River floodplain at Los Corrales de Buelna, in the central part of Cantabria, northern Spain (Figure~\ref{fig:location}). The Besaya River drains a catchment of approximately 680~km\textsuperscript{2} in the Cantabrian Range and flows northwards towards the Cantabrian Sea, discharging near Torrelavega. The basin has a humid Atlantic climate, with mean annual precipitation of about 1200--1600~mm. Rainfall occurs throughout the year, although winter months are typically wetter. Floods are mainly associated with long-duration frontal systems linked to Atlantic depressions, while shorter convective storms can produce faster responses in some upper sub-catchments.
+The study area is located in the Besaya River floodplain at Los Corrales de Buelna, in the central part of Cantabria, northern Spain (Figure~\ref{fig:location}). The Besaya River drains a catchment of approximately 680~km\textsuperscript{2} in the Cantabrian Range and flows northwards towards the Cantabrian Sea, discharging near Torrelavega. The basin has a humid Atlantic climate, with a mean annual precipitation of approximately 1400~mm, ranging from about 1200~mm in the lower valley to 1600~mm in the upper catchment. Rainfall occurs throughout the year, although winter months are typically wetter. Floods are mainly associated with long-duration frontal systems linked to Atlantic depressions, while shorter convective storms can produce faster responses in some upper sub-catchments.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\textwidth]{figures/fig00_location_map.pdf}\caption{Study area and model domain. (a) Regional location of Corrales de Buelna in Cantabria, northern Spain. (b) Satellite view of the 2D simulation domain. (c) CORINE-derived land-use classification used to assign Manning roughness classes.}
+  \includegraphics[width=\textwidth]{figures/fig00_location_map.pdf}\caption{Study area and model domain. (a) Regional location of Corrales de Buelna in Cantabria, northern Spain. (b) Satellite view of the 2D simulation domain. (c) CORINE-derived land-use classification used to assign Manning roughness classes. Administrative boundaries are shown only for geographic context and do not imply any position regarding jurisdictional claims.}
   \label{fig:location}
 \end{figure}
 
 The analysed reach covers the urban and peri-urban floodplain of Los Corrales de Buelna, approximately 20~km upstream from the river mouth. It is about 4.5~km long and lies at elevations of roughly 55--70~m~a.s.l. in the ETRS89/UTM Zone~30N coordinate system (EPSG:25830). The active channel is typically 20--40~m wide and is incised several metres below the surrounding low terrace. As a result, the main inundation corridor is well defined, but lateral connectivity with adjacent low-lying areas depends on relatively small differences in local topography.
 
-Land use changes markedly across the floodplain. Industrial and light-commercial areas occupy much of the right bank, mixed with residential zones and transport infrastructure. The left bank is more open and vegetated, with riparian woodland, dense gallery vegetation, pasture and brushland. This combination of built-up surfaces, channel margins and vegetated floodplain areas makes the reach suitable for analysing the propagation of spatially distributed Manning roughness uncertainty. In the model domain, sparse vegetation and residential areas are the dominant classes, accounting for approximately 43.6\% and 18.4\% of the mapped area, respectively (Figure~\ref{fig:location}c).
+Land use changes markedly across the floodplain. Industrial and light-commercial areas occupy much of the left bank, mixed with residential zones and transport infrastructure. The right bank is more open and vegetated, with riparian woodland, dense gallery vegetation, pasture and brushland. This combination of built-up surfaces, channel margins and vegetated floodplain areas makes the reach suitable for analysing the propagation of spatially distributed Manning roughness uncertainty. In the model domain, sparse vegetation and residential areas are the dominant classes, accounting for approximately 43.6\% and 18.4\% of the mapped area, respectively (Figure~\ref{fig:location}c).
 
-A notable feature of the reach is a secondary low-lying area on the left bank, separated from the main inundation corridor by a local topographic saddle at approximately 60~m~a.s.l. The depression covers about 7.4~ha and lies mainly below the saddle elevation. Its hydraulic connection to the primary floodplain therefore depends on whether water levels at the controlling saddle are exceeded during the event. This topographic configuration is relevant for the interpretation of the ensemble results presented later in the paper, but it is introduced here simply as a geomorphic feature of the study reach.
+A notable feature of the reach is a secondary low-lying area on the right bank, separated from the main inundation corridor by a local topographic saddle at approximately 60~m~a.s.l. The depression covers about 7.4~ha and lies mainly below the saddle elevation. Its hydraulic connection to the primary floodplain therefore depends on whether water levels at the controlling saddle are exceeded during the event. This topographic configuration is relevant for the interpretation of the ensemble results presented later in the paper, but it is introduced here simply as a geomorphic feature of the study reach.
 
-The Besaya River is gauged at Corrales de Buelna (station A025, MITERD/CHC). The annual maximum peak-flow record indicates a strongly skewed flood regime, consistent with the use of extreme-value methods for design-flow estimation. The reach has experienced several damaging floods, including events in 1983, 2010 and 2019; the 2019 flood caused damage to industrial premises on the right bank. The area is also included in the Spanish \emph{Sistema Nacional de Cartograf\'{\i}a de Zonas Inundables} (SNCZI), which provides regulatory flood-hazard information for several return periods, including the 500-year low-probability scenario \citep{miterd2026saih,miterd2026snczi}. The design event and the basic hydraulic-modelling framework used here build on a previous flood-risk assessment of this reach \citep{navas2018rop}. 
+The Besaya River is gauged at Corrales de Buelna (station A025, MITERD/CHC). The annual maximum peak-flow record indicates a strongly skewed flood regime, consistent with the use of extreme-value methods for design-flow estimation. The reach has experienced several damaging floods, including events in 1983, 2010 and 2019; the 2019 flood caused damage to industrial premises on the left bank. The area is also included in the Spanish \emph{Sistema Nacional de Cartograf\'{\i}a de Zonas Inundables} (SNCZI), which provides regulatory flood-hazard information for several return periods, including the 500-year low-probability scenario \citep{miterd2026saih,miterd2026snczi}. The design event and the basic hydraulic-modelling framework used here build on a previous flood-risk assessment of this reach \citep{navas2018rop}. 
 
 The terrain representation is based on a 5~m resolution digital elevation model derived from airborne LiDAR data acquired by the Spanish Instituto Geográfico Nacional (IGN) in 2018, with a reported vertical RMSE below 0.15~m \citep{ign2018pnoa}. The DEM was hydrologically conditioned to remove spurious depressions and preserve channel connectivity. The same conditioned terrain model was used in both hydraulic models so that differences between simulations were not introduced through the elevation input.
 
@@ -219,11 +213,11 @@ The methodological workflow follows the same roughness ensemble through two hydr
 \subsection{Monte Carlo representation of Manning roughness uncertainty}\label{sec:manning_mc}
 Manning roughness uncertainty was represented at the level of land-use classes. For each of the nine classes used in the hydraulic models, a set of reference \nman{} values was compiled from standard roughness sources: \citet{chow1959} for the main channel and vegetated floodplain classes, \citet{barnes1967} for natural channel and forested floodplain conditions, \citet{brater1996} for urban and infrastructure surfaces, and \citet{arcement1989} for composite floodplain roughness. These values were not treated as site measurements, but as empirical support for plausible class-level roughness ranges applicable to the Corrales de Buelna floodplain. Between four and nine values were available for each class, with a median of six. This amount of information is sufficient to define pragmatic sampling distributions for uncertainty propagation, but not to infer detailed distributional shapes with high statistical confidence.
 
-For each land-use class, three candidate parametric distributions were fitted: normal ($\mathcal{N}$), log-normal ($\ln\mathcal{N}$) and gamma ($\Gamma$). Log-normal and gamma distributions ensure strictly positive values, while the normal distribution was also retained as a candidate because, over the roughness ranges considered here, its fitted probability mass below zero was negligible or removed during sampling. These distribution families are commonly used in environmental and hydraulic uncertainty analyses, including roughness-sensitivity studies \citep{pappenberger2005,savage2016}. Parameters were estimated by maximum likelihood using \texttt{scipy.stats.fit}, and the Kolmogorov--Smirnov statistic was used as a selection criterion against the reference values available for each class. The candidate distribution with the highest KS $p$-value was selected for sampling. With only four to nine reference values per class, none of the three families is statistically distinguishable from the others; the selection is therefore a transparent but pragmatic rule, not a statistically definitive result. No candidate was rejected at the 5\% level, which is expected at these sample sizes. The fitted distributions should be interpreted as pragmatic devices for propagating published roughness ranges rather than as validated descriptions of Manning variability.
+For each land-use class, three candidate parametric distributions were fitted: normal ($\mathcal{N}$), log-normal ($\ln\mathcal{N}$) and gamma ($\Gamma$). Log-normal and gamma distributions ensure strictly positive values, while the normal distribution was also retained as a candidate because, over the roughness ranges considered here, its fitted probability mass below zero was negligible or removed during sampling. These distribution families are commonly used in environmental and hydraulic uncertainty analyses, including roughness-sensitivity studies \citep{pappenberger2005,savage2016}. Parameters were estimated by maximum likelihood using \texttt{scipy.stats.fit} \citep{virtanen2020scipy}, and the Kolmogorov--Smirnov statistic was used as a selection criterion against the reference values available for each class. The candidate distribution with the highest KS $p$-value was selected for sampling. With only four to nine reference values per class, none of the three families is statistically distinguishable from the others; the selection is therefore a transparent but pragmatic rule, not a statistically definitive result. No candidate was rejected at the 5\% level, which is expected at these sample sizes. The fitted distributions should be interpreted as pragmatic devices for propagating published roughness ranges rather than as validated descriptions of Manning variability.
 
-Sampling was performed in two stages. First, an internal pool of (10,000) positive values was drawn from the selected distribution for each class; negative values, where they occurred for normally distributed classes, were discarded. From this pool, \num{1000} values were then selected without replacement to form the final ensemble for that class. This procedure reduces exact repetition while preserving the empirical shape of the target distribution in the \num{1000}-member ensemble. Combining the nine class-wise samples produced a Manning matrix ($\mathbf{N} \in \mathbb{R}^{1000 \times 9}$), in which each row defines one spatial roughness realisation to be used in both hydraulic models \citep{saltelli2010}.
+Sampling was performed in two stages. First, an internal pool of \num{10000} positive values was drawn from the selected distribution for each class; negative values, where they occurred for normally distributed classes, were discarded. From this pool, \num{1000} values were then selected without replacement to form the final ensemble for that class. This procedure reduces exact repetition while preserving the empirical shape of the target distribution in the \num{1000}-member ensemble. Combining the nine class-wise samples produced a Manning matrix ($\mathbf{N} \in \mathbb{R}^{1000 \times 9}$), in which each row defines one spatial roughness realisation to be used in both hydraulic models \citep{saltelli2010}.
 
-The class-wise samples were generated independently, with no imposed inter-class correlation. This assumption gives a broad exploration of the plausible roughness space and avoids introducing a dependence structure that cannot be estimated reliably from the available bibliographic values. Its effect on the results is assessed separately in Section~\ref{sec:res_robustness} using the \texttt{generate\_manning\_combinations\_correlated} function of the \texttt{pyhydra} package (\url{https://github.com/navass11/pyhydra}), which implements a Gaussian copula sampler for alternative inter-class correlation structures. The random seed was fixed at 42 to ensure reproducibility. Each of the \num{1000} Manning combinations was also written to an individual CSV file mapping land-use codes to roughness values, so that any hydraulic simulation can be reproduced exactly.
+The class-wise samples were generated independently, with no imposed inter-class correlation. This assumption gives a broad exploration of the plausible roughness space and avoids introducing a dependence structure that cannot be estimated reliably from the available bibliographic values. Its effect on the results is assessed separately in Section~\ref{sec:res_robustness} using the \texttt{pyhydra} package, which implements a Gaussian copula sampler for alternative inter-class correlation structures. The random seed was fixed at 42 to ensure reproducibility. Each of the \num{1000} Manning combinations was also written to an individual CSV file mapping land-use codes to roughness values, so that any hydraulic simulation can be reproduced exactly.
 
 
 \subsection{Hydraulic model set-up and simulation protocol}\label{sec:model_setup}
@@ -237,7 +231,7 @@ The same Manning ensemble was propagated through two 2D hydraulic model configur
 \frac{g n^2}{h^{4/3}}\mathbf{u}|\mathbf{u}| &= 0 ,
 \label{eq:sfincs_mom}
 \end{align}
-where $\eta$ is the free-surface elevation, $h = \eta - z_b$ is water depth, $z_b$ is bed elevation, $\mathbf{u}=(u,v)$ is the depth-averaged velocity vector, $g=9.81~\mathrm{m,s^{-2}}$ is gravitational acceleration and \nman is the local Manning roughness coefficient. The simplified inertial approximation is computationally efficient because it avoids the stability constraints associated with the advective momentum terms, allowing larger time steps in many floodplain applications \citep{bates2010}. \sfincs{} was run on a staggered Cartesian grid using its subgrid topography approach, which allows fine-resolution terrain information to be represented within an efficient computational framework \citep{vanormondt2025sfincs}. The model domain comprised ($1201 \times 679$) cells at 5~m resolution. All \num{1000} \sfincs{} simulations were executed on GPU
+where $\eta$ is the free-surface elevation, $h = \eta - z_b$ is water depth, $z_b$ is bed elevation, $\mathbf{u}=(u,v)$ is the depth-averaged velocity vector, $g=9.81~\mathrm{m\,s^{-2}}$ is gravitational acceleration and \nman{} is the local Manning roughness coefficient. The simplified inertial approximation is computationally efficient because it avoids the stability constraints associated with the advective momentum terms, allowing larger time steps in many floodplain applications \citep{bates2010}. \sfincs{} was run on a staggered Cartesian grid using its subgrid topography approach, which allows fine-resolution terrain information to be represented within an efficient computational framework \citep{vanormondt2025sfincs}. The model domain comprised $1201 \times 679$ cells at 5~m resolution. All \num{1000} \sfincs{} simulations were executed on GPU
 through Docker using Deltares SFINCS v2 and an NVIDIA GeForce RTX 3090.
 
 The \hecras{} configuration used HEC-RAS 6.6 \citep{usace2026rasuser,usace2026rastech} with the full 2D Saint-Venant equations. In contrast to the simplified inertial approximation, this formulation retains the advective acceleration term:
@@ -251,9 +245,9 @@ The \hecras{} configuration used HEC-RAS 6.6 \citep{usace2026rasuser,usace2026ra
 \end{align}
 The term $\mathbf{u}\cdot\nabla\mathbf{u}$ represents advective momentum transport and is relevant where flow acceleration and spatial velocity gradients affect floodplain connectivity, for example near constrictions, embankments or topographic saddles. \hecras{} uses an implicit finite-volume solver on an unstructured mesh. The mesh was derived from the same 5~m DEM used for \sfincs{}, with an average cell-edge length of approximately 25~m in the floodplain and refinement to about 5~m in the main channel. Manning values were assigned through a rasterised land-cover file (\texttt{LandCover.hdf}); for each Monte Carlo realisation, this file was updated programmatically using the \texttt{h5py} library so that the corresponding class-wise roughness values were applied to the \hecras{} mesh.
 
-The forcing event was the $(T=500)$-year flood hydrograph for the Besaya River at Los Corrales de Buelna. The hydrograph was generated with a calibrated HEC-HMS model using the Clark unit hydrograph method for runoff transformation and a Soil Moisture Accounting model for losses \citep{usace2000hechms}, following the HEC-HMS setup described in \citet{navas2018rop}, in which parameters were calibrated to the gauged catchment. The resulting peak discharge at the catchment outlet was $Q_{500}=223~\mathrm{m^3\,s^{-1}}$, consistent with the regionalised frequency analysis of this reach \citep{navas2018rop}. The HEC-HMS hydrograph, originally produced at a 2-minute time step, was resampled to a 1-hour interval for input to both hydraulic models. The simulation window covered 19~days, long enough to include the complete rising limb, peak and recession of the event. At the downstream end of the domain, both models used a normal-depth boundary condition with a bed slope of $S_0=0.001~\mathrm{m,m^{-1}}$, estimated from the 5~m DEM along the channel centreline at the outlet.
+The forcing event was the $T=500$-year flood hydrograph for the Besaya River at Los Corrales de Buelna. The hydrograph was generated with a calibrated HEC-HMS model using the Clark unit hydrograph method for runoff transformation and a Soil Moisture Accounting model for losses \citep{usace2000hechms}, following the HEC-HMS setup described in \citet{navas2018rop}, in which parameters were calibrated to the gauged catchment. The resulting peak discharge at the catchment outlet was $Q_{500}=223~\mathrm{m^3\,s^{-1}}$, consistent with the regionalised frequency analysis of this reach \citep{navas2018rop}. The HEC-HMS hydrograph, originally produced at a 2-minute time step, was resampled to a 1-hour interval for input to both hydraulic models. The simulation window covered 19~days, long enough to include the complete rising limb, peak and recession of the event. At the downstream end of the domain, both models used a normal-depth boundary condition with a bed slope of $S_0=0.001~\mathrm{m\,m^{-1}}$, estimated from the 5~m DEM along the channel centreline at the outlet.
 
-Each of the \num{1000} Manning combinations was run once in \sfincs{} and once in \hecras{}, producing a paired hydraulic ensemble. For each simulation, the main output retained for post-processing was the maximum-over-time water-depth raster, \texttt{hamax}. \sfincs{} outputs were already available on the 5~m Cartesian grid, while \hecras{} results were exported to GeoTIFF at 5~m resolution to match the \sfincs{} output grid. The resulting set of \num{2000} GeoTIFF files was managed and analysed in Python using \texttt{xarray} and \texttt{rioxarray}.
+Each of the \num{1000} Manning combinations was run once in \sfincs{} and once in \hecras{}, producing a paired hydraulic ensemble. For each simulation, the main output retained for post-processing was the maximum-over-time water-depth raster, \texttt{hamax}. \sfincs{} outputs were already available on the 5~m Cartesian grid, while \hecras{} results were exported to GeoTIFF at 5~m resolution to match the \sfincs{} output grid. In this export, performed with the RAS~Mapper stored-map procedure, the computed water-surface elevation of each mesh cell is intersected with the underlying 5~m terrain, so that depths are rendered at terrain resolution rather than interpolated between cell centres \citep{usace2026rasuser}.
 
 
 \subsection{Flood-output metrics and ensemble cleaning}\label{sec:metrics_cleaning}
@@ -266,16 +260,16 @@ For each simulation, an effective wet-cell Manning value, $\bar{n}$, was also co
 
 Two additional metrics were retained to check whether the main results were sensitive to the use of mean depth and flooded area alone. The first was inundation volume, $V$, computed as $V = \bar{h}\times A\cdot10^6$. This combines depth and area in a single scalar and is less affected by the addition or removal of near-dry boundary cells, because cells close to $h_{\min}$ contribute little volume relative to the mean inundation depth. The second was the median wet-cell depth, $\tilde{h}$, which is less sensitive than the arithmetic mean to the sudden inclusion of a large number of shallow cells. These two metrics are used later to test whether the two-regime behaviour observed in the \hecras{} ensemble is a property of the hydraulic response rather than an artefact of the selected summary metric.
 
-Before the statistical analysis, the paired ensemble was screened for numerical non-convergences or unstable simulations. Extreme output values were identified using a robust (z)-score based on the median absolute deviation:
+Before the statistical analysis, the paired ensemble was screened for numerical non-convergences or unstable simulations. Extreme output values were identified using a robust $z$-score based on the median absolute deviation:
 \begin{equation}
 z_i^* =
 \frac{|x_i - \mathrm{median}(\mathbf{x})|}
-{1.4826,\mathrm{MAD}(\mathbf{x})} ,
+{1.4826\,\mathrm{MAD}(\mathbf{x})} ,
 \label{eq:robust_z}
 \end{equation}
-where the factor 1.4826 makes the MAD-based scale comparable to the standard deviation under a normal distribution \citep{rousseeuw1993}. A robust statistic was preferred to a classical (z)-score because the latter is itself influenced by the extreme values being detected.
+where the factor 1.4826 makes the MAD-based scale comparable to the standard deviation under a normal distribution \citep{rousseeuw1993}. A robust statistic was preferred to a classical $z$-score because the latter is itself influenced by the extreme values being detected.
 
-The screening was applied across both models and the two primary flood metrics; a simulation pair was flagged if any metric in either model exceeded $z^*>5$. This threshold was deliberately conservative. A lower threshold, such as $z^*>3$, would risk treating the low-area branch of the \hecras{} bimodal distribution as an anomaly, although it forms part of the hydraulic response analysed in this study. With $z^*>5$, five simulations were removed (indices 29, 295, 633, 724 and 755), corresponding to 0.5\% of the original ensemble. Four of these cases had \hecras{} flooded areas above $1.0~\mathrm{km^2}$ or mean depths above $1.7~\mathrm{m}$, values that were inconsistent with the model-domain geometry; the remaining case had an anomalously low \sfincs{} flooded area. Visual inspection of the corresponding \texttt{hamax} rasters confirmed numerical instability or non-convergent behaviour. Full diagnostics, including the flagged metric, robust (z)-score and outputs from both models, are given in Supplementary Table~\ref{tab:anomalous}. The final dataset therefore consists of $N=\num{995}$ valid paired simulations.
+The screening was applied across both models and the two primary flood metrics; a simulation pair was flagged if any metric in either model exceeded $z^*>5$. This threshold was deliberately conservative. A lower threshold, such as $z^*>3$, would risk treating the low-area branch of the \hecras{} bimodal distribution as an anomaly, although it forms part of the hydraulic response analysed in this study. With $z^*>5$, five simulations were removed (indices 29, 295, 633, 724 and 755), corresponding to 0.5\% of the original ensemble. Four of these cases had \hecras{} flooded areas above $1.0~\mathrm{km^2}$ or mean depths above $1.7~\mathrm{m}$, values that were inconsistent with the model-domain geometry; the remaining case had an anomalously low \sfincs{} flooded area. Visual inspection of the corresponding \texttt{hamax} rasters confirmed numerical instability or non-convergent behaviour. Full diagnostics, including the flagged metric, robust $z$-score and outputs from both models, are given in Supplementary Table~\ref{tab:anomalous}. The final dataset therefore consists of $N=\num{995}$ valid paired simulations.
 
 
 \subsection{Inter-model comparison and sensitivity analysis}\label{sec:sensitivity}
@@ -291,7 +285,7 @@ where $\mu$ and $\sigma$ are the ensemble mean and standard deviation of the cor
 Inter-model consistency was assessed using the paired structure of the ensemble. Each Manning realisation produces one \sfincs{} simulation and one \hecras{} simulation, so the two models can be compared realisation by realisation rather than only through their marginal distributions. Pearson correlation was used to quantify whether simulations producing relatively high or low outputs in one model tended to do the same in the other. Mean bias, computed as the \hecras{} ensemble mean minus the corresponding \sfincs{}
 ensemble mean, was used to quantify systematic differences between the models. Root mean square error (RMSE) was computed over paired simulations to summarise the combined effect of systematic offset and simulation-to-simulation disagreement.
 
-The relationship between Manning roughness and the \hecras{} inundation regime identified later in the analysis was evaluated separately. Spearman rank correlations were computed between each individual land-use Manning coefficient and the binary regime label. The same test was also applied to the effective wet-cell Manning value, $\bar{n}$. Differences in Manning values between the two regime groups were assessed using Student's two-sample (t)-test when the distributions were approximately normal, as checked with the Shapiro--Wilk test at $\alpha=0.05$ \citep{shapiro1965}. When this assumption was not met, the Mann--Whitney (U)-test was used instead \citep{mann1947}. All statistical tests were two-tailed and used a
+The relationship between Manning roughness and the \hecras{} inundation regime identified later in the analysis was evaluated separately. Spearman rank correlations were computed between each individual land-use Manning coefficient and the binary regime label. The same test was also applied to the effective wet-cell Manning value, $\bar{n}$. Differences in Manning values between the two regime groups were assessed using Student's two-sample $t$-test when the distributions were approximately normal, as checked with the Shapiro--Wilk test at $\alpha=0.05$ \citep{shapiro1965}. When this assumption was not met, the Mann--Whitney $U$-test was used instead \citep{mann1947}. All statistical tests were two-tailed and used a
 significance level of $\alpha=0.05$.
 
 
@@ -345,7 +339,7 @@ Table~\ref{tab:manning} summarises the bibliographic Manning ranges, the selecte
  \caption{Class-wise Manning roughness distributions used in the Monte Carlo ensemble. Solid curves show the selected fitted distributions, blue histograms show the sampled values, and orange bars indicate the bibliographic reference values.}\label{fig:distributions}
 \end{figure}
 
-The fitted probability density functions and the Monte Carlo histograms are shown in Figure~\ref{fig:distributions}. The close agreement between them indicates that the two-stage sampling procedure, based on an initial pool of (10,000) samples followed by selection of \num{1000} values without replacement, reproduced the intended class-wise distributions. The figure also shows how the shape of each histogram reflects the information contained in the bibliographic values. Classes with tightly grouped reference values, such as infrastructure, generate narrow distributions, whereas classes with more dispersed reference values, such as trees and sparse vegetation, generate broader samples.
+The fitted probability density functions and the Monte Carlo histograms are shown in Figure~\ref{fig:distributions}. The close agreement between them indicates that the two-stage sampling procedure, based on an initial pool of \num{10000} samples followed by selection of \num{1000} values without replacement, reproduced the intended class-wise distributions. The figure also shows how the shape of each histogram reflects the information contained in the bibliographic values. Classes with tightly grouped reference values, such as infrastructure, generate narrow distributions, whereas classes with more dispersed reference values, such as trees and sparse vegetation, generate broader samples.
 
 \begin{figure}[htbp]
   \centering
@@ -493,21 +487,35 @@ Mean $\bar{n}$ (wet cells) & $+0.014$ & 0.660 \\
 \end{table}
 
 
-A different picture emerges when the \sfincs{} flooded area for the same Manning realisation is used as a diagnostic. Although the relationship is not strong enough to predict regime membership deterministically, it is statistically significant: the Spearman correlation between \sfincs{} flooded area and the \hecras{} regime label is $\rho=0.3634$ ($p<10^{-31}$). Low-regime \hecras{} simulations are associated with slightly smaller \sfincs{} flooded areas on average ($0.527~\mathrm{km^2}$, compared with $0.540~\mathrm{km^2}$ for high-regime simulations; $t=-12.6$, $p<10^{-30}$). This suggests that the transition is linked to the overall hydraulic state generated by the full roughness field, rather than to any individual class value. Simulations with slightly lower floodplain activation in \sfincs{} are less likely to achieve hydraulic continuity across the saddle corridor in \hecras{}, even though the two models share the same Manning input and boundary conditions.
+A different picture emerges when the \sfincs{} flooded area for the same Manning realisation is used as a diagnostic. Although the relationship is not strong enough to predict regime membership deterministically, it is statistically significant: the Spearman correlation between \sfincs{} flooded area and the \hecras{} regime label is $\rho=0.36$ ($p<10^{-31}$; Figure~\ref{fig:bifurcation_dist}). Low-regime \hecras{} simulations are associated with slightly smaller \sfincs{} flooded areas on average ($0.527~\mathrm{km^2}$, compared with $0.540~\mathrm{km^2}$ for high-regime simulations; $t=-12.6$, $p<10^{-30}$). This suggests that the transition is linked to the overall hydraulic state generated by the full roughness field, rather than to any individual class value. Simulations with slightly lower floodplain activation in \sfincs{} are less likely to achieve hydraulic continuity across the saddle corridor in \hecras{}, even though the two models share the same Manning input and boundary conditions.
 
-The spatial frequency maps clarify the source of this regime separation (Figure~\ref{fig:bifurcation}). The high-regime simulations inundate a secondary floodplain compartment on the left bank that is largely absent from the low-regime simulations. This area, $\Omega_{\mathrm{secondary}}$, covers approximately 7.4~ha and is wet in
+The spatial frequency maps clarify the source of this regime separation (Figures~\ref{fig:bifurcation} and~\ref{fig:bifurcation_diff}). The high-regime simulations inundate a secondary floodplain compartment on the right bank that is largely absent from the low-regime simulations. This area, $\Omega_{\mathrm{secondary}}$, covers approximately 7.4~ha and is wet in
 more than 60\% of the high-regime simulations but in less than 20\% of the low-regime simulations. The frequency-difference map shows a sharp spatial contrast between this compartment and the surrounding terrain, indicating that the regime shift is not a diffuse change along the flood margin but the activation of a coherent secondary inundation area.
 
 \begin{figure}[p]
   \centering
-  \includegraphics[width=\textwidth]{figures/fig05_hydraulic_bifurcation.pdf}
-  \caption{Spatial and distributional evidence of the \hecras{} regime separation. Panels (a--b) show inundation-frequency maps for the low- and high-area regimes, with the secondary floodplain compartment and controlling topographic saddle indicated. Panel (c) shows the frequency difference between regimes, panel (d) compares flooded-area distributions, and panel (e) relates \sfincs{} flooded area to the \hecras{} regime classification.}
+  \includegraphics[width=\textwidth]{figures/fig05a_bifurcation_maps.pdf}
+  \caption{Spatial evidence of the \hecras{} regime separation: inundation-frequency maps for the low- and high-area regimes. The secondary floodplain compartment is shown by the dashed contour and the controlling topographic saddle at $z=60.1$~m a.s.l.\ by the red triangle.}
   \label{fig:bifurcation}
 \end{figure}
 
-The morphological corridor analysis identifies the controlling connection between the main inundation corridor and $\Omega_{\mathrm{secondary}}$ as a topographic saddle at $z=60.1~\mathrm{m}$ a.s.l.\footnote{EPSG:25830 coordinates: X\,=\,413230, Y\,=\,4793166.} The elevation distribution within $\Omega_{\mathrm{secondary}}$ ranges from low-lying depression cells to higher approach slopes, with the lower percentiles corresponding to the depression floor and the upper percentiles to marginal cells that become wet after connection is established. The spatial pattern therefore supports a hydraulic-connectivity interpretation: the secondary compartment becomes activated only when flow conditions across the saddle corridor provide sufficient hydraulic continuity into the adjacent depression.
+\begin{figure}[p]
+  \centering
+  \includegraphics[width=0.78\textwidth]{figures/fig05c_bifurcation_difference.pdf}
+  \caption{Frequency-difference map for the \hecras{} regime separation. Red cells are exclusively inundated in the high regime and delineate the secondary floodplain compartment.}
+  \label{fig:bifurcation_diff}
+\end{figure}
 
-This compound-connectivity pattern explains the near-horizontal bands in the \hecras{} scatter plots. Once hydraulic continuity across the saddle corridor is established, the secondary compartment is activated as a spatially coherent unit rather than through a gradual expansion of the main flood boundary. The compartment itself accounts for approximately 7.4~ha of additional flooded area, and additional cells are wetted along the connecting corridor and adjacent margins, giving an observed inter-regime difference of about $0.123~\mathrm{km^2}$. The same activation also affects mean depth. The newly connected cells are relatively shallow compared with the pre-existing wet area, so their sudden inclusion changes the wet-cell mean and produces a corresponding band structure in the depth scatter. This behaviour is therefore consistent with a discrete wet/dry transition controlled by local topography, rather than with a continuous response to increasing roughness.
+\begin{figure}[p]
+  \centering
+  \includegraphics[width=\textwidth]{figures/fig05b_bifurcation_distributions.pdf}
+  \caption{Distributional evidence of the \hecras{} regime separation. Panel (a) compares flooded-area distributions for \sfincs{} and the two \hecras{} regimes; panel (b) relates \sfincs{} flooded area to the \hecras{} regime classification for the same Manning realisations.}
+  \label{fig:bifurcation_dist}
+\end{figure}
+
+The morphological corridor analysis identifies the controlling connection between the main inundation corridor and $\Omega_{\mathrm{secondary}}$ as a topographic saddle at $z=60.1~\mathrm{m}$ a.s.l. (EPSG:25830 coordinates: X\,=\,413230, Y\,=\,4793166). The elevation distribution within $\Omega_{\mathrm{secondary}}$ ranges from low-lying depression cells to higher approach slopes, with the lower percentiles corresponding to the depression floor and the upper percentiles to marginal cells that become wet after connection is established. The spatial pattern therefore supports a hydraulic-connectivity interpretation: the secondary compartment becomes activated only when flow conditions across the saddle corridor provide sufficient hydraulic continuity into the adjacent depression.
+
+This compound-connectivity pattern explains the near-horizontal bands in the \hecras{} scatter plots. Once hydraulic continuity across the saddle corridor is established, the secondary compartment is activated as a spatially coherent unit rather than through a gradual expansion of the main flood boundary. The compartment itself accounts for approximately 7.4~ha of additional flooded area, and additional cells are wetted along the connecting corridor and adjacent margins, giving an observed inter-regime difference of about $0.124~\mathrm{km^2}$. The same activation also affects mean depth. The newly connected cells are relatively shallow compared with the pre-existing wet area, so their sudden inclusion changes the wet-cell mean and produces a corresponding band structure in the depth scatter. This behaviour is therefore consistent with a discrete wet/dry transition controlled by local topography, rather than with a continuous response to increasing roughness.
 
 The hydraulic mechanism responsible for the regime-transition behaviour is not fully resolved, but the contrasting responses are consistent with differences in how the two complete model configurations represent flow conditions near the saddle. The \hecras{} configuration combines the full 2D Saint-Venant equations, which retain advective momentum terms ($\mathbf{u}\cdot\nabla\mathbf{u}$), with an unstructured mesh that is coarser in the floodplain ($\sim$25~m) than the 5~m Cartesian grid used by \sfincs{}. Both aspects may contribute to the contrasting connectivity behaviour: the advective terms allow lateral momentum transport towards the saddle that is absent in the simplified inertial formulation, while the coarser floodplain mesh may represent the saddle geometry and connecting corridor differently from the 5~m Cartesian grid. Isolating the relative contribution of these two factors would require an additional controlled experiment --- for example, running \hecras{} with a 5~m structured grid or in diffusion-wave mode on the same mesh --- and is identified as a priority for future work (Section~\ref{sec:limitations}). In the present study, both factors are inseparable components of what is referred to as the model-structure effect. Under some roughness combinations, the flow conditions in the \hecras{} configuration appear sufficient to allow connection to the secondary compartment; under others, hydraulic continuity is not achieved. Because the transition depends on the compound effect of the full roughness field, local velocities, water-surface gradients and the saddle geometry, it is not captured by a single Manning coefficient or by $\bar{n}_{\mathrm{wet}}$. In the \sfincs{} configuration, the combination of the simplified inertial formulation and the regular 5~m grid produces a smoother, unimodal response and does not activate the same secondary compartment as a discrete regime.
 
@@ -598,7 +606,7 @@ At the domain scale, Manning roughness has a weak direct relationship with the m
 Despite this weak direct relationship, the two models respond differently to the same roughness perturbations. \hecras{} shows larger ensemble variability than \sfincs{}, with a depth-sensitivity slope about six times larger and a flooded-area coefficient of variation about four times larger. The paired comparison also shows a systematic positive bias of \hecras{} relative to \sfincs{} of approximately $0.17~\mathrm{m}$ in mean depth and $0.15~\mathrm{km^2}$ in flooded area. Only about one quarter of the
 inter-simulation variance is shared between the two models. These results indicate that the hydraulic configuration is not a neutral part of the uncertainty analysis: it affects both the magnitude of the simulated variability and the form taken by that variability.
 
-The most important difference between the two ensembles is qualitative rather than merely numerical. \sfincs{} produces a narrow, unimodal response, whereas \hecras{} produces a bimodal flooded-area distribution. The two \hecras{} regimes are separated by approximately $0.124~\mathrm{km^2}$ and are linked to the activation of a secondary floodplain compartment of about 7.4~ha on the left bank of the Besaya. Spatial frequency maps and morphological corridor analysis identify a local topographic saddle at approximately $60.1~\mathrm{m}$ a.s.l. as the controlling connection between the main inundation corridor and this secondary area. Once this threshold is crossed, the additional compartment is activated as a coherent inundation unit rather than through a gradual expansion of the flood boundary.
+The most important difference between the two ensembles is qualitative rather than merely numerical. \sfincs{} produces a narrow, unimodal response, whereas \hecras{} produces a bimodal flooded-area distribution. The two \hecras{} regimes are separated by approximately $0.124~\mathrm{km^2}$ and are linked to the activation of a secondary floodplain compartment of about 7.4~ha on the right bank of the Besaya. Spatial frequency maps and morphological corridor analysis identify a local topographic saddle at approximately $60.1~\mathrm{m}$ a.s.l. as the controlling connection between the main inundation corridor and this secondary area. Once this threshold is crossed, the additional compartment is activated as a coherent inundation unit rather than through a gradual expansion of the flood boundary.
 
 The regime transition cannot be explained by any single Manning coefficient or by the spatially averaged wet-cell Manning value. Individual class roughness values are not significantly correlated with regime membership, and the transition is better interpreted as a compound response of the full roughness field, local flow state and threshold topography. The robustness checks support this interpretation. The bimodal \hecras{} response persists when alternative metrics such as inundation volume are used, and importance-sampling tests with Gaussian-copula roughness correlation alter the relative probability of the two regimes but do not remove the bimodal structure. The precise probability assigned to each regime may therefore depend on the roughness sampling design, but the existence of the threshold-controlled response is not an artefact of the independent Monte Carlo sampling.
 
@@ -617,6 +625,16 @@ M.d.J.: Resources, Supervision, Funding acquisition, Writing -- review \& editin
 
 \section*{Declaration of competing interests}
 The authors declare that they have no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper.
+
+\section*{Funding}
+Manuel del Jesus acknowledges the support provided by Project PCI2024-153483
+(WaMA-WaDiT ``Water Management and Adaptation based on Watershed Digital
+Twins''), funded by MICIU/AEI/10.13039/501100011033 and co-funded by the
+European Union. This research did not receive any other specific grant from
+funding agencies in the public, commercial, or not-for-profit sectors. The
+funding bodies had no role in study design, data collection, analysis,
+interpretation, manuscript preparation or the decision to submit the article
+for publication.
 
 \section*{Software and data availability}
 
@@ -638,7 +656,7 @@ Availability and cost: & Free and open source (MIT License) \\
 Repository:            & \url{https://github.com/navass11/pyhydra} \\
 Persistent archive:    & A Zenodo archive of version 0.1.0 is available for
                          peer review via a private link (DOI reserved;
-                         \citep{navas2026zenodo}); public release upon
+                         \citealp{navas2026zenodo}); public release upon
                          acceptance. \\
 \end{tabular}
 
@@ -679,7 +697,7 @@ Form of repository:    & Zenodo (online database) \\
 Contents:              & Manning roughness coefficients, combination matrices,
                          flood simulation output statistics \\
 Availability and cost: & Free; available to reviewers via a private Zenodo link
-                         (DOI reserved \citep{navas2026zenodo}); publicly
+                         (DOI reserved; \citealp{navas2026zenodo}); publicly
                          available upon acceptance \\
 \end{tabular}
 
@@ -702,8 +720,6 @@ Ambiental de Cantabria (IHCantabria), University of Cantabria. The
 correlated-ensemble robustness check was performed using computing resources
 provided by the University of Cantabria through its Microsoft Azure academic
 subscription.
-This research did not receive any specific grant from funding agencies in the
-public, commercial, or not-for-profit sectors.
 
 %% ===========================================================================
 \bibliographystyle{cas-model2-names}

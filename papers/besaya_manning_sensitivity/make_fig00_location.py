@@ -19,10 +19,9 @@ from matplotlib.gridspec import GridSpec
 from matplotlib.colors import ListedColormap, BoundaryNorm
 import urllib.request
 
-FIG_DIR = Path("/Users/salvadornavasfernandez/Desktop/Github/HYDRA"
-               "/papers/besaya_manning_sensitivity/figures")
-LC_PATH = Path("/Volumes/My Passport 2/COPIA_IH/E/Rugosidades_UCLM"
-               "/HEC_RAS/LandCover.tif")
+HERE = Path(__file__).resolve().parent
+FIG_DIR = HERE / "figures"
+LC_PATH = HERE / "zenodo_upload" / "models" / "HEC-RAS" / "LandCover.tif"
 
 # ── Natural Earth ─────────────────────────────────────────────────────────────
 import geopandas as gpd

@@ -132,6 +132,30 @@ docs/notebooks
 thesis.zip
 thesis/
 papers/
+!papers/
+papers/*
+!papers/besaya_manning_sensitivity/
+papers/besaya_manning_sensitivity/*
+!papers/besaya_manning_sensitivity/*.tex
+!papers/besaya_manning_sensitivity/*.bib
+!papers/besaya_manning_sensitivity/*.py
+!papers/besaya_manning_sensitivity/highlights.txt
+!papers/besaya_manning_sensitivity/graphical_abstract.png
+!papers/besaya_manning_sensitivity/graphical_abstract.tif
+!papers/besaya_manning_sensitivity/main_AG.pdf
+!papers/besaya_manning_sensitivity/figures/
+papers/besaya_manning_sensitivity/figures/*
+!papers/besaya_manning_sensitivity/figures/*.pdf
+!papers/besaya_manning_sensitivity/figures/*.png
+!papers/besaya_manning_sensitivity/zenodo_upload/
+papers/besaya_manning_sensitivity/zenodo_upload/*
+!papers/besaya_manning_sensitivity/zenodo_upload/README.md
+!papers/besaya_manning_sensitivity/zenodo_upload/scripts/
+papers/besaya_manning_sensitivity/zenodo_upload/scripts/*
+!papers/besaya_manning_sensitivity/zenodo_upload/scripts/*.py
+!papers/besaya_manning_sensitivity/zenodo_upload/notebooks/
+papers/besaya_manning_sensitivity/zenodo_upload/notebooks/*
+!papers/besaya_manning_sensitivity/zenodo_upload/notebooks/*.ipynb
 meteostat_daily_*.csv
 
 # Notebook-derived data files (not raw data)

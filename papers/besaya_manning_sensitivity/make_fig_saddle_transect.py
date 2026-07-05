@@ -34,14 +34,12 @@ import xarray as xr
 import rasterio
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
-BASE_DIR   = Path("/Volumes/My Passport 2/COPIA_IH/E/Rugosidades_UCLM")
-HECRAS_DIR = BASE_DIR / "HEC_RAS/results"
-DEM_ASC    = BASE_DIR / "Ejemplo_Besaya/dem_corrales.asc"
-RES_CSV    = Path("/Users/salvadornavasfernandez/Desktop/Github/HYDRA"
-                  "/notebooks/modeling/hydraulic/manning_sensitivity"
-                  "/comparison_sfincs_hecras_clean.csv")
-FIG_DIR    = Path("/Users/salvadornavasfernandez/Desktop/Github/HYDRA"
-                  "/papers/besaya_manning_sensitivity/figures")
+HERE       = Path(__file__).resolve().parent
+ZENODO_DIR = HERE / "zenodo_upload"
+HECRAS_DIR = ZENODO_DIR / "simulations" / "HEC-RAS"
+DEM_ASC    = ZENODO_DIR / "models" / "HEC-RAS" / "Terrain" / "Terrain (1).dep.tif"
+RES_CSV    = ZENODO_DIR / "data" / "comparison_clean_995.csv"
+FIG_DIR    = HERE / "figures"
 CRS  = "EPSG:25830"
 THR  = 0.05
 
@@ -68,7 +66,7 @@ ref      = rxr.open_rasterio(HECRAS_DIR / f"hamax_sim_{r0_idx[0]}.tif",
                               masked=True).squeeze("band", drop=True).rio.write_crs(CRS)
 dem      = rxr.open_rasterio(str(DEM_ASC), masked=True).squeeze().rio.write_crs(CRS)
 dem_repr = dem.rio.reproject_match(ref)
-dem_np   = dem_repr.values
+dem_np   = np.where(dem_repr.values < -1000, np.nan, dem_repr.values)
 x_vals   = dem_repr.x.values
 y_vals   = dem_repr.y.values
 
@@ -212,7 +210,7 @@ dy = ymax_m - ymin_m
 fig_w   = 8.2
 # Width ratio [1.0, 1.2] → map gets 1/2.2 of total width
 map_win = fig_w * (1.0 / 2.2)     # inches available for map panel
-fig_h   = map_win * (dy / dx) + 1.2   # +1.2 for title/xlabel margins
+fig_h   = map_win * (dy / dx) + 1.45  # + margins for title/xlabel and external legend
 fig_h   = min(max(fig_h, 4.5), 7.0)   # clamp between 4.5 and 7.0 inches
 print(f"Window: dx={dx:.0f} m, dy={dy:.0f} m  →  figsize=({fig_w:.1f}, {fig_h:.1f})")
 
@@ -324,17 +322,25 @@ for x_pos, data, color in [(1, wse_low_arr, C_LOW), (2, wse_high_arr, C_HIGH)]:
                 color="white", fontweight="bold", zorder=6,
                 bbox=dict(boxstyle="round,pad=0.1", fc=color, ec="none", alpha=0.75))
 
-# Representative sims — label as short text centered below each marker
+# Representative simulations — labels offset outside the violin bodies.
 ax_vio.scatter([1], [wse_rep_low],  s=55, color="white",
                edgecolors=C_LOW,  lw=1.8, zorder=7)
 ax_vio.scatter([2], [wse_rep_high], s=55, color="white",
                edgecolors=C_HIGH, lw=1.8, zorder=7)
-ax_vio.text(1, wse_rep_low - 0.12,
-            f"sim {rep_low}  ({wse_rep_low:.2f} m)",
-            fontsize=5.5, color=C_LOW, va="top", ha="center", zorder=8)
-ax_vio.text(2, wse_rep_high + 0.12,
-            f"sim {rep_high}  ({wse_rep_high:.2f} m)",
-            fontsize=5.5, color=C_HIGH, va="bottom", ha="center", zorder=8)
+ax_vio.annotate(
+    f"sim {rep_low}\n{wse_rep_low:.2f} m",
+    xy=(1, wse_rep_low), xycoords="data",
+    xytext=(0.72, wse_rep_low - 0.10), textcoords="data",
+    fontsize=5.8, color=C_LOW, va="top", ha="right", zorder=8,
+    arrowprops=dict(arrowstyle="-", color=C_LOW, lw=0.7, shrinkA=1, shrinkB=4),
+)
+ax_vio.annotate(
+    f"sim {rep_high}\n{wse_rep_high:.2f} m",
+    xy=(2, wse_rep_high), xycoords="data",
+    xytext=(2.28, wse_rep_high + 0.10), textcoords="data",
+    fontsize=5.8, color=C_HIGH, va="bottom", ha="left", zorder=8,
+    arrowprops=dict(arrowstyle="-", color=C_HIGH, lw=0.7, shrinkA=1, shrinkB=4),
+)
 
 # Saddle terrain note at bottom inside axes (axes-fraction coords — always inside)
 ax_vio.text(1.5, ylo + 0.05,
@@ -353,7 +359,7 @@ ax_vio.set_title("(b) WSE at the morphological saddle — full ensemble",
 ax_vio.tick_params(axis="y", labelsize=6.5)
 ax_vio.tick_params(axis="x", length=0)
 
-# Legend inside panel (b) — upper right, avoids violin bodies
+# Legend inside panel (b), placed in the empty upper-right area.
 handles_vio = [
     mpatches.Patch(facecolor=C_LOW,  alpha=0.60, label="Low-regime WSE distribution"),
     mpatches.Patch(facecolor=C_HIGH, alpha=0.60, label="High-regime WSE distribution"),

@@ -17,11 +17,9 @@ from scipy import stats
 from scipy.stats import gaussian_kde
 from sklearn.mixture import GaussianMixture
 
-RES_CSV = Path("/Users/salvadornavasfernandez/Desktop/Github/HYDRA"
-               "/notebooks/modeling/hydraulic/manning_sensitivity"
-               "/comparison_sfincs_hecras_clean.csv")
-FIG_DIR = Path("/Users/salvadornavasfernandez/Desktop/Github/HYDRA"
-               "/papers/besaya_manning_sensitivity/figures")
+HERE = Path(__file__).resolve().parent
+RES_CSV = HERE / "zenodo_upload" / "data" / "comparison_clean_995.csv"
+FIG_DIR = HERE / "figures"
 
 C_LOW  = "#4878d0"
 C_HIGH = "#c44e52"
@@ -213,24 +211,28 @@ for col_idx, (sf_col, hr_col, ylabel, display_label, is_vol) in enumerate(METRIC
             label=fr"$r = {r:.2f}$, {pval_str(p)}",
             zorder=4)
 
-    # Band means — annotate on the right margin
-    n_counts = {C_LOW: low_mask.sum(), C_HIGH: high_mask.sum()}
+    # Band means — show values in a clean in-panel box instead of over the data.
+    mean_lines = []
     for mask, color, name in [(low_mask, C_LOW, "Low"), (high_mask, C_HIGH, "High")]:
         lv = (df.loc[mask, hr_col] * scale).mean()
         ax.axhline(lv, color=color, lw=0.9, ls=":", alpha=0.8)
-        fmt = f"{lv:.3f}"
-        ax.annotate(f"{name} (N={n_counts[color]}): {fmt}",
-                    xy=(x_all.max() * 0.99, lv),
-                    fontsize=7.5, color=color, ha="right", va="bottom",
-                    bbox=dict(boxstyle="round,pad=0.15", fc="white", ec="none", alpha=0.85))
+        mean_lines.append(f"{name} mean = {lv:.3f}")
+    ax.text(
+        0.98, 0.93, "\n".join(mean_lines),
+        transform=ax.transAxes,
+        fontsize=8.0,
+        color="0.15",
+        ha="right",
+        va="top",
+        bbox=dict(boxstyle="round,pad=0.28", fc="white", ec="0.75", alpha=0.93),
+        zorder=6,
+    )
 
     ax.set_xlabel("Mean Manning $n$ (wetted cells)", fontsize=9, labelpad=2)
     ax.set_ylabel(ylabel, fontsize=9, labelpad=2)
     ax.set_title(f"HEC-RAS — {display_label} (CV={cv(y_all):.1f}%)",
                  fontweight="bold", fontsize=9)
     # Legend at lower right — high regime data is sparse there
-    ax.legend(loc="lower right", handlelength=1, markerscale=2.5,
-              fontsize=8, framealpha=0.92)
     ax.grid(True, alpha=0.3)
 
 # Panel labels
@@ -244,7 +246,14 @@ fig7.suptitle(
     "Less sensitive to discrete wet-cell threshold crossings",
     fontsize=10, fontweight="bold"
 )
-plt.tight_layout(pad=1.4, h_pad=2.5, w_pad=1.5)
+handles, labels = axes[1, 0].get_legend_handles_labels()
+fig7.legend(
+    handles, labels,
+    loc="lower center", ncol=3, fontsize=8.3,
+    handlelength=1.2, markerscale=2.5, framealpha=0.92,
+    bbox_to_anchor=(0.5, 0.015),
+)
+plt.tight_layout(pad=1.4, h_pad=2.5, w_pad=1.5, rect=[0, 0.08, 1, 0.95])
 save(fig7, "fig07_alternative_metrics")
 
 print("All done.")

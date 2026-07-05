@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 import matplotlib
 matplotlib.use("Agg")
+matplotlib.rcParams["pdf.compression"] = 9
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import matplotlib.gridspec as gridspec
@@ -22,14 +23,12 @@ from sklearn.mixture import GaussianMixture
 import rioxarray as rxr
 import xarray as xr
 
-BASE_DIR   = Path("/Volumes/My Passport 2/COPIA_IH/E/Rugosidades_UCLM")
-HECRAS_DIR = BASE_DIR / "HEC_RAS/results"
-DEM_PATH   = BASE_DIR / "Ejemplo_Besaya/dem_corrales.asc"
-NB_DIR     = Path("/Users/salvadornavasfernandez/Desktop/Github/HYDRA"
-                  "/notebooks/modeling/hydraulic/manning_sensitivity")
-RES_CSV    = NB_DIR / "comparison_sfincs_hecras_clean.csv"
-FIG_DIR    = Path("/Users/salvadornavasfernandez/Desktop/Github/HYDRA"
-                  "/papers/besaya_manning_sensitivity/figures")
+HERE       = Path(__file__).resolve().parent
+ZENODO_DIR = HERE / "zenodo_upload"
+HECRAS_DIR = ZENODO_DIR / "simulations" / "HEC-RAS"
+DEM_PATH   = ZENODO_DIR / "models" / "HEC-RAS" / "Terrain" / "Terrain (1).dep.tif"
+RES_CSV    = ZENODO_DIR / "data" / "comparison_clean_995.csv"
+FIG_DIR    = HERE / "figures"
 
 CRS = "EPSG:25830"
 THR = 0.05
@@ -53,7 +52,7 @@ ref      = rxr.open_rasterio(HECRAS_DIR / f"hamax_sim_{r0_idx[0]}.tif",
                               masked=True).squeeze("band", drop=True).rio.write_crs(CRS)
 dem      = rxr.open_rasterio(str(DEM_PATH), masked=True).squeeze().rio.write_crs(CRS)
 dem_repr = dem.rio.reproject_match(ref)
-dem_np   = dem_repr.values
+dem_np   = np.where(dem_repr.values < -1000, np.nan, dem_repr.values)
 
 def build_freq(sims, n=60, seed=0):
     rng    = np.random.default_rng(seed)
@@ -108,7 +107,8 @@ hs_da   = dem_repr.copy(data=hs_arr)
 
 def add_background(ax):
     hs_da.plot(ax=ax, cmap="Greys_r", vmin=0, vmax=1,
-               add_colorbar=False, alpha=0.30, zorder=0)
+               add_colorbar=False, alpha=0.30, zorder=0,
+               rasterized=True)
 
 
 def add_zone_contour(ax, lw=1.0):
@@ -135,6 +135,7 @@ def map_panel(ax, freq, title, cmap, cbar_label, tight_x=False):
     add_background(ax)
     freq.where(freq > 0.05).plot(
         ax=ax, cmap=cmap, alpha=0.85, vmin=0, vmax=1, zorder=2,
+        rasterized=True,
         cbar_kwargs={"label": cbar_label, "shrink": 0.72,
                      "pad": 0.02, "aspect": 20,
                      "ticks": [0, 0.25, 0.5, 0.75, 1]})
@@ -150,6 +151,87 @@ def map_panel(ax, freq, title, cmap, cbar_label, tight_x=False):
     ax.tick_params(axis="x", labelsize=6)
     fix_northing(ax)
     pass  # legend added once at figure level
+
+
+# ── Standalone figures used in the manuscript ────────────────────────────────
+def save_figure(fig, name, dpi=200):
+    for ext in ["pdf", "png"]:
+        fig.savefig(FIG_DIR / f"{name}.{ext}", bbox_inches="tight", dpi=dpi)
+        print(f"Saved {name}.{ext}")
+    plt.close(fig)
+
+
+# Figure 6: low/high regime frequency maps as a genuine standalone figure.
+fig_maps, (ax_m0, ax_m1) = plt.subplots(1, 2, figsize=(7.2, 3.35))
+map_panel(
+    ax_m0, freq0,
+    f"(a) Low regime  $N$={len(r0_idx)},  "
+    f"$\\bar{{A}}$={r0['hecras_area_km2'].mean():.3f} km²",
+    "Blues", "Inundation frequency",
+)
+map_panel(
+    ax_m1, freq1,
+    f"(b) High regime  $N$={len(r1_idx)},  "
+    f"$\\bar{{A}}$={r1['hecras_area_km2'].mean():.3f} km²",
+    "Reds", "Inundation frequency",
+)
+ax_m1.set_ylabel("")
+_saddle_h = mlines.Line2D([], [], marker="^", color="#ee1111", ms=7,
+                          ls="none", markeredgecolor="white",
+                          markeredgewidth=0.7, label="Saddle z=60.1 m a.s.l.")
+_zone_h   = mlines.Line2D([], [], color="black", ls="--", lw=1.2,
+                          label="Secondary zone (~7.4 ha)")
+fig_maps.legend(
+    handles=[_saddle_h, _zone_h],
+    loc="lower center", ncol=2, fontsize=7.2, framealpha=0.0,
+    bbox_to_anchor=(0.5, 0.01), handlelength=1.8,
+)
+fig_maps.tight_layout(pad=1.0, w_pad=1.0, rect=[0, 0.09, 1, 1])
+save_figure(fig_maps, "fig05a_bifurcation_maps")
+
+
+# Figure 7: frequency-difference map as a separate generated figure.
+diff_mask = (np.abs(freq_diff.values) > 0.03) & (dem_np < 85)
+d_rows, d_cols = np.where(diff_mask)
+if len(d_rows):
+    xlim_diff = [
+        min(float(dem_repr.x.values[d_cols].min()), SADDLE_X) - 350,
+        max(float(dem_repr.x.values[d_cols].max()), SADDLE_X) + 350,
+    ]
+    ylim_diff = [
+        min(float(dem_repr.y.values[d_rows].min()), SADDLE_Y) - 350,
+        max(float(dem_repr.y.values[d_rows].max()), SADDLE_Y) + 350,
+    ]
+else:
+    xlim_diff = xlim_c
+    ylim_diff = ylim
+
+fig_diff, ax_diff = plt.subplots(figsize=(7.2, 4.0))
+add_background(ax_diff)
+vmax_ = float(abs(freq_diff).quantile(0.995))
+freq_diff.where(abs(freq_diff) > 0.03).plot(
+    ax=ax_diff, cmap="RdBu_r", vmin=-vmax_, vmax=vmax_, alpha=0.82, zorder=2,
+    rasterized=True,
+    cbar_kwargs={"label": "Δ inundation frequency (High − Low)",
+                 "shrink": 0.72, "pad": 0.02,
+                 "ticks": [-0.5, 0, 0.5]},
+)
+add_zone_contour(ax_diff, lw=1.0)
+ax_diff.plot(SADDLE_X, SADDLE_Y, marker="^", color="#ee1111", ms=8, zorder=9,
+             markeredgecolor="white", markeredgewidth=0.8)
+ax_diff.set_aspect("equal", adjustable="box")
+ax_diff.set_xlim(xlim_diff)
+ax_diff.set_ylim(ylim_diff)
+ax_diff.set_title(
+    "Frequency difference — red: cells exclusive to high regime",
+    pad=3, fontsize=8.5, fontweight="bold",
+)
+ax_diff.set_xlabel("Easting (m)", labelpad=2, fontsize=7.5)
+ax_diff.set_ylabel("Northing (m)", labelpad=2, fontsize=7.5)
+ax_diff.tick_params(axis="x", labelsize=6.5)
+fix_northing(ax_diff)
+fig_diff.tight_layout(pad=1.0)
+save_figure(fig_diff, "fig05c_bifurcation_difference")
 
 
 # ── Figure ────────────────────────────────────────────────────────────────────
