@@ -1,31 +1,40 @@
-# Paper — Roughness uncertainty in 2D flood inundation models (Besaya)
+# Paper - Roughness uncertainty in 2D flood inundation models (Besaya)
 
-Fuentes LaTeX del artículo:
+LaTeX source files for the manuscript:
 
 > **From roughness uncertainty to model-structure effects in 2D flood inundation models: a Monte Carlo comparison of SFINCS and HEC-RAS**
-> Salvador Navas, Álvaro Galán, Manuel del Jesús
+> Salvador Navas, Alvaro Galan, Manuel del Jesus
 
-Análisis de sensibilidad Monte Carlo del coeficiente de Manning sobre el río Besaya (Los Corrales de Buelna), comparando la respuesta de los modelos hidráulicos 2D SFINCS y HEC-RAS. Es uno de los casos de estudio de validación de la tesis doctoral y de la plataforma **HYDRA**.
+This repository contains the manuscript sources, figures, supplementary
+material, and reproducibility package for a Monte Carlo sensitivity analysis of
+Manning roughness in the Besaya River floodplain (Los Corrales de Buelna,
+Cantabria, Spain). The study compares the response of two 2D hydraulic models,
+SFINCS and HEC-RAS, and forms part of the validation case studies for the
+**HYDRA** platform.
 
-- 📦 **Código y herramientas usadas:** [github.com/navass11/HYDRA](https://github.com/navass11/HYDRA) (rama `main`) y [github.com/navass11/pyhydra](https://github.com/navass11/pyhydra)
-- 🌐 **Demo en vivo de HYDRA:** [hydra-web.yellowwave-5aaa93b0.spaincentral.azurecontainerapps.io](https://hydra-web.yellowwave-5aaa93b0.spaincentral.azurecontainerapps.io/)
-- 📄 **pyhydra en Zenodo:** https://doi.org/10.5281/zenodo.20932555
+- **Code and tools used:** [github.com/navass11/HYDRA](https://github.com/navass11/HYDRA) (`main` branch) and [github.com/navass11/pyhydra](https://github.com/navass11/pyhydra)
+- **Live HYDRA demo:** [hydra-web.yellowwave-5aaa93b0.spaincentral.azurecontainerapps.io](https://hydra-web.yellowwave-5aaa93b0.spaincentral.azurecontainerapps.io/)
+- **pyhydra on Zenodo:** https://doi.org/10.5281/zenodo.20932555
 
-## Estructura
+## Repository structure
 
 ```
 papers/besaya_manning_sensitivity/
-├── main_AG.tex          # Documento (versión activa)
-├── main.tex               # Versión previa
-├── figures/                # Figuras del artículo
-├── make_fig*.py             # Scripts de generación de figuras (Python)
-├── references.bib            # Bibliografía
-└── cas-*.{cls,sty,bst}         # Plantilla Elsevier/cas-sc
+├── main_AG.tex                    # Active manuscript source
+├── main_AG.pdf                    # Compiled manuscript PDF
+├── supplementary_material.tex     # Supplementary material source
+├── supplementary_material.pdf     # Compiled supplementary material PDF
+├── figures/                       # Publication figures
+├── make_fig*.py                   # Python scripts used to generate figures
+├── references.bib                 # Bibliography
+├── zenodo_upload/                 # Data/code package prepared for Zenodo
+└── cas-*.{cls,sty,bst}            # Elsevier CAS template files
 ```
 
-## Compilar
+## Build
 
 ```bash
 cd papers/besaya_manning_sensitivity
 latexmk -pdf -interaction=nonstopmode main_AG.tex
+latexmk -pdf -interaction=nonstopmode supplementary_material.tex
 ```
