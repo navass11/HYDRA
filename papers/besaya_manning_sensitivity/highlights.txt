@@ -1,5 +1,5 @@
 Paired roughness ensemble compares SFINCS and HEC-RAS flood responses.
-Mean Manning explains less than 2% of output variance in both models.
+Wet-cell mean Manning explains less than 2% of output variance.
 HEC-RAS yields a bimodal area response; SFINCS remains unimodal.
-A 60.1 m saddle marks access to a secondary floodplain compartment.
-Configuration effects combine equations, mesh design and discharge choice.
+A topographic saddle controls hydraulic connectivity to a secondary compartment.
+Model configuration changes the shape of probabilistic hazard distributions.
