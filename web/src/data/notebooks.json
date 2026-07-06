@@ -341,5 +341,12 @@
     "category": "Caso piloto",
     "icon": "②",
     "href": "http://localhost/jupyter/lab/tree/pilot_cases/valencia_dana/02_extreme_value_analysis.ipynb"
+  },
+  {
+    "slug": "pilot_cases--valencia_dana--03_real_regional_study_pyhydra",
+    "title": "DANA 03 · Regional PyMC",
+    "category": "Caso piloto",
+    "icon": "③",
+    "href": "http://localhost/jupyter/lab/tree/pilot_cases/valencia_dana/03_real_regional_study_pyhydra.ipynb"
   }
 ]
