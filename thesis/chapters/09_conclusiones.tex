@@ -124,6 +124,36 @@ La contribución original de la tesis es \hydra: una arquitectura reproducible p
   \item \textbf{Transferibilidad operativa demostrada.} \hydra ha sido aplicada en nueve casos de estudio con escalas, contextos y objetivos complementarios, demostrando que la arquitectura soporta problemas reales de ingeniería sin modificaciones en los módulos centrales.
 \end{enumerate}
 
+\subsection*{Contribución del doctorando en los trabajos compartidos}
+
+Dado que parte de la evidencia de esta tesis procede de trabajos en coautoría, la \cref{tab:rol_autoria} delimita la posición y la contribución del doctorando en cada publicación de la línea, distinguiendo los trabajos liderados de aquellos en los que la aportación fue de desarrollo de software o de cálculo, y de los trabajos del grupo que se citan como línea de extensión sin autoría propia.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Rol del doctorando en las publicaciones de la línea de investigación.}
+  \label{tab:rol_autoria}
+  \small
+  \begin{tabular}{>{\raggedright\arraybackslash}p{0.34\textwidth}>{\raggedright\arraybackslash}p{0.13\textwidth}>{\raggedright\arraybackslash}p{0.42\textwidth}}
+    \toprule
+    Publicación & Posición & Contribución del doctorando \\
+    \midrule
+    V JIA (2017) \parencite{navas2017jia} & Primer autor & Conceptualización de la cadena estocástica, análisis y redacción \\[2pt]
+    Besaya, ROP (2018) \parencite{navas2018besaya} & Primer autor & Metodología, modelización hidrológico-hidráulica, análisis de impactos y redacción \\[2pt]
+    Mallorca (2019) \parencite{navas2019mallorca} & Primer autor & Downscaling híbrido desde lluvia, geoestadística, simulación y redacción \\[2pt]
+    Andes, BID e IA (2019--2020) \parencite{paz2019idb,deljesus2020andinos} & Coautor & Calibración automática de los modelos hidrológicos y procesamiento climático \\[2pt]
+    NEOPRENE, GMD (2023) \parencite{diezsierra2023neoprene} & Segundo autor & Desarrollo de software, validación y documentación de la librería \\[2pt]
+    Calle 30, IA (2024) \parencite{navas2024calle30} & Primer autor & Metodología completa, automatización de HEC-HMS y HEC-RAS, análisis y redacción \\[2pt]
+    Downscaling, EGU (2024) \parencite{deljesus2024downscaling} & Coautor & Desarrollos de generación estocástica y reconstrucción integrados en \pyhydra \\[2pt]
+    SIMPCCe, IA (2025) \parencite{navas2025simpce} & Primer autor & Diseño y desarrollo íntegro de la herramienta, validación nacional y redacción \\[2pt]
+    Valencia (2025) \parencite{deljesus2025jia,navas2025valenciaIA} & Segundo autor & Implementación de los módulos de extremos y AFR empleados y ejecución de los cálculos \\[2pt]
+    Tanganica (2025) \parencite{navas2025tanganika,navas2025tanganicaIA} & Primer autor & Metodología, integración de datos globales y aprendizaje automático, redacción \\[2pt]
+    Rugosidad Besaya, EMS (2025) \parencite{navas2025roughness} & Primer autor & Diseño del ensemble Monte Carlo, automatización de ambos motores hidráulicos, análisis y redacción \\[2pt]
+    Vine cópulas y GPR (2026) \parencite{urrea2026vine} & Sin autoría & Trabajo del grupo citado como línea de extensión; no forma parte de las contribuciones de esta tesis \\[2pt]
+    \pyhydra y \hydra, Zenodo (2026) \parencite{navas2026pyhydra,navas2026hydrarepo} & Autor único & Diseño, desarrollo, documentación y publicación del software \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
 \section{Cierre}
 
 \hydra materializa una década de experiencia en metodologías estocásticas de inundación en un sistema funcional completo: \pyhydra, la librería Python modular, y un entorno de ejecución reproducible basado en Docker. El conjunto es instalable, ejecutable y transferible, sin dependencias de entornos de desarrollo o configuraciones manuales específicas.

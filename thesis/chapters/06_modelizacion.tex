@@ -1,5 +1,5 @@
 \chapter{Modelización hidrológica e hidráulica}
-\label{ch:modelización}
+\label{ch:modelizacion}
 
 \section{Rol de \hydra en la cadena metodológica}
 \label{sec:rol_hydra}
@@ -43,6 +43,9 @@ La arquitectura del bloque sigue el patrón de adaptador. Cada módulo traduce e
 El patrón de adaptador tiene cuatro responsabilidades concretas. Primero, preparar entradas: escribir ficheros de precipitación, caudal, condiciones de contorno o parámetros en el formato nativo de cada motor. Segundo, ejecutar: lanzar el motor mediante API, controlador externo o subproceso, registrando versión, ruta de ejecutable y código de salida. Tercero, leer resultados: convertir DSS, HDF, NetCDF, GeoTIFF o ficheros de texto en estructuras comunes. Cuarto, validar: comprobar que la simulación terminó, que existen salidas esperadas y que los valores tienen unidades y rangos plausibles. Esta separación evita que el análisis estadístico dependa de formatos propietarios.
 
 La integración tiene también límites explícitos. HYDRA no calibra automáticamente cualquier modelo por el hecho de ejecutarlo; solo automatiza las operaciones implementadas y documentadas en cada adaptador. Tampoco sustituye la revisión hidráulica experta: la estabilidad numérica, la calidad del MDT, la rugosidad, las condiciones de contorno y la representación de estructuras siguen siendo decisiones técnicas del modelo físico.
+
+\paragraph{Requisitos de plataforma y versiones.}
+Los adaptadores heredan las restricciones de ejecución de cada motor, que deben declararse como condición de reproducibilidad. HEC-RAS se ejecuta mediante \texttt{rascontrol} sobre una instalación local del programa, lo que restringe esa parte del flujo a entornos Windows; HEC-HMS admite ejecución en Windows (API Jython) y en Linux (\texttt{xvfb-run}); SWAT+ y SFINCS distribuyen ejecutables multiplataforma y son los únicos motores integrables por completo en el entorno Docker de \hydra. Cada adaptador registra en los metadatos de ejecución la versión del motor y la ruta del ejecutable empleado, y la matriz de versiones probadas se mantiene en la documentación del repositorio junto a los tests de integración, de modo que un cambio de versión del motor externo sea detectable y no invalide silenciosamente resultados anteriores.
 
 \section{Modelos hidrológicos}
 

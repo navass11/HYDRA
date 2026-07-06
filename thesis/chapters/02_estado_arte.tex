@@ -46,7 +46,7 @@ Una limitación de las cópulas elípticas es su incapacidad para representar de
 \section{Generación estocástica de precipitación}
 \label{sec:generacion_estocastica}
 
-La generación sintética de series de precipitación tiene una larga historia teórica que arranca en los modelos de puntos de Poisson y sus extensiones con estructura de cluster. Los procesos de Neyman-Scott de pulsos rectangulares (NSRP), formulados originalmente por \textcite{rodriguezituribe1987,rodriguezituribe1988}, describen la precipitación como una superposición de tormentas, cada una asociada a un evento de Poisson con un número aleatorio de celdas que producen pulsos de intensidad y duración constantes. Estos modelos, calibrables a partir de estadísticos de primer y segundo orden de series observadas, reproducen propiedades esenciales como la distribución de intensidades, la proporcion de períodos secos, la autocorrelacion temporal y la distribución de acumulados a distintas escalas. La extensión espacial STNSRP añade dependencia entre estaciones y permite generar campos multisitio coherentes.
+La generación sintética de series de precipitación tiene una larga historia teórica que arranca en los modelos de puntos de Poisson y sus extensiones con estructura de cluster. Los procesos de Neyman-Scott de pulsos rectangulares (NSRP), formulados originalmente por \textcite{rodriguezituribe1987,rodriguezituribe1988}, describen la precipitación como una superposición de tormentas, cada una asociada a un evento de Poisson con un número aleatorio de celdas que producen pulsos de intensidad y duración constantes. Estos modelos, calibrables a partir de estadísticos de primer y segundo orden de series observadas, reproducen propiedades esenciales como la distribución de intensidades, la proporción de períodos secos, la autocorrelación temporal y la distribución de acumulados a distintas escalas. La extensión espacial STNSRP añade dependencia entre estaciones y permite generar campos multisitio coherentes.
 
 NEOPRENE no es un proceso estocástico adicional, sino la librería Python que contiene la implementación NSRP puntual y STNSRP multisitio, con soporte para generación espacial de lluvia y desagregación temporal de acumulados diarios a resoluciones subhorarias \parencite{diezsierra2023neoprene}. Su diseño como paquete independiente, documentado y distribuido en GitHub y Zenodo, establece un precedente directo para la arquitectura modular de \pyhydra. La integración de NEOPRENE como backend de \path{NSRPModel} y \path{STNSRPModel} en el submódulo \path{climate.stochastic_generation} es una de las conexiones más directas entre publicaciones previas y los módulos del bloque de análisis climático-estadístico.
 
@@ -64,7 +64,7 @@ El trabajo sobre los efectos del cambio climático en los recursos hídricos de 
 \section{Fuentes de datos: reanálisis, teledetección y proyecciones}
 \label{sec:fuentes_datos_arte}
 
-El reanálisis ERA5 de ECMWF \parencite{hersbach2020era5} proporciona series horarias de precipitación, temperatura, viento y otras variables atmosféricas con cobertura global y resolución espacial de 0.25 grados desde 1940. Es la referencia principal para estudios climáticos e hidrológicos cuando no existen observaciones locales suficientes. Su acceso a través del Copernicus Climate Data Store permite descargas programaticas que \hydra automatiza en su módulo COPERNICUS.
+El reanálisis ERA5 de ECMWF \parencite{hersbach2020era5} proporciona series horarias de precipitación, temperatura, viento y otras variables atmosféricas con cobertura global y resolución espacial de 0.25 grados desde 1940. Es la referencia principal para estudios climáticos e hidrológicos cuando no existen observaciones locales suficientes. Su acceso a través del Copernicus Climate Data Store permite descargas programáticas que \hydra automatiza en su módulo COPERNICUS.
 
 Para precipitación de alta resolución espacial, los productos satelitales GPM-IMERG \parencite{huffman2020gpm} y PERSIANN-CCS \parencite{hong2004persiannccs} ofrecen estimaciones subdiarias con cobertura semiglobal. Otros productos de la misma familia, como PERSIANN-CDR \parencite{ashouri2015persiann}, aportan registros diarios de mayor longitud temporal para análisis climatológicos. Estos productos son especialmente útiles en regiones sin red densa de pluviómetros y en el análisis de eventos convectivos de alta intensidad. Su sesgo sistemático respecto a observaciones in situ exige aplicar técnicas de corrección antes de emplearlos en análisis de extremos o calibración hidrológica.
 
@@ -79,9 +79,9 @@ Los modelos HEC-HMS \parencite{scharffenberg2016hechms}, SWAT \parencite{arnold1
 
 HEC-HMS y HEC-RAS disponen de interfaces gráficas potentes pero sus versiones automatizables requieren el uso de scripting en HEC-DSS, RAS Controller o el API JSON de HEC-RAS, que no están integrados entre sí. SWAT dispone de herramientas como SWAT+ Editor y SWAT-CUP, pero sigue dependiendo de archivos de texto y procesos secuenciales difíciles de escalar. SFINCS, aunque eficiente para simulaciones masivas bidimensionales, requiere conocimiento de estructuras de malla, formatos NetCDF y control de parámetros a través de scripts específicos.
 
-La experiencia con HydroMT \parencite{eilander2023hydromt} ha demostrado el valor de construir modelos reproducibles mediante interfaces programaticas. Inspirado en este precedente, \hydra adopta una arquitectura de adaptadores: cada modelo se encapsula en un módulo que traduce datos internos de la librería a los formatos esperados, lanza la ejecución y recupera y homogeniza las salidas. Esto permite organizar flujos de simulación masiva sin alterar los motores físicos ni su aceptacion técnica por parte de administraciones y consultoría.
+La experiencia con HydroMT \parencite{eilander2023hydromt} ha demostrado el valor de construir modelos reproducibles mediante interfaces programáticas. Inspirado en este precedente, \hydra adopta una arquitectura de adaptadores: cada modelo se encapsula en un módulo que traduce datos internos de la librería a los formatos esperados, lanza la ejecución y recupera y homogeniza las salidas. Esto permite organizar flujos de simulación masiva sin alterar los motores físicos ni su aceptación técnica por parte de administraciones y consultoría.
 
-Los casos de aplicación del proyecto FORESEE \parencite{ihcantabria2020foresee,ihcantabria2021m30} y los estudios realizados para el Besaya, Mallorca y Calle 30 \parencite{navas2018besaya,navas2019mallorca,navas2024calle30} han puesto de manifiesto los puntos exactos de friccion en la automatización de cada modelo y han informado las decisiones de diseño de los adaptadores implementados en \pyhydra.
+Los casos de aplicación del proyecto FORESEE \parencite{ihcantabria2020foresee,ihcantabria2021m30} y los estudios realizados para el Besaya, Mallorca y Calle 30 \parencite{navas2018besaya,navas2019mallorca,navas2024calle30} han puesto de manifiesto los puntos exactos de fricción en la automatización de cada modelo y han informado las decisiones de diseño de los adaptadores implementados en \pyhydra.
 
 \section{Downscaling híbrido y reconstrucción de manchas de inundación}
 \label{sec:downscaling}
@@ -98,6 +98,29 @@ El enfoque conecta con desarrollos recientes que combinan generadores estocásti
 La revisión del estado del conocimiento pone de manifiesto que el modelado estocástico de inundaciones, el análisis de extremos con incertidumbre y la integración de escenarios de cambio climático han avanzado de forma significativa en el plano metodológico. Herramientas como Stan, PyMC o OpenTURNS permiten realizar análisis probabilísticos complejos; modelos como HEC-HMS, SWAT, SFINCS o HEC-RAS ofrecen simulaciones detalladas del ciclo hidrológico y la dinámica de inundaciones; y productos globales como ERA5, GPM o CMIP6 proporcionan datos de entrada con cobertura universal.
 
 Sin embargo, persisten importantes limitaciones que impiden la aplicación generalizada de estas metodologías en entornos operativos. La brecha principal no es la ausencia de métodos aislados, sino la falta de integración operativa entre datos climáticos, análisis estadístico, generación estocástica, modelos físicos y documentación utilizable. Cada uno de estos componentes requiere conocimientos técnicos específicos y consume tiempo en adaptación de formatos, conversión de unidades, organización de ficheros y comprobación de resultados.
+
+Esta afirmación debe contrastarse con los marcos integrados existentes más próximos. CLIMADA \parencite{aznar2019climada} es la plataforma de referencia para la evaluación global de riesgo climático, pero opera sobre funciones de impacto agregadas y no incorpora la cadena hidrológico-hidráulica explícita ni la generación estocástica de eventos. RainyDay \parencite{wright2017rainyday} resuelve la generación estocástica de tormentas mediante transposición de campos de teledetección, pero delega la simulación física y el análisis de impactos en herramientas externas. El ecosistema wflow \parencite{vanverseveld2024wflow}, junto con HydroMT \parencite{eilander2023hydromt}, automatiza la construcción y ejecución de modelos hidrológicos distribuidos a partir de datos globales, pero no aborda el análisis multivariante de extremos, la generación estocástica de escenarios ni el período de retorno basado en impacto. Los marcos de simulación continua con cadenas de modelos acopladas \parencite{falter2015continuous} demuestran la viabilidad del análisis de riesgo espacialmente coherente de extremo a extremo, pero son implementaciones de investigación ligadas a un dominio y a un equipo concretos, no herramientas transferibles y documentadas. La \cref{tab:marcos_comparativa} sintetiza esta comparación: ninguno de los marcos revisados cubre simultáneamente la adquisición automática de datos, el análisis probabilístico multivariante, la generación estocástica, la automatización de motores profesionales y la estimación de frecuencia sobre el impacto hidráulico, que es precisamente la combinación que \hydra integra.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Cobertura funcional de \hydra frente a los marcos integrados más próximos. ``Parcial'' indica que la capacidad existe de forma limitada o requiere herramientas externas.}
+  \label{tab:marcos_comparativa}
+  \small
+  \begin{tabular}{p{0.34\textwidth}ccccc}
+    \toprule
+    Capacidad & \hydra & CLIMADA & RainyDay & wflow & Sim.\ continua \\
+    \midrule
+    Adquisición automática de datos globales & Sí & Sí & Parcial & Sí & --- \\
+    Extremos con incertidumbre (bayesiano, AFR) & Sí & Parcial & --- & --- & Parcial \\
+    Análisis multivariante (cópulas) & Sí & --- & --- & --- & Parcial \\
+    Generación estocástica de eventos & Sí & --- & Sí & --- & Sí \\
+    Corrección de sesgo de proyecciones & Sí & Parcial & --- & Parcial & Parcial \\
+    Motores profesionales (HEC, SWAT, SFINCS) & Sí & --- & --- & Parcial & --- \\
+    Período de retorno basado en impacto & Sí & Parcial & --- & --- & Sí \\
+    Producto transferible (Docker, web, notebooks) & Sí & Sí & Parcial & Sí & --- \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
 En estudios estocásticos de inundación, donde el número de simulaciones puede ser de cientos o miles, la gestión manual de este flujo es inviable. La automatización no solo reduce errores, sino que mejora la trazabilidad, facilita la auditoría de resultados y permite transferir la metodología a nuevos equipos o territorios sin reconstruir toda la cadena de cálculo. Esta es la brecha que \hydra busca cerrar.
 

@@ -7,7 +7,7 @@ La validación de \hydra requiere demostrar que los módulos implementados produ
 
 Cada caso cubre una combinación distinta de escalas espaciales, regímenes hidrológicos, modelos físicos y técnicas estadísticas. Esta diversidad es deliberada: permite comprobar que los módulos son suficientemente generales y que las convenciones de datos y las interfaces entre bloques funcionan en contextos reales. La existencia de publicaciones asociadas a cada caso proporciona una referencia externa independiente para verificar resultados.
 
-La validación se estructura en dos niveles. A nivel de módulo, se comprueba que las funciones individuales producen salidas estadísticamente correctas y coherentes con datos de referencia. A nivel de flujo, se verifica que la cadena completa, desde la obtención de datos hasta la generación de productos de riesgo, produce resultados interpretables, reproducibles y comparables con estudios previos.
+La validación se estructura en dos niveles de naturaleza distinta. A nivel de módulo, la comprobación se apoya en los notebooks de ejemplo, que reproducen resultados de referencia (ajustes publicados, datos sintéticos con solución conocida, modelos oficiales de prueba de cada motor) y actúan como tests ejecutables de cada funcionalidad; la consolidación de estas comprobaciones en una suite de tests automáticos con cobertura de integración entre bloques es una tarea en curso que se recoge en el trabajo futuro (\cref{ch:conclusiones}). A nivel de flujo, que es el que este capítulo documenta con detalle, se verifica que la cadena completa, desde la obtención de datos hasta la generación de productos de riesgo, produce resultados interpretables, reproducibles y comparables con estudios previos publicados.
 
 Los nueve casos no son una colección heterogénea de trabajos: cada uno valida dimensiones específicas de \hydra y en conjunto cubren la totalidad de los módulos principales. Para clarificar qué valida cada caso y evitar que la amplitud de la selección se interprete como dispersión metodológica, la \cref{tab:grupos_validacion} los clasifica en tres grupos de validación.
 
@@ -233,7 +233,7 @@ El caso ha seguido siendo objeto de investigación tras la aplicación fundacion
   \label{fig:besaya_intermodel}
 \end{figure}
 
-La \cref{fig:besaya_intermodel} muestra por qué la automatización masiva no es solo una mejora operativa. La variabilidad entre formulaciones hidráulicas supera la variabilidad atribuible a Manning: HEC-RAS presenta un sesgo medio de $+0{,}172$~m en calado y $+0{,}149$~km\textsuperscript{2} en área respecto a SFINCS, mientras que la correlación entre símulaciones emparejadas es moderada ($r=0{,}52$ para calado y $r=0{,}49$ para área). Una única ejecución no habría permitido identificar esa estructura.
+La \cref{fig:besaya_intermodel} muestra por qué la automatización masiva no es solo una mejora operativa. La variabilidad entre formulaciones hidráulicas supera la variabilidad atribuible a Manning: HEC-RAS presenta un sesgo medio de $+0{,}172$~m en calado y $+0{,}149$~km\textsuperscript{2} en área respecto a SFINCS, mientras que la correlación entre simulaciones emparejadas es moderada ($r=0{,}52$ para calado y $r=0{,}49$ para área). Una única ejecución no habría permitido identificar esa estructura.
 
 \begin{figure}[htbp]
   \centering
@@ -301,7 +301,7 @@ Para el conjunto de eventos sintéticos no simulados completamente, los calados 
 
 El caso Mallorca valida la primera implementación de la cadena de downscaling híbrido basada en precipitación: integración de registros horarios, análisis diagnóstico de precipitación satelital PERSIANN y TRMM, generación de eventos multivariantes con cópulas gaussianas, selección por máxima disimilitud, reconstrucción espacial de campos de lluvia mediante kriging, simulación hidrológica e hidráulica, y reconstrucción de manchas de inundación por k-NN. Es el primer caso en el que la estadística de extremos se aplica sobre variables hidráulicas en lugar de sobre la precipitación forzante, lo que constituye una diferencia metodológica central con los enfoques convencionales.
 
-La comparación entre la mancha simulada para el evento del 9 de octubre de 2018 y la cartografía Copernicus confirma la coherencia del modelo calibrado. La disponibilidad de esa referencia externa independiente es lo que hace de este caso un banco de pruebas válido para la metodología estocástica.
+La comparación entre la mancha simulada para el evento del 9 de octubre de 2018 y la cartografía Copernicus confirma la coherencia del modelo calibrado. La disponibilidad de esa referencia externa independiente es lo que hace de este caso un banco de pruebas válido para la metodología estocástica. Debe precisarse el alcance de esa comparación: la delineación rápida de Copernicus EMS es una referencia de extensión, no de calado, y presenta limitaciones conocidas en zona urbana (sombras de edificación, momento de adquisición posterior al pico de la avenida), por lo que la calibración se evaluó como coherencia de extensión y de niveles máximos en puntos con marcas de avenida documentadas, y no mediante índices de acierto celda a celda. La sistematización de métricas cuantitativas de contraste (índice de acierto crítico sobre la extensión, error de calado en marcas de avenida) sobre este tipo de referencias post-evento forma parte del protocolo de validación descrito en la \cref{sec:validacion_knn} y es directamente aplicable cuando se disponga de levantamientos de campo con calidad suficiente.
 
 \begin{figure}[htbp]
   \centering
@@ -747,6 +747,29 @@ Los nueve casos de estudio cubren conjuntamente todos los módulos de \hydra a d
     Cuenca atlántica -- CC (IAHR 2022) & EURO-CORDEX, corrección de sesgo, cópulas gaussianas, MaxDiss, k-NN, comparación metodologías; simulación hidráulica con Iber (herramienta externa) \\
     SIMPCCe & SPAIN02, CORDEX-AEMET, corrección de sesgo SDM, ANN, análisis de sequía, informes automáticos \\
     Atlas Panamá & ERA5, TRMM, CMIP6, NEOPRENE (NSRP/STNSRP), kriging 1~km, 414 correcciones SDM/QDM, GEV, SFINCS, inundación costera \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Escala computacional gestionada}
+
+Un indicador directo del beneficio industrial de la automatización es la escala de cálculo que cada caso gestionó sin intervención manual entre etapas. La \cref{tab:escala_computacional} recoge las magnitudes documentadas en los casos; ninguna de estas campañas habría sido operativamente viable con flujos manuales de configuración, ejecución y postprocesado caso a caso. A ellas se añade la reducción del 94\% del coste de cálculo de períodos de retorno conjuntos lograda por el emulador GPR en la línea de extensión multivariante \parencite{urrea2026vine}.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Indicadores de escala computacional gestionada automáticamente en los casos de estudio.}
+  \label{tab:escala_computacional}
+  \small
+  \begin{tabular}{>{\raggedright\arraybackslash}p{0.24\textwidth}>{\raggedright\arraybackslash}p{0.64\textwidth}}
+    \toprule
+    Caso & Escala gestionada por la cadena automatizada \\
+    \midrule
+    Besaya (rugosidad) & Ensemble emparejado de 995 realizaciones de Manning ejecutado en dos motores hidráulicos 2D (1\,990 simulaciones), con carga, georreferenciación y análisis conjunto de todas las salidas \\
+    Calle 30 & Miles de eventos sintéticos multisitio; subconjunto representativo simulado en HEC-HMS y HEC-RAS 1D y reconstrucción k-NN del resto sobre la red de túneles \\
+    Mallorca & Miles de eventos sintéticos de precipitación; reconstrucción k-NN (6 vecinos) de calados y velocidades del conjunto no simulado \\
+    Atlas de Panamá & 414 correcciones de sesgo SDM/QDM, interpolación climática nacional a 1~km, 200--300 subcuencas y ejecución sistemática de SFINCS a escala de país \\
+    SIMPCCe & 60 series corregidas por variable (10 modelos $\times$ 2 escenarios $\times$ 3 horizontes) y 20 realizaciones futuras por punto de la red hídrica nacional \\
+    Tanganica & 19 modelos CMIP6 bajo dos escenarios SSP con downscaling estadístico y remuestreo bootstrap \\
     \bottomrule
   \end{tabular}
 \end{table}

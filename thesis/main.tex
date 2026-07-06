@@ -4,7 +4,7 @@
 % Los capítulos y anexos están desacoplados de la clase documental.
 \input{frontmatter/metadata}
 
-\usepackage[spanish,es-tabla]{babel}
+\usepackage[english,spanish,es-tabla]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
@@ -93,6 +93,13 @@
 \newcommand{\hydra}{HYDRA\xspace}
 \newcommand{\pyhydra}{\texttt{pyhydra}\xspace}
 
+% book.cls omite el prefijo de capítulo en figuras/tablas/ecuaciones cuando el
+% contador de capítulo es 0 (caso del Chapter 0, English Summary). Se redefine
+% de forma incondicional: los capítulos 1-9 y apéndices no cambian.
+\renewcommand{\thefigure}{\thechapter.\arabic{figure}}
+\renewcommand{\thetable}{\thechapter.\arabic{table}}
+\renewcommand{\theequation}{\thechapter.\arabic{equation}}
+
 \DefineVerbatimEnvironment{codeblock}{Verbatim}{
   fontsize=\small,
   breaklines=true,
@@ -118,6 +125,7 @@
 \frontmatter
 \input{frontmatter/titlepage}
 \restoregeometry
+\input{frontmatter/portadilla}
 \input{chapters/00_resumen}
 
 \tableofcontents
@@ -126,6 +134,9 @@
 \input{frontmatter/acronyms}
 
 \mainmatter
+% Capítulo 0: English Summary (versión extendida del abstract)
+\setcounter{chapter}{-1}
+\input{chapters/00_english_summary}
 \input{chapters/01_introduccion}
 \input{chapters/02_estado_arte}
 \input{chapters/03_hydra_arquitectura}

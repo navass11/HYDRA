@@ -100,7 +100,7 @@ from pyhydra.modeling.hydrology.hec_hms import HMSModel
 from pyhydra.modeling.hydraulic.sfincs import setup_sfincs_model
 \end{codeblock}
 
-Los 26 notebooks generales de ejemplo catalogados por la web, excluyendo casos piloto y material interno de preparación de artículos, funcionan como guías ejecutables de las funcionalidades del paquete. La \cref{tab:notebooks} lista su correspondencia con los módulos. El catálogo fuente de la interfaz web contiene además 23 entradas de casos piloto, usadas para recorrer flujos completos de Besaya, M-30, Manning y Valencia desde el navegador.
+Los 26 notebooks generales de ejemplo catalogados por la web, excluyendo casos piloto y material interno de preparación de artículos, funcionan como guías ejecutables de las funcionalidades del paquete.\footnote{Los contadores mostrados en la portada de la interfaz web corresponden al estado del catálogo en el momento de cada captura y pueden diferir del recuento de cierre de esta memoria; la cifra de referencia es la del catálogo fuente \texttt{notebooks.json}: 26 notebooks generales y 23 de casos piloto.} La \cref{tab:notebooks} lista su correspondencia con los módulos. El catálogo fuente de la interfaz web contiene además 23 entradas de casos piloto, usadas para recorrer flujos completos de Besaya, M-30, Manning y Valencia desde el navegador.
 
 \begin{figure}[htbp]
   \centering
@@ -451,6 +451,15 @@ En una aplicación industrial, el resultado de \hydra no debe limitarse al mapa 
 \end{table}
 
 La entrega recomendada incluye siempre un fichero de configuración del estudio, un registro de ejecución y una carpeta de productos intermedios. Esta estructura permite repetir solo una parte del flujo cuando cambia una hipótesis, sin volver a descargar datos ni relanzar simulaciones hidráulicas costosas.
+
+\section{Licencia, gobernanza y credenciales}
+\label{sec:gobernanza}
+
+\pyhydra y \hydra se distribuyen bajo licencia MIT, una licencia permisiva que autoriza el uso, la modificación y la redistribución ---también con fines comerciales--- con la única condición de conservar el aviso de copyright. Esta elección es coherente con el objetivo de transferencia de la tesis: no impone obligaciones de copyleft a las administraciones, consultoras o grupos de investigación que integren la librería en sus propios flujos, y es la práctica dominante en el ecosistema científico Python en el que se apoya el paquete. Los motores de simulación externos conservan sus licencias propias (dominio público en el caso de las herramientas HEC; código abierto en SWAT+ y SFINCS), que \hydra no redistribuye.
+
+La gobernanza del software sigue el ciclo ya aplicado en la versión 0.1.0: desarrollo en repositorios Git con revisión de cambios, publicación de versiones etiquetadas con changelog, y depósito de cada versión estable en Zenodo con DOI propio (\pyhydra: 10.5281/zenodo.20932555; \hydra: 10.5281/zenodo.21138151), lo que garantiza la citabilidad y la correspondencia verificable entre los resultados de esta memoria y el código que los produce. IHCantabria asume el mantenimiento del proyecto como parte de su cartera de herramientas de transferencia; la distribución en PyPI y la apertura progresiva a contribuciones externas se recogen en el trabajo futuro (\cref{ch:conclusiones}).
+
+Las credenciales de acceso a fuentes de datos (CDS, NASA Earthdata, AEMET, nodos ESGF) no se incluyen nunca en el código, los notebooks ni las imágenes Docker: cada usuario las aporta mediante variables de entorno o los ficheros de configuración estándar de cada cliente, según se detalla en el \cref{ch:fuentes_datos}. Esta separación permite publicar flujos completos sin comprometer secretos y hace que la reproducción por terceros dependa únicamente de obtener sus propias credenciales gratuitas.
 
 \section{Buenas prácticas}
 

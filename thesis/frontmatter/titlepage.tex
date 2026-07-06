@@ -1,78 +1,76 @@
 % Portada oficial UC — Escuela de Doctorado
-% Replicada de la plantilla PortadasTesis_A4_V4
+% Recreada en LaTeX puro a partir del pliego de marca PortadasTesis_A4_V4
+% (cara derecha del pliego: cabecera con regla y año, bloques de autor/director,
+%  títulos ES/EN, rectángulo decorativo, logo EDUC y regla inferior).
 \begin{titlepage}
-\newgeometry{top=1.5cm, bottom=1.5cm, left=2.2cm, right=2.2cm}
+\newgeometry{top=1.2cm, bottom=1.1cm, left=2.4cm, right=2.4cm}
 \setlength{\parindent}{0pt}
+\sffamily
 
-% ── 1. CABECERA ──────────────────────────────────────────────────────────────
-\begin{minipage}[t]{0.77\textwidth}
-  \vspace{0pt}
-  {\color{ucprimary}\fontsize{17}{20}\selectfont\textbf{Universidad de Cantabria}\par}
-  \vspace{4pt}{\color{ucprimary}\rule{\linewidth}{0.8pt}\par}
-  \vspace{5pt}
-  {\color{ucprimary}\small\textbf{Programa de Doctorado en} Ingeniería de Costas,
-   Hidrobiología y Gestión de Sistemas Acuáticos (IH2O)\par}
-\end{minipage}%
+% ── 1. CABECERA: regla superior + caja del año ──────────────────────────────
+\noindent
+{\color{ucprimary}\rule[0.42cm]{\dimexpr\textwidth-2.15cm\relax}{0.7pt}}%
 \hfill
-\begin{minipage}[t]{0.17\textwidth}
-  \vspace{0pt}
-  \begin{flushright}
-    \colorbox{ucprimary}{\parbox[c][1.6cm]{2.2cm}{%
-      \centering\color{white}\fontsize{8}{10}\selectfont
-      \textbf{Tesis}\\\textbf{Doctoral}\\[4pt]
-      \fontsize{14}{16}\selectfont\textbf{\ThesisDate}}}
-  \end{flushright}
-\end{minipage}
+\colorbox{ucprimary}{\parbox[c][0.95cm]{1.85cm}{%
+  \centering\color{white}\fontsize{16}{18}\selectfont\textbf{\ThesisDate}}}
 
-\par\vspace{1.1cm}
+\vspace{-0.15cm}
+{\color{ucprimary}\fontsize{19}{23}\selectfont Universidad de\par}
+\vspace{1pt}
+{\color{ucprimary}\fontsize{19}{23}\selectfont\textbf{Cantabria}\par}
+
+\vspace{10pt}
+
+{\color{ucprimary}\fontsize{11.5}{15}\selectfont\textbf{Programa de Doctorado en}
+ Ingeniería de Costas, Hidrobiología y Gestión de Sistemas Acuáticos (IH2O)\par}
+
+\vspace{1.5cm}
 
 % ── 2. AUTOR Y DIRECTOR ──────────────────────────────────────────────────────
-{\color{ucprimary}\small\textbf{Autor/Autora:}\par}
-{\small\ThesisAuthor\par}
+{\color{ucprimary}\fontsize{11.5}{15}\selectfont\textbf{Autor:}\par}
+{\color{ucsecondary}\fontsize{11.5}{15}\selectfont\ThesisAuthor\par}
 
 \vspace{0.45cm}
 
-{\color{ucprimary}\small\textbf{Director/a/es/as:}\par}
-{\small\ThesisDirector\par}
+{\color{ucprimary}\fontsize{11.5}{15}\selectfont\textbf{Director:}\par}
+{\color{ucsecondary}\fontsize{11.5}{15}\selectfont\ThesisDirector\par}
 
-\vspace{0.45cm}
-
-{\color{ucprimary}\small\textbf{Tutor/a:}\par}
-{\small\ThesisTutor\par}
-
-\vspace{1.3cm}
+\vspace{1.6cm}
 
 % ── 3. BLOQUE DE TÍTULO ESPAÑOL ──────────────────────────────────────────────
-{\color{ucprimary}\large\textbf{Tesis Doctoral}\par}
-
-\vspace{0.45cm}
-
-{\color{ucprimary}\raggedright\fontsize{18}{23}\selectfont\bfseries
-  \MakeUppercase{\ThesisTitleES}\par}
-
-\vspace{0.9cm}
-
-% ── 4. BLOQUE DE TÍTULO INGLÉS ───────────────────────────────────────────────
-{\color{ucprimary}\large\textbf{PhD Thesis}\par}
+{\color{ucsecondary}\fontsize{21}{25}\selectfont\bfseries Tesis Doctoral\par}
 
 \vspace{0.35cm}
 
-{\color{ucprimary}\raggedright\fontsize{13}{17}\selectfont\bfseries
+{\color{ucprimary}\raggedright\fontsize{21}{26}\selectfont\bfseries
+  \MakeUppercase{\ThesisTitleES}\par}
+
+\vspace{0.75cm}
+
+% ── 4. BLOQUE DE TÍTULO INGLÉS ───────────────────────────────────────────────
+{\color{ucsecondary}\fontsize{16}{20}\selectfont\bfseries PhD Thesis\par}
+
+\vspace{0.3cm}
+
+{\color{ucprimary}\raggedright\fontsize{15}{19}\selectfont\bfseries
   \MakeUppercase{\ThesisTitleEN}\par}
 
-\vspace{0.7cm}
+\vspace{1.0cm}
 
-% Elemento decorativo
-{\color{ucprimary}\rule{2.0cm}{0.32cm}\par}
+% Rectángulo decorativo
+{\color{ucprimary}\rule{2.2cm}{0.35cm}\par}
 
 \vfill
 
-% ── 5. NOTA INDUSTRIAL Y LOGO ────────────────────────────────────────────────
-{\color{ucprimary}\footnotesize\textit{Tesis Doctoral de carácter industrial ---
-\ThesisIndustrialContext}\par}
+% ── 5. NOTA INDUSTRIAL, LOGO Y REGLA INFERIOR ───────────────────────────────
+{\color{ucprimary}\footnotesize\itshape Tesis Doctoral de carácter industrial ---
+\ThesisIndustrialContext\par}
 
-\vspace{0.6cm}
+\vspace{0.55cm}
 
-\includegraphics[height=0.8cm]{figures/logo_uc_escuela_doctorado_crop}
+\includegraphics[width=6.8cm]{figures/logo_uc_escuela_doctorado_crop}
+
+\vspace{0.5cm}
+{\color{ucprimary}\rule{\textwidth}{0.7pt}\par}
 
 \end{titlepage}
