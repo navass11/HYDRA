@@ -9,7 +9,7 @@
 \usepackage{array}
 \usepackage{multirow}
 \usepackage{siunitx}
-\usepackage[authoryear,longnamesfirst]{natbib}
+\usepackage[authoryear]{natbib}
 \usepackage{lineno}
 \usepackage{setspace}
 \usepackage{pdflscape}
@@ -74,7 +74,8 @@
                 postcode={13005},
                 country={Spain}}
 
-\author[2]{\'Alvaro Gal\'an}
+\author[2]{{\'A}lvaro Gal\'an}
+\ead[orcid]{0000-0003-2966-3089}
 \credit{Conceptualization, Writing -- review \& editing}
 
 \affiliation[2]{organization={Escuela T\'ecnica Superior de Ingenier\'ia de Caminos, Canales y Puertos, Universidad de Castilla-La Mancha},
@@ -83,7 +84,7 @@
                 postcode={13005},
                 country={Spain}}
 
-\author[3]{Manuel del Jesus}
+\author[3]{Manuel {del Jesus}}
 \ead[orcid]{0000-0003-0703-8960}
 \credit{Resources, Supervision, Funding acquisition, Writing -- review \& editing}
 
@@ -97,30 +98,27 @@
 %% ---------------------------------------------------------------------------
 \begin{abstract}
 Manning roughness uncertainty in 2D flood models is usually assessed within a
-single model configuration. We compare SFINCS and HEC-RAS, two configurations
-differing simultaneously in governing-equation approximation, mesh design,
-numerical implementation and post-processing, using 995 valid paired roughness
-realisations for a $T=500$-year design flood in the Besaya River floodplain,
-northern Spain. Spatially averaged Manning values explain less than 2\% of
-domain-scale flood-output variance in both models, yet the same inputs produce
-contrasting uncertainty structures: HEC-RAS shows larger ensemble variability
+single model configuration. We compare SFINCS and HEC-RAS using 995 paired
+roughness realisations for a $T=500$-year design flood in the Besaya River
+floodplain, northern Spain. The wet-cell mean Manning coefficient explains less
+than 2\% of domain-scale output variance in both models, yet the same inputs
+produce contrasting uncertainty structures: HEC-RAS shows larger variability
 and a bimodal flooded-area distribution, whereas SFINCS remains unimodal.
 Inundation-frequency maps link the HEC-RAS regimes to a 60.1~m saddle
 controlling access to a 7.4~ha secondary floodplain compartment. The bimodality
 persists under alternative metrics and correlated-roughness checks, indicating
-that complete modelling configurations can alter probabilistic flood-hazard
-distributions near threshold-controlled topographic features. Because equation
-formulation, mesh representation and design discharge were not varied
-independently, the mechanism should be interpreted as configuration-level
-rather than as an isolated governing-equation effect.
+that complete modelling configurations can alter probabilistic hazard
+distributions near threshold-controlled topography. Because formulation, mesh
+representation and design discharge were not varied independently, the
+mechanism is interpreted as a configuration-level effect.
 \end{abstract}
 
 \begin{highlights}
 \item Paired roughness ensemble compares SFINCS and HEC-RAS flood responses.
-\item Mean Manning explains less than 2\% of output variance in both models.
+\item Wet-cell mean Manning explains less than 2\% of output variance.
 \item HEC-RAS yields a bimodal area response; SFINCS remains unimodal.
-\item A 60.1 m saddle marks access to a secondary floodplain compartment.
-\item Configuration effects combine equations, mesh design and discharge choice.
+\item A topographic saddle controls hydraulic connectivity to a secondary compartment.
+\item Model configuration changes the shape of probabilistic hazard distributions.
 \end{highlights}
 
 \begin{keywords}
@@ -436,7 +434,7 @@ Flooded area (km²)   & 0.49 & 0.24 & $+0.149$~km² & 0.158~km² & 1.28 \\
 \end{tabular}
 \end{table}
 
-The two models are only moderately consistent at the realisation scale. The Pearson correlation between paired simulations is $r=0.52$ for mean depth ($p<10^{-68}$) and $r=0.49$ for flooded area ($p<10^{-60}$). These values indicate that only about one quarter of the inter-simulation variance is shared between the two model ensembles ($r^2=0.27$ for depth and $r^2=0.24$ for area). In practical terms, a Manning combination that produces a relatively large flood in \sfincs{} does not necessarily produce a similarly large flood in \hecras{}. The stochastic roughness field is therefore filtered differently by the two hydraulic configurations.
+The two models are only moderately consistent at the realisation scale. The Pearson correlation between paired simulations is $r=0.52$ for mean depth ($p\approx 0$) and $r=0.49$ for flooded area ($p\approx 0$). These values indicate that only about one quarter of the inter-simulation variance is shared between the two model ensembles ($r^2=0.27$ for depth and $r^2=0.24$ for area). In practical terms, a Manning combination that produces a relatively large flood in \sfincs{} does not necessarily produce a similarly large flood in \hecras{}. The stochastic roughness field is therefore filtered differently by the two hydraulic configurations.
 
 This difference is visible not only in the mean outputs, but also in the shape of the output distributions. The \sfincs{} flooded-area distribution is unimodal and relatively narrow, with $\bar{A}=0.539~\mathrm{km^2}$ and $\mathrm{CV}=2.0\%$. By contrast, the \hecras{} flooded-area distribution is bimodal, with modes centred near 0.577 and $0.700~\mathrm{km^2}$, and an  overall coefficient of variation of 8.4\%. The 1:1 scatter plots in Figure~\ref{fig:comparison} show the same asymmetry: \sfincs{} varies continuously along the horizontal axis, whereas the \hecras{} area values fall into two distinct clusters. This confirms that the bimodality is not a property of the Manning ensemble itself, but emerges from the way the \hecras{} configuration transforms that ensemble into flood extent.
 
@@ -447,7 +445,7 @@ These results reinforce a point that is sometimes obscured in parameter-based un
 
 
 \subsection{Bimodal HEC-RAS response and topographic threshold}\label{sec:res_bifurcation}
-The two-band structure observed in the \hecras{} scatter plots corresponds to a bimodal distribution of flooded area. This behaviour was formalised with the two-component Gaussian mixture model described in Section~\ref{sec:regime_threshold}. The model converged in fewer than 15 EM iterations and separated the ensemble into a low-inundation regime, containing 97 simulations ($\pi_0=0.097$), and a high-inundation regime, containing 898 simulations ($\pi_1=0.903$). The fitted mean flooded areas were $\mu_0=0.577~\mathrm{km^2}$ and $\mu_1=0.700~\mathrm{km^2}$, with standard deviations of $0.023~\mathrm{km^2}$ and $0.046~\mathrm{km^2}$, respectively. The difference between the two component means, $\Delta\mu=0.123~\mathrm{km^2}$, is large relative to the within-regime spread, corresponding to $5.4\sigma_0$ and $2.7\sigma_1$. Adding a third component did not improve the Bayesian Information Criterion, confirming that two components are sufficient to describe the observed distribution (Table~\ref{tab:gmm}).
+The two-band structure observed in the \hecras{} scatter plots corresponds to a bimodal distribution of flooded area. This behaviour was formalised with the two-component Gaussian mixture model described in Section~\ref{sec:regime_threshold}. The model converged in fewer than 15 EM iterations and separated the ensemble into a low-inundation regime, containing 97 simulations ($\pi_0=0.097$), and a high-inundation regime, containing 898 simulations ($\pi_1=0.903$). The fitted mean flooded areas were $\mu_0=0.577~\mathrm{km^2}$ and $\mu_1=0.700~\mathrm{km^2}$, with standard deviations of $0.023~\mathrm{km^2}$ and $0.046~\mathrm{km^2}$, respectively. The difference between the two component means, $\Delta\mu=0.123~\mathrm{km^2}$, is large relative to the within-regime spread, corresponding to $5.4\sigma_0$ and $2.7\sigma_1$. Although the Bayesian Information Criterion was lower for a three-component fit, the additional component subdivided the broad high-area group rather than identifying a new hydraulic state. The two-component model is therefore used as an interpretable classifier of the low- versus high-connectivity regimes analysed below.
 
 \begin{table}[htbp]
 \centering
@@ -502,7 +500,7 @@ Mean $\bar{n}$ (wet cells) & $+0.069$ & 0.030 & $-0.252$ \\
 \end{table}
 
 
-A different picture emerges when the \sfincs{} flooded area for the same Manning realisation is used as a diagnostic. Although the relationship is not strong enough to predict regime membership deterministically, it is statistically significant: the Spearman correlation between \sfincs{} flooded area and the \hecras{} regime label is $\rho=0.36$ ($p<10^{-31}$; Figure~\ref{fig:bifurcation_dist}). Low-regime \hecras{} simulations are associated with slightly smaller \sfincs{} flooded areas on average ($0.527~\mathrm{km^2}$, compared with $0.540~\mathrm{km^2}$ for high-regime simulations; $t=-12.6$, $p<10^{-30}$). This suggests that the transition is linked to the overall hydraulic state generated by the full roughness field, rather than to any individual class value. Simulations with slightly lower floodplain activation in \sfincs{} are less likely to achieve hydraulic continuity across the saddle corridor in \hecras{}, even though the two models share the same Manning input and boundary conditions.
+A different picture emerges when the \sfincs{} flooded area for the same Manning realisation is used as a diagnostic. Although the relationship is not strong enough to predict regime membership deterministically, it is statistically significant: the Spearman correlation between \sfincs{} flooded area and the \hecras{} regime label is $\rho=0.36$ ($p\approx 0$; Figure~\ref{fig:bifurcation_dist}). Low-regime \hecras{} simulations are associated with slightly smaller \sfincs{} flooded areas on average ($0.527~\mathrm{km^2}$, compared with $0.540~\mathrm{km^2}$ for high-regime simulations; $t=-12.6$, $p\approx 0$). This suggests that the transition is linked to the overall hydraulic state generated by the full roughness field, rather than to any individual class value. Simulations with slightly lower floodplain activation in \sfincs{} are less likely to achieve hydraulic continuity across the saddle corridor in \hecras{}, even though the two models share the same Manning input and boundary conditions.
 
 The spatial frequency maps clarify the source of this regime separation (Figures~\ref{fig:bifurcation} and~\ref{fig:bifurcation_diff}). The high-regime simulations inundate a secondary floodplain compartment on the right bank that is largely absent from the low-regime simulations. This area, $\Omega_{\mathrm{secondary}}$, covers approximately 7.4~ha and is wet in
 more than 60\% of the high-regime simulations but in less than 20\% of the low-regime simulations. The frequency-difference map shows a sharp spatial contrast between this compartment and the surrounding terrain, indicating that the regime shift is not a diffuse change along the flood margin but the activation of a coherent secondary inundation area.
@@ -627,7 +625,7 @@ The regime transition cannot be explained by any single Manning coefficient. Ind
 
 These findings have practical implications for probabilistic flood-hazard modelling. A deterministic simulation based on a single best-estimate Manning map would either include or exclude the secondary floodplain compartment, whereas the ensemble assigns a probability to its activation. More generally, uncertainty analyses based only on parameter perturbations within a single model may miss important model-configuration effects, especially in floodplains where roads, embankments, terraces or natural saddles control access to secondary inundation areas. Simplified models remain valuable for efficient screening and large ensembles, but their results should be interpreted with care near topographic thresholds.
 
-The comparison should not be read as evidence that one model is universally more accurate than the other. The two configurations differ not only in their governing-equation approximation, but also in numerical implementation, mesh representation and output rendering. Direct validation is also not available for a $T=500$-year event at this reach. The main conclusion is therefore more specific: for this floodplain and design event, model configuration transforms Manning roughness uncertainty in a way that changes not only the spread of the outputs, but also the shape of the hazard distribution. Two caveats bear directly on how broadly this conclusion should be read. First, the bimodal response was observed at a single site and a single return period: whether the secondary compartment remains disconnected at lower water levels (e.g.\ $T=100$ years) or is permanently connected at higher ones is not established. Second, the peak discharge was treated as deterministic; hydrological uncertainty at $T=500$ years may reach $\pm30$--50\%, and a systematic shift in $Q_{500}$ could either suppress or reinforce the bimodal response by shifting the flow conditions at the saddle corridor relative to the connectivity threshold. Future work should extend the analysis to multiple return periods, propagate terrain uncertainty, examine local water-surface and velocity fields at the saddle, verify the HEC-RAS raster export against native mesh-scale outputs near the threshold, and repeat the comparison with more controlled mesh configurations to separate governing equation effects from discretisation effects.
+The comparison should not be read as evidence that one model is universally more accurate than the other. The two configurations differ in governing-equation approximation, numerical implementation, mesh representation and output rendering, and direct validation is not available for a $T=500$-year event at this reach. The main conclusion is more specific: for this floodplain and design event, model configuration transforms Manning roughness uncertainty in a way that changes not only the spread of the outputs, but also the shape of the hazard distribution. Two caveats bear directly on how broadly this conclusion should be read. First, the bimodal response was observed at a single site and a single return period; whether the secondary compartment remains disconnected at lower water levels (e.g.\ $T=100$ years) or is permanently connected at higher ones is not established. Second, the peak discharge was treated as deterministic; hydrological uncertainty at $T=500$ years may reach $\pm30$--50\%, and a systematic shift in $Q_{500}$ could suppress or reinforce the bimodal response by shifting the flow conditions at the saddle corridor relative to the connectivity threshold. Future work should extend the analysis to multiple return periods, propagate terrain uncertainty, examine local water-surface and velocity fields at the saddle, verify the HEC-RAS raster export against native mesh-scale outputs near the threshold, and repeat the comparison with more controlled mesh configurations to separate governing-equation effects from discretisation effects.
 
 
 %% ===========================================================================
