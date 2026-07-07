@@ -16,12 +16,13 @@ from sklearn.mixture import GaussianMixture
 
 ROOT = Path(__file__).resolve().parent
 DATA_CSV = ROOT / "zenodo_upload" / "data" / "comparison_clean_995.csv"
+MANNING_CSV = ROOT / "zenodo_upload" / "data" / "monte_carlo_combinations.csv"
 OUT = ROOT / "graphical_abstract.png"
 OUT_TIFF = ROOT / "graphical_abstract.tif"
 
 C_SFINCS = "#2f9e44"
 C_LOW = "#3b6fb6"
-C_HIGH = "#c44e52"
+C_HIGH = "#E69F00"
 C_TEXT = "#202124"
 C_MUTED = "#5f6368"
 
@@ -49,42 +50,52 @@ def arrow(ax, xy0, xy1, color="#6b7280", lw=2.0, scale=17):
     )
 
 
-def draw_input_panel(ax):
+def draw_input_panel(ax, manning):
     ax.set_axis_off()
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
 
     ax.text(
         0.05,
-        0.90,
+        0.97,
         "Same roughness\nensemble",
         ha="left",
         va="top",
-        fontsize=15.5,
+        fontsize=14.5,
         fontweight="bold",
         color=C_TEXT,
     )
     ax.text(
         0.05,
-        0.66,
-        "Paired Manning\nsamples",
+        0.80,
+        "9 land-use classes,\neach with its own\nManning-$n$ range",
         ha="left",
         va="top",
-        fontsize=12.5,
+        fontsize=10,
         color=C_MUTED,
     )
 
+    classes = list(manning.columns)
+    n = len(classes)
     rng = np.random.default_rng(9)
-    classes = np.arange(9)
-    base = np.linspace(0.02, 0.16, 9)
-    for i, b in enumerate(base):
-        y = b + rng.normal(0, 0.007, 40)
-        x = rng.normal(classes[i], 0.09, 40)
-        ax.scatter(x / 10 + 0.05, y * 2.2 + 0.08, s=10, color="#8d99ae", alpha=0.42)
-        ax.plot([i / 10 + 0.02, i / 10 + 0.08], [b * 2.2 + 0.08] * 2, color="#394867", lw=2)
+    plot_bottom, plot_top = 0.12, 0.44
+    xs = np.linspace(0.10, 0.90, n)
 
-    ax.text(0.05, 0.055, "Land-use roughness ranges", fontsize=10, color=C_MUTED)
-    arrow(ax, (0.78, 0.45), (0.97, 0.45), color="#4b5563", lw=2.5)
+    ax.hlines(plot_bottom - 0.03, 0.04, 0.96, color="#c7cad1", lw=1.2)
+
+    for xi, cls in zip(xs, classes):
+        vals = manning[cls].to_numpy()
+        sample = rng.choice(vals, size=min(14, len(vals)), replace=False)
+        norm = (sample - vals.min()) / (vals.max() - vals.min() + 1e-12)
+        y = plot_bottom + norm * (plot_top - plot_bottom)
+        jitter = rng.normal(0, 0.016, size=len(sample))
+        ax.scatter(xi + jitter, y, s=26, color="#6b7ea3", alpha=0.75, linewidths=0, zorder=2)
+        med = plot_bottom + np.median(norm) * (plot_top - plot_bottom)
+        ax.plot([xi - 0.045, xi + 0.045], [med, med], color="#243352", lw=3.2,
+                 solid_capstyle="round", zorder=3)
+
+    ax.text(0.5, 0.065, "same combination", fontsize=8.5, color=C_MUTED, ha="center", va="top")
+    ax.text(0.5, 0.025, "→ paired into both models", fontsize=8.5, color=C_MUTED, ha="center", va="top")
 
 
 def draw_distribution_panel(ax, data, labels):
@@ -123,7 +134,15 @@ def draw_distribution_panel(ax, data, labels):
     ax.tick_params(labelsize=9)
     ax.grid(True, alpha=0.18, axis="y")
     ax.spines[["top", "right"]].set_visible(False)
-    ax.legend(loc="upper left", fontsize=8.7, frameon=False)
+    ax.legend(
+        loc="upper center",
+        bbox_to_anchor=(0.5, -0.20),
+        ncol=3,
+        fontsize=8.7,
+        frameon=False,
+        handlelength=1.3,
+        columnspacing=1.1,
+    )
 
 
 def draw_threshold_panel(ax):
@@ -131,58 +150,53 @@ def draw_threshold_panel(ax):
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
 
-    x = np.linspace(0.07, 0.93, 300)
-    terrain = 0.20 + 0.12 * np.sin(2.7 * np.pi * x) + 0.42 * np.exp(-((x - 0.55) / 0.105) ** 2)
-    water_low = 0.53
-    water_high = 0.66
+    ax.text(0.05, 0.95, "Topographic threshold", fontsize=14, fontweight="bold", color=C_TEXT, va="top")
 
-    ax.fill_between(x, 0.08, terrain, color="#d7d2c8", alpha=1.0)
-    ax.plot(x, terrain, color="#6f6658", lw=2.0)
+    x = np.linspace(0.05, 0.95, 300)
+    terrain = 0.30 + 0.10 * np.sin(2.7 * np.pi * x) + 0.42 * np.exp(-((x - 0.55) / 0.105) ** 2)
+    floor = 0.08
+    water_low = 0.52
+    water_high = 0.72
+
+    ax.fill_between(x, floor, terrain, color="#d7d2c8", alpha=1.0)
+    ax.plot(x, terrain, color="#6f6658", lw=2.2)
     ax.fill_between(x, terrain, water_low, where=water_low > terrain, color=C_LOW, alpha=0.35)
     ax.fill_between(x, terrain, water_high, where=water_high > terrain, color=C_HIGH, alpha=0.25)
-    ax.hlines(water_low, 0.07, 0.49, colors=C_LOW, linestyles="-", lw=2.5)
-    ax.hlines(water_high, 0.07, 0.93, colors=C_HIGH, linestyles="-", lw=2.5)
-    ax.vlines(0.55, 0.08, terrain[np.argmin(np.abs(x - 0.55))], color="#111827", linestyles="--", lw=1.5)
+    ax.hlines(water_low, 0.05, 0.55, colors=C_LOW, linestyles="-", lw=3.0)
+    ax.hlines(water_low, 0.55, 0.95, colors=C_LOW, linestyles=(0, (1, 1.4)), lw=1.6, alpha=0.55)
+    ax.hlines(water_high, 0.05, 0.95, colors=C_HIGH, linestyles="-", lw=3.0)
+    ax.vlines(0.55, floor, terrain[np.argmin(np.abs(x - 0.55))], color="#111827", linestyles="--", lw=1.5)
 
-    ax.text(0.05, 0.93, "Topographic threshold", fontsize=14, fontweight="bold", color=C_TEXT)
-    label_box = {"facecolor": "white", "edgecolor": "none", "alpha": 0.88, "pad": 2.2}
+    label_box = {"facecolor": "white", "edgecolor": "none", "alpha": 0.92, "pad": 2.5}
     ax.text(
         0.55,
-        0.75,
-        "60.1 m\nsaddle",
+        0.755,
+        "60.1 m saddle",
         ha="center",
         va="bottom",
-        fontsize=12,
+        fontsize=13,
         fontweight="bold",
         bbox=label_box,
     )
-    ax.text(
-        0.73,
-        0.84,
-        "high-regime\nconnection",
-        color=C_HIGH,
-        fontsize=11,
-        fontweight="bold",
-        ha="left",
-        bbox=label_box,
-    )
-    ax.text(0.07, 0.05, "Main floodplain", fontsize=10, color=C_MUTED)
-    ax.text(0.94, 0.05, "Secondary\ncompartment", fontsize=10, color=C_MUTED, ha="right")
-    arrow(ax, (0.60, 0.65), (0.80, 0.65), color=C_HIGH, lw=2.2, scale=15)
+    ax.text(0.06, water_low, "Low regime", color=C_LOW, fontsize=10.5, fontweight="bold",
+            ha="left", va="bottom")
+    ax.text(0.06, water_high, "High regime", color=C_HIGH, fontsize=10.5, fontweight="bold",
+            ha="left", va="bottom")
 
 
 def main():
     data = pd.read_csv(DATA_CSV, index_col=0)
     labels = classify_regimes(data)
+    manning = pd.read_csv(MANNING_CSV)
 
     fig = plt.figure(figsize=(13.28, 5.31), dpi=100, facecolor="white")
     gs = fig.add_gridspec(
         1,
         3,
-        width_ratios=[0.82, 1.38, 1.10],
+        width_ratios=[0.78, 1.30, 1.22],
         left=0.035,
         right=0.985,
-        bottom=0.23,
+        bottom=0.30,
         top=0.79,
         wspace=0.30,
     )
@@ -191,7 +205,7 @@ def main():
     ax1 = fig.add_subplot(gs[0, 1])
     ax2 = fig.add_subplot(gs[0, 2])
 
-    draw_input_panel(ax0)
+    draw_input_panel(ax0, manning)
     draw_distribution_panel(ax1, data, labels)
     draw_threshold_panel(ax2)
 

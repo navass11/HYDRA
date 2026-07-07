@@ -2,7 +2,7 @@
 
 **Authors:** Salvador Navas, Álvaro Galán, Manuel del Jesus  
 **Journal:** Environmental Modelling & Software (under review)  
-**DOI (this dataset):** https://doi.org/10.5281/zenodo.20672451 *(reserved — restricted access during peer review; will be made public upon acceptance)*  
+**DOI (this dataset):** https://doi.org/10.5281/zenodo.20672450 *(concept DOI, always resolves to the latest version; openly available)*  
 **Code repository:** https://github.com/navass11/pyhydra
 
 ---
@@ -204,7 +204,7 @@ If you use this dataset, please cite:
 > Navas, S., Galán, Á., & del Jesus, M. (2026). From roughness uncertainty to
 > model-structure effects in 2D flood inundation models: a Monte Carlo comparison
 > of SFINCS and HEC-RAS. *Environmental Modelling & Software* (under review).
-> Dataset: Zenodo. https://doi.org/10.5281/zenodo.20672451
+> Dataset: Zenodo. https://doi.org/10.5281/zenodo.20672450
 
 ---
 

@@ -40,6 +40,26 @@
     \group_end:
   }
 }
+% Patch: \ead[orcid]{ID} is rendered via \urlauthor, which wraps the bare
+% ORCID id in \url{...} -- producing a hyperlink that points to the literal
+% id (e.g. "0000-0001-7439-1743") instead of https://orcid.org/<id>. A plain
+% \href here mis-resolves to a GoToR "open remote file <url>.pdf" action
+% instead of a URI action, because \urlauthor's call is deferred through the
+% .aux file (like a citation) and replayed before hyperref's scheme-detection
+% for \href is fully set up. \hyper@linkurl always treats its target as a
+% URL (no file/URL ambiguity), so it is unaffected by that timing issue.
+\makeatletter
+\RenewDocumentCommand \urlauthor { m m }
+{
+  \int_gincr:N \g_uad_int
+  \seq_gput_right:Nn \g_stm_uad_seq
+    {
+      \hyper@linkurl {#1} {https://orcid.org/#1}
+      \parsename {#2}
+      \space (\eadauthor)
+    }
+}
+\makeatother
 \ExplSyntaxOff
 
 \linenumbers
@@ -64,34 +84,28 @@
 
 \author[1]{Salvador Navas}
 \cormark[1]
-\ead{s.navas11@gmail.com}
+\ead{salvador.navas@alumnos.unican.es}
 \ead[orcid]{0000-0001-7439-1743}
 \credit{Conceptualization, Methodology, Software, Data curation, Formal analysis, Visualization, Writing -- original draft, Writing -- review \& editing}
 
-\affiliation[1]{organization={HidraLab},
-                addressline={Avda. Camilo Jos\'e Cela s/n},
-                city={Ciudad Real},
-                postcode={13005},
+% ROR Universidad de Cantabria: https://ror.org/046ffzj20
+\affiliation[1]{organization={Department of Water and Environmental Sciences and Techniques, University of Cantabria},
+                city={Santander},
                 country={Spain}}
 
 \author[2]{{\'A}lvaro Gal\'an}
 \ead[orcid]{0000-0003-2966-3089}
 \credit{Conceptualization, Writing -- review \& editing}
 
-\affiliation[2]{organization={Escuela T\'ecnica Superior de Ingenier\'ia de Caminos, Canales y Puertos, Universidad de Castilla-La Mancha},
+\affiliation[2]{organization={ETSI Caminos, Canales y Puertos, Department of Civil and Building Engineering, Universidad de Castilla-La Mancha},
                 addressline={Avda. Camilo Jos\'e Cela s/n},
                 city={Ciudad Real},
-                postcode={13005},
+                postcode={13071},
                 country={Spain}}
 
-\author[3]{Manuel {del Jesus}}
+\author[1]{Manuel {del Jesus}}
 \ead[orcid]{0000-0003-0703-8960}
 \credit{Resources, Supervision, Funding acquisition, Writing -- review \& editing}
-
-% ROR Universidad de Cantabria: https://ror.org/046ffzj20
-\affiliation[3]{organization={Departamento de Ciencias y T\'ecnicas del Agua y del Medio Ambiente, Universidad de Cantabria},
-                city={Santander},
-                country={Spain}}
 
 \cortext[1]{Corresponding author}
 
@@ -667,8 +681,8 @@ pipeline.
 \smallskip
 \begin{tabular}{@{}p{4.5cm}p{9cm}@{}}
 Name:                  & \texttt{pyhydra} \\
-Developer:             & Salvador Navas, HidraLab \\
-Contact:               & \texttt{s.navas11@gmail.com} \\
+Developer:             & Salvador Navas, University of Cantabria \\
+Contact:               & \texttt{salvador.navas@alumnos.unican.es} \\
 Year first available:  & 2026 \\
 Version used:          & 0.1.0 (commit \texttt{9f33b9e}) \\
 Hardware required:     & Standard workstation ($\geq$8\,GB RAM) \\
@@ -678,10 +692,8 @@ Program language:      & Python \\
 Program size:          & $\sim$500\,KB \\
 Availability and cost: & Free and open source (MIT License) \\
 Repository:            & \url{https://github.com/navass11/pyhydra} \\
-Persistent archive:    & A Zenodo archive of version 0.1.0 is available for
-                         peer review via a private link (DOI reserved;
-                         \citealp{navas2026zenodo}); public release upon
-                         acceptance. \\
+Persistent archive:    & A Zenodo archive of version 0.1.0 is openly available
+                         at \citealp{navas2026zenodo}. \\
 \end{tabular}
 
 \smallskip
@@ -715,14 +727,13 @@ also included in the archive under \texttt{simulations/HEC-RAS/} and
 \smallskip
 \begin{tabular}{@{}p{4.5cm}p{9cm}@{}}
 Name:                  & Besaya River Manning--flood ensemble statistics \\
-Developer:             & Salvador Navas, HidraLab \\
-Contact:               & \texttt{s.navas11@gmail.com} \\
+Developer:             & Salvador Navas, University of Cantabria \\
+Contact:               & \texttt{salvador.navas@alumnos.unican.es} \\
 Form of repository:    & Zenodo (online database) \\
 Contents:              & Manning roughness coefficients, combination matrices,
                          flood simulation output statistics \\
-Availability and cost: & Free; available to reviewers via a private Zenodo link
-                         (DOI reserved; \citealp{navas2026zenodo}); publicly
-                         available upon acceptance \\
+Availability and cost: & Free; openly available on Zenodo
+                         (\citealp{navas2026zenodo}) \\
 \end{tabular}
 
 \section*{Declaration of generative AI and AI-assisted technologies
