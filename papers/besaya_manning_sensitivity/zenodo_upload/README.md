@@ -201,7 +201,7 @@ Recommended execution order:
 
 If you use this dataset, please cite:
 
-> Navas, S., Galán, Á., & del Jesus, M. (2025). From roughness uncertainty to
+> Navas, S., Galán, Á., & del Jesus, M. (2026). From roughness uncertainty to
 > model-structure effects in 2D flood inundation models: a Monte Carlo comparison
 > of SFINCS and HEC-RAS. *Environmental Modelling & Software* (under review).
 > Dataset: Zenodo. https://doi.org/10.5281/zenodo.20672451
