@@ -90,6 +90,12 @@
 \setlist{itemsep=0.25em, topsep=0.4em}
 \setlength{\emergencystretch}{3em}
 
+% Evitar líneas viudas/huérfanas y cortes de párrafo antiestéticos entre páginas
+\widowpenalty=10000
+\clubpenalty=10000
+\displaywidowpenalty=10000
+\brokenpenalty=4991
+
 \newcommand{\hydra}{HYDRA\xspace}
 \newcommand{\pyhydra}{\texttt{pyhydra}\xspace}
 
@@ -126,6 +132,8 @@
 \input{frontmatter/titlepage}
 \restoregeometry
 \input{frontmatter/portadilla}
+\input{frontmatter/dedicatoria}
+\input{frontmatter/agradecimientos}
 \input{chapters/00_resumen}
 
 \tableofcontents

@@ -159,7 +159,7 @@ El submódulo \texttt{climate.bias\_correction} proporciona cuatro variantes par
 
 El método \texttt{BiasCorrection.fit\_transform(obs, hist, future, var, method=\text{\textquotesingle}delta\text{\textquotesingle})} ofrece un punto de entrada único a las cuatro variantes sin necesidad de instanciar la clase explícitamente.
 
-Ambos métodos fueron aplicados en los estudios de los países andinos \parencite{paz2019idb,deljesus2020andinos} y en SIMPCCe \parencite{navas2025simpce}, con proyecciones CMIP5 y CMIP6 respectivamente.
+Ambos métodos fueron aplicados en los estudios de los países andinos \parencite{paz2019idb,deljesus2020andinos} y en SIMPCCe \parencite{navas2025simpce,fundacioncanal2022guiaembalses}, con proyecciones CMIP5 y CMIP6 respectivamente.
 
 En \pyhydra, la corrección de sesgo se implementa como transformación explícita entre una serie o campo del modelo climático y una referencia observacional. El módulo conserva el período de calibración, la fuente observada, el modelo, el escenario y la variante de corrección. Esta trazabilidad es crítica porque dos estudios con el mismo modelo CMIP6 pueden producir resultados distintos si cambian el período histórico, la fuente observacional o la variante de mapeo cuantil.
 

@@ -90,7 +90,7 @@ El módulo \texttt{modeling.hydrology.swat} gestiona la integración mediante un
 
 La lectura implementada se centra en el formato SWAT+ \texttt{channel\_sd}; no debe interpretarse como un lector universal de todas las salidas históricas de SWAT/SWAT+. Otros ficheros de balance o formatos heredados (\texttt{output.rch}, \texttt{output.sub}) pueden seguir requiriendo postprocesado específico del caso.
 
-SIMPCCe \parencite{navas2025simpce} es el ejemplo más directo de uso de SWAT dentro del ecosistema \hydra para análisis de aportaciones a embalses españoles bajo proyecciones CMIP6.
+El patrón conceptual de este flujo ---proyecciones CMIP corregidas de sesgo transformadas en respuesta hidrológica continua--- es el mismo que aplica SIMPCCe \parencite{navas2025simpce} para el análisis de aportaciones a embalses españoles, si bien esa herramienta emula la transformación hidrológica mediante una red neuronal entrenada sobre las series SIMPA en lugar de ejecutar SWAT. El adaptador de SWAT no cuenta todavía con un caso de estudio publicado en esta línea: su validación es de nivel de módulo, mediante los notebooks de ejemplo sobre proyectos de prueba oficiales del modelo, y su papel en la arquitectura es habilitar ese flujo continuo para los estudios que lo requieran.
 
 \section{Modelos hidráulicos}
 
