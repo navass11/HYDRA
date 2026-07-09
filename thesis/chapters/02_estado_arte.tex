@@ -1,4 +1,4 @@
-\chapter{Estado del arte}
+\chapter{Estado de la técnica}
 \label{ch:estado_arte}
 
 \section{Riesgo de inundación en un contexto cambiante}
@@ -7,7 +7,12 @@ Las inundaciones constituyen el desastre natural con mayor frecuencia, mayor ext
 
 Los enfoques probabilísticos y estocásticos ofrecen una representación más completa, pero su adopción práctica sigue siendo limitada. La curva de aprendizaje técnica, la falta de herramientas integradas y la complejidad operativa de las cadenas de cálculo impiden que muchos equipos profesionales los utilicen de forma sistemática \parencite{dibaldassarre2010}. La guía metodológica española para cartografía de zonas inundables reconoce esta tensión entre rigor metodológico y aplicabilidad práctica \parencite{marm2011guia}, lo que refuerza la pertinencia de una herramienta como \hydra.
 
-\section{Modelado estocástico de inundaciones}
+\section{Métodos probabilísticos para el análisis del riesgo de inundación}
+\label{sec:metodos_probabilisticos}
+
+Este bloque revisa los fundamentos estadísticos y estocásticos sobre los que se apoya la tesis: el modelado estocástico de inundaciones, el análisis de extremos con incertidumbre, el análisis regional y geoestadístico, el análisis multivariante con cópulas y la generación estocástica de precipitación.
+
+\subsection{Modelado estocástico de inundaciones}
 \label{sec:modelado_estocastico}
 
 El modelado de inundaciones ha estado dominado históricamente por enfoques deterministas centrados en escenarios de diseño con un único evento representativo. Sin embargo, dos eventos con el mismo período de retorno en términos de precipitación o caudal pueden producir impactos hidráulicos muy diferentes en función de la distribución temporal de la lluvia, la humedad antecedente, la respuesta de la cuenca o la geometría hidráulica local. El período de retorno del forzamiento no es el período de retorno del daño.
@@ -16,7 +21,7 @@ Los enfoques estocásticos amplían el espacio de simulación generando múltipl
 
 En la práctica, el reto consiste en mantener un equilibrio entre realismo físico y coste computacional. Las metodologías modernas suelen estructurarse en tres etapas: generación masiva de forzamientos sintéticos, selección mediante algoritmos como la máxima disimilitud, y simulación completa del subconjunto seleccionado seguida de reconstrucción estadística del resto \parencite{ihcantabria2020foresee,ihcantabria2021m30}. Este esquema ha sido aplicado en contextos reales de inundación fluvial urbana y en estudios de resiliencia de infraestructuras críticas.
 
-\section{Análisis estadístico de extremos e inferencia bayesiana}
+\subsection{Análisis estadístico de extremos e inferencia bayesiana}
 \label{sec:extremos}
 
 El análisis de extremos proporciona el marco estadístico para estimar cuantiles raros y períodos de retorno. Las formulaciones clásicas, basadas en distribuciones GEV y modelos POT con máxima verosimilitud, han sido extendidas con métodos bayesianos que incorporan incertidumbre paramétrica, conocimiento a priori e incertidumbre estructural \parencite{martins2000generalized,coles2001extremes}.
@@ -25,14 +30,14 @@ Los modelos bayesianos jerárquicos permiten aprovechar simultáneamente informa
 
 El desplazamiento del foco desde los extremos de la variable forzante hacia los extremos del impacto hidráulico es una idea central de esta tesis. La incertidumbre en parámetros de distribuciones de extremos, especialmente en series cortas o eventos raros, puede ser tan relevante como la estimación central. El episodio de precipitación extrema de Valencia de octubre de 2024 ilustra la importancia de este enfoque: la estimación de niveles de retorno de un evento sin precedente histórico exige tanto un marco estadístico bayesiano robusto como series de referencia adecuadas \parencite{deljesus2025valencia}.
 
-\section{Análisis de frecuencia regional y geoestadística}
+\subsection{Análisis de frecuencia regional y geoestadística}
 \label{sec:rfa}
 
 Cuando las series locales son cortas o los cuantiles de interés corresponden a períodos de retorno superiores a la longitud del registro, el análisis de frecuencia regional (RFA) permite combinar información de múltiples estaciones bajo la hipótesis de homogeneidad regional. El enfoque basado en L-momentos de \textcite{hosking1997rfa} es el más extendido: permite identificar regiones homogéneas, seleccionar distribuciones regionales y estimar cuantiles con mayor precisión que los métodos locales cuando el número de años de registro es limitado.
 
 La interpolación espacial de parámetros de distribución y de cuantiles extremos es una extensión natural del RFA. Las técnicas de kriging y los modelos geoestadísticos permiten mapear incertidumbre y aprovechar estructuras de correlación espacial que los enfoques puramente locales ignoran \parencite{cooley2007bayesian}. En \hydra, el módulo de análisis espacial implementa estas capacidades, permitiendo tanto el análisis regional de frecuencias como la generación de campos espaciales de extremos consistentes con la estructura de dependencia observada.
 
-\section{Análisis multivariante y cópulas}
+\subsection{Análisis multivariante y cópulas}
 \label{sec:cópulas}
 
 Los extremos hidrológicos y sus impactos tienen carácter multivariante. La intensidad de precipitación, la duración del evento, la humedad antecedente del suelo, la forma del hidrograma y la altura de la llanura de inundación son variables que interactúan y cuya dependencia condicionada determina el impacto final. Tratar estas variables como independientes conduce a estimaciones sesgadas del riesgo.
@@ -43,7 +48,7 @@ El análisis multivariante basado en cópulas constituye uno de los componentes 
 
 Una limitación de las cópulas elípticas es su incapacidad para representar dependencias asimétricas o de cola pesada, frecuentes en precipitación extrema multisitio. Las vine cópulas \parencite{aas2009vines} superan esta restricción descomponiendo la densidad multivariante en un producto de cópulas bivariantes condicionadas organizadas en una estructura jerárquica de árboles. Este enfoque, aplicado por \textcite{urrea2026vine} al río Besaya, demuestra que las vine cópulas flexibles superan sistemáticamente a la cópula gaussiana en la reproducción de la dependencia conjunta en la cola superior de la distribución, y que el cálculo de períodos de retorno multivariantes puede acelerarse en un orden de magnitud mediante la aproximación de la función de distribución conjunta con procesos gaussianos (GPR).
 
-\section{Generación estocástica de precipitación}
+\subsection{Generación estocástica de precipitación}
 \label{sec:generacion_estocastica}
 
 La generación sintética de series de precipitación tiene una larga historia teórica que arranca en los modelos de puntos de Poisson y sus extensiones con estructura de cluster. Los procesos de Neyman-Scott de pulsos rectangulares (NSRP), formulados originalmente por \textcite{rodriguezituribe1987,rodriguezituribe1988}, describen la precipitación como una superposición de tormentas, cada una asociada a un evento de Poisson con un número aleatorio de celdas que producen pulsos de intensidad y duración constantes. Estos modelos, calibrables a partir de estadísticos de primer y segundo orden de series observadas, reproducen propiedades esenciales como la distribución de intensidades, la proporción de períodos secos, la autocorrelación temporal y la distribución de acumulados a distintas escalas. La extensión espacial STNSRP añade dependencia entre estaciones y permite generar campos multisitio coherentes.
@@ -52,7 +57,12 @@ NEOPRENE no es un proceso estocástico adicional, sino la librería Python que c
 
 Además de la ruta NEOPRENE (NSRP/STNSRP), \pyhydra incorpora dos rutas complementarias. La primera es un generador puntual de eventos de precipitación basado en separación de eventos y modelado con cópulas gaussianas, útil para construir escenarios discretos de simulación hidrológica directa \parencite{navas2018besaya,navas2024calle30}. La segunda es la integración de CoSMoS como librería de generación de series hidroclimáticas generales, orientada a preservar distribución marginal, dependencia temporal y estacionalidad. La distinción es importante: NSRP/STNSRP, implementados en NEOPRENE, representan explícitamente tormentas y células de lluvia; CoSMoS proporciona un marco estocástico general para series temporales; y el generador por cópulas se orienta a eventos discretos.
 
-\section{Cambio climático: datos, proyecciones y corrección de sesgo}
+\section{Datos y escenarios climáticos}
+\label{sec:datos_escenarios}
+
+El segundo bloque de la revisión aborda la materia prima de los estudios: las proyecciones de cambio climático y su corrección de sesgo, y las fuentes globales de datos observacionales y de reanálisis.
+
+\subsection{Cambio climático: datos, proyecciones y corrección de sesgo}
 \label{sec:cambio_climatico}
 
 La evaluación del riesgo de inundación bajo escenarios futuros exige integrar proyecciones climáticas de modelos de circulación general o regional. El programa CMIP6 \parencite{eyring2016cmip6}, junto con los escenarios SSP \parencite{oneill2016ssp}, proporciona el marco de referencia actual para explorar la incertidumbre intermodelo y multiescenario. El acceso a estos datos se realiza a través de plataformas como la ESGF y el Copernicus Climate Data Store, que \hydra utiliza mediante sus módulos de fuentes de datos.
@@ -61,7 +71,7 @@ Los modelos climáticos presentan sesgos sistemáticos respecto a las observacio
 
 El trabajo sobre los efectos del cambio climático en los recursos hídricos de los países andinos \parencite{deljesus2020andinos}, realizado con el modelo VIC y proyecciones CMIP5, y el posterior informe para el Banco Interamericano de Desarrollo \parencite{paz2019idb} son los antecedentes directos del bloque de cambio climático de \pyhydra. La herramienta SIMPCCe, que implementa flujos automatizados de descarga, corrección de sesgo y análisis de aportaciones a embalses para cuencas españolas, es el precedente más reciente de este enfoque transferido a una herramienta Python utilizable \parencite{navas2025simpce}.
 
-\section{Fuentes de datos: reanálisis, teledetección y proyecciones}
+\subsection{Fuentes de datos: reanálisis, teledetección y proyecciones}
 \label{sec:fuentes_datos_arte}
 
 El reanálisis ERA5 de ECMWF \parencite{hersbach2020era5} proporciona series horarias de precipitación, temperatura, viento y otras variables atmosféricas con cobertura global y resolución espacial de 0.25 grados desde 1940. Es la referencia principal para estudios climáticos e hidrológicos cuando no existen observaciones locales suficientes. Su acceso a través del Copernicus Climate Data Store permite descargas programáticas que \hydra automatiza en su módulo COPERNICUS.
@@ -72,7 +82,12 @@ Los caudales observados a escala global se encuentran disponibles en productos c
 
 Para la parametrización de modelos hidrológicos, la información edafológica de SoilGrids \parencite{poggio2021soilgrids} proporciona texturas, clases texturales y propiedades físico-hidrológicas a 250 metros de resolución con estimación de incertidumbre, lo que permite una parametrización más robusta que los productos de suelos tradicionales en regiones con coberturas edafológicas incompletas.
 
-\section{Automatización de modelos hidrológicos e hidráulicos}
+\section{Integración y automatización de la cadena de cálculo}
+\label{sec:integracion_automatizacion}
+
+El tercer bloque revisa las estrategias para convertir los métodos anteriores en flujos operativos: la automatización de los motores de simulación profesionales y el downscaling híbrido que hace computacionalmente viable el análisis estocástico masivo.
+
+\subsection{Automatización de modelos hidrológicos e hidráulicos}
 \label{sec:automatización}
 
 Los modelos HEC-HMS \parencite{scharffenberg2016hechms}, SWAT \parencite{arnold1998swat,gassman2007swat}, SFINCS \parencite{leijnse2021sfincs} y HEC-RAS \parencite{brunner2016hecras} constituyen el núcleo de la simulación física en \hydra. Cada uno cuenta con una larga trayectoria técnica y una comunidad de usuarios consolidada, pero su uso combinado en simulaciones estocásticas masivas sigue requiriendo una carga operativa elevada.
@@ -83,7 +98,7 @@ La experiencia con HydroMT \parencite{eilander2023hydromt} ha demostrado el valo
 
 Los casos de aplicación del proyecto FORESEE \parencite{ihcantabria2020foresee,ihcantabria2021m30} y los estudios realizados para el Besaya, Mallorca y Calle 30 \parencite{navas2018besaya,navas2019mallorca,navas2024calle30} han puesto de manifiesto los puntos exactos de fricción en la automatización de cada modelo y han informado las decisiones de diseño de los adaptadores implementados en \pyhydra.
 
-\section{Downscaling híbrido y reconstrucción de manchas de inundación}
+\subsection{Downscaling híbrido y reconstrucción de manchas de inundación}
 \label{sec:downscaling}
 
 El downscaling híbrido combina información de modelos dinámicos con métodos estadísticos y de aprendizaje automático para reconstruir variables de alta resolución a partir de simulaciones de escala gruesa. En el contexto de inundaciones, esta estrategia permite estimar manchas de inundación para eventos no simulados directamente, aprovechando relaciones estadísticas aprendidas a partir de un subconjunto representativo de simulaciones completas.
@@ -127,7 +142,7 @@ En estudios estocásticos de inundación, donde el número de simulaciones puede
 \section{Línea de investigación propia}
 \label{sec:linea_propia}
 
-Una parte sustancial del estado del arte empleado en esta tesis procede de una línea de trabajo desarrollada de forma ininterrumpida desde 2017 en IHCantabria. Esta trayectoria combina investigación aplicada, transferencia a proyectos reales y publicación de herramientas o metodologías reproducibles. En conjunto, las publicaciones de esta línea no solo justifican las decisiones de diseño de \hydra, sino que constituyen los antecedentes directos de sus módulos y flujos de trabajo.
+Una parte sustancial del estado de la técnica empleado en esta tesis procede de una línea de trabajo desarrollada de forma ininterrumpida desde 2017 en IHCantabria. Esta trayectoria combina investigación aplicada, transferencia a proyectos reales y publicación de herramientas o metodologías reproducibles. En conjunto, las publicaciones de esta línea no solo justifican las decisiones de diseño de \hydra, sino que constituyen los antecedentes directos de sus módulos y flujos de trabajo.
 
 \paragraph{Primera presentación de la metodología (2017).}
 La presentación inicial de la metodología estocástica para estudios de inundación tuvo lugar en las V Jornadas de Ingeniería del Agua \parencite{navas2017jia}. En ese trabajo se describió la cadena metodológica basada en generación sintética de precipitación mediante técnicas geoestadísticas, simulación hidrológica e hidráulica y análisis estadístico de los impactos resultantes mediante minería de datos y regresión probabilística. Ese esquema conceptual prefigura directamente la arquitectura de \hydra.
@@ -200,9 +215,9 @@ La \cref{tab:publicaciones_modulos} resume la correspondencia entre cada publica
   \bottomrule
 \end{longtable}
 
-Por tanto, esta memoria no revisa el estado del arte desde una posición externa: organiza, formaliza e integra una trayectoria previa de investigación aplicada. \hydra se plantea como la consolidación industrial de esa experiencia en una herramienta modular para estudios de inundación bajo incertidumbre.
+Por tanto, esta memoria no revisa el estado de la técnica desde una posición externa: organiza, formaliza e integra una trayectoria previa de investigación aplicada. \hydra se plantea como la consolidación industrial de esa experiencia en una herramienta modular para estudios de inundación bajo incertidumbre.
 
-\section{Posicionamiento de la tesis frente al estado del arte}
+\section{Posicionamiento de la tesis frente al estado de la técnica}
 \label{sec:posicionamiento}
 
 La revisión presentada en este capítulo describe un campo metodológicamente maduro. Las distribuciones GEV y GPD, los estimadores L-momentos y bayesianos, los procesos NSRP/STNSRP, las librerías NEOPRENE y CoSMoS, las cópulas multivariantes y las vine cópulas, las técnicas de corrección de sesgo, el downscaling híbrido y los motores de simulación hidrológica e hidráulica son metodologías o herramientas con fundamento teórico sólido y validación extensa en la literatura. Las plataformas de datos ERA5, GPM, CMIP6 y SoilGrids proporcionan acceso sin precedentes a variables atmosféricas e hidrológicas a escala global.

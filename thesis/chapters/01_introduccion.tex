@@ -13,7 +13,7 @@ En estudios de inundación bajo incertidumbre, este problema se amplifica. La ev
 
 En esta memoria, el \textit{modelo automático de inundación estocástica} que recoge el título se entiende en sentido amplio: no como un único motor hidráulico o algoritmo aislado, sino como una arquitectura reproducible de cálculo. Su núcleo central es \pyhydra, la librería Python donde se implementan los módulos científicos y técnicos; \hydra\footnote{El nombre evoca a la hidra de la mitología griega: una criatura de múltiples cabezas que actúan de forma coordinada como un único organismo. La analogía refleja la arquitectura modular de la herramienta, cuyos módulos operan de manera autónoma pero integrada dentro de un flujo de cálculo unificado.} designa la plataforma que integra ese núcleo con web, notebooks, Docker y servicios de apoyo. La arquitectura resultante integra adquisición automática de datos, análisis estadístico de extremos, generación probabilística de escenarios, automatización de modelos hidrológicos e hidráulicos, y postprocesado de impactos. Es la automatización de esa cadena completa, y no de un componente particular, lo que constituye el objeto central de la investigación. A lo largo de la memoria, el término \emph{reproducible} se emplea en un sentido operativo que el \cref{ch:manual} concreta en cuatro contratos verificables: entradas trazables, transformaciones reproducibles, salidas en formatos estándar y registro suficiente para auditar cada resultado.
 
-\section{Punto de partida}
+\section{Antecedentes}
 
 El punto de partida de esta tesis se encuentra en trabajos previos de modelado estocástico de inundaciones desarrollados en IHCantabria. En ellos se han explorado metodologías basadas en generación sintética de caudales y precipitaciones, selección de eventos representativos, simulación hidrológica e hidráulica, y reconstrucción probabilística de impactos. El caso fundacional de esta línea es el estudio del río Besaya en Los Corrales de Buelna \parencite{navas2018besaya}, en el que se evidenció, para el caso analizado, que el período de retorno del forzamiento meteorológico no coincide necesariamente con el del impacto hidráulico simulado. Esta observación ---el principio $T_{\mathrm{forzante}} \neq T_{\mathrm{impacto}}$--- justifica que la frecuencia de inundación deba estimarse directamente sobre los impactos y no sobre la variable forzante, y constituye el fundamento metodológico de \hydra. Estas experiencias han demostrado el potencial del enfoque, pero también han puesto de manifiesto la necesidad de automatizarlo y documentarlo de forma sistemática.
 
@@ -29,7 +29,7 @@ La pregunta de investigación que articula esta tesis es:
 
 Esta pregunta se descompone en dos elementos. El primero es si las metodologías existentes ---generación estocástica de eventos, análisis multivariante de extremos, corrección de sesgo climático, downscaling híbrido, automatización de modelos físicos--- pueden integrarse en una arquitectura común sin sacrificar su solidez individual. El segundo es si esa integración puede articularse de forma suficientemente modular y documentada para ser transferida a nuevos casos, equipos o territorios sin reconstruir toda la cadena.
 
-\section{Hipótesis de partida}
+\section{Hipótesis}
 
 La hipótesis central de la tesis es que la principal barrera para la adopción operativa de metodologías avanzadas de análisis del riesgo de inundación no reside en la ausencia de conocimiento científico, sino en la dificultad para integrarlas dentro de flujos de trabajo reproducibles. Las metodologías existen, están publicadas y permiten representar de forma más completa la variabilidad e incertidumbre asociadas al riesgo de inundación que los enfoques clásicos; lo que limita su adopción es la infraestructura que las conecte, documente y haga transferibles a equipos técnicos en proyectos reales de ingeniería.
 
@@ -56,13 +56,11 @@ Los objetivos específicos son:
   \item Consolidar, documentar y validar el núcleo \pyhydra y su despliegue en \hydra mediante casos de estudio reproducibles.
 \end{enumerate}
 
-\section{Contribuciones de la tesis}
-
-Las contribuciones de esta tesis se articulan en tres niveles diferenciados: metodologías incorporadas (con base científica preexistente), desarrollos implementados (integración y automatización realizada en el marco de la tesis) y contribución original (la arquitectura \pyhydra como núcleo reutilizable, desplegada en la plataforma \hydra). Esta distinción es necesaria en una memoria de doctorado industrial donde la novedad reside en la integración y no en la creación aislada de métodos. El detalle completo de cada nivel, con referencias explícitas y delimitación precisa, se presenta en la \cref{sec:contribuciones_originales}.
-
 \section{Carácter industrial de la memoria}
 
 El resultado principal de la tesis es doble y jerárquico: \pyhydra, como paquete Python que constituye el núcleo central de la investigación, y \hydra, como repositorio de integración que reúne web, notebooks, Docker y servicios auxiliares para convertir ese núcleo en un producto técnico utilizable. Por ello, esta memoria no se plantea solo como un documento académico clásico, sino también como la documentación técnica de la herramienta. Cada bloque metodológico se documenta con su propósito, sus entradas, sus salidas, su posición dentro del flujo completo y sus criterios de validación.
+
+En coherencia con ese carácter, las contribuciones de la tesis se articulan en tres niveles diferenciados: metodologías incorporadas (con base científica preexistente), desarrollos implementados (integración y automatización realizada en el marco de la tesis) y contribución original (la arquitectura \pyhydra como núcleo reutilizable, desplegada en la plataforma \hydra). Esta distinción es necesaria en una memoria de doctorado industrial donde la novedad reside en la integración y no en la creación aislada de métodos; su detalle completo, con referencias explícitas y delimitación precisa, se presenta en la \cref{sec:contribuciones_originales}.
 
 Este planteamiento permite que la memoria funcione simultáneamente como:
 
@@ -77,6 +75,6 @@ La decisión de redactar la memoria como documento híbrido condiciona su estruc
 
 \section{Organización de la memoria}
 
-La memoria se estructura en capítulos académicos y capítulos de documentación técnica. El estado del arte y la metodología justifican las decisiones científicas; los capítulos centrales describen la arquitectura de \hydra y sus módulos; el manual de uso y los anexos convierten la tesis en una referencia práctica para aplicar la herramienta en estudios reales.
+La memoria se estructura en capítulos académicos y capítulos de documentación técnica. El estado de la técnica y la metodología justifican las decisiones científicas; los capítulos centrales describen la arquitectura de \hydra y sus módulos; el manual de uso y los anexos convierten la tesis en una referencia práctica para aplicar la herramienta en estudios reales.
 
-El documento puede leerse de dos formas. Una primera lectura, académica, sigue la secuencia problema, pregunta de investigación, estado del arte, metodología, validación y conclusiones. Una segunda lectura, técnica, permite consultar directamente los capítulos de arquitectura, fuentes de datos, módulos climáticos, modelización y manual de uso. Esta doble lectura es coherente con el objetivo de que la tesis sea defendible como investigación doctoral y utilizable como documentación avanzada de \hydra.
+El documento puede leerse de dos formas. Una primera lectura, académica, sigue la secuencia problema, pregunta de investigación, estado de la técnica, metodología, validación y conclusiones. Una segunda lectura, técnica, permite consultar directamente los capítulos de arquitectura, fuentes de datos, módulos climáticos, modelización y manual de uso. Esta doble lectura es coherente con el objetivo de que la tesis sea defendible como investigación doctoral y utilizable como documentación avanzada de \hydra.

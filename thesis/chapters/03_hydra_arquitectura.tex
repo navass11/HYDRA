@@ -380,30 +380,7 @@ La misma separación se mantiene en el despliegue cloud. En el flujo usado para 
 
 La gestión de sesiones de notebooks sigue el mismo criterio de preservación de datos. Cuando un usuario abre un notebook desde la web, la API crea o reutiliza una cookie anónima \texttt{hydra\_jupyter\_session}, copia el notebook base a \path{/workspace/data/jupyter_sessions/<session_id>/notebooks/} y redirige JupyterLab hacia esa copia. Así, cada navegador trabaja sobre su propio espacio editable y los notebooks originales incluidos en la imagen permanecen inalterados.
 
-El arranque completo del entorno se realiza con un único comando desde el directorio raíz del repositorio:
-
-\begin{codeblock}
-docker compose -f docker/docker-compose.yml up -d
-\end{codeblock}
-
-Para apuntar el volumen de datos a un directorio distinto del repositorio (por ejemplo, un recurso compartido con proyectos de modelización):
-
-\begin{codeblock}
-HYDRA_DATA_PATH="/ruta/a/datos" \
-  docker compose -f docker/docker-compose.yml up -d
-\end{codeblock}
-
-\subsection{Instalación directa sin Docker}
-
-Para instalación directa en el entorno Python del usuario, sin los servicios de frontend ni backend:
-
-\begin{codeblock}
-pip install -e .
-\end{codeblock}
-
-Esta vía es la recomendada para desarrollo de módulos propios e iteración rápida sobre el código fuente. Las dependencias extendidas (PyMC, pyvinecopulib, etc.) pueden instalarse selectivamente según los módulos que se necesiten.
-
-El entorno Docker fija las versiones principales del entorno Python y reduce la variabilidad asociada al sistema operativo o a las dependencias del usuario. Los resultados que dependen de servicios externos, credenciales, datos actualizados o motores hidráulicos instalados en el host siguen requiriendo registrar la versión y la configuración empleadas.
+Desde el punto de vista arquitectónico, el entorno Docker fija las versiones principales del entorno Python y reduce la variabilidad asociada al sistema operativo o a las dependencias del usuario, mientras que la instalación directa de \pyhydra como paquete editable cubre el desarrollo de módulos propios y la iteración rápida sobre el código fuente. Los resultados que dependen de servicios externos, credenciales, datos actualizados o motores hidráulicos instalados en el host siguen requiriendo registrar la versión y la configuración empleadas. Las instrucciones operativas de instalación, arranque del entorno y configuración del volumen de datos se detallan en el manual práctico (\cref{ch:manual}); este capítulo se limita a justificar las decisiones de arquitectura que las hacen posibles.
 
 \section{Trazabilidad con el plan de investigación}
 
@@ -420,11 +397,11 @@ La \cref{tab:pi_hidra_cap} resume esta correspondencia. Las tareas T1 y T2 conti
   \toprule
   Tarea & Resultado & Módulos y capítulos \\
   \midrule
-  T1 & Generación estocástica de precipitaciones y análisis de extremos & \path{climate.time_series}, \path{climate.stochastic_generation} --- Caps.~5 y 8 \\[4pt]
-  T2 & Eventos de caudal, downscaling híbrido y reconstrucción de inundación & \path{climate.hybrid_downscaling} --- Caps.~5, 6 y 8 \\[4pt]
-  T3 & Descarga y corrección de sesgo de datos climáticos & \path{data_sources}, \path{climate.bias_correction} --- Caps.~4, 5 y 7 \\[4pt]
-  T4 & Configuración y ejecución automática de modelos hidrológicos e hidráulicos & \path{modeling.hydrology}, \path{modeling.hydraulic} --- Caps.~6 y 7 \\[4pt]
-  T5 & Integración, validación, documentación y transferencia & todos los módulos --- Caps.~3, 7, 8 y 9 \\
+  T1 & Generación estocástica de precipitaciones y análisis de extremos & \path{climate.time_series}, \path{climate.stochastic_generation} --- Caps.~5 y 7 \\[4pt]
+  T2 & Eventos de caudal, downscaling híbrido y reconstrucción de inundación & \path{climate.hybrid_downscaling} --- Caps.~5, 6 y 7 \\[4pt]
+  T3 & Descarga y corrección de sesgo de datos climáticos & \path{data_sources}, \path{climate.bias_correction} --- Caps.~4 y 5 y Apéndice~A \\[4pt]
+  T4 & Configuración y ejecución automática de modelos hidrológicos e hidráulicos & \path{modeling.hydrology}, \path{modeling.hydraulic} --- Cap.~6 y Apéndice~A \\[4pt]
+  T5 & Integración, validación, documentación y transferencia & todos los módulos --- Caps.~3, 7 y 8 y Apéndice~A \\
   \bottomrule
   \end{tabular}
 \end{table}
