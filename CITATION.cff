@@ -45,4 +45,4 @@ references:
   - type: software
     title: "pyhydra: a modular Python library for hydrological and climate analysis"
     doi: "10.5281/zenodo.20932554"
-    version: 0.1.5
+    version: 0.1.7
