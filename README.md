@@ -1,8 +1,8 @@
 # HYDRA
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![HYDRA DOI](https://zenodo.org/badge/doi/10.5281/zenodo.21138151.svg)](https://doi.org/10.5281/zenodo.21138151)
-[![pyhydra DOI](https://zenodo.org/badge/doi/10.5281/zenodo.20932555.svg)](https://doi.org/10.5281/zenodo.20932555)
+[![HYDRA DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.21138151-blue)](https://doi.org/10.5281/zenodo.21138151)
+[![pyhydra DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.20932555-blue)](https://doi.org/10.5281/zenodo.20932555)
 
 **HYDRA** is the web, API, notebook and deployment environment built around
 [`pyhydra`](https://github.com/navass11/pyhydra), a modular Python library for
