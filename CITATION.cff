@@ -2,21 +2,25 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
 title: "HYDRA: web platform, notebooks and deployment environment for pyhydra"
-version: 0.1.1
+version: 0.1.2
 date-released: "2026-07-30"
 license: MIT
 repository-code: "https://github.com/navass11/HYDRA"
 url: "https://hydra-web.yellowwave-5aaa93b0.spaincentral.azurecontainerapps.io/"
-doi: "10.5281/zenodo.21138151"
+doi: "10.5281/zenodo.21138150"
 identifiers:
   - type: doi
-    value: "10.5281/zenodo.21138151"
-    description: "Zenodo archive of HYDRA v0.1.0"
+    value: "10.5281/zenodo.21138150"
+    description: "Concept DOI: always resolves to the latest archived version of HYDRA. See this record's Zenodo page for the version-specific DOI of each release."
 authors:
   - family-names: Navas Fernández
     given-names: Salvador
-    affiliation: "Hidralab S.L."
-    email: "s.navas11@gmail.com"
+    affiliation: "IH Cantabria"
+    orcid: "https://orcid.org/0000-0001-7439-1743"
+  - family-names: del Jesus
+    given-names: Manuel
+    affiliation: "Universidad de Cantabria"
+    orcid: "https://orcid.org/0000-0003-0703-8960"
 keywords:
   - hydrology
   - flood modelling
@@ -40,5 +44,5 @@ abstract: >
 references:
   - type: software
     title: "pyhydra: a modular Python library for hydrological and climate analysis"
-    doi: "10.5281/zenodo.20932555"
-    version: 0.1.1
+    doi: "10.5281/zenodo.20932554"
+    version: 0.1.5

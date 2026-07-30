@@ -1,8 +1,8 @@
 # HYDRA
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![HYDRA DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.21138151-blue)](https://doi.org/10.5281/zenodo.21138151)
-[![pyhydra DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.20932555-blue)](https://doi.org/10.5281/zenodo.20932555)
+[![HYDRA DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.21138150-blue)](https://doi.org/10.5281/zenodo.21138150)
+[![pyhydra DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.20932554-blue)](https://doi.org/10.5281/zenodo.20932554)
 
 **HYDRA** is the web, API, notebook and deployment environment built around
 [`pyhydra`](https://github.com/navass11/pyhydra), a modular Python library for
@@ -155,12 +155,11 @@ If you use the Python package, cite:
 
 ```bibtex
 @software{navas2026pyhydra,
-  author    = {Navas Fernández, Salvador},
+  author    = {Navas Fernández, Salvador and del Jesus, Manuel},
   title     = {pyhydra: a modular Python library for hydrological and climate analysis},
   year      = {2026},
-  version   = {0.1.0},
   publisher = {Zenodo},
-  doi       = {10.5281/zenodo.20932555},
+  doi       = {10.5281/zenodo.20932554},
   url       = {https://github.com/navass11/pyhydra}
 }
 ```
@@ -169,15 +168,18 @@ If you use the HYDRA platform, cite:
 
 ```bibtex
 @software{navas2026hydra,
-  author    = {Navas Fernández, Salvador},
+  author    = {Navas Fernández, Salvador and del Jesus, Manuel},
   title     = {HYDRA: web platform, notebooks and deployment environment for pyhydra},
   year      = {2026},
-  version   = {0.1.0},
   publisher = {Zenodo},
-  doi       = {10.5281/zenodo.21138151},
+  doi       = {10.5281/zenodo.21138150},
   url       = {https://github.com/navass11/HYDRA}
 }
 ```
+
+Both DOIs above are *concept DOIs*, which always resolve to the latest
+archived version of each repository; the version-specific DOI for any given
+release is listed on that concept DOI's Zenodo page.
 
 ## License
 
