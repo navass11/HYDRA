@@ -17,7 +17,7 @@ En esta memoria, el \textit{modelo automático de inundación estocástica} que 
 
 El punto de partida de esta tesis se encuentra en trabajos previos de modelado estocástico de inundaciones desarrollados en IHCantabria. En ellos se han explorado metodologías basadas en generación sintética de caudales y precipitaciones, selección de eventos representativos, simulación hidrológica e hidráulica, y reconstrucción probabilística de impactos. El caso fundacional de esta línea es el estudio del río Besaya en Los Corrales de Buelna \parencite{navas2018besaya}, en el que se evidenció, para el caso analizado, que el período de retorno del forzamiento meteorológico no coincide necesariamente con el del impacto hidráulico simulado. Esta observación ---el principio $T_{\mathrm{forzante}} \neq T_{\mathrm{impacto}}$--- justifica que la frecuencia de inundación deba estimarse directamente sobre los impactos y no sobre la variable forzante, y constituye el fundamento metodológico de \hydra. Estas experiencias han demostrado el potencial del enfoque, pero también han puesto de manifiesto la necesidad de automatizarlo y documentarlo de forma sistemática.
 
-La evolución natural de esa línea de trabajo es pasar de metodologías implementadas para casos concretos a una librería modular que pueda reutilizarse en distintos ámbitos. Este cambio es relevante para una tesis de carácter industrial: el conocimiento no se materializa solo en publicaciones o resultados de caso, sino en una herramienta que puede instalarse, ejecutarse, auditarse y ampliarse.
+La evolución natural de esa línea de trabajo es pasar de metodologías implementadas para casos concretos a una librería modular que pueda reutilizarse en distintos ámbitos. Este cambio es relevante para una tesis con mención industrial: el conocimiento no se materializa solo en publicaciones o resultados de caso, sino en una herramienta que puede instalarse, ejecutarse, auditarse y ampliarse.
 
 \section{Pregunta de investigación}
 
@@ -56,11 +56,11 @@ Los objetivos específicos son:
   \item Consolidar, documentar y validar el núcleo \pyhydra y su despliegue en \hydra mediante casos de estudio reproducibles.
 \end{enumerate}
 
-\section{Carácter industrial de la memoria}
+\section{Mención industrial de la memoria}
 
 El resultado principal de la tesis es doble y jerárquico: \pyhydra, como paquete Python que constituye el núcleo central de la investigación, y \hydra, como repositorio de integración que reúne web, notebooks, Docker y servicios auxiliares para convertir ese núcleo en un producto técnico utilizable. Por ello, esta memoria no se plantea solo como un documento académico clásico, sino también como la documentación técnica de la herramienta. Cada bloque metodológico se documenta con su propósito, sus entradas, sus salidas, su posición dentro del flujo completo y sus criterios de validación.
 
-En coherencia con ese carácter, las contribuciones de la tesis se articulan en tres niveles diferenciados: metodologías incorporadas (con base científica preexistente), desarrollos implementados (integración y automatización realizada en el marco de la tesis) y contribución original (la arquitectura \pyhydra como núcleo reutilizable, desplegada en la plataforma \hydra). Esta distinción es necesaria en una memoria de doctorado industrial donde la novedad reside en la integración y no en la creación aislada de métodos; su detalle completo, con referencias explícitas y delimitación precisa, se presenta en la \cref{sec:contribuciones_originales}.
+En coherencia con esa mención industrial, las contribuciones de la tesis se articulan en tres niveles diferenciados: metodologías incorporadas (con base científica preexistente), desarrollos implementados (integración y automatización realizada en el marco de la tesis) y contribución original (la arquitectura \pyhydra como núcleo reutilizable, desplegada en la plataforma \hydra). Esta distinción es necesaria en una memoria de doctorado con mención industrial donde la novedad reside en la integración y no en la creación aislada de métodos; su detalle completo, con referencias explícitas y delimitación precisa, se presenta en la \cref{sec:contribuciones_originales}.
 
 Este planteamiento permite que la memoria funcione simultáneamente como:
 
