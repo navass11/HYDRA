@@ -27,6 +27,21 @@ cd pyhydra
 pip install -e .
 \end{codeblock}
 
+El núcleo instalado con \texttt{pip install -e .} cubre el stack científico base (\cref{tab:dependencias}). Las dependencias extendidas pueden activarse de forma selectiva mediante \emph{extras} declarados en \texttt{pyproject.toml}, sin necesidad del entorno Docker completo:
+
+\begin{codeblock}
+pip install "pyhydra[statistics]"   # PyMC, pyvinecopulib, lmoments3
+pip install "pyhydra[geospatial]"   # GeoPandas, rasterio, earthaccess
+pip install "pyhydra[models]"       # hydromt_sfincs, hecdss, pySWATPlus, spotpy
+pip install "pyhydra[all]"          # todas las anteriores
+\end{codeblock}
+
+Para reproducir exactamente los resultados de esta memoria, se recomienda fijar la versión etiquetada del paquete en lugar de instalar la rama principal:
+
+\begin{codeblock}
+pip install "pyhydra @ git+https://github.com/navass11/pyhydra.git@v0.1.7"
+\end{codeblock}
+
 La versión instalada puede comprobarse desde Python:
 
 \begin{codeblock}
@@ -457,7 +472,7 @@ La entrega recomendada incluye siempre un fichero de configuración del estudio,
 
 \pyhydra y \hydra se distribuyen bajo licencia MIT, una licencia permisiva que autoriza el uso, la modificación y la redistribución ---también con fines comerciales--- con la única condición de conservar el aviso de copyright. Esta elección es coherente con el objetivo de transferencia de la tesis: no impone obligaciones de copyleft a las administraciones, consultoras o grupos de investigación que integren la librería en sus propios flujos, y es la práctica dominante en el ecosistema científico Python en el que se apoya el paquete. Los motores de simulación externos conservan sus licencias propias (dominio público en el caso de las herramientas HEC; código abierto en SWAT+ y SFINCS), que \hydra no redistribuye.
 
-La gobernanza del software sigue el ciclo ya aplicado en la versión 0.1.0: desarrollo en repositorios Git con revisión de cambios, publicación de versiones etiquetadas con changelog, y depósito de cada versión estable en Zenodo con DOI propio (\pyhydra: 10.5281/zenodo.20932555; \hydra: 10.5281/zenodo.21138151), lo que garantiza la citabilidad y la correspondencia verificable entre los resultados de esta memoria y el código que los produce. IHCantabria asume el mantenimiento del proyecto como parte de su cartera de herramientas de transferencia; la distribución en PyPI y la apertura progresiva a contribuciones externas se recogen en el trabajo futuro (\cref{ch:conclusiones}).
+La gobernanza del software sigue un ciclo de desarrollo en repositorios Git con revisión de cambios, publicación de versiones etiquetadas con changelog, y depósito de cada versión estable en Zenodo mediante un DOI de concepto que resuelve siempre a la última versión archivada (\pyhydra: 10.5281/zenodo.20932554, actualmente v0.1.7; \hydra: 10.5281/zenodo.21138150, actualmente v0.1.2), lo que garantiza la citabilidad y la correspondencia verificable entre los resultados de esta memoria y el código que los produce; la página Zenodo de cada DOI de concepto enlaza además a la versión específica de cada release. IHCantabria asume el mantenimiento del proyecto como parte de su cartera de herramientas de transferencia; la distribución en PyPI y la apertura progresiva a contribuciones externas se recogen en el trabajo futuro (\cref{ch:conclusiones}).
 
 Las credenciales de acceso a fuentes de datos (CDS, NASA Earthdata, AEMET, nodos ESGF) no se incluyen nunca en el código, los notebooks ni las imágenes Docker: cada usuario las aporta mediante variables de entorno o los ficheros de configuración estándar de cada cliente, según se detalla en el \cref{ch:fuentes_datos}. Esta separación permite publicar flujos completos sin comprometer secretos y hace que la reproducción por terceros dependa únicamente de obtener sus propias credenciales gratuitas.
 

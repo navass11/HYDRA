@@ -536,6 +536,12 @@ Este anexo es una referencia rápida de las funciones y clases principales de \p
 
   \item[\apisig{read\_swat\_discharge(output\_dir, unit, freq=\textquotesingle{}day\textquotesingle{})}]
   Extrae la serie \texttt{flo\_out} de una unidad de canal SWAT+ a partir de \texttt{read\_channel\_sd}. Devuelve \texttt{pd.Series}.
+
+  \item[\apisig{SWATModel(...)}]
+  Envuelve la edición de parámetros y la ejecución de un proyecto SWAT+ en un único método \texttt{.run\_swat(*params)}, que devuelve el caudal simulado como \texttt{pd.Series}. Expone sus cotas de calibración mediante la propiedad \texttt{parameter\_bounds}.
+
+  \item[\apisig{calibrate\_swat\_sceua(model, observed, dbname, n\_evals=100,\\ objective=\textquotesingle{}nse\textquotesingle{}, ngs=None)}]
+  Calibra un \texttt{SWATModel} mediante SCE-UA de \texttt{spotpy}, análogamente a \texttt{calibrate\_hms\_sceua}. Un fallo de simulación se penaliza como un ajuste extremo en lugar de interrumpir la búsqueda. Devuelve el sampler tras la ejecución.
 \end{description}
 
 % ============================================================
