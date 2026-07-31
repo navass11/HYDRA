@@ -138,7 +138,7 @@ La \cref{tab:matriz_validacion_hydra} separa tres tipos de evidencia. Las public
 
 \subsection{Contexto y problema}
 
-El río Besaya, en Cantabria, discurre por Los Corrales de Buelna en una llanura de inundación con actividad industrial y residencial significativa. El régimen hidrológico atlántico de la cuenca genera episodios de crecida asociados a frentes de larga duración con intensidades moderadas pero elevados volúmenes acumulados. En estas condiciones, la caracterización del riesgo de inundación requiere representar adecuadamente la distribución conjunta de pico, volumen y duración de la avenida, que no pueden tratarse como variables independientes \parencite{navas2018besaya}.
+El río Besaya, en Cantabria, discurre por Los Corrales de Buelna en una llanura de inundación con actividad industrial y residencial significativa (\cref{fig:besaya_localizacion}). El régimen hidrológico atlántico de la cuenca genera episodios de crecida asociados a frentes de larga duración con intensidades moderadas pero elevados volúmenes acumulados. En estas condiciones, la caracterización del riesgo de inundación requiere representar adecuadamente la distribución conjunta de pico, volumen y duración de la avenida, que no pueden tratarse como variables independientes \parencite{navas2018besaya}.
 
 \begin{figure}[htbp]
   \centering
@@ -258,6 +258,7 @@ La bifurcación de la \cref{fig:besaya_bifurcacion} evidencia otra aportación d
   \label{fig:besaya_alternative_metrics}
 \end{figure}
 
+La \cref{fig:besaya_cv_comparison} confirma mediante validación cruzada que la variabilidad intermodelo domina sobre la intramodelo atribuible a Manning, y la \cref{fig:besaya_alternative_metrics} muestra que esa conclusión se mantiene bajo métricas alternativas de concordancia y superposición espacial, lo que descarta que el resultado dependa de la métrica de comparación elegida.
 
 \clearpage
 \section{Sant Llorenç des Cardassar, Mallorca}
@@ -299,7 +300,7 @@ Para el conjunto de eventos sintéticos no simulados completamente, los calados 
 
 \subsection{Resultados y conexión con HYDRA}
 
-El caso Mallorca valida la primera implementación de la cadena de downscaling híbrido basada en precipitación: integración de registros horarios, análisis diagnóstico de precipitación satelital PERSIANN y TRMM, generación de eventos multivariantes con cópulas gaussianas, selección por máxima disimilitud, reconstrucción espacial de campos de lluvia mediante kriging, simulación hidrológica e hidráulica, y reconstrucción de manchas de inundación por k-NN. Es el primer caso en el que la estadística de extremos se aplica sobre variables hidráulicas en lugar de sobre la precipitación forzante, lo que constituye una diferencia metodológica central con los enfoques convencionales.
+El caso Mallorca valida la primera implementación de la cadena de downscaling híbrido basada en precipitación: integración de registros horarios, análisis diagnóstico de precipitación satelital PERSIANN y TRMM, generación de eventos multivariantes con cópulas gaussianas, selección por máxima disimilitud, reconstrucción espacial de campos de lluvia mediante kriging, simulación hidrológica e hidráulica, y reconstrucción de manchas de inundación por k-NN. Es el primer caso en el que la estadística de extremos se aplica sobre variables hidráulicas en lugar de sobre la precipitación forzante, lo que constituye una diferencia metodológica central con los enfoques convencionales. La \cref{fig:mallorca_calado} ilustra esa diferencia: la extensión y la distribución de calados obtenidas al calcular la frecuencia sobre la variable hidráulica difieren sustancialmente de las resultantes de aplicar la metodología habitual sobre la precipitación forzante.
 
 La comparación entre la mancha simulada para el evento del 9 de octubre de 2018 y la cartografía Copernicus confirma la coherencia del modelo calibrado. La disponibilidad de esa referencia externa independiente es lo que hace de este caso un banco de pruebas válido para la metodología estocástica. Debe precisarse el alcance de esa comparación: la delineación rápida de Copernicus EMS es una referencia de extensión, no de calado, y presenta limitaciones conocidas en zona urbana (sombras de edificación, momento de adquisición posterior al pico de la avenida), por lo que la calibración se evaluó como coherencia de extensión y de niveles máximos en puntos con marcas de avenida documentadas, y no mediante índices de acierto celda a celda. La sistematización de métricas cuantitativas de contraste (índice de acierto crítico sobre la extensión, error de calado en marcas de avenida) sobre este tipo de referencias post-evento forma parte del protocolo de validación descrito en la \cref{sec:validacion_knn} y es directamente aplicable cuando se disponga de levantamientos de campo con calidad suficiente.
 
@@ -316,7 +317,7 @@ La comparación entre la mancha simulada para el evento del 9 de octubre de 2018
 
 \subsection{Contexto y problema}
 
-La Calle 30 agrupa las infraestructuras soterradas y elevadas de la M-30 en el entorno del río Manzanares en Madrid. Su exposición al riesgo de inundación combina la escorrentía de cuencas externas de mediano tamaño, la precipitación directa y la posibilidad de interacciones con el nivel freático. La complejidad del sistema hidrológico y la importancia de la infraestructura como eje de movilidad metropolitana exigen metodologías capaces de explorar un espacio amplio de escenarios de forzamiento. El caso se presentó inicialmente en las VII Jornadas de Ingeniería del Agua \parencite{deljesus2023calle30} y fue desarrollado posteriormente como artículo \parencite{navas2024calle30,deljesus2024downscaling}.
+La Calle 30 agrupa las infraestructuras soterradas y elevadas de la M-30 en el entorno del río Manzanares en Madrid (\cref{fig:m30_localizacion}). Su exposición al riesgo de inundación combina la escorrentía de cuencas externas de mediano tamaño, la precipitación directa y la posibilidad de interacciones con el nivel freático. La complejidad del sistema hidrológico y la importancia de la infraestructura como eje de movilidad metropolitana exigen metodologías capaces de explorar un espacio amplio de escenarios de forzamiento. El caso se presentó inicialmente en las VII Jornadas de Ingeniería del Agua \parencite{deljesus2023calle30} y fue desarrollado posteriormente como artículo \parencite{navas2024calle30,deljesus2024downscaling}.
 
 \begin{figure}[htbp]
   \centering
@@ -460,7 +461,7 @@ Los resultados del análisis individual muestran una sensibilidad extrema de los
   \end{tabular}}
 \end{table}
 
-El período de retorno estimado para los valores observados el 29 de octubre de 2024 (710,8 mm en Turís, 265,1 mm en Carlet) es especialmente revelador. Sin incluir el evento en la serie, los métodos clásicos estiman períodos de retorno superiores a 11.000 años en Turís (MLE) y de más de 31.000 años (L-momentos), mientras que el método bayesiano estima 3.069 años. Al incluir el evento, las estimaciones descienden bruscamente a valores coherentes: entre 66 y 91 años en Turís y entre 70 y 95 años en Carlet (Tabla~\ref{tab:returns_valencia}).
+El período de retorno estimado para los valores observados el 29 de octubre de 2024 (710,8 mm en Turís, 265,1 mm en Carlet) es especialmente revelador. Sin incluir el evento en la serie, los métodos clásicos estiman períodos de retorno superiores a 11.000 años en Turís (MLE) y de más de 31.000 años (L-momentos) sobre las curvas de nivel de retorno pre-DANA de la \cref{fig:valencia_curvas_retorno}, mientras que el método bayesiano estima 3.069 años. Al incluir el evento, las estimaciones descienden bruscamente a valores coherentes: entre 66 y 91 años en Turís y entre 70 y 95 años en Carlet (Tabla~\ref{tab:returns_valencia}).
 
 \begin{table}[htbp]
   \centering
@@ -507,7 +508,7 @@ El análisis RFA local (9 estaciones próximas) produce estimaciones más establ
 
 \subsection{Conexión con HYDRA}
 
-El caso Valencia valida los módulos de análisis de extremos de \path{pyhydra.climate.time_series} en un escenario de urgencia post-evento. La comparación entre MLE, L-momentos y estimación bayesiana sobre las mismas series, con y sin inclusión del evento, ilustra con datos reales por qué la disponibilidad de múltiples métodos de estimación es esencial para comunicar adecuadamente la incertidumbre. La implementación del RFA en \path{pyhydra.climate.spatial_analysis} permite reproducir el flujo completo, desde la descarga de datos de las redes AEMET, SIAR y AVAMET hasta la estimación de cuantiles regionales con intervalos credibles.
+El caso Valencia valida los módulos de análisis de extremos de \path{pyhydra.climate.time_series} en un escenario de urgencia post-evento. La comparación entre MLE, L-momentos y estimación bayesiana sobre las mismas series, con y sin inclusión del evento y para las dos estaciones de Turís y Carlet (\cref{fig:valencia_return_levels}), ilustra con datos reales por qué la disponibilidad de múltiples métodos de estimación es esencial para comunicar adecuadamente la incertidumbre. La implementación del RFA en \path{pyhydra.climate.spatial_analysis} permite reproducir el flujo completo, desde la descarga de datos de las redes AEMET, SIAR y AVAMET hasta la estimación de cuantiles regionales con intervalos credibles.
 
 La conclusión principal del estudio \parencite{navas2025valenciaIA} es que el método bayesiano proporciona estimaciones más estables y coherentes entre escenarios que los métodos clásicos, al representar explícitamente la incertidumbre en los parámetros y en los cuantiles de retorno. Esta conclusión refuerza la decisión de incluir \texttt{fit\_gev\_mcmc} como alternativa preferente en \hydra para análisis en regiones con alta variabilidad o series cortas.
 
@@ -537,7 +538,7 @@ La quinta etapa estima los niveles extremos de forma no paramétrica a partir de
 
 Los niveles históricos extremos estimados a partir de distribuciones teóricas (GEV, Weibull) arrojan valores de 771,55-771,76 m para un período de retorno de 100 años. El enfoque bootstrap produce niveles sistemáticamente menores para los mismos períodos de retorno (770,19 m para T100), diferencia atribuible al efecto suavizador del remuestreo sobre los valores extremos atípicos.
 
-Las proyecciones bajo cambio climático muestran incrementos sistemáticos de los niveles máximos a lo largo del siglo XXI en ambos escenarios. El mayor incremento proyectado se alcanza en el período 2041-2060, donde los niveles máximos asociados a períodos de retorno cortos (T5-T10) aumentan más de 0,9 m respecto al histórico. Hacia el final del siglo (2081-2100), los incrementos se estabilizan por debajo de 0,6 m para los períodos de retorno largos (T100-T500), efecto atribuido a la expansión superficial del lago que amortigua los cambios de nivel a medida que el volumen adicional se distribuye sobre una mayor área. Las diferencias entre SSP2-4.5 y SSP5-8.5 son marcadas en las primeras décadas y convergen hacia el final del siglo.
+Las proyecciones bajo cambio climático (\cref{fig:tanganika_proyecciones}) muestran incrementos sistemáticos de los niveles máximos a lo largo del siglo XXI en ambos escenarios. El mayor incremento proyectado se alcanza en el período 2041-2060, donde los niveles máximos asociados a períodos de retorno cortos (T5-T10) aumentan más de 0,9 m respecto al histórico. Hacia el final del siglo (2081-2100), los incrementos se estabilizan por debajo de 0,6 m para los períodos de retorno largos (T100-T500), efecto atribuido a la expansión superficial del lago que amortigua los cambios de nivel a medida que el volumen adicional se distribuye sobre una mayor área. Las diferencias entre SSP2-4.5 y SSP5-8.5 son marcadas en las primeras décadas y convergen hacia el final del siglo, como resume la \cref{fig:tanganika_variaciones_nivel}.
 
 \begin{figure}[htbp]
   \centering
@@ -575,7 +576,7 @@ Las proyecciones climáticas proceden de 21 modelos GCM del proyecto CMIP5 bajo 
 
 \subsection{Resultados}
 
-Las proyecciones de precipitación muestran incrementos del $+15\%$ en el corto plazo hasta el $+20\%$ en el largo plazo bajo RCP~8.5 en la vertiente occidental, con decrementos del $5\%$--$15\%$ en el norte de Colombia y partes de Bolivia. Los cambios en temperatura son sistemáticamente positivos: entre $+1\,^\circ$C a corto plazo y $+3\,^\circ$C a largo plazo bajo RCP~8.5. Los cambios proyectados en caudal son no lineales respecto a los cambios de precipitación y presentan alta variabilidad estacional: en Perú y Ecuador bajo RCP~8.5 en el período 2071-2100, los caudales de los meses más húmedos aumentan más de un 40\% respecto al histórico, mientras que en Bolivia la respuesta puede ser moderada o incluso negativa en determinados meses. Las diferencias entre modelos GCM son el principal factor de incertidumbre en todos los países.
+Las proyecciones de precipitación muestran incrementos del $+15\%$ en el corto plazo hasta el $+20\%$ en el largo plazo bajo RCP~8.5 en la vertiente occidental, con decrementos del $5\%$--$15\%$ en el norte de Colombia y partes de Bolivia. Los cambios en temperatura son sistemáticamente positivos: entre $+1\,^\circ$C a corto plazo y $+3\,^\circ$C a largo plazo bajo RCP~8.5. Los cambios proyectados en caudal son no lineales respecto a los cambios de precipitación y presentan alta variabilidad estacional (\cref{fig:andes_caudales_cc}): en Perú y Ecuador bajo RCP~8.5 en el período 2071-2100, los caudales de los meses más húmedos aumentan más de un 40\% respecto al histórico, mientras que en Bolivia la respuesta puede ser moderada o incluso negativa en determinados meses. Las diferencias entre modelos GCM son el principal factor de incertidumbre en todos los países.
 
 \begin{figure}[htbp]
   \centering
@@ -642,7 +643,7 @@ La diferencia entre la metodología estocástica y la estándar es sistemática 
   \end{tabular}}
 \end{table}
 
-Los mapas de inundación resultantes no son proporcionales a la diferencia en caudales, lo que evidencia la no linealidad del sistema y descarta cualquier factor de corrección simple aplicable a los resultados de la metodología estándar. La diferencia entre enfoques es mayor que la incertidumbre intermodelo de los escenarios climáticos para todos los períodos de retorno considerados.
+Los mapas de inundación resultantes no son proporcionales a la diferencia en caudales, lo que evidencia la no linealidad del sistema y descarta cualquier factor de corrección simple aplicable a los resultados de la metodología estándar, como ilustra la \cref{fig:iahr2022_mapas}. La diferencia entre enfoques es mayor que la incertidumbre intermodelo de los escenarios climáticos para todos los períodos de retorno considerados.
 
 \begin{figure}[htbp]
   \centering
@@ -669,7 +670,7 @@ SIMPCCe consta de cinco módulos que se corresponden directamente con capacidade
 
 \subsection{Resultados}
 
-Las conclusiones del análisis a escala nacional con 10 modelos CORDEX confirman que el cambio climático reduce sistemáticamente las aportaciones medias anuales en la mayoría de las cuencas españolas, que las aportaciones mínimas en épocas de estiaje disminuyen incluso en cuencas donde la precipitación media no registra cambios estadísticamente significativos, y que la sequía hidrológica tiende a aumentar en severidad y duración bajo ambos escenarios. La envolvente intermodelo permite cuantificar la incertidumbre y orientar decisiones de planificación con distintos niveles de cautela.
+Las conclusiones del análisis a escala nacional con 10 modelos CORDEX confirman que el cambio climático reduce sistemáticamente las aportaciones medias anuales en la mayoría de las cuencas españolas, que las aportaciones mínimas en épocas de estiaje disminuyen incluso en cuencas donde la precipitación media no registra cambios estadísticamente significativos, y que la sequía hidrológica tiende a aumentar en severidad y duración bajo ambos escenarios. La envolvente intermodelo permite cuantificar la incertidumbre y orientar decisiones de planificación con distintos niveles de cautela. La \cref{fig:simpce_output} muestra los dos productos operativos de la herramienta: la interfaz de entrenamiento y validación de la red neuronal, y la ficha automática de síntesis de resultados.
 
 \begin{figure}[htbp]
   \centering
@@ -702,7 +703,7 @@ El Atlas Interactivo de Riesgo Climático de Panamá \parencite{ihcantabria2023p
 
 \subsection{Metodología aplicada}
 
-La cadena metodológica moviliza los tres bloques funcionales de \hydra en una ejecución a escala nacional. El bloque de datos descarga ERA-5 \parencite{hersbach2020era5}, precipitación TRMM/TMPA \parencite{huffman2007trmm} y proyecciones de 23 modelos CMIP6 \parencite{eyring2016cmip6} bajo SSP2-4.5 y SSP5-8.5 para el período 1950-2100. NEOPRENE \parencite{diezsierra2023neoprene}, mediante sus generadores NSRP/STNSRP, rellena los huecos en 73 estaciones meteorológicas nacionales para el período 1950-2022. Los campos de precipitación se interpolan a malla de 1~km mediante Kriging Universal con elevación y precipitación media TRMM como covariables.
+La cadena metodológica moviliza los tres bloques funcionales de \hydra en una ejecución a escala nacional. El bloque de datos descarga ERA-5 \parencite{hersbach2020era5}, precipitación TRMM/TMPA \parencite{huffman2007trmm} y proyecciones de 23 modelos CMIP6 \parencite{eyring2016cmip6} bajo SSP2-4.5 y SSP5-8.5 para el período 1950-2100. NEOPRENE \parencite{diezsierra2023neoprene}, mediante sus generadores NSRP/STNSRP, rellena los huecos en 73 estaciones meteorológicas nacionales para el período 1950-2022. Los campos de precipitación se interpolan a malla de 1~km mediante Kriging Universal con elevación y precipitación media TRMM como covariables, según el patrón espacial que muestra la \cref{fig:panama_atlas} para el conjunto de subcuencas del país.
 
 La corrección de sesgo se ejecuta en 414 combinaciones (23 modelos $\times$ 2 escenarios $\times$ 6 variables $\times$ 3 períodos) mediante QDM para precipitación \parencite{cannon2015sdm} y SDM para temperatura \parencite{switanek2017sdm}. El modelo hidrológico LEM ---calibrado con Nash-Sutcliffe NS $= 0{,}87$ en las estaciones de referencia--- simula los caudales en 200-300 subcuencas; los caudales máximos para períodos de retorno de 10, 50 y 100 años se calculan con ajuste GEV mediante \texttt{pyhydra.climate.time\_series.extremes}. Las manchas de inundación fluvial se generan con el modelo SFINCS para el conjunto nacional y con modelos hidráulicos 2D de alta resolución para el área metropolitana.
 

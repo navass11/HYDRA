@@ -106,7 +106,7 @@ La \cref{tab:estructura_modulos} describe los 14 módulos sustantivos agrupados 
   \bottomrule
 \end{longtable}
 
-La librería \pyhydra se organiza en 14 submódulos temáticos agrupados en los tres bloques funcionales. La plataforma \hydra incorpora un conjunto de notebooks generales de ejemplo que ilustran esas funcionalidades reutilizables con datos reales, sintéticos controlados y modelos de referencia. La interfaz web cataloga 26 notebooks generales y añade 23 entradas de casos piloto para recorrer flujos completos. Los notebooks internos empleados para preparar artículos en desarrollo no forman parte del catálogo general de ejemplos de uso. \hydra incluye además la configuración del entorno Docker con todas las dependencias instaladas, de modo que los notebooks pueden ejecutarse sin configuración adicional del entorno de usuario.
+La librería \pyhydra se organiza en 14 submódulos temáticos agrupados en los tres bloques funcionales que resume la \cref{fig:organizacion_modulos_presentacion}. La plataforma \hydra incorpora un conjunto de notebooks generales de ejemplo que ilustran esas funcionalidades reutilizables con datos reales, sintéticos controlados y modelos de referencia. La interfaz web cataloga 26 notebooks generales y añade 23 entradas de casos piloto para recorrer flujos completos. Los notebooks internos empleados para preparar artículos en desarrollo no forman parte del catálogo general de ejemplos de uso. \hydra incluye además la configuración del entorno Docker con todas las dependencias instaladas, de modo que los notebooks pueden ejecutarse sin configuración adicional del entorno de usuario.
 
 \begin{figure}[p]
 \centering
@@ -312,7 +312,7 @@ El repositorio incluye un fichero \texttt{docker-compose.yml} que orquesta tres 
   \item[web.] Servidor nginx con el frontend estático compilado con el \emph{framework} Astro. Actúa como proxy inverso que expone el acceso a JupyterLab y al backend bajo un único dominio y puerto~80, y sirve la interfaz web de \hydra con el catálogo de notebooks navegable.
 \end{description}
 
-La misma separación se mantiene en el despliegue cloud. En el flujo usado para la plataforma \hydra, el repositorio de GitHub actúa como fuente versionada de código, notebooks, web, API y configuración Docker; GitHub Actions construye las imágenes Linux/amd64; el registro de contenedores almacena las imágenes \texttt{hydra-web}, \texttt{hydra-api} y \texttt{hydra-jupyter}; y Azure Container Apps ejecuta los tres servicios coordinados en una red interna. Los datos persistentes no viajan dentro de las imágenes, sino que se montan desde Azure Files bajo \texttt{/workspace/data}. Esta decisión separa claramente tres planos: código versionado, imágenes desplegables y datos de proyecto.
+La misma separación se mantiene en el despliegue cloud, tal como resume la \cref{fig:despliegue_azure_hydra}. En el flujo usado para la plataforma \hydra, el repositorio de GitHub actúa como fuente versionada de código, notebooks, web, API y configuración Docker; GitHub Actions construye las imágenes Linux/amd64; el registro de contenedores almacena las imágenes \texttt{hydra-web}, \texttt{hydra-api} y \texttt{hydra-jupyter}; y Azure Container Apps ejecuta los tres servicios coordinados en una red interna. Los datos persistentes no viajan dentro de las imágenes, sino que se montan desde Azure Files bajo \texttt{/workspace/data}. Esta decisión separa claramente tres planos: código versionado, imágenes desplegables y datos de proyecto.
 
 \begin{figure}[p]
 \centering

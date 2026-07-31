@@ -3,7 +3,7 @@
 
 \section{Instalación}
 
-El objetivo de este anexo es proporcionar una ruta práctica para ejecutar los flujos principales con el menor número posible de decisiones ambiguas. El usuario puede trabajar de dos formas complementarias: instalando \pyhydra como librería Python, recomendado para desarrollo y uso desde scripts propios; o mediante la plataforma \hydra con Docker, recomendada para reproducir los notebooks, navegar la web y ejecutar los servicios sin configurar manualmente el entorno.
+El objetivo de este anexo es proporcionar una ruta práctica para ejecutar los flujos principales con el menor número posible de decisiones ambiguas. El usuario puede trabajar de dos formas complementarias: instalando \pyhydra como librería Python, recomendado para desarrollo y uso desde scripts propios; o mediante la plataforma \hydra con Docker, recomendada para reproducir los notebooks, navegar la web y ejecutar los servicios sin configurar manualmente el entorno. La \cref{tab:manual_modos_uso} resume cuándo conviene cada modo.
 
 \begin{table}[htbp]
   \centering
@@ -66,7 +66,7 @@ HYDRA_DATA_PATH="/ruta/a/datos" \
   docker compose -f docker/docker-compose.yml up -d
 \end{codeblock}
 
-El servicio \texttt{web} expone una interfaz de navegación de notebooks en el puerto 80. El acceso a JupyterLab se realiza en \texttt{http://localhost/jupyter/} y el backend de herramientas en \texttt{http://localhost/api/}.
+El servicio \texttt{web} expone una interfaz de navegación de notebooks en el puerto 80. El acceso a JupyterLab se realiza en \texttt{http://localhost/jupyter/} y el backend de herramientas en \texttt{http://localhost/api/}. La \cref{fig:hydra_web_home} muestra la pantalla principal de esta interfaz.
 
 \begin{figure}[p]
   \centering
@@ -115,7 +115,7 @@ from pyhydra.modeling.hydrology.hec_hms import HMSModel
 from pyhydra.modeling.hydraulic.sfincs import setup_sfincs_model
 \end{codeblock}
 
-Los 26 notebooks generales de ejemplo catalogados por la web, excluyendo casos piloto y material interno de preparación de artículos, funcionan como guías ejecutables de las funcionalidades del paquete.\footnote{Los contadores mostrados en la portada de la interfaz web corresponden al estado del catálogo en el momento de cada captura y pueden diferir del recuento de cierre de esta memoria; la cifra de referencia es la del catálogo fuente \texttt{notebooks.json}: 26 notebooks generales y 23 de casos piloto.} La \cref{tab:notebooks} lista su correspondencia con los módulos. El catálogo fuente de la interfaz web contiene además 23 entradas de casos piloto, usadas para recorrer flujos completos de Besaya, M-30, Manning y Valencia desde el navegador.
+Los 26 notebooks generales de ejemplo catalogados por la web, excluyendo casos piloto y material interno de preparación de artículos, funcionan como guías ejecutables de las funcionalidades del paquete.\footnote{Los contadores mostrados en la portada de la interfaz web corresponden al estado del catálogo en el momento de cada captura y pueden diferir del recuento de cierre de esta memoria; la cifra de referencia es la del catálogo fuente \texttt{notebooks.json}: 26 notebooks generales y 23 de casos piloto.} La \cref{tab:notebooks} lista su correspondencia con los módulos, y la \cref{fig:hydra_web_tutorial} muestra la estructura tutorial de la web que conecta ese catálogo con la referencia de API y los casos piloto. El catálogo fuente de la interfaz web contiene además 23 entradas de casos piloto, usadas para recorrer flujos completos de Besaya, M-30, Manning y Valencia desde el navegador.
 
 \begin{figure}[htbp]
   \centering
@@ -123,6 +123,8 @@ Los 26 notebooks generales de ejemplo catalogados por la web, excluyendo casos p
   \caption{Estructura tutorial de la web asociada a \pyhydra. Los ficheros de catálogo conectan módulos, referencia de API, notebooks reproducibles y casos piloto, de modo que la documentación no queda separada del código ni de las evidencias computacionales usadas en la tesis.}
   \label{fig:hydra_web_tutorial}
 \end{figure}
+
+La \cref{tab:manual_responsabilidades} resume la responsabilidad técnica de cada uno de estos tres bloques.
 
 \begin{table}[htbp]
   \centering
@@ -185,7 +187,7 @@ Los 26 notebooks generales de ejemplo catalogados por la web, excluyendo casos p
 
 La documentación del producto no se apoya solo en la lectura del código fuente. Cada bloque de la librería se valida mediante notebooks que actúan como ejemplos reproducibles: contienen una descripción metodológica, datos sintéticos o de referencia, llamadas a la API y productos de salida. Esta estructura es especialmente importante en una tesis con mención industrial, porque permite demostrar que \hydra no es un prototipo aislado, sino una herramienta con flujos de uso comprobables.
 
-Además de los notebooks funcionales generales, el directorio del caso piloto de Los Corrales de Buelna, situado en \texttt{notebooks/pilot\_cases/}, documenta el origen de la línea metodológica. Este material complementa el capítulo de casos de estudio porque muestra el encadenamiento completo de la librería desde adquisición de datos hasta mapas de período de retorno.
+Además de los notebooks funcionales generales, el directorio del caso piloto de Los Corrales de Buelna, situado en \texttt{notebooks/pilot\_cases/}, documenta el origen de la línea metodológica. Este material complementa el capítulo de casos de estudio porque muestra el encadenamiento completo de la librería desde adquisición de datos hasta mapas de período de retorno, tal como detalla la \cref{tab:manual_corrales_notebooks}.
 
 \begin{table}[htbp]
   \centering
