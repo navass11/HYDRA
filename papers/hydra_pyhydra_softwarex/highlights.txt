@@ -1,0 +1,5 @@
+• pyhydra connects hydroclimatic statistics with automated flood modelling.
+• Optional extras isolate statistics, geospatial and modelling dependencies.
+• Shared contracts trace data, parameters, model runs and impact metrics.
+• Four workflows illustrate transfer across three Spanish flood-risk sites.
+• Versioned releases support inspection, reuse and software citation.

@@ -157,6 +157,19 @@ papers/besaya_manning_sensitivity/zenodo_upload/scripts/*
 !papers/besaya_manning_sensitivity/zenodo_upload/notebooks/
 papers/besaya_manning_sensitivity/zenodo_upload/notebooks/*
 !papers/besaya_manning_sensitivity/zenodo_upload/notebooks/*.ipynb
+!papers/hydra_pyhydra_softwarex/
+papers/hydra_pyhydra_softwarex/*
+!papers/hydra_pyhydra_softwarex/*.tex
+!papers/hydra_pyhydra_softwarex/*.bib
+!papers/hydra_pyhydra_softwarex/*.md
+!papers/hydra_pyhydra_softwarex/highlights.txt
+!papers/hydra_pyhydra_softwarex/main.pdf
+!papers/hydra_pyhydra_softwarex/figures/
+papers/hydra_pyhydra_softwarex/figures/*
+!papers/hydra_pyhydra_softwarex/figures/*.pdf
+!papers/hydra_pyhydra_softwarex/figures/*.png
+!papers/hydra_pyhydra_softwarex/figures/*.tex
+!papers/hydra_pyhydra_softwarex/figures/*.py
 meteostat_daily_*.csv
 
 # Notebook-derived data files (not raw data)
