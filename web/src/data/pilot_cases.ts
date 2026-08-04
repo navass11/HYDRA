@@ -611,6 +611,17 @@ export const pilotCases: PilotCase[] = [
         tags: ['Análisis esp.', 'Modelización'],
         tagColor: 'bg-rose-100 text-rose-700',
       },
+      {
+        number: 9,
+        title: { es: 'Decisión de propagación de incertidumbre', en: 'Uncertainty-propagation strategy' },
+        description: {
+          es: 'Aplicación de pyhydra.uq (v0.2.0) al diseño MaxDiss de 425 eventos ya simulados en el paso 7: el diagnóstico de emulabilidad mide un R² validado cruzado de 0.86 (familia RBF cúbica) para el área inundada, muy por encima del R²=0.55 de la práctica habitual de tomar solo el caudal punta como predictor. Un piloto retrospectivo de solo 30 eventos ya habría recomendado reducir y emular, con un margen decisivo (+0.16). La reconstrucción reduce_and_emulate propaga el resultado a los ~4.900 miembros de la población sintética de cambio climático manteniendo exactos los 425 valores simulados, y la regla de parada secuencial muestra que 250 de las 425 simulaciones HEC-RAS habrían bastado.',
+          en: 'pyhydra.uq (v0.2.0) applied to the 425-event MaxDiss design already simulated in Step 7: the emulability diagnostic measures a cross-validated R² of 0.86 (cubic-RBF family) for flooded area, well above the R²=0.55 reached by the conventional peak-flow-only predictor. A retrospective 30-event pilot would already have recommended reducing and emulating, with a decisive +0.16 margin. reduce_and_emulate propagates the result to the ~4,900-member climate-change synthetic population while keeping all 425 simulated values exact, and the sequential stopping rule shows that 250 of the 425 HEC-RAS runs would have sufficed.',
+        },
+        notebookPath: 'pilot_cases/los_corrales_buelna/09_uncertainty_propagation_strategy.ipynb',
+        tags: ['Incertidumbre'],
+        tagColor: 'bg-emerald-100 text-emerald-700',
+      },
     ],
     stats: [
       { value: '13', label: { es: 'Estaciones pluviométricas', en: 'Rain gauges' } },
@@ -642,6 +653,10 @@ export const pilotCases: PilotCase[] = [
       {
         es: 'Una inundación para cualquier período de retorno estudiado puede afectar a más del 13 % de la población y al 20 % de la superficie del municipio; la canalización del tramo medio traslada el problema aguas abajo sin eliminarlo.',
         en: 'A flood for any studied return period can affect more than 13 % of the population and 20 % of the municipal area; the channelisation of the middle reach transfers the problem downstream without eliminating it.',
+      },
+      {
+        es: 'Aplicado retrospectivamente al diseño MaxDiss de 425 eventos, pyhydra.uq confirma que la reducción y emulación era la estrategia correcta (R² = 0.86, margen +0.16 con solo un piloto de 30 eventos) y que la regla de parada secuencial habría ahorrado el 41 % del presupuesto de simulación hidráulica (250 de 425 eventos).',
+        en: 'Applied retrospectively to the 425-event MaxDiss design, pyhydra.uq confirms that reduction and emulation was the right strategy (R² = 0.86, +0.16 margin from just a 30-event pilot) and that the sequential stopping rule would have saved 41 % of the hydraulic-simulation budget (250 of 425 events).',
       },
     ],
     references: [
@@ -709,6 +724,18 @@ export const pilotCases: PilotCase[] = [
           en: 'The 1946 historical orthophoto is used as an external reference to verify that the T10 extent reproduces the historical Besaya floodplain.',
         },
       },
+      {
+        title: {
+          es: 'pyhydra.uq — decisión de propagación de incertidumbre',
+          en: 'pyhydra.uq — uncertainty-propagation decision layer',
+        },
+        description: {
+          es: 'Módulo publicado en pyhydra v0.2.0 que decide, a partir de un piloto cargado contra el presupuesto de simulación, si reducir y emular un ensemble o propagarlo por Monte Carlo directo. El paso 9 lo aplica al diseño MaxDiss ya simulado de este caso piloto.',
+          en: 'Module released in pyhydra v0.2.0 that decides, from a pilot charged against the simulation budget, whether to reduce and emulate an ensemble or propagate it by direct Monte Carlo. Step 9 applies it to this pilot case\'s already-simulated MaxDiss design.',
+        },
+        href: 'https://github.com/navass11/pyhydra/wiki/Uncertainty-Quantification',
+        cta: { es: 'Ver documentación', en: 'View documentation' },
+      },
     ],
     figures: [
       {
@@ -775,6 +802,17 @@ export const pilotCases: PilotCase[] = [
         notebookPath: 'pilot_cases/valencia_dana/02_extreme_value_analysis.ipynb',
         tags: ['Clima'],
         tagColor: 'bg-red-100 text-red-700',
+      },
+      {
+        number: 3,
+        title: { es: 'Migración a pyhydra y calibración PyMC', en: 'Migration to pyhydra & PyMC calibration' },
+        description: {
+          es: 'Reconstruye el estudio anterior íntegramente sobre las APIs de pyhydra: recalcula los máximos anuales locales y regionales, repite el ajuste GEV puntual (MLE/L-momentos) y el análisis regional de frecuencia, y añade un ajuste jerárquico bayesiano con PyMC. Los resultados se contrastan directamente contra las tablas de referencia del ajuste histórico en Stan/PyStan, confirmando la migración sin pérdida de precisión.',
+          en: 'Rebuilds the earlier study entirely on pyhydra APIs: recomputes local and regional annual maxima, repeats the point GEV fit (MLE/L-moments) and regional frequency analysis, and adds a hierarchical Bayesian fit with PyMC. Results are checked directly against the historical Stan/PyStan reference tables, confirming the migration carries no loss of precision.',
+        },
+        notebookPath: 'pilot_cases/valencia_dana/03_real_regional_study_pyhydra.ipynb',
+        tags: ['Bayesiano', 'pyhydra'],
+        tagColor: 'bg-purple-100 text-purple-700',
       },
     ],
     stats: [
@@ -848,12 +886,12 @@ export const pilotCases: PilotCase[] = [
     figures: [
       {
         title: {
-          es: 'Pipeline Valencia DANA — 2 pasos',
-          en: 'Valencia DANA pipeline — 2 steps',
+          es: 'Pipeline Valencia DANA — metodología JIA 2025 (2 pasos)',
+          en: 'Valencia DANA pipeline — JIA 2025 methodology (2 steps)',
         },
         caption: {
-          es: 'Flujo de trabajo para el episodio DANA: exploración y control de calidad de los registros disponibles (paso 1) y análisis de valores extremos para estimar el período de retorno del evento (paso 2).',
-          en: 'Workflow for the DANA episode: exploration and quality control of available records (step 1) and extreme-value analysis to estimate the event return period (step 2).',
+          es: 'Flujo de trabajo del artículo original: exploración y control de calidad de los registros disponibles (paso 1) y análisis de valores extremos para estimar el período de retorno del evento (paso 2). El catálogo de notebooks se ha ampliado desde entonces con un tercer paso que migra el estudio a las APIs de pyhydra.',
+          en: 'Workflow from the original paper: exploration and quality control of available records (step 1) and extreme-value analysis to estimate the event return period (step 2). The notebook catalogue has since grown with a third step migrating the study onto the pyhydra APIs.',
         },
         svg: danaSvg,
       },

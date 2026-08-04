@@ -192,6 +192,7 @@ async def _refresh_requested_notebook_if_stale(
         "pilot_cases/los_corrales_buelna/06_hybrid_event_reconstruction.ipynb",
         "pilot_cases/los_corrales_buelna/07_hec_ras_hydraulics.ipynb",
         "pilot_cases/los_corrales_buelna/08_hybrid_return_periods.ipynb",
+        "pilot_cases/los_corrales_buelna/09_uncertainty_propagation_strategy.ipynb",
     }
     if relative.as_posix() in besaya_session_output_notebooks:
         current_text = _notebook_source_text(current)
