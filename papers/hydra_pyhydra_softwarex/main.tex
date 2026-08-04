@@ -73,13 +73,15 @@ correction and hydrological/hydraulic simulation through ad-hoc,
 difficult-to-reuse scripts, which hampers reproducibility and transfer
 between catchments, teams and regulatory contexts. \textbf{pyhydra} is an
 open, modular Python library that consolidates this chain into a single
-installable scientific core, organised in fourteen sub-modules: harmonised
+installable scientific core, organised in fifteen sub-modules: harmonised
 access to hydro-climatic and hydrological data from public services,
 extreme-value and copula-based statistics, stochastic rainfall generation,
 climate bias correction, hybrid statistical--dynamical downscaling,
-automation of HEC-HMS, HEC-RAS, SFINCS and SWAT+, and propagation of
+automation of HEC-HMS, HEC-RAS, SFINCS and SWAT+, propagation of
 uncertainty through Monte Carlo ensembles, bootstrap confidence intervals
-and Bayesian inference. Individual modules can be used independently once
+and Bayesian inference, and a pilot-based rule that decides, within a fixed
+simulation budget, whether an expensive solver's response can be emulated
+or should instead be sampled by direct Monte Carlo. Individual modules can be used independently once
 the core package is installed via \texttt{pip} from its GitHub repository
 (not yet on PyPI); a companion platform, HYDRA, optionally exposes the same
 notebooks through a browser-based Docker deployment, without changing how
@@ -113,10 +115,10 @@ stochastic rainfall generation \sep extreme value statistics \sep uncertainty qu
 \toprule
 Nr. & Code metadata description & Metadata \\
 \midrule
-C1 & Current code version & v0.1.7 \\[3pt]
+C1 & Current code version & v0.2.0 \\[3pt]
 C2 & Permanent link to code/repository used for this code version &
-\url{https://github.com/navass11/pyhydra/tree/v0.1.7}; archived at
-\url{https://doi.org/10.5281/zenodo.21705553} \\[3pt]
+\url{https://github.com/navass11/pyhydra/tree/v0.2.0}; archived at
+\url{https://doi.org/10.5281/zenodo.21790226} \\[3pt]
 C3 & Legal code license & MIT License \\[3pt]
 C4 & Code versioning system used & git \\[3pt]
 C5 & Software code languages, tools and services used &
@@ -131,7 +133,7 @@ the \texttt{statistics}, \texttt{geospatial}, \texttt{models} and
 HEC-RAS, SFINCS, SWAT+) are not bundled and must be installed on the
 host \\[3pt]
 C7 & Link to developer documentation/manual &
-\url{https://github.com/navass11/pyhydra/tree/v0.1.7} (README,
+\url{https://github.com/navass11/pyhydra/tree/v0.2.0} (README,
 \texttt{docs/} package/installation guide, and
 \texttt{notebooks/pilot\_cases/}, which include the four illustrative
 examples of \cref{sec:examples}, inspectable and executable from this
@@ -233,13 +235,17 @@ such as HydroMT-SFINCS as dependencies rather than duplicating them.
 \subsection{Software architecture}
 \label{sec:architecture}
 
+\begin{sloppypar}
 \texttt{pyhydra} is a pip-installable Python package with no web or
-infrastructure code, organised in three functional blocks -- data sources,
-climate and statistics, and modelling -- that communicate through standard
-data structures such as \texttt{pandas.DataFrame} for tabular series,
-\texttt{xarray.Dataset} for gridded data and GeoTIFF or
-\texttt{geopandas.GeoDataFrame} for spatial layers, so that a module in
-one block can be replaced or bypassed without breaking the others. A separate,
+infrastructure code, organised in four functional blocks -- data sources,
+climate and statistics, model integration, and a UQ (uncertainty
+quantification) strategy layer -- that communicate through standard
+data structures such as \path{pandas.DataFrame} for tabular series,
+\path{xarray.Dataset} for gridded data and GeoTIFF or
+\path{geopandas.GeoDataFrame} for spatial layers, so that a module in
+one block can be replaced or bypassed without breaking the others.
+\end{sloppypar}
+A separate,
 companion repository, \texttt{HYDRA}, consumes pyhydra as a dependency and
 adds an optional deployment layer on top of it: a JupyterLab environment, a
 FastAPI backend and an Astro/nginx web frontend, together with the Docker
@@ -251,7 +257,7 @@ dependency on it and can be used directly from any Python environment.
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{figures/fig01_architecture.pdf}
-\caption{Software architecture. pyhydra provides three functional blocks of
+\caption{Software architecture. pyhydra provides four functional blocks of
 reusable Python components connected through standard exchange formats;
 HYDRA wraps the scientific core with reproducible execution, service and
 access layers. Colours identify functional roles and do not encode values.
@@ -289,7 +295,7 @@ a persistent file share rather than baked into the images.
 \subsection{Software functionalities}
 \label{sec:functionalities}
 
-\cref{tab:modules} lists the fourteen sub-modules and their main
+\cref{tab:modules} lists the fifteen sub-modules and their main
 capabilities. The statistical modules implement established methodology
 rather than novel formulations: bias correction follows standard
 delta/quantile-mapping approaches \citep{teutschbein2012biascorrection},
@@ -322,6 +328,7 @@ Module & Block & Main capability \\
 \path{modeling.hydraulic.sfincs} & Modelling & Model setup, boundary conditions, batch execution \\
 \path{modeling.hydraulic.hec_ras} & Modelling & 1D/2D project automation, DSS result extraction \\
 \path{modeling.hydraulic.sensitivity} & Modelling & Manning Monte Carlo ensembles, spatial impact regression \\
+\path{uq} & UQ & Pilot-based emulability diagnostic, MaxDiss design, reduce-and-emulate vs.\ Monte Carlo \\
 \bottomrule
 \end{tabular}
 
@@ -346,23 +353,23 @@ and GeoJSON/\texttt{geopandas} as the common data currency between blocks
 and with external tools such as QGIS); and \emph{operational transfer}
 (documentation, example notebooks and a reproducible Docker environment are
 treated as first-class deliverables, not optional accessories). A
-\texttt{pytest} suite of 256 tests across sixteen modules exercises the
-statistical and modelling utilities most exposed to regression. A GitHub
+\texttt{pytest} suite of 291 tests across seventeen modules exercises the
+statistical, modelling and UQ utilities most exposed to regression. A GitHub
 Actions workflow (Ubuntu, core plus lightweight extended dependencies
 including PyMC) runs this suite on every push across a Python 3.9--3.12
 matrix; the one test that depends on PyMC/pytensor is still marked
 \texttt{optional\_dependency} and guarded to skip rather than fail if that
 stack is unavailable or, as happens with the older PyMC resolved on Python
 3.9, incompatible with the installed NumPy. For the code version in
-Table~\ref{tab:metadata} (commit \texttt{ddc5293}, 30 July 2026), this
-workflow reports 256/256 passed on Python 3.10--3.12 and 255 passed
-plus 1 skipped on 3.9, with 27--28\% line coverage -- concentrated in the
+Table~\ref{tab:metadata} (commit \texttt{5552aa9}, 4 August 2026), this
+workflow reports 291/291 passed on Python 3.10--3.12 and 290 passed
+plus 1 skipped on 3.9, with 30--31\% line coverage -- concentrated in the
 statistical and modelling-adapter code exercised directly by unit tests,
 lower in the data-connector and engine-automation modules whose
 behaviour is instead exercised, not formally verified, by the pilot-case
 notebooks of \cref{sec:examples} against real services and engines. Runs
 archived at
-\url{https://github.com/navass11/pyhydra/actions/runs/30553479840}.
+\url{https://github.com/navass11/pyhydra/actions/runs/30904958268}.
 
 \paragraph{Reproducibility boundary} Reproducibility is reported at the
 level supported by each workflow. Extreme-value fitting, copula analysis
@@ -391,7 +398,7 @@ edited the source and rendered the final figure.}
 
 \begin{sloppypar}
 \paragraph{Uncertainty propagation and analysis} Rather than being confined
-to a single module, uncertainty quantification cuts across the three
+to a single module, uncertainty quantification cuts across the four
 functional blocks: asymptotic, bootstrap and Bayesian posterior estimates on
 extreme-value parameters and return levels
 (\texttt{climate.time\_series}); posterior propagation across pooled
@@ -399,7 +406,18 @@ stations and prediction variance from spatial interpolators
 (\texttt{climate.spatial\_analysis}); and Monte Carlo roughness ensembles
 aggregated into spatial impact statistics with outlier screening
 (\texttt{modeling.hydraulic}) -- the machinery exercised by the
-SFINCS--HEC-RAS demonstration case in \cref{sec:examples}.
+SFINCS--HEC-RAS demonstration case in \cref{sec:examples}. The \texttt{uq}
+module is a dedicated decision layer sitting above these: given an ensemble
+and an expensive solver, it draws a nested maximum-dissimilarity pilot
+charged against a fixed evaluation budget \texttt{n\_max}, measures that
+pilot's cross-validated emulability against a declared family of cheap
+emulators, and from that measurement chooses between completing a
+reduce-and-emulate design or falling back to direct Monte Carlo -- rather
+than fixing the choice by convention. A \texttt{StrategyDecision.margin}
+flags choices taken on a hair's breadth, and a companion sequential-design
+routine classifies each additional design point as improving, converged or
+deteriorating so that a flattened error curve is not mistaken for one that
+has turned upward.
 \end{sloppypar}
 
 \subsection{Sample code snippets}
@@ -447,7 +465,7 @@ reproducibility boundary defined above, what is required to re-run it.
 \centering
 \caption{Traceability of the four illustrative workflows. Notebook paths
 are relative to
-\url{https://github.com/navass11/pyhydra/tree/v0.1.7/notebooks/pilot_cases/}.
+\url{https://github.com/navass11/pyhydra/tree/v0.2.0/notebooks/pilot_cases/}.
 ``Open data'' marks inputs redistributable in full; ``Partial'' marks
 cases where only some inputs (e.g.\ literature-based parameter
 distributions or published aggregates) are open and the remainder is
@@ -713,7 +731,7 @@ During manuscript preparation (2026), the authors used ChatGPT and the
 Codex coding assistant (OpenAI; specific model versions not recorded) to
 assist with language editing, text revision, manuscript formatting and
 the drafting of figure code (identified in the affected captions); during
-this revision (30 July 2026), Claude Sonnet 5 (model ID
+these revisions (30 July -- 4 August 2026), Claude Sonnet 5 (model ID
 \texttt{claude-sonnet-5}, Anthropic) assisted with editing manuscript
 text, diagnosing and fixing software defects surfaced by the
 continuous-integration workflow added in \cref{sec:functionalities}, and
@@ -741,7 +759,7 @@ its Microsoft Azure academic subscription.
 \bibliography{references}
 
 \section*{Current executable software version}
-pyhydra v0.1.7 (commit \texttt{ddc5293}) is the executable software version
+pyhydra v0.2.0 (commit \texttt{5552aa9}) is the executable software version
 described in this publication; its archived record and immutable GitHub
 tag link are provided in Table~\ref{tab:metadata} and should be cited
 independently using the corresponding Zenodo record

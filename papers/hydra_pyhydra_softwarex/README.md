@@ -19,9 +19,9 @@ is described in the article and cited separately, but is not itself the
 repository referenced by the metadata table -- see "Why pyhydra, not HYDRA"
 below.
 
-- **Code described (metadata repository, C2):** [github.com/navass11/pyhydra](https://github.com/navass11/pyhydra), tag [`v0.1.7`](https://github.com/navass11/pyhydra/tree/v0.1.7)
+- **Code described (metadata repository, C2):** [github.com/navass11/pyhydra](https://github.com/navass11/pyhydra), tag [`v0.2.0`](https://github.com/navass11/pyhydra/tree/v0.2.0)
 - **Companion deployment platform (cited, not metadata subject):** [github.com/navass11/HYDRA](https://github.com/navass11/HYDRA), tag [`v0.1.2`](https://github.com/navass11/HYDRA/tree/v0.1.2)
-- **Zenodo archives:** pyhydra v0.1.7 [10.5281/zenodo.21705553](https://doi.org/10.5281/zenodo.21705553) (concept DOI [10.5281/zenodo.20932554](https://doi.org/10.5281/zenodo.20932554)) · HYDRA v0.1.2 [10.5281/zenodo.21705293](https://doi.org/10.5281/zenodo.21705293) (concept DOI [10.5281/zenodo.21138150](https://doi.org/10.5281/zenodo.21138150))
+- **Zenodo archives:** pyhydra v0.2.0 [10.5281/zenodo.21790226](https://doi.org/10.5281/zenodo.21790226) (concept DOI [10.5281/zenodo.20932554](https://doi.org/10.5281/zenodo.20932554)) · HYDRA v0.1.2 [10.5281/zenodo.21705293](https://doi.org/10.5281/zenodo.21705293) (concept DOI [10.5281/zenodo.21138150](https://doi.org/10.5281/zenodo.21138150))
 
 ## Why pyhydra, not HYDRA, as the metadata repository
 

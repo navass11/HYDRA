@@ -1,7 +1,8 @@
 # SoftwareX submission audit
 
 Audit date: 30 July 2026. Major-revision pass: 30 July 2026. Minor-revision
-passes: 30-31 July 2026 (four rounds, summarised below).
+passes: 30-31 July 2026 (four rounds, summarised below). Content update:
+4 August 2026 (pyhydra v0.2.0, summarised below).
 
 Official sources:
 
@@ -67,6 +68,26 @@ below, each resolved before the next:
    stop it drifting three pages from its introduction, past unrelated
    content, into a mostly-blank page.
 
+## Content update (4 August 2026)
+
+pyhydra `v0.2.0` (commit `5552aa9`) added a fifteenth sub-module,
+`pyhydra.uq`: a decision layer that measures, from a budget-charged pilot
+design, whether an expensive solver's response can be emulated well enough
+to justify a reduce-and-emulate strategy, or should instead be sampled by
+direct Monte Carlo. Reflected throughout the manuscript: the architecture
+now describes four functional blocks instead of three (`fig01_architecture`
+redrawn with a fourth "UQ strategy" box); the module table
+(`tab:modules`) gained a `uq` row; the "Uncertainty propagation and
+analysis" paragraph (\S2.2) now describes the decision rule; and the
+test-suite paragraph, C1/C2 metadata and both software citations were
+updated to the verified `v0.2.0` state (291/291 tests passing on Python
+3.10-3.12, 290 passed + 1 skipped on 3.9, 30-31% coverage, CI run
+`30904958268`, DOI `10.5281/zenodo.21790226`). Per an explicit authorial
+decision, the module is described only in Software functionalities -- no
+new illustrative example/demonstrator was added, since a prospective
+validation of the decision rule is the subject of a separate,
+not-yet-published manuscript and is not cited here.
+
 ## Major-revision changes (30 July 2026)
 
 In response to a simulated editorial review recommending major revision,
@@ -127,7 +148,7 @@ the following changes were made to `main.tex` and this audit:
 | Generative-AI declaration | Present | Identifies ChatGPT, Codex (OpenAI, versions not recorded) and Claude Sonnet 5 (`claude-sonnet-5`, Anthropic), what each assisted with and when, and states assistance did not extend to designing methodology or validating scientific content. AI-assisted figures are identified in their captions. |
 | Data-availability statement | Present | Confirms open software/notebooks and explains why restricted model projects or project datasets are not redistributed. |
 | Software citation | Pass | pyhydra (metadata subject) and the companion HYDRA platform are cited separately through their own Zenodo records (specific-version DOI in the manuscript; concept DOI in each repository's own README/CITATION.cff). |
-| Test suite / software quality evidence | Pass, with honest gaps disclosed | 256 tests across 16 modules; 256/256 passing on Python 3.10-3.12, 255 passing + 1 skipped on 3.9 (an older-PyMC/NumPy-2.0 incompatibility, guarded to skip rather than fail); 27-28% line coverage, concentrated in statistical/modelling-adapter code. Verified in a public GitHub Actions run tied to the cited commit. |
+| Test suite / software quality evidence | Pass, with honest gaps disclosed | 291 tests across 17 modules; 291/291 passing on Python 3.10-3.12, 290 passing + 1 skipped on 3.9 (an older-PyMC/NumPy-2.0 incompatibility, guarded to skip rather than fail); 30-31% line coverage, concentrated in statistical/modelling-adapter code. Verified in a public GitHub Actions run tied to the cited commit. |
 | Highlights | Pass | `highlights.txt`, five bullets, 71-78 characters each (limit 85), no unexplained acronyms. |
 | Graphical abstract | Optional, absent | Recommended but not required. |
 
@@ -142,7 +163,7 @@ blocker. It is listed below for completeness only.
 | Requirement | pyhydra (C2, binding) | HYDRA (cited, not binding) | Status |
 |---|---:|---:|---|
 | Public GitHub repository | Public | Public | Verified. |
-| Permanent version link | `v0.1.7` tag, matches Zenodo `10.5281/zenodo.21705553` | `v0.1.2` tag, matches Zenodo `10.5281/zenodo.21705293` | Verified via the Zenodo API against each tag's commit. |
+| Permanent version link | `v0.2.0` tag, matches Zenodo `10.5281/zenodo.21790226` | `v0.1.2` tag, matches Zenodo `10.5281/zenodo.21705293` | Verified via the Zenodo API against each tag's commit. |
 | Well-documented `README.md` | Present, current | Present, current | Updated this round; installation, purpose, extras and citation all reflect the current release. |
 | License file | `LICENSE` (MIT) | `LICENSE` (MIT) | The claim in an earlier draft of this audit that SoftwareX requires the exact filename `LICENSE.txt` could not be verified against the current Guide for Authors; GitHub itself recognises `LICENSE` as the canonical license file. Left as-is; revisit only if Editorial Manager flags it. |
 | Source code under `repo/src` | Resolved -- `src/pyhydra/` | Not compliant (`api/`, `web/`, `notebooks/`, `docker/` at repo root) | None required for submission, since HYDRA is not the C2 repository. |
