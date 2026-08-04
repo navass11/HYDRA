@@ -33,7 +33,7 @@ Este anexo es una referencia rápida de las funciones y clases principales de \p
   Función (no clase) que construye un widget Jupyter interactivo para selección y descarga de estaciones AEMET; en modo directo requiere \texttt{api\_key}. Devuelve el widget \texttt{ipywidgets}.
 
   \item[\apisig{AemetCSVLoader(folder\_path)}]
-  Carga y filtra de calidad series descargadas por \texttt{AEMETDownloader}. Métodos: \texttt{.load\_station\_data()} (lee \texttt{selected\_stations.csv}, devuelve \texttt{pd.DataFrame}), \texttt{.load\_series\_data(variable)} (concatena las series de la variable indicada) y \texttt{.analyze\_series\_quality()}.
+  Carga las series descargadas por \texttt{AEMETDownloader} y las filtra según criterios de calidad. Métodos: \texttt{.load\_station\_data()} (lee \texttt{selected\_stations.csv}, devuelve \texttt{pd.DataFrame}), \texttt{.load\_series\_data(variable)} (concatena las series de la variable indicada) y \texttt{.analyze\_series\_quality()}.
 
   \item[\apisig{download\_synop(station\_id, start\_date, end\_date, progress=None,\\ cancel\_flag=None)}]
   Descarga datos SYNOP de OGIMET para una estación y un período. Devuelve \texttt{pd.DataFrame} con variables meteorológicas.

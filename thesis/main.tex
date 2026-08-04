@@ -4,7 +4,7 @@
 % Los capítulos y anexos están desacoplados de la clase documental.
 \input{frontmatter/metadata}
 
-\usepackage[english,spanish,es-tabla]{babel}
+\usepackage[english,spanish,es-tabla,es-lcroman]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
@@ -20,10 +20,10 @@
 \usepackage{pdflscape}
 \usepackage{enumitem}
 \usepackage{seqsplit}
-\usepackage{csquotes}
 \usepackage{xspace}
 \usepackage{xcolor}
 \usepackage{fvextra}
+\usepackage{csquotes}
 % Named grays (reemplaza la sintaxis gray!XX que babel-spanish rompe)
 \definecolor{plhbg}{gray}{0.93}   % placeholder background (was gray!10 approx)
 \definecolor{plhtxt}{gray}{0.42}  % placeholder text      (was gray!60 approx)
@@ -52,6 +52,12 @@
             citecolor=ucprimary,
             urlcolor=ucsecondary,
             filecolor=ucsecondary]{hyperref}
+\hypersetup{
+  pdftitle={\ThesisTitleES},
+  pdfauthor={\ThesisAuthor},
+  pdfsubject={Tesis doctoral con Mención Industrial sobre modelización estocástica del riesgo de inundación},
+  pdfkeywords={doctorado industrial, inundación estocástica, hidrología, modelización hidráulica, análisis de extremos, cambio climático, reproducibilidad, pyhydra, HYDRA}
+}
 \usepackage[capitalise,noabbrev,nameinlink]{cleveref}
 % Nombres en español para cleveref (override del inglés por defecto)
 \crefname{figure}{figura}{figuras}
@@ -130,7 +136,9 @@
 \begin{document}
 
 \frontmatter
+\hypersetup{pageanchor=false}
 \input{frontmatter/titlepage}
+\hypersetup{pageanchor=true}
 \restoregeometry
 \input{frontmatter/portadilla}
 \input{frontmatter/dedicatoria}
