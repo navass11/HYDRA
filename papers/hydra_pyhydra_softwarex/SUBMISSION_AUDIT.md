@@ -2,12 +2,66 @@
 
 Audit date: 30 July 2026. Major-revision pass: 30 July 2026. Minor-revision
 passes: 30-31 July 2026 (four rounds, summarised below). Content update:
-4 August 2026 (pyhydra v0.2.0, summarised below).
+4 August 2026 (pyhydra v0.2.0, summarised below). Session update:
+14 September 2026 (summarised first, below -- corrects two stale figures
+left over from the 4 August pass and fixes a real compilation defect this
+audit had not caught).
 
 Official sources:
 
 - [SoftwareX Guide for Authors](https://www.sciencedirect.com/journal/softwarex/publish/guide-for-authors)
 - [Official Original Software Publication LaTeX template](https://legacyfileshare.elsevier.com/promis_misc/softwarex-osp-template.tex)
+
+## Session update (14 September 2026)
+
+Independent re-review against the guide for authors fetched directly as a
+PDF (not from memory), plus a real `pdflatex`+`bibtex` compile and a live
+audit of the `pyhydra`/`HYDRA` GitHub repositories and the connected local
+checkout. Findings and fixes:
+
+- **Word/page limits were misstated in the table below and are corrected
+  here.** The guide's real limit is **4,000 words** (not 3,000), counting
+  abstract + running text + captions + footnotes and excluding title,
+  authors, affiliations, references and the metadata table; there is
+  **no page limit** at all (compiled length is 22-23 pages with
+  `elsarticle`, which is normal and not a submission concern). The
+  manuscript is well within the real limit (~3,000-3,500 words depending
+  on whether the end declarations are counted), so this correction does
+  not change the Pass verdict, only the reasoning behind it.
+- **Abstract was 255 words at the start of this session**, not the ~227
+  this audit previously recorded (the two must have diverged after the
+  4 August content update). Trimmed back to 231 words; still a Pass
+  against the real 250-word limit, with a comfortable margin now.
+- **Real compilation defect found and fixed.** `\'a`/`\'e`-style TeX
+  accents inside `\affiliation{organization={...}}` and in
+  Acknowledgements produced visibly corrupted text in the compiled PDF
+  ("Hidr ΩΩimmediateáulica" instead of "Hidráulica") under
+  `elsarticle`+`hyperref`. This is not something `texcount` or a word-count
+  pass would ever catch. Fixed by switching to literal UTF-8 accented
+  characters; recompiled clean (0 errors, 0 undefined references) with the
+  real `references.bib`.
+- **Valencia DANA factor corrected.** The stated "factor of 3.2-4.6" does
+  not match any method in `notebooks/pilot_cases/valencia_dana/02_extreme_value_analysis.ipynb`;
+  the real minimum across all method/scale combinations (point and
+  regional-RFA, MLE and L-moments) is 3.47. Corrected to "3.5-4.6".
+- **Bibliography cross-checked against the real `references.bib`**: 25
+  keys cited in `main.tex`, 25 entries defined, exact match both ways.
+  Recompiled with the real bibliography: 0 undefined references, citations
+  render as numbered brackets as the guide requires.
+- **`highlights.txt` re-verified**: 5 bullets, 67-74 characters each,
+  under the 85-character limit -- unchanged, still a Pass.
+- **`LICENSE` copyright line** in both `pyhydra` and `HYDRA` said
+  "Copyright (c) ... Salvador Navas, hidralab.com"; per an explicit
+  authorial decision this session, "hidralab.com" was removed from both
+  (pyhydra: committed directly in the connected local checkout; HYDRA:
+  committed to local `main` via a worktree, **not yet pushed** -- run
+  `git push` from the HYDRA repo to publish it).
+- **`pyhydra`'s `main` branch is 4 commits ahead of the cited `v0.2.0`
+  tag** (dropped the auxiliary `07_hec_ras_hydraulics_run.ipynb` that
+  Table 3's footnote still describes as present, added two new
+  notebooks). Not a defect as long as `v0.2.0` remains the tag/DOI cited
+  by the manuscript; flagged here so a future re-tag does not silently
+  invalidate Table 3 without a corresponding text update.
 
 ## Minor-revision passes (30-31 July 2026)
 
@@ -135,9 +189,9 @@ the following changes were made to `main.tex` and this audit:
 | Requirement | Status | Evidence or action |
 |---|---|---|
 | Original Software Publication template | Pass | `main.tex` uses the official `preprint,12pt,a4paper` class settings, zero paragraph indentation and the five mandatory main sections. |
-| Maximum 3,000 words (running text) | Pass, small margin | Abstract + body (excluding metadata table, captions, references, declarations): ~2,900 words by `texcount`. Do not add further body text without cutting elsewhere. |
+| Maximum 4,000 words (abstract + running text + captions + footnotes; excludes title/authors/affiliations/references/metadata table) | Pass, comfortable margin | ~3,000-3,500 words depending on whether end declarations are counted; verified 14 Sept 2026 against the guide fetched directly as a PDF (corrects an earlier, wrong "3,000 words" figure in this audit). No page limit exists. |
 | Maximum six figures | Pass | Five figures are cited and embedded. |
-| Abstract no more than 250 words | Pass | ~227 words; no citations; abbreviations are defined or established. |
+| Abstract no more than 250 words | Pass | 231 words as of 14 Sept 2026 (was 255, over the limit, before that session's trim; this audit's earlier "~227" figure did not match the file and has been corrected). No citations; abbreviations are defined or established. |
 | One to seven English keywords | Pass | Six keywords. |
 | Required metadata and current code version | Pass | Mandatory C1--C8 table lists a single metadata repository (pyhydra, C2), per the guide's requirement of one GitHub link; the companion HYDRA repository is cited separately in the text, not in the table. Fits on one page (no oversized-float warning). |
 | Five mandatory sections | Pass | Motivation and significance; Software description; Illustrative examples; Impact; Conclusions. |
@@ -165,7 +219,7 @@ blocker. It is listed below for completeness only.
 | Public GitHub repository | Public | Public | Verified. |
 | Permanent version link | `v0.2.0` tag, matches Zenodo `10.5281/zenodo.21790226` | `v0.1.2` tag, matches Zenodo `10.5281/zenodo.21705293` | Verified via the Zenodo API against each tag's commit. |
 | Well-documented `README.md` | Present, current | Present, current | Updated this round; installation, purpose, extras and citation all reflect the current release. |
-| License file | `LICENSE` (MIT) | `LICENSE` (MIT) | The claim in an earlier draft of this audit that SoftwareX requires the exact filename `LICENSE.txt` could not be verified against the current Guide for Authors; GitHub itself recognises `LICENSE` as the canonical license file. Left as-is; revisit only if Editorial Manager flags it. |
+| License file | `LICENSE` (MIT) | `LICENSE` (MIT) | The claim in an earlier draft of this audit that SoftwareX requires the exact filename `LICENSE.txt` could not be verified against the current Guide for Authors; GitHub itself recognises `LICENSE` as the canonical license file. Left as-is; revisit only if Editorial Manager flags it. Copyright line updated 14 Sept 2026 in both repos to remove "hidralab.com" (now reads "Copyright (c) ... Salvador Navas"); pyhydra's change is committed, HYDRA's is committed locally on `main` but not yet pushed. |
 | Source code under `repo/src` | Resolved -- `src/pyhydra/` | Not compliant (`api/`, `web/`, `notebooks/`, `docker/` at repo root) | None required for submission, since HYDRA is not the C2 repository. |
 | Recognized open-source license | MIT | MIT | Confirmed. |
 | Accepted-version archival by SoftwareX | Future action | N/A (not the metadata repository) | Be prepared for Elsevier to copy the accepted pyhydra code to its GitHub organization. |

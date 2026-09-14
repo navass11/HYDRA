@@ -49,7 +49,7 @@
 \ead[url]{https://orcid.org/0000-0001-7439-1743}
 \cortext[cor1]{Corresponding author.}
 
-\affiliation[1]{organization={IHCantabria -- Instituto de Hidr\'aulica Ambiental de la Universidad de Cantabria},
+\affiliation[1]{organization={IHCantabria -- Instituto de Hidráulica Ambiental de la Universidad de Cantabria},
                 addressline={Calle Isabel Torres 15, PCTCAN},
                 city={Santander},
                 postcode={39011},
@@ -59,7 +59,7 @@
 \author[2]{Manuel del Jesus}
 \ead[url]{https://orcid.org/0000-0003-0703-8960}
 
-\affiliation[2]{organization={Departamento de Ciencias y T\'ecnicas del Agua y del Medio Ambiente, Universidad de Cantabria},
+\affiliation[2]{organization={Departamento de Ciencias y Técnicas del Agua y del Medio Ambiente, Universidad de Cantabria},
                 addressline={Avenida de los Castros 44},
                 city={Santander},
                 postcode={39005},
@@ -77,23 +77,21 @@ installable scientific core, organised in fifteen sub-modules: harmonised
 access to hydro-climatic and hydrological data from public services,
 extreme-value and copula-based statistics, stochastic rainfall generation,
 climate bias correction, hybrid statistical--dynamical downscaling,
-automation of HEC-HMS, HEC-RAS, SFINCS and SWAT+, propagation of
-uncertainty through Monte Carlo ensembles, bootstrap confidence intervals
-and Bayesian inference, and a pilot-based rule that decides, within a fixed
+automation of HEC-HMS, HEC-RAS, SFINCS and SWAT+, and propagation of
+uncertainty through Monte Carlo ensembles, bootstrap and Bayesian
+inference, including a pilot-based rule that decides, within a fixed
 simulation budget, whether an expensive solver's response can be emulated
 or should instead be sampled by direct Monte Carlo. Individual modules can be used independently once
 the core package is installed via \texttt{pip} from its GitHub repository
 (not yet on PyPI); a companion platform, HYDRA, optionally exposes the same
-notebooks through a browser-based Docker deployment, without changing how
-pyhydra itself is used. pyhydra is illustrated through four flood-risk
-workflows at three Spanish pilot sites -- Besaya, M-30 Manzanares and
-Valencia -- spanning fluvial, urban and compound-event settings, three of
-which are conditioned on external engines or project data; at Madrid's
-M-30, the multivariate copula-based methodology it implements yields a
-500-year design depth 0.83~m higher than the classical univariate estimate.
-pyhydra is released under the MIT license, archived on Zenodo, and its
-methodology already underpins six peer-reviewed journal articles (five
-published, one in press) from the authors' group.
+notebooks through a browser-based Docker deployment. pyhydra is illustrated
+through four flood-risk workflows at three Spanish pilot sites -- Besaya,
+M-30 Manzanares and Valencia -- spanning fluvial, urban and compound-event
+settings; at Madrid's M-30, the multivariate copula-based methodology it
+implements yields a 500-year design depth 0.83~m higher than the classical
+univariate estimate. pyhydra is released under the MIT license, archived on
+Zenodo, and its methodology already underpins six peer-reviewed journal
+articles from the authors' group.
 \end{abstract}
 
 \begin{keyword}
@@ -271,7 +269,13 @@ edited the source and rendered the final figure.}
 Each pyhydra sub-module exposes its public API through its
 \texttt{\_\_init\_\_.py}, so the import pattern is always
 \texttt{from pyhydra.\allowbreak<block>.\allowbreak<module> import
-<name>}. Optional heavy dependencies (PyMC, GDAL, GeoPandas, pyvinecopulib) are
+<name>}. OpenTURNS is a core dependency, installed by default with
+\texttt{pip install pyhydra}, and provides the Gaussian-copula fitting used
+by \texttt{climate.spatial\_analysis} (\cref{tab:modules}) and illustrated
+in the M-30 example of \cref{sec:examples}; it is imported lazily inside
+the specific functions that need it, following the same lazy-import
+convention as the optional heavy dependencies below. Optional heavy
+dependencies (PyMC, GDAL, GeoPandas, pyvinecopulib) are
 imported lazily inside the functions that need them, so
 the package loads -- and the parts of the API that do not need them run --
 even when those dependencies are absent; a user who only needs
@@ -319,7 +323,7 @@ Module & Block & Main capability \\
 \path{data_sources.climate_change} & Data & CMIP6 via CDS and ESGF \\
 \path{data_sources.soils} & Data & SoilGrids download \& USDA texture classification \\
 \path{climate.time_series} & Climate & Event extraction, GEV/GPD fitting, NSE/KGE/PBIAS \\
-\path{climate.spatial_analysis} & Climate & Regional frequency analysis, Gaussian/vine copulas, IDW/kriging/GP interpolation \\
+\path{climate.spatial_analysis} & Climate & Regional frequency analysis, Gaussian copulas (OpenTURNS) / vine copulas (pyvinecopulib), IDW/kriging/GP interpolation \\
 \path{climate.stochastic_generation} & Climate & NEOPRENE (point NSRP, spatial STNSRP), CoSMoS random fields \\
 \path{climate.bias_correction} & Climate & Delta method, empirical/quantile-delta/scaled-distribution mapping \\
 \path{climate.hybrid_downscaling} & Climate & Hydrograph classification, MaxDiss selection, k-NN/RBF flood-map reconstruction \\
@@ -746,10 +750,10 @@ content of the published article and the archived code.
 \section*{Acknowledgements}
 The stochastic-impact methodology consolidated in this software originates
 from doctoral and research work carried out at IHCantabria -- Instituto de
-Hidr\'aulica Ambiental de la Universidad de Cantabria. The authors thank the
-Confederaci\'on Hidrogr\'afica del Cant\'abrico and the Agencia Estatal de
-Meteorolog\'ia for hydrological and climate records used in the associated
-case studies, and the Instituto Geogr\'afico Nacional for openly available
+Hidráulica Ambiental de la Universidad de Cantabria. The authors thank the
+Confederación Hidrográfica del Cantábrico and the Agencia Estatal de
+Meteorología for hydrological and climate records used in the associated
+case studies, and the Instituto Geográfico Nacional for openly available
 PNOA products. Computationally intensive workflows used IHCantabria
 infrastructure and resources provided by the University of Cantabria through
 its Microsoft Azure academic subscription.
