@@ -1,0 +1,327 @@
+---
+// defensa.astro — Thesis defense launcher page
+import Layout from '../layouts/Layout.astro';
+import { totalSlides, totalMinutes, backupSlides } from '../data/slides';
+const base = import.meta.env.BASE_URL;
+const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
+---
+
+<Layout
+  title="Defensa de Tesis — HYDRA"
+  description="Presentación interactiva de la tesis doctoral: HYDRA, modelo automático de inundación estocástica"
+>
+  <style is:global>
+    body { background: #020617 !important; margin: 0; }
+    header, footer { display: none !important; }
+    main { padding: 0 !important; margin: 0 !important; }
+  </style>
+
+  <style>
+    .defensa-landing {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 24px;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(13,148,136,0.12) 0%, transparent 70%),
+                  radial-gradient(ellipse 60% 40% at 80% 80%, rgba(59,130,246,0.08) 0%, transparent 60%),
+                  #020617;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Animated background grid */
+    .defensa-grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(13,148,136,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(13,148,136,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black, transparent);
+      pointer-events: none;
+    }
+
+    .defensa-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      max-width: 700px;
+      width: 100%;
+    }
+
+    /* Logo area */
+    .defensa-logo-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 32px;
+      animation: fadeInDown 0.6s ease both;
+    }
+    .defensa-logo-img {
+      width: 72px;
+      height: 72px;
+      border-radius: 20px;
+      box-shadow: 0 0 40px rgba(13,148,136,0.3);
+    }
+    .defensa-logo-text {
+      font-size: 48px;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -0.03em;
+    }
+
+    /* Title card */
+    .defensa-title-card {
+      background: rgba(15,23,42,0.8);
+      border: 1px solid rgba(13,148,136,0.25);
+      border-radius: 20px;
+      padding: 32px 40px;
+      margin-bottom: 40px;
+      animation: fadeInUp 0.7s ease 0.1s both;
+      backdrop-filter: blur(12px);
+    }
+    .defensa-thesis-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #f1f5f9;
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+    .defensa-thesis-subtitle {
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 20px;
+    }
+    .defensa-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    .defensa-badge {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 99px;
+      border: 1px solid;
+    }
+    .badge-teal  { background: rgba(13,148,136,0.12); color: #5eead4; border-color: rgba(13,148,136,0.3); }
+    .badge-blue  { background: rgba(59,130,246,0.12); color: #93c5fd; border-color: rgba(59,130,246,0.3); }
+    .badge-slate { background: rgba(100,116,139,0.12); color: #94a3b8; border-color: rgba(100,116,139,0.3); }
+
+    /* Stats row */
+    .defensa-stats {
+      display: flex;
+      gap: 32px;
+      justify-content: center;
+      margin-bottom: 40px;
+      animation: fadeInUp 0.7s ease 0.2s both;
+    }
+    .defensa-stat {
+      text-align: center;
+    }
+    .defensa-stat-num {
+      font-size: 28px;
+      font-weight: 800;
+      color: #5eead4;
+      display: block;
+      font-variant-numeric: tabular-nums;
+    }
+    .defensa-stat-label {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    /* Mode selector */
+    .defensa-modes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 32px;
+      animation: fadeInUp 0.7s ease 0.3s both;
+    }
+
+    @media (max-width: 600px) {
+      .defensa-modes { grid-template-columns: 1fr; }
+    }
+
+    .mode-card {
+      display: block;
+      text-decoration: none;
+      background: rgba(15,23,42,0.8);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 24px 20px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .mode-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.2s;
+      border-radius: inherit;
+    }
+    .mode-card:hover { transform: translateY(-2px); }
+    .mode-card:hover::before { opacity: 1; }
+
+    .mode-online::before {
+      background: radial-gradient(ellipse at 50% 0%, rgba(13,148,136,0.15) 0%, transparent 70%);
+    }
+    .mode-online:hover { border-color: rgba(13,148,136,0.4); box-shadow: 0 8px 32px rgba(13,148,136,0.15); }
+
+    .mode-offline::before {
+      background: radial-gradient(ellipse at 50% 0%, rgba(99,102,241,0.15) 0%, transparent 70%);
+    }
+    .mode-offline:hover { border-color: rgba(99,102,241,0.4); box-shadow: 0 8px 32px rgba(99,102,241,0.15); }
+
+    .mode-icon {
+      font-size: 28px;
+      margin-bottom: 12px;
+      display: block;
+    }
+    .mode-label {
+      font-size: 16px;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 6px;
+    }
+    .mode-desc {
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.5;
+    }
+    .mode-tag {
+      display: inline-block;
+      margin-top: 12px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      padding: 2px 8px;
+      border-radius: 99px;
+    }
+    .tag-teal  { background: rgba(13,148,136,0.2); color: #5eead4; }
+    .tag-indigo { background: rgba(99,102,241,0.2); color: #a5b4fc; }
+
+    /* Recommended badge */
+    .mode-recommended {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      background: rgba(13,148,136,0.2);
+      color: #5eead4;
+      border: 1px solid rgba(13,148,136,0.3);
+      border-radius: 99px;
+      padding: 2px 8px;
+    }
+
+    /* Footer note */
+    .defensa-note {
+      font-size: 11px;
+      color: #334155;
+      animation: fadeInUp 0.7s ease 0.4s both;
+    }
+    .defensa-note a { color: #475569; }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+
+  <div class="defensa-landing">
+    <div class="defensa-grid-bg" aria-hidden="true"></div>
+
+    <div class="defensa-content">
+      <!-- Logo -->
+      <div class="defensa-logo-wrap">
+        <img src={asset('/favicon.png')} alt="HYDRA" class="defensa-logo-img" />
+        <span class="defensa-logo-text">HYDRA</span>
+      </div>
+
+      <!-- Title card -->
+      <div class="defensa-title-card">
+        <div class="defensa-thesis-title">
+          Modelo automático de inundación estocástica bajo<br/>
+          incertidumbre hidrológica y climática
+        </div>
+        <div class="defensa-thesis-subtitle">
+          Tesis Doctoral Industrial · Universidad de Cantabria · IHCantabria
+        </div>
+        <div class="defensa-meta">
+          <span class="defensa-badge badge-teal">Salvador Navas Fernández</span>
+          <span class="defensa-badge badge-blue">{totalSlides} slides · ~{totalMinutes} min</span>
+          <span class="defensa-badge badge-slate">{backupSlides.length} anexos para preguntas</span>
+          <span class="defensa-badge badge-slate">9 casos de estudio</span>
+          <span class="defensa-badge badge-slate">DOI: 10.5281/zenodo.21138151</span>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="defensa-stats">
+        <div class="defensa-stat">
+          <span class="defensa-stat-num">{totalSlides}</span>
+          <span class="defensa-stat-label">Slides</span>
+        </div>
+        <div class="defensa-stat">
+          <span class="defensa-stat-num">{totalMinutes}</span>
+          <span class="defensa-stat-label">Minutos</span>
+        </div>
+        <div class="defensa-stat">
+          <span class="defensa-stat-num">9</span>
+          <span class="defensa-stat-label">Casos piloto</span>
+        </div>
+        <div class="defensa-stat">
+          <span class="defensa-stat-num">4</span>
+          <span class="defensa-stat-label">Continentes</span>
+        </div>
+      </div>
+
+      <!-- Mode selector -->
+      <div class="defensa-modes">
+        <!-- Online mode -->
+        <a href={asset('/defensa-live')} class="mode-card mode-online" id="btn-online">
+          <span class="mode-recommended">Recomendado</span>
+          <span class="mode-icon">🌐</span>
+          <div class="mode-label">Modo Online</div>
+          <div class="mode-desc">
+            La presentación navega por la web real de HYDRA. El tribunal ve el producto funcionando en vivo.
+          </div>
+          <span class="mode-tag tag-teal">HYDRA Web + HUD</span>
+        </a>
+
+        <!-- Offline mode -->
+        <a href={asset('/defensa-offline')} class="mode-card mode-offline" id="btn-offline">
+          <span class="mode-icon">💾</span>
+          <div class="mode-label">Modo Offline</div>
+          <div class="mode-desc">
+            Presentación autónoma con figuras de la tesis embebidas. Funciona sin internet ni servidor.
+          </div>
+          <span class="mode-tag tag-indigo">Standalone · Sin dependencias</span>
+        </a>
+      </div>
+
+      <div class="defensa-note">
+        Atajos de teclado: <kbd>→</kbd> / <kbd>Space</kbd> siguiente &nbsp;·&nbsp;
+        <kbd>←</kbd> anterior &nbsp;·&nbsp;
+        <kbd>P</kbd> vista presentador &nbsp;·&nbsp;
+        <kbd>F</kbd> pantalla completa &nbsp;·&nbsp;
+        <kbd>Esc</kbd> minimizar
+      </div>
+    </div>
+  </div>
+</Layout>

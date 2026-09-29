@@ -12,6 +12,7 @@ export function getStaticPaths() {
 const { case: pc } = Astro.props;
 const base = import.meta.env.BASE_URL;
 const notebookSessionHref = (path: string) => `/api/notebooks/session?path=${encodeURIComponent(path)}`;
+const hasNotebooks = pc.steps.some((s) => s.notebookPath);
 
 const stepColors: Record<number, string> = {
   1: 'border-sky-500/30 bg-sky-950/50',
@@ -68,6 +69,13 @@ const stepTitleColors: Record<number, string> = {
         <span class="inline-flex rounded-full bg-white/12 border border-white/20 px-3 py-1 text-sm text-white/80">
           {pc.region}<span data-t-es=", España" data-t-en=", Spain">, España</span>
         </span>
+        {!hasNotebooks ? (
+          <span
+            class="inline-flex rounded-full bg-amber-500/15 border border-amber-400/30 px-3 py-1 text-sm text-amber-200"
+            data-t-es="📄 Caso documentado — sin notebooks ejecutables en pyhydra"
+            data-t-en="📄 Documented case — no executable notebooks in pyhydra"
+          >📄 Caso documentado — sin notebooks ejecutables en pyhydra</span>
+        ) : null}
       </div>
       <h1 class="text-4xl md:text-6xl font-extrabold mb-4">{pc.title}</h1>
       <p
@@ -143,11 +151,19 @@ const stepTitleColors: Record<number, string> = {
       <section id="case-workflow">
         <div id="case-workflow-heading" class="mb-8">
           <h2 class="text-3xl font-bold text-white mb-2" data-i18n="case.workflow.title">Flujo de trabajo</h2>
-          <p class="text-slate-400" data-i18n="case.workflow.description">{pc.steps.length} notebooks ejecutables — haz clic en cualquier paso para abrir en Jupyter Lab.</p>
+          {hasNotebooks ? (
+            <p class="text-slate-400" data-i18n="case.workflow.description">Notebooks ejecutables — haz clic en cualquier paso para abrir en Jupyter Lab.</p>
+          ) : (
+            <p
+              class="text-slate-400"
+              data-t-es="Metodología documentada a partir de la publicación original — este caso es anterior a pyhydra y no dispone de notebooks ejecutables en esta plataforma."
+              data-t-en="Methodology documented from the original publication — this case predates pyhydra and has no executable notebooks on this platform."
+            >Metodología documentada a partir de la publicación original — este caso es anterior a pyhydra y no dispone de notebooks ejecutables en esta plataforma.</p>
+          )}
         </div>
 
         <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-5">
-          {pc.steps.map((step) => (
+          {pc.steps.map((step) => step.notebookPath ? (
             <a
               href={notebookSessionHref(step.notebookPath)}
               target="_blank"
@@ -178,6 +194,36 @@ const stepTitleColors: Record<number, string> = {
                 ▶ <span data-i18n="case.open_notebook">Abrir notebook</span>
               </span>
             </a>
+          ) : (
+            <div
+              class={`rounded-2xl border-2 p-5 ${stepColors[step.number] ?? 'border-white/10 bg-white/5'}`}
+            >
+              <div class="flex items-center gap-3 mb-3">
+                <span class={`inline-flex w-8 h-8 rounded-lg items-center justify-center text-sm font-black ${stepNumColors[step.number] ?? 'bg-white/10 text-slate-300'}`}>
+                  {String(step.number).padStart(2, '0')}
+                </span>
+                <div class="flex flex-wrap gap-1">
+                  {step.tags.map((tag) => (
+                    <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-white/10 text-slate-300">{tag}</span>
+                  ))}
+                </div>
+              </div>
+              <h3
+                class="font-bold text-white mb-2"
+                data-t-es={step.title.es}
+                data-t-en={step.title.en}
+              >{step.title.es}</h3>
+              <p
+                class="text-sm text-slate-400 leading-relaxed"
+                data-t-es={step.description.es}
+                data-t-en={step.description.en}
+              >{step.description.es}</p>
+              <span
+                class="inline-flex mt-3 text-xs font-semibold text-slate-500"
+                data-t-es="📄 Metodología documentada"
+                data-t-en="📄 Documented methodology"
+              >📄 Metodología documentada</span>
+            </div>
           ))}
         </div>
       </section>

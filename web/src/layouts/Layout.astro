@@ -25,7 +25,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
     <link rel="icon" type="image/png" href={asset('/favicon.png')} />
@@ -133,6 +133,91 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     <main>
       <slot />
     </main>
+
+    {/* postMessage listener for defensa-live iframe mode */}
+    <script is:inline>
+      (function () {
+        // Inject a highlight ring element once
+        function getOrCreateRing() {
+          let ring = document.getElementById('__defensa_ring__');
+          if (!ring) {
+            ring = document.createElement('div');
+            ring.id = '__defensa_ring__';
+            ring.style.cssText = [
+              'position:fixed', 'pointer-events:none', 'z-index:999999',
+              'border-radius:10px', 'opacity:0',
+              'border:2px solid #0d9488',
+              'box-shadow:0 0 0 4px rgba(13,148,136,.15),0 0 28px rgba(13,148,136,.35)',
+              'transition:opacity .3s,top .4s,left .4s,width .4s,height .4s',
+            ].join(';');
+            document.body.appendChild(ring);
+            // Pulse animation
+            const style = document.createElement('style');
+            style.textContent = `
+              @keyframes __defensa_pulse__ {
+                0%,100%{box-shadow:0 0 0 4px rgba(13,148,136,.15),0 0 28px rgba(13,148,136,.35)}
+                50%{box-shadow:0 0 0 8px rgba(13,148,136,.07),0 0 44px rgba(13,148,136,.5)}
+              }
+              #__defensa_ring__[data-active]{animation:__defensa_pulse__ 2s ease-in-out infinite}
+            `;
+            document.head.appendChild(style);
+          }
+          return ring;
+        }
+
+        window.addEventListener('message', function (e) {
+          if (e.origin !== window.location.origin) return;
+          if (!e.data || e.data.type !== 'defensa-command') return;
+          const { anchor, highlight } = e.data;
+
+          // Scroll
+          if (anchor) {
+            try {
+              const el = document.querySelector(anchor);
+              if (el) el.scrollIntoView({ behavior: 'instant', block: 'center' });
+            } catch (_) {}
+          }
+
+          // Highlight ring
+          const ring = getOrCreateRing();
+          ring.removeAttribute('data-active');
+          ring.style.opacity = '0';
+
+          if (highlight) {
+            setTimeout(function () {
+              try {
+                const target = document.querySelector(highlight);
+                if (!target) return;
+                const rect = target.getBoundingClientRect();
+                const pad = 8;
+                ring.style.top    = (rect.top - pad) + 'px';
+                ring.style.left   = (rect.left - pad) + 'px';
+                ring.style.width  = (rect.width + pad * 2) + 'px';
+                ring.style.height = (rect.height + pad * 2) + 'px';
+                ring.style.opacity = '1';
+                ring.setAttribute('data-active', '1');
+              } catch (_) {}
+            }, 500);
+          }
+        });
+
+        // Forward navigation keys to the parent when embedded in the defensa-live iframe.
+        // A keydown fired inside an iframe's own document never bubbles to the parent
+        // document, so once the presenter clicks into the live site to show it off,
+        // the parent's arrow-key/space navigation would otherwise go dead.
+        if (window.self !== window.top) {
+          var FORWARD_KEYS = ['ArrowRight', 'ArrowLeft', ' ', 'f', 'F', 'm', 'M', 'p', 'P'];
+          document.addEventListener('keydown', function (e) {
+            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+            if (FORWARD_KEYS.indexOf(e.key) === -1) return;
+            e.preventDefault();
+            try {
+              window.parent.postMessage({ type: 'defensa-key', key: e.key }, window.location.origin);
+            } catch (_) {}
+          });
+        }
+      })();
+    </script>
 
     <!-- Footer -->
     <footer class="bg-gray-950 text-gray-400 py-12 mt-24">

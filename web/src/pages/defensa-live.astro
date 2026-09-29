@@ -1,0 +1,1651 @@
+---
+// defensa-live.astro — Presentación interactiva de tesis (Online/Live) con sincronización de doble pantalla (Modo Presentador)
+import Layout from '../layouts/Layout.astro';
+import { slides, totalSlides, totalMinutes } from '../data/slides';
+const base = import.meta.env.BASE_URL;
+const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
+---
+
+<Layout
+  title="Defensa Tesis HYDRA — Presentación"
+  description="Presentación interactiva: navega la web de HYDRA alternando con diapositivas"
+>
+
+<style is:global>
+  /* Reset default layout spaces */
+  body { overflow: hidden !important; background: #020617 !important; margin: 0; padding: 0; }
+  header, footer { display: none !important; }
+  main { padding: 0 !important; margin: 0 !important; }
+
+  /* Audience-only full screen mode overrides — must live in a global block: the
+     `.projection-view` class is toggled on <body>, which this page's own scoped
+     styles can never reach (body belongs to Layout.astro, not this component). */
+  body.projection-view .live-panel { display: none !important; }
+  body.projection-view .live-topbar { display: none !important; }
+  body.projection-view .live-bottombar { display: none !important; }
+  .live-dots-wrap { display:none !important; }
+  .live-chapter {
+    height:28px;
+    padding:0 10px;
+    border-radius:7px;
+    border:1px solid rgba(255,255,255,.06);
+    background:rgba(255,255,255,.025);
+    color:#475569;
+    font:700 10px/1 Inter,system-ui,sans-serif;
+    cursor:pointer;
+  }
+  .live-chapter.active { background:rgba(13,148,136,.16); border-color:rgba(94,234,212,.28); color:#5eead4; }
+  .live-chapter:not(.active) { display:none; }
+</style>
+
+<style>
+  /* ── Shell ── */
+  .live-shell {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    background: #020617;
+    font-family: 'Inter', system-ui, sans-serif;
+    color: #e2e8f0;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+  }
+
+  /* ── Top bar ── */
+  .live-topbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 16px;
+    height: 46px;
+    background: rgba(10,15,30,0.98);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    flex-shrink: 0;
+    z-index: 10;
+  }
+  .live-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #5eead4;
+    white-space: nowrap;
+  }
+  .live-logo img { width: 26px; height: 26px; border-radius: 7px; }
+  .live-block-badge {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 2px 9px;
+    border-radius: 99px;
+    border: 1px solid;
+    white-space: nowrap;
+    transition: all 0.3s;
+  }
+  .live-mode-badge {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 3px 10px;
+    border-radius: 99px;
+    white-space: nowrap;
+    transition: background 0.3s, color 0.3s, border-color 0.3s;
+    background: rgba(99,102,241,0.15);
+    color: #a5b4fc;
+    border: 1px solid rgba(99,102,241,0.35);
+  }
+  .live-mode-badge.mode-web {
+    background: rgba(13,148,136,0.15);
+    color: #5eead4;
+    border-color: rgba(13,148,136,0.4);
+  }
+  .live-progress-wrap {
+    flex: 1;
+    height: 3px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+    min-width: 60px;
+  }
+  .live-progress-fill {
+    height: 100%;
+    background: linear-gradient(to right, #0d9488, #06b6d4);
+    transition: width 0.5s ease;
+  }
+  .live-counter {
+    font-size: 12px;
+    font-weight: 700;
+    color: #475569;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .live-timer {
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .live-topbar-btn {
+    height: 30px;
+    padding: 0 10px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 7px;
+    background: rgba(255,255,255,0.04);
+    color: #64748b;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: inherit;
+    transition: all 0.15s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .live-topbar-btn:hover { background: rgba(255,255,255,0.1); color: #e2e8f0; }
+  .live-topbar-btn.exit:hover { background: rgba(239,68,68,0.15); color: #fca5a5; }
+  .live-topbar-btn-primary {
+    background: rgba(13,148,136,0.18);
+    border-color: rgba(13,148,136,0.5);
+    color: #5eead4;
+    font-weight: 700;
+  }
+  .live-topbar-btn-primary:hover { background: rgba(13,148,136,0.3); color: #99f6e4; }
+  .live-topbar-btn.active { color: #5eead4; border-color: rgba(13,148,136,0.3); }
+
+  /* ── Main row ── */
+  .live-main {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ── Left content area ── */
+  .live-left-viewport {
+    flex: 1;
+    position: relative;
+    min-width: 0;
+    background: #020617;
+  }
+
+  /* ── Iframe wrap ── */
+  .live-iframe-wrap {
+    position: absolute;
+    inset: 0;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.35s ease, visibility 0s linear 0.35s;
+  }
+  .live-iframe-wrap.active-mode {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 0.35s ease;
+  }
+  .live-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+  /* Loading overlay */
+  .live-iframe-loading {
+    position: absolute;
+    inset: 0;
+    background: #020617;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    z-index: 5;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .live-iframe-loading.visible { opacity: 1; }
+  .live-spinner {
+    width: 32px; height: 32px;
+    border: 2px solid rgba(13,148,136,0.2);
+    border-top-color: #0d9488;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .live-loading-text { font-size: 13px; color: #475569; }
+
+  /* ── Slide wrap (for standalone slides) ── */
+  .live-slide-wrap {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(13,148,136,0.06) 0%, transparent 70%), #020617;
+    overflow-y: auto;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.35s ease, background 0.6s ease, visibility 0s linear 0.35s;
+  }
+  .live-slide-wrap.active-mode {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 0.35s ease, background 0.6s ease;
+  }
+  .live-slide-content {
+    flex: 1;
+    width: 100%;
+    max-width: min(100%, calc(100vh * 16 / 9));
+    aspect-ratio: 16 / 9;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+  .audience-slide-frame {
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    border:0;
+    background:#020617;
+    pointer-events:none;
+  }
+  .live-slide-content .slide-live-bullet:nth-child(n+4) { display:none; }
+
+  /* ── Side panel (notes/controls) ── */
+  .live-panel {
+    width: clamp(400px, 29vw, 470px);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(180deg,rgba(8,12,24,.995),rgba(5,9,19,.995));
+    border-left: 1px solid rgba(94,234,212,0.12);
+    overflow: hidden;
+    position: absolute;
+    inset: 0 0 0 auto;
+    box-shadow: -24px 0 60px rgba(0,0,0,.48);
+    transition: transform 0.3s ease, opacity .2s ease;
+    z-index: 8;
+  }
+  .live-panel.collapsed { width:clamp(400px,29vw,470px); transform:translateX(102%); opacity:0; pointer-events:none; }
+
+  .panel-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .panel-scroll::-webkit-scrollbar { width: 4px; }
+  .panel-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+
+  /* Slide info sections */
+  .panel-section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #64748b;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .panel-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: #f1f5f9;
+    line-height: 1.35;
+  }
+  .panel-subtitle {
+    font-size: 12.5px;
+    color: #94a3b8;
+    font-style: italic;
+    margin-top: 3px;
+  }
+  .panel-script {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: #cbd5e1;
+    border-left: 3px solid;
+    padding: 12px 14px;
+    background: rgba(255,255,255,.025);
+    border-radius: 0 10px 10px 0;
+  }
+  .panel-bullets {
+    list-style: none;
+    padding: 0; margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .panel-bullets li {
+    font-size: 12px;
+    color: #b8c1cf;
+    padding: 8px 10px;
+    border-radius: 7px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.04);
+    line-height: 1.4;
+  }
+  .panel-notes {
+    font-size: 12.5px;
+    color: #38bdf8;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    padding: 14px;
+    border-radius: 8px;
+    background: rgba(14,165,233,0.06);
+    border: 1px solid rgba(14,165,233,0.15);
+  }
+  .panel-brief { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+  .panel-brief-card { padding:11px 12px; border-radius:10px; background:rgba(15,23,42,.72); border:1px solid rgba(255,255,255,.07); }
+  .panel-brief-card strong { display:block; color:#5eead4; font-size:9px; letter-spacing:.09em; text-transform:uppercase; margin-bottom:5px; }
+  .panel-brief-card span { display:block; color:#cbd5e1; font-size:12px; line-height:1.4; }
+  .panel-links { display:flex; flex-direction:column; gap:7px; }
+  .panel-link { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 11px; border-radius:9px; background:rgba(13,148,136,.07); border:1px solid rgba(45,212,191,.16); color:#99f6e4; text-decoration:none; font-size:11.5px; line-height:1.3; }
+  .panel-link:hover { background:rgba(13,148,136,.14); border-color:rgba(45,212,191,.35); }
+  .panel-link::after { content:'↗'; color:#5eead4; flex-shrink:0; }
+  .panel-results { display:grid; grid-template-columns:1fr; gap:7px; }
+  .panel-result { padding:10px 11px; border-radius:9px; background:rgba(245,158,11,.06); border:1px solid rgba(245,158,11,.18); }
+  .panel-result strong { color:#fbbf24; font-size:18px; font-weight:900; margin-right:7px; }
+  .panel-result span { color:#e2e8f0; font-size:11.5px; font-weight:700; }
+  .panel-result small { display:block; color:#94a3b8; font-size:10.5px; line-height:1.35; margin-top:4px; }
+  .panel-pyhydra { padding:12px; border-radius:10px; background:rgba(8,145,178,.08); border:1px solid rgba(34,211,238,.2); color:#dbeafe; font-size:12px; line-height:1.45; }
+  .panel-pyhydra-modules { display:flex; flex-wrap:wrap; gap:5px; margin-top:8px; }
+  .panel-pyhydra-modules span { padding:3px 6px; border-radius:5px; background:rgba(8,145,178,.14); color:#a5f3fc; font:700 9px/1.2 monospace; }
+
+  /* Divider */
+  .panel-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.04);
+  }
+
+  /* Next slide preview */
+  .panel-next {
+    padding: 10px;
+    border-radius: 8px;
+    background: rgba(13,148,136,0.05);
+    border: 1px solid rgba(13,148,136,0.12);
+  }
+  .panel-next-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #0d9488;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .panel-next-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #5eead4;
+  }
+  .panel-next-block {
+    font-size: 10px;
+    color: #334155;
+    margin-top: 3px;
+  }
+
+  /* Notes toggle */
+  .notes-toggle-btn {
+    font-size: 11px;
+    font-weight: 600;
+    color: #475569;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-family: inherit;
+    text-align: left;
+  }
+  .notes-toggle-btn:hover { color: #64748b; }
+
+  /* ── Bottom bar ── */
+  .live-bottombar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 16px;
+    height: 50px;
+    background: rgba(10,15,30,0.98);
+    border-top: 1px solid rgba(255,255,255,0.05);
+    flex-shrink: 0;
+  }
+  .live-nav-btn {
+    padding: 7px 16px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 9px;
+    background: rgba(255,255,255,0.04);
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+  .live-nav-btn:hover { background: rgba(13,148,136,0.15); border-color: rgba(13,148,136,0.4); color: #5eead4; }
+  .live-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .live-nav-next {
+    background: rgba(13,148,136,0.1);
+    border-color: rgba(13,148,136,0.35);
+    color: #5eead4;
+  }
+  .live-nav-next:hover { background: rgba(13,148,136,0.22); }
+
+  .live-dots-wrap {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    overflow: hidden;
+  }
+  .live-chapter {
+    height: 28px;
+    padding: 0 10px;
+    border-radius: 7px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.025);
+    color: #475569;
+    font: 700 10px/1 inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .live-chapter.active { background: rgba(13,148,136,.16); border-color:rgba(94,234,212,.28); color:#5eead4; }
+  .live-chapter:hover:not(.active) { background:rgba(255,255,255,.07); color:#94a3b8; }
+  .live-chapter:not(.active) { display:none; }
+
+  .live-go-input {
+    width: 46px;
+    padding: 4px 6px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+    background: rgba(255,255,255,0.03);
+    color: #64748b;
+    font-size: 12px;
+    text-align: center;
+    font-family: inherit;
+    font-variant-numeric: tabular-nums;
+  }
+  .live-go-input:focus { outline: none; border-color: rgba(13,148,136,0.5); color: #e2e8f0; }
+
+  /* Keyboard shortcut hint */
+  .live-keys {
+    font-size: 10px;
+    color: #334155;
+    white-space: nowrap;
+  }
+  @media (max-width: 1450px) {
+    .live-keys { display: none; }
+    .live-chapter { padding-inline: 8px; font-size: 9px; }
+  }
+
+  /* Floating audience tool tab (hidden unless hovered) */
+  .live-floating-controls {
+    position: fixed;
+    bottom: 12px;
+    left: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(2, 8, 23, 0.85);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 30px;
+    padding: 4px 12px;
+    z-index: 10000;
+    opacity: 0.1;
+    transition: opacity 0.3s;
+  }
+  .live-floating-controls:hover { opacity: 1; }
+  .floating-btn {
+    border: none;
+    background: none;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 2px 6px;
+    font-family: inherit;
+  }
+  .floating-btn:hover { color: #5eead4; }
+
+  /* ── PRESENTER WINDOW ONLY MODE OVERRIDES (opened via pop-up) ── */
+  .presenter-window-layout {
+    display: grid !important;
+    grid-template-columns: 1.1fr 0.9fr;
+    height: 100vh;
+    width: 100vw;
+    background: #090d16;
+    overflow: hidden;
+  }
+  .presenter-window-left {
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgba(255,255,255,0.06);
+    background: #020617;
+    overflow: hidden;
+  }
+  .presenter-window-right {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 24px;
+    gap: 20px;
+  }
+  .presenter-preview-frame {
+    flex: 1;
+    position: relative;
+    border: 8px solid #1e293b;
+    border-radius: 12px;
+    margin: 16px;
+    background: #000;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+    overflow: hidden;
+  }
+  .presenter-notes-area {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #e2e8f0;
+    background: rgba(14,165,233,0.05);
+    border: 1px solid rgba(14,165,233,0.15);
+    border-radius: 10px;
+    padding: 16px;
+    white-space: pre-wrap;
+  }
+  .presenter-large-timer {
+    font-size: 32px;
+    font-weight: 800;
+    color: #5eead4;
+    font-variant-numeric: tabular-nums;
+  }
+</style>
+
+<!-- Full-screen shell -->
+<div class="live-shell" id="live-shell">
+
+  <!-- Top bar (hidden in projection mode) -->
+  <div class="live-topbar" id="live-topbar">
+    <div class="live-logo">
+      <img src={asset('/favicon.png')} alt="HYDRA" />
+      HYDRA · Defensa
+    </div>
+    <span class="live-block-badge" id="top-block">Apertura</span>
+    <span class="live-mode-badge" id="live-mode-badge">📄 Diapositiva</span>
+    <div class="live-progress-wrap">
+      <div class="live-progress-fill" id="live-progress" style="width:3.45%"></div>
+    </div>
+    <span class="live-counter" id="live-counter">1 / {totalSlides}</span>
+    <span class="live-timer" id="live-timer">⏱ 0:00</span>
+    <button class="live-topbar-btn live-topbar-btn-primary" id="btn-present" title="Abre la vista de presentador en otra ventana y pone esta pantalla en modo proyección">🎬 Presentar</button>
+    <button class="live-topbar-btn" id="btn-panel-toggle" title="Ocultar/Mostrar panel lateral (N)">Mostrar Panel</button>
+    <button class="live-topbar-btn active" id="btn-projection" title="Activar modo proyección (M)">📺 Proyectar</button>
+    <button class="live-topbar-btn" id="btn-notes" title="Abrir Notas en otra pantalla (P)">📝 Presentador (P)</button>
+    <button class="live-topbar-btn" id="btn-fullscreen" title="Pantalla completa (F)">⛶ Pantalla completa</button>
+    <a href={asset('/defensa')} class="live-topbar-btn exit" title="Volver">✕ Salir</a>
+  </div>
+
+  <!-- Main view row -->
+  <div class="live-main">
+
+    <!-- Left viewport: dynamically toggles between iframe and slide contents -->
+    <div class="live-left-viewport">
+      
+      <!-- Iframe mode wrapper -->
+      <div class="live-iframe-wrap" id="iframe-wrap">
+        <div class="live-iframe-loading" id="iframe-loading">
+          <div class="live-spinner"></div>
+          <div class="live-loading-text" id="iframe-loading-text">Cargando HYDRA…</div>
+        </div>
+        <iframe
+          id="live-iframe"
+          class="live-iframe"
+          src={asset('/')}
+          title="HYDRA Web"
+          allow="fullscreen"
+        ></iframe>
+      </div>
+
+      <!-- Slide deck mode wrapper -->
+      <div class="live-slide-wrap" id="slide-wrap">
+        <iframe
+          class="audience-slide-frame"
+          id="audience-slide-frame"
+          src={asset('/defensa-offline?slide=0&preview=1')}
+          title="Diapositiva proyectada"
+          tabindex="-1"
+        ></iframe>
+        <div class="live-slide-content" id="live-slide-content" style="display:none"></div>
+      </div>
+
+    </div>
+
+    <!-- Right Side panel (hidden in projection mode) -->
+    <div class="live-panel collapsed" id="live-panel">
+      <div class="panel-scroll" id="panel-scroll">
+
+        <!-- Slide title -->
+        <div>
+          <div class="panel-section-label">Slide actual</div>
+          <div class="panel-title" id="panel-title">HYDRA</div>
+          <div class="panel-subtitle" id="panel-subtitle"></div>
+        </div>
+
+        <div class="panel-brief">
+          <div class="panel-brief-card"><strong>Objetivo</strong><span id="panel-objective">—</span></div>
+          <div class="panel-brief-card"><strong>Qué señalar</strong><span id="panel-cue">—</span></div>
+        </div>
+
+        <div id="panel-results-wrap" style="display:none">
+          <div class="panel-section-label">📈 Resultados que debes destacar</div>
+          <div class="panel-results" id="panel-results"></div>
+        </div>
+
+        <div id="panel-pyhydra-wrap" style="display:none">
+          <div class="panel-section-label">⚙ Papel de pyhydra en el caso</div>
+          <div class="panel-pyhydra" id="panel-pyhydra-role"></div>
+          <div class="panel-pyhydra-modules" id="panel-pyhydra-modules"></div>
+        </div>
+
+        <div class="panel-divider"></div>
+
+        <!-- Script speech -->
+        <div>
+          <div class="panel-section-label">🎙 Guion para leer</div>
+          <div class="panel-script" id="panel-script"></div>
+        </div>
+
+        <!-- Bullets preview -->
+        <div id="panel-bullets-wrap">
+          <div class="panel-section-label">Puntos en pantalla</div>
+          <ul class="panel-bullets" id="panel-bullets"></ul>
+        </div>
+
+        <div class="panel-divider"></div>
+
+        <!-- Presenter notes (collapsible) -->
+        <div>
+          <button class="notes-toggle-btn" id="notes-toggle">📝 Notas y preguntas típicas del tribunal ▼</button>
+          <div id="panel-notes-body">
+            <div class="panel-notes" id="panel-notes"></div>
+          </div>
+        </div>
+
+        <div class="panel-divider"></div>
+
+        <div id="panel-links-wrap">
+          <div class="panel-section-label">🔗 Fuentes y material relacionado</div>
+          <div class="panel-links" id="panel-links"></div>
+        </div>
+
+        <div class="panel-divider"></div>
+
+        <!-- Next slide preview -->
+        <div class="panel-next" id="panel-next">
+          <div class="panel-next-label">→ Siguiente slide</div>
+          <div class="panel-next-title" id="panel-next-title">—</div>
+          <div class="panel-next-block" id="panel-next-block"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom bar (hidden in projection mode) -->
+  <div class="live-bottombar" id="live-bottombar">
+    <button class="live-nav-btn" id="live-prev" disabled>← Anterior</button>
+    <div aria-hidden="true" style="flex:1"></div>
+    <span class="live-keys">← → Space · M=Proyección · P=Notas</span>
+    <input class="live-go-input" id="live-go" type="number" min="1" max={totalSlides} value="1" title="Ir al slide" />
+    <button class="live-nav-btn live-nav-next" id="live-next">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- Dedicated Presenter Window HTML Layout     -->
+<!-- (Only shown if ?presenter=1 URL query)    -->
+<!-- ========================================== -->
+<div id="presenter-only-layout" style="display:none;" class="presenter-window-layout">
+  <!-- Left Side: Preview of current slide -->
+  <div class="presenter-window-left">
+    <div style="padding:16px 24px; border-bottom:1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between; align-items:center;">
+      <span style="font-weight:800; color:#5eead4;">📺 VISTA DEL PROYECTOR (PREVIEW)</span>
+      <span id="pres-win-counter" style="font-weight:700; color:#64748b;">1/29</span>
+    </div>
+    <div class="presenter-preview-frame">
+      <!-- Read-only mirror of what the audience sees: pointer-events disabled so its own
+           nav controls can't be clicked by mistake — this pane never drives shared state,
+           only the buttons below do. -->
+      <iframe id="pres-win-preview-iframe" style="width:100%; height:100%; border:none; background:#020617; pointer-events:none;" src={asset('/defensa-offline?slide=0&preview=1')} tabindex="-1"></iframe>
+    </div>
+  </div>
+
+  <!-- Right Side: Notes and large controls -->
+  <div class="presenter-window-right">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <span class="panel-section-label">Tiempo transcurrido</span>
+        <div class="presenter-large-timer" id="pres-win-timer">0:00</div>
+      </div>
+      <div style="text-align:right;">
+        <span class="panel-section-label">Próximo bloque</span>
+        <div id="pres-win-next-block" style="font-size:14px; font-weight:700; color:#a5b4fc;">—</div>
+      </div>
+    </div>
+
+    <div class="panel-divider"></div>
+
+    <!-- Speech text -->
+    <div>
+      <span class="panel-section-label">🎙 Lo que debes decir (Guion)</span>
+      <div id="pres-win-speech" style="font-size:16px; line-height:1.6; color:#e2e8f0; font-style:italic; border-left:4px solid #0d9488; padding-left:16px; margin-top:6px;">—</div>
+    </div>
+
+    <!-- Notes & expected tribunal questions -->
+    <div>
+      <span class="panel-section-label" style="color:#38bdf8;">💡 Guía para el presentador y preguntas del tribunal</span>
+      <div class="presenter-notes-area" id="pres-win-notes">—</div>
+    </div>
+
+    <div class="panel-divider"></div>
+
+    <!-- Next slide Title -->
+    <div class="panel-next">
+      <span class="panel-next-label">Siguiente diapositiva</span>
+      <div class="panel-next-title" id="pres-win-next-title">—</div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div style="display:flex; gap:16px; margin-top:auto;">
+      <button class="live-nav-btn" id="pres-win-prev" style="flex:1; padding:12px; font-size:14px;">← Diapositiva anterior</button>
+      <button class="live-nav-btn live-nav-next" id="pres-win-next" style="flex:1.5; padding:12px; font-size:14px;">Diapositiva siguiente →</button>
+    </div>
+  </div>
+</div>
+
+<script define:vars={{ base }}>
+  window.__hydra_base = base;
+</script>
+
+<script>
+  import { slides, totalSlides } from '../data/slides.ts';
+
+  // ── Mode detection ──
+  const params = new URLSearchParams(window.location.search);
+  const isPresenterWindow = params.get('presenter') === '1';
+  const base = (window as any).__hydra_base ?? '/';
+
+  // Synchronizer BroadcastChannel for double-screen PPT-like view
+  const syncChannel = new BroadcastChannel('defensa-sync');
+
+  // Adjust DOM visible nodes immediately based on mode
+  if (isPresenterWindow) {
+    document.getElementById('live-shell')!.style.display = 'none';
+    document.getElementById('presenter-only-layout')!.style.display = 'grid';
+  }
+
+  // ── State ──
+  let current = -1;
+  let elapsed = 0;
+  let timerInterval: ReturnType<typeof setInterval> | null = null;
+  let panelOpen = false;
+  let notesOpen = true;
+  let projectionMode = false;
+
+  // ── DOM References ──
+  const iframe          = document.getElementById('live-iframe') as HTMLIFrameElement;
+  const loading         = document.getElementById('iframe-loading')!;
+  const iframeWrap      = document.getElementById('iframe-wrap')!;
+  const slideWrap       = document.getElementById('slide-wrap')!;
+  const slideContent     = document.getElementById('live-slide-content')!;
+  const audienceSlideFrame = document.getElementById('audience-slide-frame') as HTMLIFrameElement;
+  const panel           = document.getElementById('live-panel')!;
+  const progress        = document.getElementById('live-progress')!;
+  const counter         = document.getElementById('live-counter')!;
+  const timerEl         = document.getElementById('live-timer')!;
+  const topBlock        = document.getElementById('top-block')!;
+  const modeBadge       = document.getElementById('live-mode-badge')!;
+  const goInput         = document.getElementById('live-go') as HTMLInputElement;
+  const prevBtn         = document.getElementById('live-prev') as HTMLButtonElement;
+  const nextBtn         = document.getElementById('live-next') as HTMLButtonElement;
+  const panelTitle      = document.getElementById('panel-title')!;
+  const panelSubtitle   = document.getElementById('panel-subtitle')!;
+  const panelObjective  = document.getElementById('panel-objective')!;
+  const panelCue        = document.getElementById('panel-cue')!;
+  const panelResults    = document.getElementById('panel-results')!;
+  const panelResultsWrap = document.getElementById('panel-results-wrap')!;
+  const panelPyhydraWrap = document.getElementById('panel-pyhydra-wrap')!;
+  const panelPyhydraRole = document.getElementById('panel-pyhydra-role')!;
+  const panelPyhydraModules = document.getElementById('panel-pyhydra-modules')!;
+  const panelScriptEl   = document.getElementById('panel-script')!;
+  const panelBullets    = document.getElementById('panel-bullets')!;
+  const panelBulletsWrap = document.getElementById('panel-bullets-wrap')!;
+  const panelNotes      = document.getElementById('panel-notes')!;
+  const panelLinks      = document.getElementById('panel-links')!;
+  const panelLinksWrap  = document.getElementById('panel-links-wrap')!;
+  const panelNextTitle  = document.getElementById('panel-next-title')!;
+  const panelNextBlock  = document.getElementById('panel-next-block')!;
+
+  // Presenter Window Only elements
+  const presWinTimer       = document.getElementById('pres-win-timer')!;
+  const presWinNextBlock   = document.getElementById('pres-win-next-block')!;
+  const presWinSpeech      = document.getElementById('pres-win-speech')!;
+  const presWinNotes       = document.getElementById('pres-win-notes')!;
+  const presWinNextTitle   = document.getElementById('pres-win-next-title')!;
+  const presWinCounter     = document.getElementById('pres-win-counter')!;
+  const presWinPrevBtn     = document.getElementById('pres-win-prev') as HTMLButtonElement;
+  const presWinNextBtn     = document.getElementById('pres-win-next') as HTMLButtonElement;
+  const presPreviewIframe  = document.getElementById('pres-win-preview-iframe') as HTMLIFrameElement;
+
+  type PresenterLink = { label: string; href: string };
+  const localHref = (path: string) => `${base.replace(/\/$/, '')}${path}`;
+  function presenterLinksFor(slide: typeof slides[0]): PresenterLink[] {
+    const links: PresenterLink[] = [];
+    if (slide.url) links.push({ label: slide.webLabel ?? 'Abrir la página mostrada', href: localHref(slide.url) });
+    if (slide.figure) links.push({ label: `Abrir figura · ${slide.figureCaption ?? slide.figure}`, href: localHref(`/defensa/figures/${slide.figure}`) });
+
+    if (slide.title.includes('Fuentes de datos')) links.push({ label: 'Módulo HYDRA · Fuentes de datos', href: localHref('/modules/fuentes-datos') });
+    else if (/GEV|Cópulas|estocástica|climátic/i.test(slide.title) && slide.block === 'Módulos') links.push({ label: 'Módulo HYDRA · Análisis climático', href: localHref('/modules/analisis-climatico') });
+    else if (/Modelización|acoplamiento/i.test(slide.title)) links.push({ label: 'Módulo HYDRA · Modelización', href: localHref('/modules/modelizacion') });
+
+    const caseRoutes: Array<[RegExp,string,string]> = [
+      [/Besaya/i,'Caso reproducible · Besaya','/cases/los-corrales-buelna'],
+      [/Mallorca/i,'Caso reproducible · Mallorca','/cases/mallorca-sant-llorenc'],
+      [/Calle 30/i,'Caso reproducible · Calle 30','/cases/m30-manzanares'],
+      [/Valencia/i,'Caso reproducible · DANA Valencia','/cases/valencia-dana'],
+      [/Tanganica/i,'Caso reproducible · Lago Tanganica','/cases/lago-tanganica'],
+      [/Andes/i,'Caso reproducible · Andes','/cases/andes-hidroelectrico'],
+      [/Panamá/i,'Caso reproducible · Atlas de Panamá','/cases/atlas-panama'],
+      [/SIMPCCe/i,'Caso reproducible · SIMPCCe','/cases/simpcce'],
+    ];
+    const caseRoute = caseRoutes.find(([pattern]) => pattern.test(slide.title));
+    if (caseRoute) links.push({ label: caseRoute[1], href: localHref(caseRoute[2]) });
+
+    if (['Apertura','Arquitectura','Validación','Conclusiones','Cierre'].includes(slide.block)) {
+      links.push({ label: 'Código fuente · pyhydra', href: 'https://github.com/navass11/pyhydra' });
+    }
+    if (['Arquitectura','Validación','Conclusiones','Cierre'].includes(slide.block)) {
+      links.push({ label: 'Archivo reproducible · Zenodo', href: 'https://doi.org/10.5281/zenodo.20932555' });
+    }
+    return links.filter((link, index, all) => all.findIndex(other => other.href === link.href) === index).slice(0, 4);
+  }
+  function presenterObjectiveFor(slide: typeof slides[0]): string {
+    if (slide.id === 1) return 'Presentar formalmente la tesis, la autoría y el marco institucional.';
+    if (slide.webPurpose) return slide.webPurpose;
+    const byBlock: Record<string,string> = {
+      'Apertura':'Fijar el marco conceptual y el recorrido de la defensa.',
+      'Motivación':'Justificar el problema científico y formular la hipótesis.',
+      'Estado del arte':'Delimitar la brecha que HYDRA resuelve.',
+      'Arquitectura':'Explicar cómo se convierte la metodología en infraestructura reproducible.',
+      'Módulos':'Mostrar la función verificable de este componente dentro de la cadena.',
+      'Demo en vivo':'Demostrar la operación real del núcleo científico.',
+      'Casos de estudio':'Aportar evidencia empírica y transferencia industrial.',
+      'Validación':'Relacionar hipótesis, resultados y veredicto.',
+      'Conclusiones':'Distinguir aportaciones, límites y trabajo futuro.',
+      'Cierre':'Cerrar con la contribución original y su transferibilidad.',
+    };
+    return byBlock[slide.block] ?? `Explicar la función de esta diapositiva dentro de ${slide.block}.`;
+  }
+  function presenterCueFor(slide: typeof slides[0]): string {
+    if (slide.id === 1) return 'Saludar al tribunal, hacer una pausa y nombrar director y tutor sin leer la portada.';
+    if (slide.webAction) return slide.webAction;
+    if (slide.figureCaption) return `Señalar en la figura: ${slide.figureCaption}`;
+    const firstNote = slide.notes?.split(/\n|(?<=[.!?])\s/).find(part => part.trim().length > 12)?.trim();
+    return firstNote ?? 'Conectar el mensaje con la diapositiva anterior y anticipar la siguiente.';
+  }
+
+  // ── Timer ──
+  function startTimer() {
+    if (timerInterval) return;
+    timerInterval = setInterval(() => {
+      elapsed++;
+      const m = Math.floor(elapsed / 60);
+      const s = elapsed % 60;
+      const timeStr = `⏱ ${m}:${s.toString().padStart(2,'0')}`;
+      const timeStrLarge = `${m}:${s.toString().padStart(2,'0')}`;
+      if (timerEl) timerEl.textContent = timeStr;
+      if (presWinTimer) presWinTimer.textContent = timeStrLarge;
+    }, 1000);
+  }
+
+  // ── Sync Channel communication ──
+  function broadcastChange(index: number) {
+    syncChannel.postMessage({ type: 'slide-change', index });
+  }
+
+  syncChannel.onmessage = (e) => {
+    if (e.data && e.data.type === 'slide-change') {
+      goTo(e.data.index);
+    }
+  };
+
+  // Storage event listener fallback (very reliable for popups and multiple tabs)
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'defensa-live-slide' && e.newValue !== null) {
+      const idx = parseInt(e.newValue);
+      if (idx !== current) {
+        goTo(idx);
+      }
+    }
+  });
+
+  // ── Iframe URL builder ──
+  function buildUrl(slide: typeof slides[0]): string | null {
+    // Only change the projector to the website at deliberately scripted evidence/demo moments.
+    // Other URLs remain available as presenter references without interrupting the oral narrative.
+    if (!slide.url || !slide.webMode) return null;
+    return base.replace(/\/$/, '') + slide.url;
+  }
+
+  // ── Navigate Iframe ──
+  let iframeCurrentPath = '';
+  let loadingSlowTimer: ReturnType<typeof setTimeout> | null = null;
+  const loadingText = document.getElementById('iframe-loading-text');
+
+  function navigateIframe(slide: typeof slides[0]) {
+    const url = buildUrl(slide);
+    if (!url) return;
+
+    const targetPath = new URL(url, window.location.origin).pathname;
+    if (iframeCurrentPath !== targetPath) {
+      if (loading) loading.classList.add('visible');
+      if (loadingText) loadingText.textContent = 'Cargando HYDRA…';
+      if (loadingSlowTimer) clearTimeout(loadingSlowTimer);
+      loadingSlowTimer = setTimeout(() => {
+        if (loadingText) loadingText.textContent = 'Sigue cargando… la conexión va más lenta de lo normal';
+      }, 4000);
+      iframe.src = url;
+      iframeCurrentPath = targetPath;
+    } else {
+      sendToIframe(slide);
+    }
+  }
+
+  // ── Send commands to pages inside Iframe ──
+  function sendToIframe(slide: typeof slides[0]) {
+    try {
+      iframe.contentWindow?.postMessage({
+        type: 'defensa-command',
+        anchor: slide.anchor ?? null,
+        highlight: slide.highlight ?? null,
+      }, '*');
+    } catch (_) {}
+  }
+
+  if (iframe) {
+    iframe.addEventListener('load', () => {
+      if (loading) loading.classList.remove('visible');
+      if (loadingSlowTimer) { clearTimeout(loadingSlowTimer); loadingSlowTimer = null; }
+      try {
+        iframeCurrentPath = new URL(iframe.src).pathname;
+      } catch (_) {}
+      setTimeout(() => sendToIframe(slides[current]), 600);
+    });
+  }
+
+  audienceSlideFrame.addEventListener('load', () => {
+    audienceSlideFrame.contentWindow?.postMessage({ type: 'defensa-preview-slide', index: Math.max(0, current) }, '*');
+  });
+
+  // ── Toggle Presentation View Layouts ──
+  function setProjectionMode(val: boolean) {
+    projectionMode = val;
+    const body = document.body;
+    body.classList.toggle('projection-view', val);
+    
+    // Auto-minimize sidebar panel state
+    if (val) {
+      panel.classList.add('collapsed');
+      document.getElementById('btn-projection')!.textContent = '📺 Normal';
+    } else {
+      if (panelOpen) panel.classList.remove('collapsed');
+      document.getElementById('btn-projection')!.textContent = '📺 Proyectar';
+    }
+  }
+
+  // ── Dynamic Slide HTML Renderer (Same design as offline) ──
+  function renderSlideContent(slide: typeof slides[0]) {
+    if (isPresenterWindow) return; // Presenter window does not render slides locally
+    const figSrc = slide.figure ? `${base.replace(/\/$/, '')}/defensa/figures/${slide.figure}` : null;
+    const secondaryFigSrc = slide.secondaryFigure ? `${base.replace(/\/$/, '')}/defensa/figures/${slide.secondaryFigure}` : null;
+    let html = '';
+
+    const headerStyle = `margin-bottom:16px; animation:fadeInDown 0.5s ease both;`;
+    const titleStyle = `font-size:clamp(26px, 3.4vw, 44px); font-weight:800; color:#f1f5f9; letter-spacing:-0.02em; line-height:1.2; margin-bottom:8px;`;
+    const subtitleStyle = `font-size:clamp(17px, 1.9vw, 22px); color:#94a3b8; font-style:italic;`;
+    const scriptStyle = `font-size:clamp(15px, 1.4vw, 17px); line-height:1.55; color:#9aa5b5; border-left:3px solid ${slide.blockColor}; padding-left:16px; margin-bottom:16px; font-style:italic; animation:fadeInLeft 0.5s ease both;`;
+    const bulletLiStyle = `font-size:clamp(17px, 1.9vw, 21px); color:#d5dbe5; padding:10px 14px; border-radius:8px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); line-height:1.4; transform: translateY(10px); opacity:0; transition: all 0.3s ease;`;
+
+    // Render Cover Page
+    if (slide.type === 'title') {
+      const isFirst = slide.id === 1;
+      html += `
+        <div style="display:flex; flex-direction:column; align-items:${isFirst ? 'flex-start' : 'center'}; justify-content:center; text-align:${isFirst ? 'left' : 'center'}; min-height:82vh; padding:${isFirst ? '44px 64px' : '20px'}; ${isFirst ? `background:linear-gradient(90deg,rgba(2,6,23,.98) 0%,rgba(2,6,23,.86) 44%,rgba(2,6,23,.14) 78%),url('${base.replace(/\/$/, '')}/defensa/cover-stochastic-flood.png') center/cover no-repeat;` : ''}">
+          <span class="slide-block" style="background:${slide.blockColor}22; color:${slide.blockColor}; border:1px solid ${slide.blockColor}44; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; padding:4px 12px; border-radius:99px; margin-bottom:24px; animation:fadeInDown 0.5s ease both;">
+            ${slide.block}
+          </span>
+          <div class="slide-main-title" style="font-size:clamp(34px, 4.2vw, 58px); font-weight:900; color:#fff; letter-spacing:-0.03em; line-height:1.15; margin-bottom:16px; max-width:${isFirst ? '760px' : 'none'}; animation:fadeInUp 0.6s ease both;">${slide.title}</div>
+          ${slide.subtitle ? `<div class="slide-main-subtitle" style="font-size:clamp(16px, 1.9vw, 21px); color:${isFirst ? '#cbd5e1' : '#94a3b8'}; max-width:760px; line-height:1.5; margin-bottom:22px; animation:fadeInUp 0.6s ease 0.1s both;">${slide.subtitle}</div>` : ''}
+
+          ${!isFirst && slide.bullets?.length ? `
+            <ul class="slide-title-bullets" style="display:grid; grid-template-columns:1fr; gap:10px; text-align:left; max-width:620px; padding:0; margin:0 0 24px 0; list-style:none; animation:fadeInUp 0.6s ease 0.2s both;">
+              ${slide.bullets.map(b => `<li style="font-size:clamp(16px, 1.8vw, 19px); color:#cbd5e1; padding:10px 16px; border-radius:8px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05);">${b}</li>`).join('')}
+            </ul>
+          ` : ''}
+
+          <!-- Logos on Cover -->
+          ${isFirst ? `
+            <div style="width:min(760px,62%); display:grid; grid-template-columns:1.15fr 1fr 1fr; gap:10px; animation:fadeInUp .7s ease .2s both;">
+              <div style="padding:12px 14px;border-radius:10px;background:rgba(15,23,42,.78);border:1px solid rgba(255,255,255,.1);"><span style="display:block;color:#5eead4;font-size:10px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;margin-bottom:4px;">Doctorando</span><strong>Salvador Navas Fernández</strong></div>
+              <div style="padding:12px 14px;border-radius:10px;background:rgba(15,23,42,.78);border:1px solid rgba(255,255,255,.1);"><span style="display:block;color:#5eead4;font-size:10px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;margin-bottom:4px;">Director</span><strong>Dr. Manuel del Jesús Peñil</strong></div>
+              <div style="padding:12px 14px;border-radius:10px;background:rgba(15,23,42,.78);border:1px solid rgba(255,255,255,.1);"><span style="display:block;color:#5eead4;font-size:10px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;margin-bottom:4px;">Tutor</span><strong>Dr. César Álvarez Díaz</strong></div>
+            </div>
+            <div style="display:flex;gap:24px;align-items:center;margin-top:18px;animation:fadeInUp .7s ease .3s both;">
+              <img src="${base.replace(/\/$/, '')}/defensa/figures/logo_uc_escuela_doctorado.png" style="height:40px;" />
+              <img src="${base.replace(/\/$/, '')}/defensa/figures/logo_ihcantabria_actual.png" style="width:190px; height:auto; object-fit:contain;" alt="IHCantabria · Instituto de Hidráulica Ambiental, Universidad de Cantabria" />
+              <span style="color:#94a3b8;font-size:12px;max-width:420px;">Programa IH2O · Tesis Doctoral con Mención Industrial · 2026</span>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    } 
+    // Render Index Layout
+    else if (slide.type === 'index') {
+      html += `
+        <div style="padding:28px 64px; display:flex; flex-direction:column; min-height:82vh;">
+          <div class="slide-heading-area" style="${headerStyle}">
+            <div class="slide-title" style="${titleStyle}">${slide.title}</div>
+            ${slide.subtitle ? `<div class="slide-subtitle" style="${subtitleStyle}">${slide.subtitle}</div>` : ''}
+          </div>
+          <div class="index-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:16px; flex:1; overflow-y:auto; margin-top:16px; animation:fadeInUp 0.6s ease both;">
+            ${slide.bullets?.map((b, bi) => {
+              const parts = b.split(' — ');
+              const numAndTitle = parts[0] || '';
+              const desc = parts[1] || '';
+              const num = numAndTitle.split('.')[0] || (bi + 1);
+              const title = numAndTitle.substring(numAndTitle.indexOf('.') + 1).trim();
+              
+              const colors = ['#0d9488', '#3b82f6', '#6366f1', '#0891b2', '#10b981', '#f59e0b', '#ef4444'];
+              const col = colors[bi % colors.length];
+
+              return `
+                <div class="index-card" style="padding:18px 22px; border-radius:12px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); display:flex; gap:16px; align-items:start; transition:all 0.3s; transform:translateY(10px); opacity:0; animation:fadeInUp 0.3s ease forwards ${bi * 0.08}s;">
+                  <div style="width:40px; height:40px; border-radius:10px; background:${col}22; border:1px solid ${col}44; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:800; color:${col}; flex-shrink:0;">
+                    ${num}
+                  </div>
+                  <div>
+                    <div style="font-size:clamp(17px, 1.4vw, 19px); font-weight:700; color:#f1f5f9; margin-bottom:4px;">${title}</div>
+                    <div style="font-size:clamp(14.5px, 1.2vw, 16px); color:#94a3b8; line-height:1.4;">${desc}</div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+    // Render Quote Layout
+    else if (slide.type === 'quote') {
+      html += `
+        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:82vh; padding:40px;">
+          <div class="quote-text" style="font-size:clamp(25px, 3vw, 38px); font-weight:600; color:#e2e8f0; line-height:1.45; text-align:center; max-width:980px; margin-bottom:32px; position:relative; animation:fadeIn 0.6s ease both;">
+            <span aria-hidden="true" style="font-size:82px; color:${slide.blockColor}55; position:absolute; top:-48px; left:-48px; font-family:Georgia,serif;">“</span>
+            ${slide.script}
+          </div>
+          ${slide.bullets?.length ? `
+            <ul class="slide-bullets" style="display:flex; flex-direction:column; gap:8px; width:100%; max-width:650px; text-align:left; padding:0; margin:0; list-style:none;">
+              ${slide.bullets.map(b => `<li class="slide-live-bullet" style="${bulletLiStyle}">${b}</li>`).join('')}
+            </ul>
+          ` : ''}
+        </div>
+      `;
+    } 
+    // Render Table matrix layout
+    else if (slide.type === 'table') {
+      html += `
+        <div style="padding:28px 64px;">
+          <div class="slide-heading-area" style="${headerStyle}">
+            <div class="slide-title" style="${titleStyle}">${slide.title}</div>
+            ${slide.subtitle ? `<div class="slide-subtitle" style="${subtitleStyle}">${slide.subtitle}</div>` : ''}
+          </div>
+          <div style="overflow-x:auto; flex:1; animation:fadeInUp 0.6s ease both; margin-top:16px;">
+            <table style="width:100%; border-collapse:collapse; text-align:left; font-size:clamp(15px, 1.5vw, 18px); color:#d5dbe5; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.05); border-radius:8px; overflow:hidden;">
+              <thead>
+                <tr style="background:rgba(13,148,136,0.15); border-bottom:1px solid rgba(13,148,136,0.3); color:#5eead4; font-weight:700;">
+                  <th style="padding:10px 14px;">Caso de Estudio</th>
+                  <th style="padding:10px 14px;">País / Cuenca</th>
+                  <th style="padding:10px 14px;">Datos (M1)</th>
+                  <th style="padding:10px 14px;">Clima (M2)</th>
+                  <th style="padding:10px 14px;">Estocástica (M3)</th>
+                  <th style="padding:10px 14px;">Modelado (M4)</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${slide.bullets?.map((b, bi) => {
+                  const parts = b.split(' → ');
+                  const caseName = parts[0] || '';
+                  const details = parts[1] || '';
+                  const check = `<span style="color:#10b981; font-weight:bold;">✔</span>`;
+                  const cross = `<span style="color:#475569;">—</span>`;
+                  
+                  let m1 = cross, m2 = cross, m3 = cross, m4 = cross;
+                  if (caseName.includes('Besaya')) { m1=check; m2=check; m3=check; m4=check; }
+                  else if (caseName.includes('Calle 30')) { m1=check; m2=check; m3=check; m4=check; }
+                  else if (caseName.includes('Mallorca')) { m1=check; m2=check; m3=check; m4=check; }
+                  else if (caseName.includes('Valencia')) { m1=check; m2=check; m3=cross; m4=cross; }
+                  else if (caseName.includes('Tanganica')) { m1=check; m2=check; m3=cross; m4=check; }
+                  else if (caseName.includes('Panamá')) { m1=check; m2=check; m3=cross; m4=check; }
+                  else if (caseName.includes('SIMPCCe')) { m1=check; m2=check; m3=cross; m4=check; }
+                  else if (caseName.includes('Andes')) { m1=check; m2=check; m3=cross; m4=cross; }
+                  else if (caseName.includes('IAHR')) { m1=check; m2=check; m3=check; m4=check; }
+
+                  return `
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.03); background:${bi % 2 === 0 ? 'rgba(255,255,255,0.01)' : 'transparent'};">
+                      <td style="padding:10px 14px; font-weight:700; color:#f1f5f9;">${caseName}</td>
+                      <td style="padding:10px 14px; color:#94a3b8;">${details.split('(')[0] || ''}</td>
+                      <td style="padding:10px 14px; text-align:center;">${m1}</td>
+                      <td style="padding:10px 14px; text-align:center;">${m2}</td>
+                      <td style="padding:10px 14px; text-align:center;">${m3}</td>
+                      <td style="padding:10px 14px; text-align:center;">${m4}</td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+    // Render Split Layout (Text + Figures)
+    else if (slide.type === 'split' || (slide.type === 'normal' && figSrc)) {
+      html += `
+        <div style="padding:28px 64px;">
+          <div class="slide-heading-area" style="${headerStyle}">
+            <div class="slide-title" style="${titleStyle}">${slide.title}</div>
+            ${slide.subtitle ? `<div class="slide-subtitle" style="${subtitleStyle}">${slide.subtitle}</div>` : ''}
+          </div>
+          <div class="slide-split-body" style="display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); gap:28px; align-items:start; overflow:hidden; margin-top:10px;">
+            <div class="slide-split-left" style="display:flex; flex-direction:column; gap:12px;">
+              <!-- Inline Math block render if exists -->
+              ${slide.mathBlock ? `<div style="animation:fadeInLeft 0.5s ease both 0.1s;">${slide.mathBlock}</div>` : ''}
+              
+              ${slide.bullets?.length ? `
+                <ul class="slide-bullets" style="display:flex; flex-direction:column; gap:6px; padding:0; margin:0; list-style:none;">
+                  ${slide.bullets.map(b => `<li class="slide-live-bullet" style="${bulletLiStyle}">${b}</li>`).join('')}
+                </ul>
+              ` : ''}
+            </div>
+            <div class="slide-split-right" style="display:flex; flex-direction:column; align-items:center; justify-content:center; animation:fadeInRight 0.6s ease both;">
+              ${figSrc ? `
+                <div style="display:grid; grid-template-columns:${secondaryFigSrc ? '1fr 1fr' : '1fr'}; gap:10px; width:100%; align-items:center;">
+                  <figure style="margin:0; min-width:0;">
+                    <img class="slide-figure" src="${figSrc}" alt="${slide.figureCaption || ''}" style="width:100%; max-height:${secondaryFigSrc ? 'calc((100vh - 265px) / 1.25)' : 'calc(100vh - 230px)'}; object-fit:contain; border-radius:10px; box-shadow:0 12px 32px rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.06);" />
+                    ${slide.figureCaption ? `<figcaption class="slide-figure-caption" style="font-size:clamp(12px, 1.05vw, 14px); color:#b3bdca; text-align:center; margin-top:6px; line-height:1.25;">${slide.figureCaption}</figcaption>` : ''}
+                  </figure>
+                  ${secondaryFigSrc ? `<figure style="margin:0; min-width:0;"><img class="slide-figure" src="${secondaryFigSrc}" alt="${slide.secondaryFigureCaption || ''}" style="width:100%; max-height:calc((100vh - 265px) / 1.25); object-fit:contain; border-radius:10px; box-shadow:0 12px 32px rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.06);" />${slide.secondaryFigureCaption ? `<figcaption class="slide-figure-caption" style="font-size:clamp(12px, 1.05vw, 14px); color:#b3bdca; text-align:center; margin-top:6px; line-height:1.25;">${slide.secondaryFigureCaption}</figcaption>` : ''}</figure>` : ''}
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    } 
+    // Render Full Figure Layout
+    else if (slide.type === 'figure') {
+      html += `
+        <div style="padding:26px 48px; display:flex; flex-direction:column; min-height:82vh;">
+          <div class="slide-heading-area" style="${headerStyle}">
+            <div class="slide-title" style="${titleStyle}">${slide.title}</div>
+            ${slide.subtitle ? `<div class="slide-subtitle" style="${subtitleStyle}">${slide.subtitle}</div>` : ''}
+          </div>
+          <div class="slide-figure-full" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; animation:zoomIn 0.5s ease both;">
+            ${figSrc ? `
+              <img src="${figSrc}" alt="${slide.figureCaption || ''}" style="max-height:calc(100vh - 240px); max-width:100%; object-fit:contain; border-radius:12px; box-shadow:0 24px 64px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.06);" />
+              ${slide.figureCaption ? `<div class="slide-figure-caption" style="font-size:clamp(14px, 1.4vw, 16px); color:#94a3b8; text-align:center; margin-top:6px; font-style:italic;">${slide.figureCaption}</div>` : ''}
+            ` : ''}
+          </div>
+        </div>
+      `;
+    } 
+    // Render Timeline layout
+    else if (slide.type === 'timeline') {
+      html += `
+        <div style="padding:28px 64px; display:flex; flex-direction:column; min-height:82vh;">
+          <div class="slide-heading-area" style="${headerStyle}">
+            <div class="slide-title" style="${titleStyle}">${slide.title}</div>
+          </div>
+          <ul class="timeline-list" style="display:flex; flex-direction:column; gap:10px; padding:0; margin:0; list-style:none; overflow-y:auto; flex:1; animation:fadeInUp 0.6s ease both;">
+            ${slide.bullets?.map((b, bi) => {
+              const [year, ...rest] = b.split(' — ');
+              return `
+                <li class="timeline-item" style="display:flex; gap:16px; align-items:flex-start; transform:translateY(10px); opacity:0; animation:fadeInUp 0.3s ease forwards ${bi * 0.08}s;">
+                  <div class="timeline-dot" style="width:44px; height:44px; border-radius:50%; background:${slide.blockColor}22; border:2px solid ${slide.blockColor}aa; display:flex; align-items:center; justify-content:center; font-size:clamp(12px, 1.1vw, 14px); font-weight:700; color:${slide.blockColor}; flex-shrink:0;">${year.trim()}</div>
+                  <div class="timeline-text" style="font-size:clamp(17px, 1.9vw, 21px); color:#cbd5e1; padding:8px 0; line-height:1.4;"><strong style="color:#e2e8f0;">${rest.join(' — ')}</strong></div>
+                </li>
+              `;
+            }).join('')}
+          </ul>
+        </div>
+      `;
+    } 
+    // Render Matrix Grid layout
+    else if (slide.type === 'matrix') {
+      html += `
+        <div style="padding:28px 64px; display:flex; flex-direction:column; min-height:82vh;">
+          <div class="slide-heading-area" style="${headerStyle}">
+            <div class="slide-title" style="${titleStyle}">${slide.title}</div>
+          </div>
+          <div class="matrix-grid" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; flex:1; overflow-y:auto; animation:fadeInUp 0.6s ease both;">
+            ${slide.bullets?.map(b => {
+              const [name, ...rest] = b.split(' → ');
+              return `
+                <div class="matrix-item" style="padding:12px 14px; border-radius:10px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); font-size:clamp(14px, 1.4vw, 16px); color:#b8c1cf; line-height:1.4;">
+                  <strong style="color:#e2e8f0; display:block; margin-bottom:4px;">${name.trim()}</strong>
+                  ${rest.join(' → ')}
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    } 
+    // Default normal layout
+    else {
+      html += `
+        <div style="padding:32px 64px; min-height:82vh; display:flex; flex-direction:column;">
+          <div class="slide-heading-area" style="${headerStyle}">
+            <div class="slide-title" style="${titleStyle}">${slide.title}</div>
+            ${slide.subtitle ? `<div class="slide-subtitle" style="${subtitleStyle}">${slide.subtitle}</div>` : ''}
+          </div>
+          <div style="flex:1; display:flex; flex-direction:column; justify-content:center; padding-bottom:clamp(8px,4vh,42px);">
+            ${slide.mathBlock ? `<div style="animation:fadeInLeft 0.5s ease both 0.1s; margin-bottom:20px;">${slide.mathBlock}</div>` : ''}
+
+            ${slide.bullets?.length ? `
+              <div class="slide-bullets" style="display:grid; grid-template-columns:${slide.bullets.length <= 3 ? 'repeat(3,minmax(0,1fr))' : 'repeat(2,minmax(0,1fr))'}; gap:clamp(12px,1.6vw,22px); padding:0; margin:0; margin-top:18px; align-items:stretch;">
+                ${slide.bullets.map((b, bi) => `<div class="slide-live-bullet" style="${bulletLiStyle}; min-height:${slide.bullets.length <= 3 ? '150px' : '112px'}; display:flex; align-items:center; padding:clamp(18px,2vw,28px); font-size:clamp(18px,1.75vw,24px); line-height:1.42; border-left:4px solid ${slide.blockColor};"><span style="display:flex;align-items:center;justify-content:center;min-width:34px;height:34px;margin-right:14px;border-radius:50%;background:${slide.blockColor}22;color:${slide.blockColor};font-size:16px;font-weight:900;">${bi + 1}</span><span>${b}</span></div>`).join('')}
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    slideContent.innerHTML = html;
+
+    // Trigger bullets list animation sequentially
+    setTimeout(() => {
+      const bullets = slideContent.querySelectorAll('.slide-live-bullet');
+      bullets.forEach((li, bi) => {
+        const item = li as HTMLElement;
+        setTimeout(() => {
+          item.style.transform = 'translateY(0)';
+          item.style.opacity = '1';
+          item.style.background = 'rgba(255,255,255,0.03)';
+          item.style.borderColor = `${slide.blockColor}33`;
+          item.style.color = '#f1f5f9';
+        }, bi * 120);
+      });
+    }, 50);
+  }
+
+  // ── Main Slide Navigation ──
+  function goTo(idx: number) {
+    if (idx < 0 || idx >= totalSlides) return;
+    if (current === idx) return;
+    current = idx;
+    const slide = slides[idx];
+
+    // If we are in the presenter window, update notes-only presentation layout
+    if (isPresenterWindow) {
+      if (presWinTimer) startTimer();
+      presWinCounter.textContent = `${idx + 1} / ${totalSlides}`;
+      
+      const nextSlide = slides[idx + 1];
+      presWinNextBlock.textContent = nextSlide ? `${nextSlide.block} · ~${nextSlide.estimatedMinutes} min` : 'FIN';
+      presWinSpeech.textContent = slide.script;
+      presWinNotes.textContent = slide.notes ?? 'Sin anotaciones privadas para esta sección.';
+      presWinNextTitle.textContent = nextSlide ? `${idx + 2}. ${nextSlide.title}` : 'Fin de la presentación / Ronda de preguntas';
+
+      presWinPrevBtn.disabled = idx === 0;
+      presWinNextBtn.disabled = idx === totalSlides - 1;
+
+      // Sync the audience-view preview iframe inside the presenter popup window
+      if (presPreviewIframe) {
+        presPreviewIframe.src = `${base.replace(/\/$/, '')}/defensa-offline?slide=${idx}&preview=1`;
+      }
+
+      // Persist state
+      localStorage.setItem('defensa-live-slide', String(idx));
+      return;
+    }
+
+    // --- AUDIENCE OR SINGLE SCREEN VIEWER MODE ---
+    
+    // Topbar updates
+    const pct = ((idx + 1) / totalSlides) * 100;
+    if (progress) progress.style.width = `${pct}%`;
+    if (counter) counter.textContent = `${idx + 1} / ${totalSlides}`;
+    if (topBlock) {
+      topBlock.textContent = slide.block;
+      topBlock.style.background = `${slide.blockColor}22`;
+      topBlock.style.color = slide.blockColor;
+      topBlock.style.borderColor = `${slide.blockColor}44`;
+    }
+
+    // Mode badge: clarify at a glance whether we're browsing the live site or viewing a slide
+    const isWebEvidence = !!slide.webMode && !!slide.url;
+    const modeText = isWebEvidence
+      ? (slide.webMode === 'demo' ? '▶ Demostración guiada' : '◆ Evidencia web')
+      : '▣ Relato de la defensa';
+    if (modeBadge) {
+      modeBadge.textContent = modeText;
+      modeBadge.classList.toggle('mode-web', isWebEvidence);
+    }
+    if (goInput) goInput.value = String(idx + 1);
+
+    // Nav buttons
+    if (prevBtn) prevBtn.disabled = idx === 0;
+    if (nextBtn) nextBtn.disabled = idx === totalSlides - 1;
+
+    // Panel updates (visible to speaker on presenter screen)
+    if (panelTitle) panelTitle.textContent = slide.title;
+    if (panelSubtitle) panelSubtitle.textContent = slide.subtitle ?? '';
+    if (panelObjective) {
+      panelObjective.textContent = presenterObjectiveFor(slide);
+    }
+    if (panelCue) {
+      panelCue.textContent = presenterCueFor(slide);
+    }
+    if (panelResults && panelResultsWrap) {
+      panelResults.innerHTML = '';
+      panelResultsWrap.style.display = slide.results?.length ? 'block' : 'none';
+      slide.results?.forEach(result => {
+        const card = document.createElement('div');
+        card.className = 'panel-result';
+        const value = document.createElement('strong');
+        value.textContent = result.value;
+        const label = document.createElement('span');
+        label.textContent = result.label;
+        card.append(value, label);
+        if (result.implication) {
+          const implication = document.createElement('small');
+          implication.textContent = result.implication;
+          card.appendChild(implication);
+        }
+        panelResults.appendChild(card);
+      });
+    }
+    if (panelPyhydraWrap && panelPyhydraRole && panelPyhydraModules) {
+      panelPyhydraWrap.style.display = slide.pyhydraRole ? 'block' : 'none';
+      panelPyhydraRole.textContent = slide.pyhydraRole ?? '';
+      panelPyhydraModules.innerHTML = '';
+      slide.pyhydraModules?.forEach(module => {
+        const chip = document.createElement('span');
+        chip.textContent = module;
+        panelPyhydraModules.appendChild(chip);
+      });
+    }
+    if (panelScriptEl) {
+      panelScriptEl.textContent = slide.script;
+      panelScriptEl.style.borderColor = slide.blockColor;
+    }
+
+    if (panelBullets) {
+      panelBullets.innerHTML = '';
+      if (slide.bullets?.length) {
+        panelBulletsWrap.style.display = 'block';
+        slide.bullets.forEach(b => {
+          const li = document.createElement('li');
+          li.textContent = b;
+          panelBullets.appendChild(li);
+        });
+      } else {
+        panelBulletsWrap.style.display = 'none';
+      }
+    }
+
+    if (panelNotes) panelNotes.textContent = slide.notes ?? '—';
+
+    if (panelLinks && panelLinksWrap) {
+      panelLinks.innerHTML = '';
+      const links = presenterLinksFor(slide);
+      panelLinksWrap.style.display = links.length ? 'block' : 'none';
+      links.forEach(link => {
+        const anchor = document.createElement('a');
+        anchor.className = 'panel-link';
+        anchor.href = link.href;
+        anchor.target = '_blank';
+        anchor.rel = 'noopener noreferrer';
+        anchor.textContent = link.label;
+        panelLinks.appendChild(anchor);
+      });
+    }
+
+    const nextSlide = slides[idx + 1];
+    if (panelNextTitle) panelNextTitle.textContent = nextSlide ? `${idx + 2}. ${nextSlide.title}` : 'Fin de la presentación';
+    if (panelNextBlock) panelNextBlock.textContent = nextSlide ? `${nextSlide.block} · ~${nextSlide.estimatedMinutes} min` : '';
+
+    // The web is used only for three deliberate pieces of evidence. A URL may
+    // still exist as presenter backup without interrupting the main narrative.
+    if (isWebEvidence) {
+      slideWrap.classList.remove('active-mode');
+      iframeWrap.classList.add('active-mode');
+      navigateIframe(slide);
+    } else {
+      if (iframeWrap) iframeWrap.classList.remove('active-mode');
+      slideWrap.classList.add('active-mode');
+      slideWrap.style.background = `radial-gradient(ellipse 70% 50% at 50% 0%, ${slide.blockColor}0d 0%, transparent 70%), #020617`;
+      audienceSlideFrame.contentWindow?.postMessage({ type: 'defensa-preview-slide', index: idx }, '*');
+    }
+
+    // Persist slide state
+    localStorage.setItem('defensa-live-slide', String(idx));
+  }
+
+  // Helper actions to advance / return
+  function next() {
+    if (current < totalSlides - 1) {
+      goTo(current + 1);
+      broadcastChange(current);
+    }
+  }
+
+  function prev() {
+    if (current > 0) {
+      goTo(current - 1);
+      broadcastChange(current);
+    }
+  }
+
+  // ── Open Presenter notes in a popup window (OneDrive presenter view style) ──
+  function openPresenterNotesWindow() {
+    const url = new URL(window.location.href);
+    url.searchParams.set('presenter', '1');
+    url.searchParams.set('slide', String(current));
+    const win = window.open(url.toString(), 'defensa_notes', 'width=1100,height=750,menubar=no,toolbar=no,location=no,status=no');
+    if (!win || win.closed || typeof win.closed === 'undefined') {
+      alert("El navegador ha bloqueado la ventana emergente de Notas. Por favor, permite las ventanas emergentes (pop-ups) en tu barra de direcciones para poder usar la vista de presentador.");
+    }
+    return win;
+  }
+
+  // ── "Presentar": PowerPoint-style two-window start.
+  // Browsers exit fullscreen the instant a popup takes focus, so this window can't be
+  // made fullscreen *and* spawn the popup in one step — we clean its chrome instead
+  // (projection mode) and leave fullscreen as a manual last step once both windows are
+  // dragged to their own screens (button/F key still there for that).
+  function startPresenting() {
+    if (!projectionMode) setProjectionMode(true);
+    const win = openPresenterNotesWindow();
+    if (win) win.focus();
+  }
+
+  // ── Wire controls and UI interactions ──
+
+  // Navigation events
+  if (nextBtn) nextBtn.addEventListener('click', next);
+  if (prevBtn) prevBtn.addEventListener('click', prev);
+  if (presWinNextBtn) presWinNextBtn.addEventListener('click', next);
+  if (presWinPrevBtn) presWinPrevBtn.addEventListener('click', prev);
+
+  // Presenter Notes popups
+  const btnNotes = document.getElementById('btn-notes');
+  if (btnNotes) btnNotes.addEventListener('click', openPresenterNotesWindow);
+
+  const btnPresent = document.getElementById('btn-present');
+  if (btnPresent) btnPresent.addEventListener('click', startPresenting);
+
+  // Projection View Toggles
+  const btnProj = document.getElementById('btn-projection');
+  if (btnProj) btnProj.addEventListener('click', () => setProjectionMode(!projectionMode));
+
+  // Panel toggles
+  const btnPanel = document.getElementById('btn-panel-toggle');
+  if (btnPanel) {
+    btnPanel.addEventListener('click', () => {
+      panelOpen = !panelOpen;
+      panel.classList.toggle('collapsed', !panelOpen);
+      btnPanel.classList.toggle('active', panelOpen);
+      btnPanel.textContent = panelOpen ? 'Ocultar Panel' : 'Mostrar Panel';
+    });
+  }
+
+  // ── Fullscreen (cross-browser: Safari needs the webkit-prefixed API) ──
+  function isFullscreen() {
+    const d = document as any;
+    return !!(d.fullscreenElement || d.webkitFullscreenElement || d.mozFullScreenElement || d.msFullscreenElement);
+  }
+  function toggleFullscreen(): Promise<void> {
+    const d = document as any;
+    const el = document.documentElement as any;
+    if (!isFullscreen()) {
+      const request = el.requestFullscreen ?? el.webkitRequestFullscreen ?? el.mozRequestFullScreen ?? el.msRequestFullscreen;
+      if (!request) { alert('Este navegador no admite pantalla completa.'); return Promise.resolve(); }
+      const result = request.call(el);
+      if (result?.then) {
+        return result.catch((err: Error) => alert('No se ha podido activar pantalla completa: ' + err.message));
+      }
+      return Promise.resolve();
+    } else {
+      const exit = d.exitFullscreen ?? d.webkitExitFullscreen ?? d.mozCancelFullScreen ?? d.msExitFullscreen;
+      const result = exit?.call(d);
+      return result?.then ? result : Promise.resolve();
+    }
+  }
+  function updateFullscreenButtons() {
+    const active = isFullscreen();
+    if (btnFullscreen) btnFullscreen.textContent = active ? '⛶ Salir de pantalla completa' : '⛶ Pantalla completa';
+  }
+  ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'MSFullscreenChange'].forEach((evt) => {
+    document.addEventListener(evt, updateFullscreenButtons);
+  });
+
+  const btnFullscreen = document.getElementById('btn-fullscreen');
+  if (btnFullscreen) btnFullscreen.addEventListener('click', toggleFullscreen);
+
+  const notesToggle = document.getElementById('notes-toggle');
+  if (notesToggle) {
+    notesToggle.addEventListener('click', () => {
+      notesOpen = !notesOpen;
+      const body = document.getElementById('panel-notes-body')!;
+      body.style.display = notesOpen ? 'block' : 'none';
+      notesToggle.textContent = notesOpen
+        ? '📝 Notas y preguntas típicas del tribunal ▼'
+        : '📝 Notas y preguntas típicas del tribunal ▶';
+    });
+  }
+
+  if (goInput) {
+    goInput.addEventListener('change', () => {
+      const n = parseInt(goInput.value) - 1;
+      if (!isNaN(n)) {
+        goTo(Math.min(Math.max(0, n), totalSlides - 1));
+        broadcastChange(current);
+      }
+    });
+  }
+
+  // Keyboard shortcut keys logic
+  function handleNavKey(key: string) {
+    if (key === 'ArrowRight' || key === ' ') next();
+    if (key === 'ArrowLeft') prev();
+    if (key === 'n' || key === 'N') {
+      if (!isPresenterWindow && btnPanel) {
+        panelOpen = !panelOpen;
+        panel.classList.toggle('collapsed', !panelOpen);
+        btnPanel.classList.toggle('active', panelOpen);
+        btnPanel.textContent = panelOpen ? 'Ocultar Panel' : 'Mostrar Panel';
+      }
+    }
+    if (key === 'm' || key === 'M') {
+      if (!isPresenterWindow) setProjectionMode(!projectionMode);
+    }
+    if (key === 'p' || key === 'P') {
+      openPresenterNotesWindow();
+    }
+    if (key === 'f' || key === 'F') {
+      toggleFullscreen();
+    }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.target instanceof HTMLInputElement) return;
+    if (['ArrowRight', ' ', 'ArrowLeft'].includes(e.key)) e.preventDefault();
+    handleNavKey(e.key);
+  });
+
+  // Keys forwarded from inside the live-site iframe (see Layout.astro): a keydown
+  // there never bubbles to this document on its own, so without this the presenter
+  // loses arrow-key/space navigation the moment they click into the embedded site.
+  window.addEventListener('message', (e) => {
+    if (e.origin !== window.location.origin) return;
+    if (!e.data || e.data.type !== 'defensa-key') return;
+    handleNavKey(e.data.key);
+  });
+
+  // Inject CSS animations in page dynamically
+  const anims = document.createElement('style');
+  anims.textContent = `
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInLeft {
+      from { opacity: 0; transform: translateX(-16px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fadeInRight {
+      from { opacity: 0; transform: translateX(16px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes zoomIn {
+      from { opacity: 0; transform: scale(0.97); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  `;
+  document.head.appendChild(anims);
+
+  // ── Init state load ──
+  const stored = localStorage.getItem('defensa-live-slide');
+  const urlSlide = params.get('slide');
+  const initIdx = urlSlide ? parseInt(urlSlide) : (stored ? parseInt(stored) : 0);
+
+  goTo(Math.min(Math.max(0, initIdx), totalSlides - 1));
+  startTimer();
+</script>
+
+</Layout>

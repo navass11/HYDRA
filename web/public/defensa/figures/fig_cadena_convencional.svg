@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 680" role="img" aria-labelledby="title desc">
+  <title id="title">Cadena convencional de estimación de inundaciones y sus pérdidas de información</title>
+  <desc id="desc">La lluvia observada se transforma en lluvia de diseño, caudal de diseño, modelo hidráulico y mapa de inundación. Tres avisos muestran dónde se pierde la incertidumbre.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#071427"/><stop offset="1" stop-color="#0b2133"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="8" stdDeviation="8" flood-opacity=".3"/></filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0L12 6 0 12z" fill="#5eead4"/></marker>
+  </defs>
+  <rect width="1200" height="680" rx="28" fill="url(#bg)"/>
+  <text x="56" y="72" fill="#e2e8f0" font-family="Inter,Arial,sans-serif" font-size="30" font-weight="700">Del registro al impacto: la cadena que debe conservar la incertidumbre</text>
+  <text x="56" y="112" fill="#94a3b8" font-family="Inter,Arial,sans-serif" font-size="20">El procedimiento convencional asigna un mismo período de retorno a variables que no son equivalentes.</text>
+  <g font-family="Inter,Arial,sans-serif" filter="url(#shadow)">
+    <g transform="translate(55 190)"><rect width="180" height="150" rx="18" fill="#102a43" stroke="#38bdf8" stroke-width="2"/><text x="90" y="48" text-anchor="middle" fill="#7dd3fc" font-size="34">▥</text><text x="90" y="88" text-anchor="middle" fill="#f8fafc" font-size="20" font-weight="700">Registros</text><text x="90" y="118" text-anchor="middle" fill="#94a3b8" font-size="16">lluvia y caudal</text></g>
+    <g transform="translate(285 190)"><rect width="180" height="150" rx="18" fill="#102a43" stroke="#38bdf8" stroke-width="2"/><text x="90" y="48" text-anchor="middle" fill="#7dd3fc" font-size="34">ƒ</text><text x="90" y="88" text-anchor="middle" fill="#f8fafc" font-size="20" font-weight="700">Extremos</text><text x="90" y="118" text-anchor="middle" fill="#94a3b8" font-size="16">cuantil T</text></g>
+    <g transform="translate(515 190)"><rect width="180" height="150" rx="18" fill="#102a43" stroke="#f59e0b" stroke-width="2"/><text x="90" y="48" text-anchor="middle" fill="#fbbf24" font-size="34">☂</text><text x="90" y="88" text-anchor="middle" fill="#f8fafc" font-size="20" font-weight="700">Forzamiento</text><text x="90" y="118" text-anchor="middle" fill="#94a3b8" font-size="16">evento de diseño</text></g>
+    <g transform="translate(745 190)"><rect width="180" height="150" rx="18" fill="#102a43" stroke="#f59e0b" stroke-width="2"/><text x="90" y="48" text-anchor="middle" fill="#fbbf24" font-size="34">≈</text><text x="90" y="88" text-anchor="middle" fill="#f8fafc" font-size="20" font-weight="700">Modelos físicos</text><text x="90" y="118" text-anchor="middle" fill="#94a3b8" font-size="16">hidrología + hidráulica</text></g>
+    <g transform="translate(975 190)"><rect width="180" height="150" rx="18" fill="#12342f" stroke="#34d399" stroke-width="2"/><text x="90" y="48" text-anchor="middle" fill="#6ee7b7" font-size="34">▰</text><text x="90" y="88" text-anchor="middle" fill="#f8fafc" font-size="20" font-weight="700">Impacto</text><text x="90" y="118" text-anchor="middle" fill="#94a3b8" font-size="16">calado y extensión</text></g>
+  </g>
+  <g stroke="#5eead4" stroke-width="5" marker-end="url(#arrow)"><path d="M240 265H270"/><path d="M470 265H500"/><path d="M700 265H730"/><path d="M930 265H960"/></g>
+  <g font-family="Inter,Arial,sans-serif">
+    <path d="M375 355v54" stroke="#fb7185" stroke-width="3"/><circle cx="375" cy="435" r="25" fill="#4c1724" stroke="#fb7185" stroke-width="2"/><text x="375" y="444" text-anchor="middle" fill="#fecdd3" font-size="25" font-weight="800">1</text><text x="375" y="490" text-anchor="middle" fill="#f8fafc" font-size="18" font-weight="700">Estacionariedad</text><text x="375" y="518" text-anchor="middle" fill="#94a3b8" font-size="15">el clima no es invariable</text>
+    <path d="M605 355v54" stroke="#fb7185" stroke-width="3"/><circle cx="605" cy="435" r="25" fill="#4c1724" stroke="#fb7185" stroke-width="2"/><text x="605" y="444" text-anchor="middle" fill="#fecdd3" font-size="25" font-weight="800">2</text><text x="605" y="490" text-anchor="middle" fill="#f8fafc" font-size="18" font-weight="700">Evento único</text><text x="605" y="518" text-anchor="middle" fill="#94a3b8" font-size="15">se pierde la variabilidad conjunta</text>
+    <path d="M835 355v54" stroke="#fb7185" stroke-width="3"/><circle cx="835" cy="435" r="25" fill="#4c1724" stroke="#fb7185" stroke-width="2"/><text x="835" y="444" text-anchor="middle" fill="#fecdd3" font-size="25" font-weight="800">3</text><text x="835" y="490" text-anchor="middle" fill="#f8fafc" font-size="18" font-weight="700">T heredado</text><text x="835" y="518" text-anchor="middle" fill="#94a3b8" font-size="15">T forzante ≠ T impacto</text>
+    <rect x="184" y="575" width="832" height="62" rx="31" fill="#0f3b3b" stroke="#2dd4bf"/><text x="600" y="614" text-anchor="middle" fill="#ccfbf1" font-size="21" font-weight="700">HYDRA automatiza la cadena y propaga escenarios e incertidumbre hasta el impacto</text>
+  </g>
+</svg>

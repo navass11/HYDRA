@@ -10,6 +10,7 @@ const API_DEV_TARGET = process.env.API_DEV_URL ?? 'http://localhost:8000';
 export default defineConfig({
   site:   isGHPages ? 'https://navass11.github.io' : 'http://localhost',
   base:   isGHPages ? '/HYDRA' : '/',
+  devToolbar: { enabled: false },
   integrations: [tailwind()],
   vite: {
     server: {

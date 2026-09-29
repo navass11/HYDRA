@@ -67,14 +67,14 @@ export const ui: Record<Lang, Record<string, string>> = {
     'case.approach': 'Enfoque HYDRA',
     'case.references.title': 'Referencias del caso',
     'case.references.description':
-      'Fuentes de datos, métodos y validaciones que sustentan el caso piloto de Los Corrales de Buelna.',
+      'Fuentes de datos, métodos y validaciones que sustentan el caso piloto.',
     'case.workflow.title': 'Flujo de trabajo',
     'case.workflow.description':
-      '8 notebooks ejecutables — haz clic en cualquier paso para abrir en Jupyter Lab.',
+      'Notebooks ejecutables — haz clic en cualquier paso para abrir en Jupyter Lab.',
     'case.open_notebook': 'Abrir notebook',
     'case.findings.title': 'Hallazgos clave',
     'case.findings.description':
-      'Resultados principales extraídos del análisis completo de riesgo de inundación del río Besaya a su paso por Los Corrales de Buelna.',
+      'Resultados principales extraídos del análisis.',
     'case.validation.label': 'Validación independiente',
     'case.back_all': 'Todos los casos piloto',
     'case.explore_modules': 'Explorar módulos HYDRA',
@@ -155,14 +155,14 @@ export const ui: Record<Lang, Record<string, string>> = {
     'case.approach': 'HYDRA approach',
     'case.references.title': 'Case references',
     'case.references.description':
-      'Data sources, methods and validation checks supporting the Los Corrales de Buelna pilot case.',
+      'Data sources, methods and validation checks supporting this pilot case.',
     'case.workflow.title': 'Workflow',
     'case.workflow.description':
-      '8 executable notebooks — click any step to open in Jupyter Lab.',
+      'Executable notebooks — click any step to open in Jupyter Lab.',
     'case.open_notebook': 'Open notebook',
     'case.findings.title': 'Key findings',
     'case.findings.description':
-      'Main results from the full flood risk analysis of the Besaya River at Los Corrales de Buelna.',
+      'Main results extracted from the analysis.',
     'case.validation.label': 'Independent validation',
     'case.back_all': 'All pilot cases',
     'case.explore_modules': 'Explore HYDRA modules',

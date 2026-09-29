@@ -173,6 +173,8 @@ const accentStyles: Record<string, AccentStyle> = {
   orange:  { card: 'bg-orange-950/50 border-orange-500/30 hover:border-orange-400/60 hover:bg-orange-900/60', label: 'text-orange-400', labelHover: 'hover:text-orange-300', divider: 'bg-orange-500/25', runHover: 'group-hover:text-orange-400', icon: 'opacity-60 group-hover:opacity-100' },
   emerald: { card: 'bg-emerald-950/50 border-emerald-500/30 hover:border-emerald-400/60 hover:bg-emerald-900/60', label: 'text-emerald-400', labelHover: 'hover:text-emerald-300', divider: 'bg-emerald-500/25', runHover: 'group-hover:text-emerald-400', icon: 'opacity-60 group-hover:opacity-100' },
   purple:  { card: 'bg-purple-950/50 border-purple-500/30 hover:border-purple-400/60 hover:bg-purple-900/60', label: 'text-purple-400', labelHover: 'hover:text-purple-300', divider: 'bg-purple-500/25', runHover: 'group-hover:text-purple-400', icon: 'opacity-60 group-hover:opacity-100' },
+  rose:    { card: 'bg-rose-950/50 border-rose-500/30 hover:border-rose-400/60 hover:bg-rose-900/60',     label: 'text-rose-400',     labelHover: 'hover:text-rose-300',     divider: 'bg-rose-500/25',     runHover: 'group-hover:text-rose-400',     icon: 'opacity-60 group-hover:opacity-100' },
+  amber:   { card: 'bg-amber-950/50 border-amber-500/30 hover:border-amber-400/60 hover:bg-amber-900/60', label: 'text-amber-400',   labelHover: 'hover:text-amber-300',   divider: 'bg-amber-500/25',   runHover: 'group-hover:text-amber-400',   icon: 'opacity-60 group-hover:opacity-100' },
 };
 const pilotCaseGroups = pilotCases.map(pc => {
   const prefix = `pilot_cases--${pc.slug.replace(/-/g, '_')}--`;
@@ -474,7 +476,12 @@ const notebookSessionHref = (slug: string) => {
                 </span>
               ))}
               <span class="rounded-full bg-white/8 border border-white/10 px-2.5 py-1 text-xs text-slate-300">
-                {pc.steps.length} <span data-i18n="cases.notebooks_count">notebooks</span>
+                {pc.steps.length}{' '}
+                {pc.steps.some((s) => s.notebookPath) ? (
+                  <span data-i18n="cases.notebooks_count">notebooks</span>
+                ) : (
+                  <span data-t-es="pasos" data-t-en="steps">pasos</span>
+                )}
               </span>
             </div>
 

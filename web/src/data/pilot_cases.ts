@@ -4,7 +4,8 @@ export type PilotCaseStep = {
   number: number;
   title: I18n;
   description: I18n;
-  notebookPath: string;
+  // Absent for cases documented from pre-pyhydra work (no executable notebook in this repo).
+  notebookPath?: string;
   tags: string[];
   tagColor: string;
 };
@@ -343,6 +344,14 @@ const danaSvg = `
   <text x="682" y="250" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle" data-t-es="método más estable" data-t-en="most stable method">método más estable</text>
 </svg>`;
 
+// ─── Figure helper for documented (pre-pyhydra) cases ────────────────────────
+// These cases predate pyhydra and have no executable notebook in this repo, so
+// instead of a hand-drawn SVG diagram they embed a real figure from the thesis.
+
+const figBase = (import.meta.env.BASE_URL as string).replace(/\/$/, '');
+const figImg = (file: string, altEs: string) =>
+  `<img src="${figBase}/defensa/figures/${file}" alt="${altEs}" style="width:100%;border-radius:12px;display:block" />`;
+
 // ─── Pilot cases ────────────────────────────────────────────────────────────
 
 export const pilotCases: PilotCase[] = [
@@ -364,8 +373,8 @@ export const pilotCases: PilotCase[] = [
     accentColor: 'orange',
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="12" rx="10" ry="10"/><path d="M12 2 C8 6 8 10 12 12 C16 14 16 18 12 22"/><line x1="2" y1="12" x2="22" y2="12" stroke-dasharray="3 2" stroke-width="1.2"/></svg>',
     summary: {
-      es: 'Caso piloto publicado en Ingeniería del Agua (Navas et al. 2024) en el que se desarrolla una metodología de análisis de frecuencia de inundación basada en la generación de hietogramas sintéticos multivariados a partir de cópulas gaussianas sobre 17 pluviómetros ubicados en el entorno de la Calle 30 de Madrid. La metodología clasifica 1.761 eventos históricos mediante PCA + K-Means, genera ~1M eventos sintéticos por cópula, selecciona 1.000 mediante MaxDiss, los simula en HEC-HMS (1D) y HEC-RAS, y reconstruye los calados en 1M puntos mediante interpolación kNN, obteniendo curvas de periodo de retorno en las secciones de interés (Puente de Toledo, Represa nº9).',
-      en: 'Pilot case published in Ingeniería del Agua (Navas et al. 2024) presenting a flood frequency analysis methodology based on multivariate synthetic hyetogram generation using Gaussian copulas over 17 rain gauges located around the Madrid M30. The methodology classifies 1,761 historical events via PCA + K-Means, generates ~1M synthetic events by copula, selects 1,000 via MaxDiss, simulates them in HEC-HMS and HEC-RAS, and reconstructs flood depths at 1M points via kNN interpolation, yielding return period curves at key cross-sections (Puente de Toledo, Represa nº9).',
+      es: 'Caso piloto publicado en Ingeniería del Agua (Navas et al. 2024) en el que se desarrolla una metodología de análisis de frecuencia de inundación basada en la generación de hietogramas sintéticos multivariados a partir de cópulas gaussianas sobre 17 pluviómetros ubicados en el entorno de la Calle 30 de Madrid. La metodología clasifica 1.761 eventos históricos mediante PCA + K-Means, genera ~1M eventos sintéticos por cópula, selecciona 1.000 mediante MaxDiss, transforma la lluvia en caudales con HEC-HMS y simula los calados con HEC-RAS 1D, para después reconstruir el conjunto mediante interpolación kNN y obtener curvas de período de retorno en las secciones de interés (Puente de Toledo, Represa nº9).',
+      en: 'Pilot case published in Ingeniería del Agua (Navas et al. 2024) presenting a flood frequency analysis methodology based on multivariate synthetic hyetograph generation using Gaussian copulas over 17 rain gauges around Madrid Calle 30. The methodology classifies 1,761 historical events via PCA + K-Means, generates ~1M synthetic events, selects 1,000 via MaxDiss, transforms rainfall into discharges with HEC-HMS and simulates water depths with 1D HEC-RAS, then reconstructs the full set through kNN interpolation to obtain return-period curves at key cross-sections (Puente de Toledo and Dam No. 9).',
     },
     challenge: {
       es: 'El análisis de frecuencia univariado de precipitación subestima el riesgo en cuencas urbanas densamente instrumentadas como el Manzanares en Madrid. La estadística de precipitación en una sola estación ignora la variabilidad espacial y la correlación entre pluviómetros. Además, transformar precipitación en caudal exige una cadena de modelos (hidrológico + hidráulico) cuya incertidumbre acumulada es difícil de cuantificar si sólo se propagan hietogramas de diseño clásicos. El resultado es una caracterización del riesgo con cobertura de incertidumbre insuficiente y potencial infravaloración del evento de diseño.',
@@ -1156,6 +1165,627 @@ pilotCases.push({
         en: 'Methodology workflow: from Monte Carlo generation of 1,000 roughness combinations (step 1) to correlated copula analysis (step 7). The central finding — topographic hydraulic bifurcation in HEC-RAS — is identified in step 5.',
       },
       svg: manningSvg,
+    },
+  ],
+});
+
+// ─── Mallorca pilot case (documented, pre-pyhydra) ────────────────────────────
+
+pilotCases.push({
+  slug: 'mallorca-sant-llorenc',
+  title: 'Mallorca · Sant Llorenç',
+  subtitle: {
+    es: 'Downscaling híbrido de precipitación extrema en una cuenca torrencial sin aforo — Sant Llorenç des Cardassar',
+    en: 'Hybrid downscaling of extreme rainfall in an ungauged torrential catchment — Sant Llorenç des Cardassar',
+  },
+  location: {
+    es: 'Sant Llorenç des Cardassar, Mallorca, España',
+    en: 'Sant Llorenç des Cardassar, Mallorca, Spain',
+  },
+  river: "Torrent de Ca n'Amer",
+  region: 'Illes Balears',
+  color: 'from-rose-900 via-red-900 to-slate-900',
+  tag: 'Caso Piloto',
+  accentColor: 'rose',
+  icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21L8 13L12 17L16 10L21 21"/><path d="M4 8Q8 4 12 8T20 8" stroke-dasharray="2.5 2"/></svg>',
+  summary: {
+    es: 'Caso piloto de 2019 (Navas & del Jesús, VI Jornadas de Ingeniería del Agua) que evalúa una metodología de downscaling híbrido para el episodio de precipitación extrema del 9 de octubre de 2018 en Sant Llorenç des Cardassar, cuando cayeron cerca de 220 L/m² en pocas horas sobre una cuenca sin estaciones de aforo. Se clasificaron 25 formas de hietograma histórico mediante PCA y k-means, se acopló el máximo, la duración y el tipo de tormenta entre pluviómetros vecinos con una cópula gaussiana, y se reconstruyó el campo espacial de precipitación por kriging a 25 m. La hidrología se resolvió en una malla de 25 m y la hidráulica en una malla de 8 m derivada de LiDAR (modelo Iber), calibrada contra la única referencia de validación disponible: la extensión de inundación observada por Copernicus EMS.',
+    en: 'Pilot case from 2019 (Navas & del Jesús, VI Jornadas de Ingeniería del Agua) evaluating a hybrid downscaling methodology for the extreme rainfall episode of 9 October 2018 in Sant Llorenç des Cardassar, when close to 220 L/m² fell within a few hours over an ungauged catchment. 25 historical hyetograph shapes were classified via PCA and k-means, peak, duration and storm type were coupled between neighbouring rain gauges with a Gaussian copula, and the spatial rainfall field was reconstructed by kriging at 25 m. Hydrology was resolved on a 25 m grid and hydraulics on an 8 m LiDAR-derived grid (Iber model), calibrated against the only available validation reference: the Copernicus EMS observed flood extent.',
+  },
+  challenge: {
+    es: 'Sant Llorenç des Cardassar carece de estaciones de aforo y de un registro pluviométrico denso, lo que impide aplicar un análisis de frecuencia clásico de estación única. El episodio del 9 de octubre de 2018 fue además un evento torrencial de mesoescala muy localizado, con fuerte variabilidad espacial entre los pocos pluviómetros disponibles en la comarca. Sin caudal observado ni serie larga, la única vía de validación independiente era la extensión de inundación detectada por satélite tras el evento.',
+    en: 'Sant Llorenç des Cardassar has no gauging stations and no dense rainfall record, which rules out a classical single-station frequency analysis. The 9 October 2018 episode was also a highly localised mesoscale torrential event, with strong spatial variability among the few rain gauges available in the area. With no observed discharge and no long series, the only independent validation route was the satellite-derived flood extent captured after the event.',
+  },
+  approach: {
+    es: 'El enfoque combina cuatro piezas: (1) clasificación PCA + k-means de 25 formas representativas de hietograma a partir del registro histórico regional; (2) acoplamiento espacial de máximo, media, duración y tipo de tormenta entre pluviómetros vecinos mediante una cópula gaussiana; (3) regionalización del campo de precipitación de diseño por kriging a una malla de 25 m; (4) modelización hidrológica en la malla de 25 m e hidráulica 2D en una malla de 8 m derivada de LiDAR (Iber), calibrada frente a la extensión de inundación de Copernicus EMS y alcanzando un calado máximo simulado de 5,85 m en el núcleo urbano. Los eventos de diseño no simulados directamente se reconstruyen mediante interpolación k-NN con 6 vecinos, seleccionados minimizando el error sobre los últimos 10 eventos simulados.',
+    en: 'The approach combines four pieces: (1) PCA + k-means classification of 25 representative hyetograph shapes from the regional historical record; (2) spatial coupling of peak, mean, duration and storm type between neighbouring rain gauges via a Gaussian copula; (3) regionalisation of the design rainfall field by kriging onto a 25 m grid; (4) hydrological modelling on the 25 m grid and 2D hydraulics on an 8 m LiDAR-derived grid (Iber), calibrated against the Copernicus EMS flood extent and reaching a simulated maximum depth of 5.85 m in the urban core. Design events not simulated directly are reconstructed via k-NN interpolation with 6 neighbours, selected by minimising error over the last 10 simulated events.',
+  },
+  steps: [
+    {
+      number: 1,
+      title: { es: 'Clasificación de hietogramas históricos', en: 'Historical hyetograph classification' },
+      description: {
+        es: 'PCA + k-means sobre el registro histórico regional identifica 25 formas representativas de hietograma, base para la generación de escenarios de diseño.',
+        en: 'PCA + k-means over the regional historical record identifies 25 representative hyetograph shapes, the basis for design scenario generation.',
+      },
+      tags: ['Clima', 'Clasificación'],
+      tagColor: 'bg-rose-100 text-rose-700',
+    },
+    {
+      number: 2,
+      title: { es: 'Acoplamiento espacial por cópula gaussiana', en: 'Spatial coupling via Gaussian copula' },
+      description: {
+        es: 'Una cópula gaussiana acopla máximo, media, duración y tipo de tormenta entre los pluviómetros vecinos disponibles en la comarca.',
+        en: 'A Gaussian copula couples peak, mean, duration and storm type across the available neighbouring rain gauges in the area.',
+      },
+      tags: ['Cópulas'],
+      tagColor: 'bg-rose-100 text-rose-700',
+    },
+    {
+      number: 3,
+      title: { es: 'Regionalización por kriging (25 m)', en: 'Kriging regionalisation (25 m)' },
+      description: {
+        es: 'El campo de precipitación de diseño se interpola a una malla regular de 25 m mediante kriging, sin apoyo de una red densa de pluviómetros.',
+        en: 'The design rainfall field is interpolated onto a regular 25 m grid via kriging, without support from a dense rain-gauge network.',
+      },
+      tags: ['Interpolación'],
+      tagColor: 'bg-rose-100 text-rose-700',
+    },
+    {
+      number: 4,
+      title: { es: 'Hidrología-hidráulica y validación Copernicus', en: 'Hydrology-hydraulics and Copernicus validation' },
+      description: {
+        es: 'Hidrología a 25 m e hidráulica 2D a 8 m (LiDAR, Iber), calibrada frente a la extensión de inundación de Copernicus EMS; reconstrucción de eventos restantes por k-NN (6 vecinos).',
+        en: 'Hydrology at 25 m and 2D hydraulics at 8 m (LiDAR, Iber), calibrated against the Copernicus EMS flood extent; remaining events reconstructed via k-NN (6 neighbours).',
+      },
+      tags: ['Hidráulica', 'Iber'],
+      tagColor: 'bg-rose-100 text-rose-700',
+    },
+  ],
+  stats: [
+    { value: '220 L/m²', label: { es: 'Precipitación en pocas horas (9-oct-2018)', en: 'Rainfall in a few hours (9-Oct-2018)' } },
+    { value: '5,85 m', label: { es: 'Calado máximo simulado', en: 'Max. simulated depth' } },
+    { value: '25', label: { es: 'Formas de hietograma clasificadas', en: 'Classified hyetograph shapes' } },
+    { value: '8 m', label: { es: 'Resolución malla hidráulica (LiDAR)', en: 'Hydraulic mesh resolution (LiDAR)' } },
+  ],
+  keyFindings: [
+    {
+      es: 'Única cuenca del catálogo sin estaciones de aforo, validada exclusivamente contra la extensión de inundación observada por Copernicus EMS.',
+      en: 'The only catchment in the catalogue with no gauging stations, validated exclusively against the Copernicus EMS observed flood extent.',
+    },
+    {
+      es: 'La cópula gaussiana entre pluviómetros permite generar campos de tormenta espacialmente coherentes pese a la escasa densidad de la red disponible.',
+      en: 'The Gaussian copula between rain gauges enables generating spatially coherent storm fields despite the sparse density of the available network.',
+    },
+    {
+      es: 'El doble mallado (25 m hidrológico, 8 m hidráulico LiDAR) alcanza un calado máximo simulado de 5,85 m en el núcleo urbano de Sant Llorenç.',
+      en: 'The dual grid (25 m hydrological, 8 m LiDAR hydraulic) reaches a simulated maximum depth of 5.85 m in the Sant Llorenç urban core.',
+    },
+  ],
+  references: [
+    {
+      title: {
+        es: 'Navas & del Jesús (2019) — VI Jornadas de Ingeniería del Agua',
+        en: 'Navas & del Jesús (2019) — VI Jornadas de Ingeniería del Agua',
+      },
+      description: {
+        es: 'Evaluación de una metodología para estudios de inundación basada en técnicas estadísticas avanzadas. Aplicación en Sant Llorenç des Cardassar, Mallorca.',
+        en: 'Evaluation of a flood study methodology based on advanced statistical techniques. Application to Sant Llorenç des Cardassar, Mallorca.',
+      },
+    },
+  ],
+  figures: [
+    {
+      title: { es: 'Calados en Sant Llorenç: método clásico vs. enfoque estocástico completo', en: 'Depths in Sant Llorenç: classical method vs. full stochastic approach' },
+      caption: {
+        es: 'Comparación de calados simulados: la metodología clásica (izquierda) frente al enfoque estocástico completo con downscaling híbrido (derecha), este último mostrando mayor dispersión del flujo en calles secundarias.',
+        en: 'Simulated depth comparison: the classical methodology (left) versus the full stochastic approach with hybrid downscaling (right), the latter showing greater flow dispersion in secondary streets.',
+      },
+      svg: figImg('fig_mallorca_comparativa.png', 'Comparativa de calados en Sant Llorenç des Cardassar'),
+    },
+  ],
+});
+
+// ─── Lago Tanganica pilot case (documented, pre-pyhydra) ──────────────────────
+
+pilotCases.push({
+  slug: 'lago-tanganica',
+  title: 'Lago Tanganica',
+  subtitle: {
+    es: 'Niveles de diseño bajo cambio climático en una cuenca transfronteriza de 4 países',
+    en: 'Design water levels under climate change in a 4-country transboundary basin',
+  },
+  location: {
+    es: 'Puerto de Kalundu, Burundi (cuenca del Lago Tanganica)',
+    en: 'Kalundu Port, Burundi (Lake Tanganyika basin)',
+  },
+  river: 'Lago Tanganica',
+  region: 'África Central',
+  color: 'from-sky-900 via-blue-900 to-slate-900',
+  tag: 'Caso Piloto',
+  accentColor: 'sky',
+  icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 16Q6 12 10 16T18 16T22 16" /><path d="M2 20Q6 16 10 20T18 20T22 20" /><path d="M12 3v8" stroke-dasharray="2 2"/></svg>',
+  summary: {
+    es: 'Caso publicado en las VIII Jornadas de Ingeniería del Agua (Navas, del Jesús, Tomás & Martín, 2025) que estima niveles de diseño para el puerto de Kalundu en el Lago Tanganica. AdaBoost predice los caudales mensuales de entrada a partir de variables ERA5; una relación empírica N(Q), construida por regímenes, transforma caudal en nivel. La señal futura procede de 19 modelos CMIP6 corregidos mediante el método delta. El bootstrap se aplica a los residuos de N(Q) y los cambios extremos resultantes se combinan con los niveles históricos obtenidos de la altimetría Hydroweb de 1992-2023.',
+    en: 'Case published at the VIII Jornadas de Ingeniería del Agua (Navas, del Jesús, Tomás & Martín, 2025) estimating design levels for Kalundu Port on Lake Tanganyika. AdaBoost predicts monthly inflows from ERA5 variables; an empirical regime-based N(Q) relationship transforms discharge into level. The future signal comes from 19 CMIP6 models corrected with the delta method. Bootstrap is applied to residuals from N(Q), and the resulting extreme changes are combined with historical levels obtained from Hydroweb altimetry for 1992-2023.',
+  },
+  challenge: {
+    es: 'El Lago Tanganica es una cuenca transfronteriza de gran escala con instrumentación heterogénea entre los cuatro países ribereños, lo que dificulta construir una serie de caudales de entrada fiable y homogénea. Además, el diseño de infraestructura portuaria requiere niveles extremos bajo cambio climático, un problema no estacionario que ni la estadística de extremos clásica ni un único modelo climático pueden resolver por sí solos con la incertidumbre adecuadamente cuantificada.',
+    en: 'Lake Tanganyika is a large-scale transboundary basin with heterogeneous instrumentation across its four riparian countries, making it difficult to build a reliable, homogeneous inflow series. In addition, port infrastructure design requires extreme levels under climate change, a non-stationary problem that neither classical extreme-value statistics nor a single climate model can resolve alone with properly quantified uncertainty.',
+  },
+  approach: {
+    es: 'El flujo encadena cinco etapas: ERA5 y componentes principales alimentan un regresor AdaBoost que estima caudales mensuales; una relación empírica N(Q), dividida por K-means en tres regímenes, transforma caudal en nivel; 19 modelos CMIP6 bajo SSP2-4.5 y SSP5-8.5 incorporan la señal climática mediante el método delta mensual; el bootstrap remuestrea los residuos de N(Q) y genera aproximadamente 20.000 años simulados; y los percentiles empíricos de los máximos anuales producen cambios de nivel que se aplican sobre los extremos históricos de Hydroweb (1992-2023).',
+    en: 'The workflow links five stages: ERA5 variables and principal components feed an AdaBoost regressor that estimates monthly inflows; an empirical N(Q) relationship split into three regimes by K-means transforms discharge into lake level; 19 CMIP6 models under SSP2-4.5 and SSP5-8.5 introduce the climate signal through the monthly delta method; bootstrap resamples residuals from N(Q) to generate about 20,000 simulated years; and empirical annual-maximum percentiles yield level changes applied to the historical Hydroweb extremes (1992-2023).',
+  },
+  steps: [
+    {
+      number: 1,
+      title: { es: 'ERA5 y predicción de caudales', en: 'ERA5 and inflow prediction' },
+      description: {
+        es: 'Las variables ERA5 se normalizan y reducen mediante componentes principales; AdaBoost estima los caudales mensuales de entrada al lago.',
+        en: 'ERA5 variables are normalised and reduced through principal components; AdaBoost estimates monthly inflows to the lake.',
+      },
+      tags: ['CMIP6', 'Clima'],
+      tagColor: 'bg-sky-100 text-sky-700',
+    },
+    {
+      number: 2,
+      title: { es: 'Relación caudal-nivel N(Q)', en: 'Discharge-level N(Q) relation' },
+      description: {
+        es: 'K-means separa caudales bajos, medios y altos; funciones específicas para cada régimen transforman el caudal simulado en nivel del lago.',
+        en: 'K-means separates low, medium and high flows; regime-specific functions transform simulated discharge into lake level.',
+      },
+      tags: ['Machine Learning'],
+      tagColor: 'bg-sky-100 text-sky-700',
+    },
+    {
+      number: 3,
+      title: { es: 'Señal climática de 19 modelos CMIP6', en: 'Climate signal from 19 CMIP6 models' },
+      description: {
+        es: 'El método delta mensual incorpora las anomalías de SSP2-4.5 y SSP5-8.5 conservando la variabilidad espacial y temporal de ERA5.',
+        en: 'The monthly delta method introduces SSP2-4.5 and SSP5-8.5 anomalies while preserving ERA5 spatial and temporal variability.',
+      },
+      tags: ['Estocástico', 'Incertidumbre'],
+      tagColor: 'bg-sky-100 text-sky-700',
+    },
+    {
+      number: 4,
+      title: { es: 'Bootstrap de la incertidumbre de N(Q)', en: 'Bootstrap of N(Q) uncertainty' },
+      description: {
+        es: 'Los residuos de la relación caudal-nivel se remuestrean 1.000-2.000 veces por combinación de modelo y escenario, generando aproximadamente 20.000 años simulados.',
+        en: 'Residuals from the discharge-level relationship are resampled 1,000-2,000 times per model-scenario combination, generating about 20,000 simulated years.',
+      },
+      tags: ['Estocástico', 'Incertidumbre'],
+      tagColor: 'bg-sky-100 text-sky-700',
+    },
+    {
+      number: 5,
+      title: { es: 'Extremos en cuatro horizontes futuros', en: 'Extremes across four future horizons' },
+      description: {
+        es: 'Estimación de cambios de nivel para T5-T500 en 2021-2040, 2041-2060, 2061-2080 y 2081-2100, bajo SSP2-4.5 y SSP5-8.5.',
+        en: 'Estimation of level changes for T5-T500 in 2021-2040, 2041-2060, 2061-2080 and 2081-2100, under SSP2-4.5 and SSP5-8.5.',
+      },
+      tags: ['Extremos', 'No estacionariedad'],
+      tagColor: 'bg-sky-100 text-sky-700',
+    },
+  ],
+  stats: [
+    { value: '>230.000 km²', label: { es: 'Superficie de cuenca (4 países)', en: 'Basin area (4 countries)' } },
+    { value: '19', label: { es: 'Modelos climáticos CMIP6', en: 'CMIP6 climate models' } },
+    { value: 'R²=0,96', label: { es: 'Ajuste del regresor AdaBoost', en: 'AdaBoost regressor fit' } },
+    { value: '~20.000 años', label: { es: 'Series simuladas (bootstrap)', en: 'Simulated series-years (bootstrap)' } },
+  ],
+  keyFindings: [
+    {
+      es: 'El mayor incremento del nivel máximo de diseño NO ocurre a finales de siglo: se proyecta en el horizonte 2041-2060 (+0,9 m para T5-T10).',
+      en: 'The largest increase in maximum design level does NOT occur at the end of the century: it is projected for the 2041-2060 horizon (+0.9 m for T5-T10).',
+    },
+    {
+      es: 'Hacia 2081-2100 el incremento se estabiliza por debajo de 0,6 m para T100-T500, amortiguado por la propia expansión de la superficie del lago.',
+      en: 'By 2081-2100 the increase stabilises below 0.6 m for T100-T500, damped by the lake’s own surface area expansion.',
+    },
+    {
+      es: 'AdaBoost fue seleccionado entre 6 algoritmos de machine learning evaluados, alcanzando R²=0,96 en la predicción de caudales de entrada.',
+      en: 'AdaBoost was selected among 6 evaluated machine-learning algorithms, reaching R²=0.96 in inflow prediction.',
+    },
+  ],
+  references: [
+    {
+      title: {
+        es: 'Navas, del Jesús, Tomás & Martín (2025) — VIII Jornadas de Ingeniería del Agua',
+        en: 'Navas, del Jesús, Tomás & Martín (2025) — VIII Jornadas de Ingeniería del Agua',
+      },
+      description: {
+        es: 'Metodología innovadora para modelar el impacto del cambio climático en el Lago Tanganica con datos globales y regionales. Zaragoza, España.',
+        en: 'Innovative methodology to model climate change impact on Lake Tanganyika using global and regional data. Zaragoza, Spain.',
+      },
+    },
+  ],
+  figures: [
+    {
+      title: { es: 'Variación proyectada del nivel del lago (T5-T500, escenarios SSP)', en: 'Projected lake level variation (T5-T500, SSP scenarios)' },
+      caption: {
+        es: 'Variación proyectada del nivel del Lago Tanganica para T5-T500, cuatro horizontes temporales y los escenarios SSP2-4.5 y SSP5-8.5.',
+        en: 'Projected Lake Tanganyika level variation for T5-T500, four time horizons and the SSP2-4.5 and SSP5-8.5 scenarios.',
+      },
+      svg: figImg('fig_tanganika_variaciones_nivel.png', 'Variación proyectada del nivel del Lago Tanganica'),
+    },
+    {
+      title: { es: 'Proyecciones de nivel del lago por escenario y horizonte', en: 'Lake level projections by scenario and horizon' },
+      caption: {
+        es: 'Proyecciones del nivel máximo de diseño del Lago Tanganica, mostrando el efecto amortiguador de la expansión de la superficie del lago hacia finales de siglo.',
+        en: 'Maximum design level projections for Lake Tanganyika, showing the damping effect of lake surface expansion towards the end of the century.',
+      },
+      svg: figImg('fig_tanganika_proyecciones.png', 'Proyecciones del nivel del Lago Tanganica'),
+    },
+  ],
+});
+
+// ─── Andes hydropower pilot case (documented, pre-pyhydra) ────────────────────
+
+pilotCases.push({
+  slug: 'andes-hidroelectrico',
+  title: 'Andes · Vulnerabilidad hidroeléctrica',
+  subtitle: {
+    es: 'Vulnerabilidad de centrales hidroeléctricas andinas ante el cambio climático — Bolivia, Colombia, Ecuador y Perú',
+    en: 'Vulnerability of Andean hydropower plants to climate change — Bolivia, Colombia, Ecuador and Peru',
+  },
+  location: {
+    es: 'Cuencas andinas amazónicas, Bolivia/Colombia/Ecuador/Perú',
+    en: 'Andean-Amazonian basins, Bolivia/Colombia/Ecuador/Peru',
+  },
+  river: 'Cuencas andino-amazónicas',
+  region: 'Bolivia · Colombia · Ecuador · Perú',
+  color: 'from-amber-900 via-orange-900 to-slate-900',
+  tag: 'Caso Piloto',
+  accentColor: 'amber',
+  icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 20L7 10L11 16L15 6L19 14L22 20" /><path d="M4 8Q6 5 8 8" stroke-dasharray="2 1.5"/></svg>',
+  summary: {
+    es: 'Caso regional en Bolivia, Colombia, Ecuador y Perú cuya aportación operativa principal fue automatizar con SPOTPY la calibración de los modelos hidrológicos sobre numerosas cuencas, evitando ajustes manuales incompatibles con la escala del estudio. Tras reconstruir los campos climáticos mediante datos satelitales, kriging y corrección de sesgo, el modelo VIC transformó lluvia y temperatura en caudales. La cadena calibrada propagó 21 modelos CMIP5, dos escenarios RCP y tres horizontes sobre más de 200 subcuencas.',
+    en: 'Case published at the VI Jornadas de Ingeniería del Agua (del Jesús, Paz, Navas, Turienzo, Díez-Sierra & Peña, Toledo 2019) assessing the vulnerability of Andean hydropower plants to climate change in basins of Bolivia, Colombia, Ecuador and Peru. Sparse instrumentation in Amazonian areas required filling gaps with NASA satellite precipitation and universal kriging interpolation (1 km HydroSheds DEM as elevation covariate, ρ=0.42, RMSE=10.47 mm), while also correcting a systematic CFSR temperature bias of around 6°C. On this climate basis, 21 CMIP5 models were processed under RCP4.5 and RCP8.5 scenarios across three horizons, feeding the VIC hydrological model calibrated at the CachEsperanz gauge (NSE=0.65, PBIAS=14.17%).',
+  },
+  challenge: {
+    es: 'Las cuencas amazónicas que alimentan las centrales hidroeléctricas andinas están escasamente instrumentadas, con estaciones dispersas y series cortas o incompletas. Estimar el impacto del cambio climático en el caudal de diseño exige, primero, reconstruir un campo climático fiable donde apenas hay observaciones, y después propagar esa incertidumbre a través de un modelo hidrológico distribuido y de un ensemble multi-modelo de escenarios de cambio climático, sin perder trazabilidad de dónde se introduce cada fuente de error.',
+    en: 'The Amazonian basins feeding Andean hydropower plants are sparsely instrumented, with scattered stations and short or incomplete series. Estimating climate change impact on design discharge requires first reconstructing a reliable climate field where observations are scarce, and then propagating that uncertainty through a distributed hydrological model and a multi-model ensemble of climate change scenarios, without losing traceability of where each error source is introduced.',
+  },
+  approach: {
+    es: 'El flujo combina: (1) reconstrucción de campos climáticos mediante precipitación satelital NASA y kriging universal con HydroSheds; (2) corrección del sesgo de temperatura CFSR; (3) calibración automática de modelos hidrológicos con SPOTPY mediante PSO, DREAM y SCE-UA; (4) transformación distribuida de lluvia y temperatura en caudales con VIC; y (5) propagación de 21 modelos CMIP5 bajo RCP4.5/RCP8.5 y tres horizontes. La automatización permitió aplicar de forma homogénea el proceso a más de 200 subcuencas.',
+    en: 'The workflow combines: (1) filling Amazonian gaps with NASA satellite precipitation and universal kriging interpolation using the HydroSheds DEM (1 km) as covariate, validated by cross-validation (ρ=0.42, RMSE=10.47 mm); (2) correcting the systematic CFSR temperature bias (~6°C) before the water balance; (3) processing 21 CMIP5 models under RCP4.5/RCP8.5 across three horizons (2011-2040 / 2041-2070 / 2071-2100); (4) the VIC distributed hydrological model calibrated at the CachEsperanz gauge (NSE=0.65, PBIAS=14.17%). Results show flow increases above 40% in the wet months of Peru and Ecuador towards 2071-2100 under RCP8.5, with a more moderate or even negative response in Bolivia.',
+  },
+  steps: [
+    {
+      number: 1,
+      title: { es: 'Relleno satelital y kriging universal', en: 'Satellite gap-filling and universal kriging' },
+      description: {
+        es: 'Precipitación satelital NASA e interpolación por kriging universal (DEM HydroSheds 1 km) rellenan los vacíos instrumentales de las cuencas amazónicas (ρ=0,42, RMSE=10,47 mm).',
+        en: 'NASA satellite precipitation and universal kriging interpolation (1 km HydroSheds DEM) fill instrumental gaps in the Amazonian basins (ρ=0.42, RMSE=10.47 mm).',
+      },
+      tags: ['Datos', 'Interpolación'],
+      tagColor: 'bg-amber-100 text-amber-700',
+    },
+    {
+      number: 2,
+      title: { es: 'Corrección de sesgo de temperatura CFSR', en: 'CFSR temperature bias correction' },
+      description: {
+        es: 'Corrección de un sesgo sistemático de ~6°C en la temperatura del reanálisis CFSR antes de calcular el balance hídrico.',
+        en: 'Correction of a systematic ~6°C bias in CFSR reanalysis temperature before computing the water balance.',
+      },
+      tags: ['Bias correction'],
+      tagColor: 'bg-amber-100 text-amber-700',
+    },
+    {
+      number: 3,
+      title: { es: 'Ensemble CMIP5 (21 modelos, RCP4.5/8.5)', en: 'CMIP5 ensemble (21 models, RCP4.5/8.5)' },
+      description: {
+        es: 'Procesamiento de 21 modelos climáticos globales CMIP5 bajo dos escenarios de emisión en tres horizontes temporales.',
+        en: 'Processing of 21 CMIP5 global climate models under two emission scenarios across three time horizons.',
+      },
+      tags: ['CMIP5', 'Clima'],
+      tagColor: 'bg-amber-100 text-amber-700',
+    },
+    {
+      number: 4,
+      title: { es: 'Calibración automática SPOTPY + VIC', en: 'SPOTPY + VIC automatic calibration' },
+      description: {
+        es: 'SPOTPY automatiza el ciclo de parámetros, ejecución y evaluación mediante PSO, DREAM y SCE-UA. VIC transforma después los campos climáticos en caudal; CachEsperanz alcanza NSE=0,65 y PBIAS=14,17%.',
+        en: 'Distributed VIC hydrological model calibrated at the CachEsperanz gauge (NSE=0.65, PBIAS=14.17%), projecting design discharges under climate change.',
+      },
+      tags: ['Modelización', 'VIC'],
+      tagColor: 'bg-amber-100 text-amber-700',
+    },
+  ],
+  stats: [
+    { value: '21', label: { es: 'Modelos climáticos CMIP5', en: 'CMIP5 climate models' } },
+    { value: '>200', label: { es: 'Subcuencas con flujo automatizado', en: 'Sub-basins with automated workflow' } },
+    { value: '+40%', label: { es: 'Incremento caudal húmedo (Perú/Ecuador, 2071-2100)', en: 'Wet-season flow increase (Peru/Ecuador, 2071-2100)' } },
+    { value: 'NSE=0,65', label: { es: 'Calibración VIC (CachEsperanz)', en: 'VIC calibration (CachEsperanz)' } },
+  ],
+  keyFindings: [
+    {
+      es: 'La calibración automática con SPOTPY hizo viable procesar más de 200 subcuencas; esta experiencia informó directamente la interfaz de calibración incorporada posteriormente en HYDRA.',
+      en: 'Automatic calibration with SPOTPY made processing more than 200 sub-basins viable; this experience directly informed the calibration interface later incorporated into HYDRA.',
+    },
+    {
+      es: 'Incrementos de caudal superiores al 40% en los meses húmedos de Perú y Ecuador hacia 2071-2100 bajo RCP8.5.',
+      en: 'Flow increases above 40% in the wet months of Peru and Ecuador towards 2071-2100 under RCP8.5.',
+    },
+    {
+      es: 'Respuesta más moderada, e incluso negativa, en Bolivia — el cambio climático no afecta por igual a toda la cordillera andina.',
+      en: 'A more moderate, even negative, response in Bolivia — climate change does not affect the whole Andean range equally.',
+    },
+    {
+      es: 'La escasa correlación cruzada del kriging (ρ=0,42) se compensa con validación explícita, no se oculta: limitación reconocida abiertamente por la falta de instrumentación amazónica.',
+      en: 'The low kriging cross-correlation (ρ=0.42) is compensated with explicit validation, not hidden: an openly acknowledged limitation stemming from sparse Amazonian instrumentation.',
+    },
+  ],
+  references: [
+    {
+      title: {
+        es: 'del Jesús, Paz, Navas, Turienzo, Díez-Sierra & Peña (2019) — VI Jornadas de Ingeniería del Agua',
+        en: 'del Jesús, Paz, Navas, Turienzo, Díez-Sierra & Peña (2019) — VI Jornadas de Ingeniería del Agua',
+      },
+      description: {
+        es: 'Vulnerabilidad de centrales hidroeléctricas andinas frente al cambio climático. Toledo, España.',
+        en: 'Vulnerability of Andean hydropower plants to climate change. Toledo, Spain.',
+      },
+    },
+  ],
+  figures: [
+    {
+      title: { es: 'Influencia del cambio climático en el caudal mensual', en: 'Climate change influence on monthly discharge' },
+      caption: {
+        es: 'Influencia proyectada del cambio climático en el caudal mensual de Colombia, Bolivia, Perú y Ecuador (RCP4.5/8.5, tres horizontes).',
+        en: 'Projected climate change influence on monthly discharge in Colombia, Bolivia, Peru and Ecuador (RCP4.5/8.5, three horizons).',
+      },
+      svg: figImg('fig_andes_caudales_cc.png', 'Influencia del cambio climático en caudales andinos'),
+    },
+  ],
+});
+
+// ─── Atlas de Panamá pilot case (documented, pre-pyhydra) ──────────────────────
+
+pilotCases.push({
+  slug: 'atlas-panama',
+  title: 'Atlas de Panamá',
+  subtitle: {
+    es: 'Automatización a escala nacional para el Ministerio de Ambiente de Panamá y el BID — 52 cuencas en ambas vertientes',
+    en: 'National-scale automation for Panama’s Ministry of Environment and the IDB — 52 basins on both slopes',
+  },
+  location: {
+    es: 'República de Panamá (ambas vertientes)',
+    en: 'Republic of Panama (both slopes)',
+  },
+  river: '52 cuencas nacionales',
+  region: 'Panamá',
+  color: 'from-emerald-900 via-green-900 to-slate-900',
+  tag: 'Caso Piloto',
+  accentColor: 'emerald',
+  icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4v16M20 4v16" /><path d="M4 12Q12 6 20 12" /><path d="M4 18Q12 22 20 18" stroke-dasharray="2 1.5"/></svg>',
+  summary: {
+    es: 'Encargado por el Ministerio de Ambiente de Panamá y el BID (2023), este es el caso de mayor escala del catálogo: 52 cuencas de hasta 13.400 km² en ambas vertientes, más 1.464 puntos costeros analizados frente a inundación costera y viento extremo sobre el área metropolitana. NEOPRENE/STNSRP rellenó 73 estaciones nacionales (1950-2022) y el kriging universal generó una malla de 1 km. Sobre esta base se corrigieron automáticamente 414 combinaciones de sesgo (23 modelos CMIP6 × 2 escenarios SSP × 6 variables × 3 horizontes) mediante QDM y SDM, alimentando el modelo hidrológico LEM (NS=0,87) y ejecuciones masivas de SFINCS nacional, con modelos 2D de alta resolución en el área metropolitana.',
+    en: 'Commissioned by Panama’s Ministry of Environment and the IDB (2023), this is the largest-scale case in the catalogue: 52 basins up to 13,400 km² on both slopes, plus 1,464 coastal points analysed against coastal flooding and extreme wind over the metropolitan area. NEOPRENE/STNSRP filled 73 national stations (1950-2022) and universal kriging generated a 1 km grid. On this basis, 414 bias-correction combinations (23 CMIP6 models × 2 SSP scenarios × 6 variables × 3 horizons) were corrected automatically via QDM and SDM, feeding the LEM hydrological model (NS=0.87) and massive national SFINCS runs, with high-resolution 2D models over the metropolitan area.',
+  },
+  challenge: {
+    es: 'Un atlas de riesgo climático de ámbito nacional exige procesar decenas de cuencas heterogéneas, cientos de combinaciones de modelo climático y escenario, y miles de simulaciones hidráulicas, todo con trazabilidad auditable para un organismo público. Hacerlo manualmente, cuenca a cuenca, es sencillamente inviable dentro de los plazos y el presupuesto de un encargo institucional de esta escala: automatizar el flujo de trabajo completo no es una comodidad, es la condición de viabilidad del proyecto.',
+    en: 'A national-scale climate risk atlas requires processing dozens of heterogeneous basins, hundreds of climate model-scenario combinations, and thousands of hydraulic simulations, all with auditable traceability for a public institution. Doing it manually, basin by basin, is simply unfeasible within the timeline and budget of an institutional commission of this scale: automating the full workflow is not a convenience, it is the project’s condition of feasibility.',
+  },
+  approach: {
+    es: 'El flujo de trabajo nacional combina: (1) relleno de series con NEOPRENE/STNSRP sobre 73 estaciones (1950-2022) y regionalización por kriging universal a malla de 1 km; (2) corrección automática de sesgo de 414 combinaciones (23 modelos CMIP6 × 2 SSP × 6 variables × 3 horizontes) mediante Quantile Delta Mapping y Scaled Distribution Mapping; (3) modelo hidrológico LEM calibrado con NS=0,87 sobre las 52 cuencas; (4) ejecuciones masivas del modelo hidráulico SFINCS a escala nacional, con refinamiento 2D de alta resolución en el área metropolitana y análisis específico de 1.464 puntos costeros frente a inundación costera y viento extremo.',
+    en: 'The national workflow combines: (1) series gap-filling with NEOPRENE/STNSRP over 73 stations (1950-2022) and regionalisation by universal kriging onto a 1 km grid; (2) automatic bias correction of 414 combinations (23 CMIP6 models × 2 SSP × 6 variables × 3 horizons) via Quantile Delta Mapping and Scaled Distribution Mapping; (3) the LEM hydrological model calibrated with NS=0.87 across the 52 basins; (4) massive national-scale runs of the SFINCS hydraulic model, with high-resolution 2D refinement over the metropolitan area and a dedicated analysis of 1,464 coastal points against coastal flooding and extreme wind.',
+  },
+  steps: [
+    {
+      number: 1,
+      title: { es: 'Relleno NEOPRENE/STNSRP y kriging nacional', en: 'NEOPRENE/STNSRP gap-filling and national kriging' },
+      description: {
+        es: 'NEOPRENE/STNSRP rellena 73 estaciones nacionales (1950-2022); kriging universal genera una malla climática de 1 km para todo el país.',
+        en: 'NEOPRENE/STNSRP fills 73 national stations (1950-2022); universal kriging generates a 1 km climate grid for the whole country.',
+      },
+      tags: ['NEOPRENE', 'Interpolación'],
+      tagColor: 'bg-emerald-100 text-emerald-700',
+    },
+    {
+      number: 2,
+      title: { es: '414 correcciones de sesgo automáticas', en: '414 automatic bias corrections' },
+      description: {
+        es: '23 modelos CMIP6 × 2 escenarios SSP × 6 variables × 3 horizontes se corrigen automáticamente mediante QDM y SDM.',
+        en: '23 CMIP6 models × 2 SSP scenarios × 6 variables × 3 horizons are automatically corrected via QDM and SDM.',
+      },
+      tags: ['CMIP6', 'Bias correction'],
+      tagColor: 'bg-emerald-100 text-emerald-700',
+    },
+    {
+      number: 3,
+      title: { es: 'Modelo hidrológico LEM (52 cuencas)', en: 'LEM hydrological model (52 basins)' },
+      description: {
+        es: 'El modelo hidrológico LEM, calibrado con NS=0,87, transforma la climatología corregida en caudales de diseño para las 52 cuencas nacionales.',
+        en: 'The LEM hydrological model, calibrated with NS=0.87, transforms the corrected climatology into design discharges for the 52 national basins.',
+      },
+      tags: ['Modelización', 'LEM'],
+      tagColor: 'bg-emerald-100 text-emerald-700',
+    },
+    {
+      number: 4,
+      title: { es: 'SFINCS nacional + costa (1.464 puntos)', en: 'National SFINCS + coast (1,464 points)' },
+      description: {
+        es: 'Ejecuciones masivas de SFINCS a escala nacional, con 2D de alta resolución en el área metropolitana y 1.464 puntos costeros evaluados frente a inundación costera y viento extremo.',
+        en: 'Massive national-scale SFINCS runs, with high-resolution 2D over the metropolitan area and 1,464 coastal points evaluated against coastal flooding and extreme wind.',
+      },
+      tags: ['SFINCS', 'Costa'],
+      tagColor: 'bg-emerald-100 text-emerald-700',
+    },
+  ],
+  stats: [
+    { value: '52', label: { es: 'Cuencas (hasta 13.400 km²)', en: 'Basins (up to 13,400 km²)' } },
+    { value: '414', label: { es: 'Combinaciones de corrección de sesgo', en: 'Bias-correction combinations' } },
+    { value: '1.464', label: { es: 'Puntos costeros analizados', en: 'Coastal points analysed' } },
+    { value: 'NS=0,87', label: { es: 'Calibración modelo hidrológico LEM', en: 'LEM hydrological model calibration' } },
+  ],
+  keyFindings: [
+    {
+      es: 'Caso de mayor escala del catálogo: automatización viable a nivel nacional (52 cuencas, ambas vertientes) allí donde un flujo manual sería inabordable.',
+      en: 'The largest-scale case in the catalogue: nationally viable automation (52 basins, both slopes) where a manual workflow would be unfeasible.',
+    },
+    {
+      es: '414 combinaciones de corrección de sesgo procesadas automáticamente, con registro de versión y validación de rangos por cada combinación — la automatización sistematiza la auditoría, no la elimina.',
+      en: '414 bias-correction combinations processed automatically, with version logging and range validation per combination — automation systematises auditing, it does not remove it.',
+    },
+    {
+      es: 'Encargo institucional real (Ministerio de Ambiente de Panamá + BID) que demuestra la hipótesis H1 de eficiencia y automatización a escala regional.',
+      en: 'A real institutional commission (Panama Ministry of Environment + IDB) that demonstrates hypothesis H1 on efficiency and automation at regional scale.',
+    },
+  ],
+  references: [
+    {
+      title: {
+        es: 'IH Cantabria (2023) — Atlas Interactivo de Riesgo Climático de la República de Panamá',
+        en: 'IH Cantabria (2023) — Interactive Climate Risk Atlas of the Republic of Panama',
+      },
+      description: {
+        es: 'Proyecto del Ministerio de Ambiente de Panamá y el BID. atlasderiesgoclimatico.miambiente.gob.pa',
+        en: 'Project by the Panama Ministry of Environment and the IDB. atlasderiesgoclimatico.miambiente.gob.pa',
+      },
+      href: 'https://atlasderiesgoclimatico.miambiente.gob.pa/atlas',
+      cta: { es: 'Abrir atlas interactivo', en: 'Open interactive atlas' },
+    },
+  ],
+  figures: [
+    {
+      title: { es: 'Precipitación media por subcuencas', en: 'Mean precipitation by sub-basin' },
+      caption: {
+        es: 'Precipitación media por subcuencas, obtenida mediante el flujo nacional de descarga, control de calidad e interpolación espacial.',
+        en: 'Mean precipitation by sub-basin, obtained via the national download, quality control and spatial interpolation workflow.',
+      },
+      svg: figImg('fig_panama_precipitacion.png', 'Precipitación media por subcuencas de Panamá'),
+    },
+  ],
+});
+
+// ─── SIMPCCe pilot case (documented, pre-pyhydra) ──────────────────────────────
+
+pilotCases.push({
+  slug: 'simpcce',
+  title: 'SIMPCCe',
+  subtitle: {
+    es: 'Herramienta nacional de caudales mínimos de embalses ante el cambio climático — Fundación Canal',
+    en: 'National tool for reservoir minimum-inflow analysis under climate change — Fundación Canal',
+  },
+  location: {
+    es: 'Aplicable a cualquier punto de la red hidrográfica española',
+    en: 'Applicable to any point in the Spanish hydrographic network',
+  },
+  river: 'Red hidrográfica española',
+  region: 'España',
+  color: 'from-purple-900 via-violet-900 to-slate-900',
+  tag: 'Caso Piloto',
+  accentColor: 'purple',
+  icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="9" rx="1.5" /><path d="M4 10L12 4L20 10" /><path d="M9 19v-5h6v5" stroke-dasharray="1.6 1.6"/></svg>',
+  summary: {
+    es: 'SIMPCCe es una herramienta de ámbito nacional desarrollada según la guía metodológica de la Fundación Canal para estimar caudales mínimos de embalses bajo cambio climático, publicada en Ingeniería del Agua (Navas & del Jesús, 2025) tras comunicaciones previas en las VII Jornadas de Ingeniería del Agua (2023) y el 8th IAHR Europe Congress (2024). Descarga automáticamente SPAIN02 v5 y las aportaciones SIMPA-CEDEX (1950-2015), junto con 10 modelos CORDEX-AEMET bajo RCP4.5/8.5 en tres horizontes. Una red neuronal entrenada sobre componentes principales (95% de la varianza) de precipitación y temperatura distribuidas predice las aportaciones mensuales; la corrección de sesgo SDM genera 60 series corregidas por variable, que alimentan 20 simulaciones futuras de aportación con informes automáticos de índices de sequía (SPI) y fiabilidad. El proyecto recibió el Premio al Talento Joven M.R. Llamas (Fundación Botín, Observatorio del Agua).',
+    en: 'SIMPCCe is a national-scale tool developed following the Fundación Canal methodological guide to estimate reservoir minimum inflows under climate change, published in Ingeniería del Agua (Navas & del Jesús, 2025) after earlier communications at the VII Jornadas de Ingeniería del Agua (2023) and the 8th IAHR Europe Congress (2024). It automatically downloads SPAIN02 v5 and SIMPA-CEDEX contributions (1950-2015), together with 10 CORDEX-AEMET models under RCP4.5/8.5 across three horizons. A neural network trained on principal components (95% variance) of distributed precipitation and temperature predicts monthly inflows; SDM bias correction generates 60 corrected series per variable, feeding 20 future inflow simulations with automatic drought index (SPI) and reliability reports. The project received the M.R. Llamas Young Talent Award (Fundación Botín, Observatorio del Agua).',
+  },
+  challenge: {
+    es: 'La guía metodológica de la Fundación Canal exige estimar caudales mínimos ambientales de cualquier embalse español bajo distintos escenarios de cambio climático, pero un modelo físico distribuido calibrado caso a caso es inviable para cubrir toda la red hidrográfica nacional en tiempo y coste razonables. Se necesita una herramienta lo bastante rápida como para reentrenarse en cualquier cuenca, sin sacrificar la fiabilidad de la señal de sequía hidrológica que la Fundación Canal necesita reportar.',
+    en: 'The Fundación Canal methodological guide requires estimating environmental minimum flows for any Spanish reservoir under different climate change scenarios, but a distributed physical model calibrated case by case is unfeasible to cover the whole national hydrographic network within reasonable time and cost. A tool fast enough to retrain for any basin is needed, without sacrificing the reliability of the hydrological drought signal that Fundación Canal needs to report.',
+  },
+  approach: {
+    es: 'El flujo de trabajo combina: (1) descarga automática de SPAIN02 v5 y las aportaciones SIMPA-CEDEX (1950-2015) junto con 10 modelos CORDEX-AEMET bajo RCP4.5/8.5 en tres horizontes; (2) reducción dimensional por componentes principales (95% de la varianza) de precipitación y temperatura distribuidas; (3) una red neuronal (ANN) entrenada sobre esas componentes predice las aportaciones mensuales; (4) corrección de sesgo SDM que genera 60 series corregidas por variable; (5) 20 simulaciones futuras de aportación con informes automáticos de índices de sequía (SPI) y fiabilidad. El resultado principal: el cambio climático reduce las aportaciones medias anuales en la mayoría de cuencas españolas, y los mínimos de estiaje caen incluso donde la precipitación media no muestra cambio significativo.',
+    en: 'The workflow combines: (1) automatic download of SPAIN02 v5 and SIMPA-CEDEX contributions (1950-2015) together with 10 CORDEX-AEMET models under RCP4.5/8.5 across three horizons; (2) dimensional reduction via principal components (95% variance) of distributed precipitation and temperature; (3) a neural network (ANN) trained on those components predicts monthly inflows; (4) SDM bias correction generating 60 corrected series per variable; (5) 20 future inflow simulations with automatic drought index (SPI) and reliability reports. The main result: climate change reduces mean annual inflows in most Spanish basins, and low-flow minima drop even where mean precipitation shows no significant change.',
+  },
+  steps: [
+    {
+      number: 1,
+      title: { es: 'Descarga automática de datos nacionales', en: 'Automatic national data download' },
+      description: {
+        es: 'Descarga de SPAIN02 v5, aportaciones SIMPA-CEDEX (1950-2015) y 10 modelos CORDEX-AEMET bajo RCP4.5/8.5 en tres horizontes.',
+        en: 'Download of SPAIN02 v5, SIMPA-CEDEX contributions (1950-2015) and 10 CORDEX-AEMET models under RCP4.5/8.5 across three horizons.',
+      },
+      tags: ['Datos', 'CORDEX'],
+      tagColor: 'bg-purple-100 text-purple-700',
+    },
+    {
+      number: 2,
+      title: { es: 'Componentes principales y red neuronal', en: 'Principal components and neural network' },
+      description: {
+        es: 'Componentes principales (95% varianza) de precipitación y temperatura distribuidas alimentan una red neuronal (ANN) que predice aportaciones mensuales.',
+        en: 'Principal components (95% variance) of distributed precipitation and temperature feed a neural network (ANN) predicting monthly inflows.',
+      },
+      tags: ['Machine Learning'],
+      tagColor: 'bg-purple-100 text-purple-700',
+    },
+    {
+      number: 3,
+      title: { es: 'Corrección de sesgo SDM (60 series)', en: 'SDM bias correction (60 series)' },
+      description: {
+        es: 'Corrección de sesgo por Scaled Distribution Mapping genera 60 series corregidas por variable a partir de los modelos CORDEX.',
+        en: 'Scaled Distribution Mapping bias correction generates 60 corrected series per variable from the CORDEX models.',
+      },
+      tags: ['Bias correction'],
+      tagColor: 'bg-purple-100 text-purple-700',
+    },
+    {
+      number: 4,
+      title: { es: 'Simulaciones futuras e informes de sequía', en: 'Future simulations and drought reports' },
+      description: {
+        es: '20 simulaciones futuras de aportación mensual con informes automáticos de índices de sequía (SPI) y fiabilidad del suministro.',
+        en: '20 future monthly-inflow simulations with automatic drought index (SPI) and supply reliability reports.',
+      },
+      tags: ['Sequía', 'SPI'],
+      tagColor: 'bg-purple-100 text-purple-700',
+    },
+  ],
+  stats: [
+    { value: '10', label: { es: 'Modelos CORDEX-AEMET', en: 'CORDEX-AEMET models' } },
+    { value: '60', label: { es: 'Series corregidas por variable (SDM)', en: 'Corrected series per variable (SDM)' } },
+    { value: '95%', label: { es: 'Varianza explicada (PCA)', en: 'Explained variance (PCA)' } },
+    { value: '20', label: { es: 'Simulaciones futuras de aportación', en: 'Future inflow simulations' } },
+  ],
+  keyFindings: [
+    {
+      es: 'Herramienta nacional aplicable a cualquier punto de la red hidrográfica española, según la guía metodológica de la Fundación Canal.',
+      en: 'A national tool applicable to any point in the Spanish hydrographic network, following the Fundación Canal methodological guide.',
+    },
+    {
+      es: 'Los caudales mínimos de estiaje caen incluso donde la precipitación media no muestra cambio significativo: la severidad y duración de la sequía hidrológica aumenta en ambos escenarios RCP.',
+      en: 'Low-flow minima drop even where mean precipitation shows no significant change: hydrological drought severity and duration increase under both RCP scenarios.',
+    },
+    {
+      es: 'Premio al Talento Joven “M.R. Llamas” 2023 del Observatorio del Agua de la Fundación Botín a la candidatura colectiva de Manuel del Jesus Peñil, Salvador Navas Fernández y Dina V. Gómez Rave por la guía metodológica que enmarca SIMPCCe.',
+      en: '2023 M.R. Llamas Young Talent Award from the Botín Foundation Water Observatory to the collective candidacy of Manuel del Jesus Peñil, Salvador Navas Fernández and Dina V. Gómez Rave for the methodological guide underpinning SIMPCCe.',
+    },
+  ],
+  references: [
+    {
+      title: {
+        es: 'Navas & del Jesús (2025) — Ingeniería del Agua, vol. 29(2), 132-148',
+        en: 'Navas & del Jesús (2025) — Ingeniería del Agua, vol. 29(2), 132-148',
+      },
+      description: {
+        es: 'SIMPCCe: A tool for the analysis of reservoir inflows under climate change scenarios. DOI: 10.4995/ia.2025.23217',
+        en: 'SIMPCCe: A tool for the analysis of reservoir inflows under climate change scenarios. DOI: 10.4995/ia.2025.23217',
+      },
+      href: 'https://doi.org/10.4995/ia.2025.23217',
+      cta: { es: 'Abrir publicación', en: 'Open publication' },
+    },
+    {
+      title: {
+        es: 'Navas & del Jesús (2023/2024) — VII Jornadas de Ingeniería del Agua / 8th IAHR Europe Congress',
+        en: 'Navas & del Jesús (2023/2024) — VII Jornadas de Ingeniería del Agua / 8th IAHR Europe Congress',
+      },
+      description: {
+        es: 'Comunicaciones previas: Análisis de aportaciones a embalses ante escenarios de cambio climático: la aplicación SIMPCCe (Cartagena, 2023; Lisboa, 2024).',
+        en: 'Earlier communications: Analysis of reservoir inflows under climate change scenarios: the SIMPCCe application (Cartagena, 2023; Lisbon, 2024).',
+      },
+    },
+  ],
+  figures: [
+    {
+      title: { es: 'Interfaz de entrenamiento y validación de la red neuronal', en: 'Neural network training and validation interface' },
+      caption: {
+        es: 'Interfaz de entrenamiento y validación de la red neuronal de SIMPCCe sobre componentes principales de precipitación y temperatura.',
+        en: 'SIMPCCe neural network training and validation interface over precipitation and temperature principal components.',
+      },
+      svg: figImg('fig_simpcce_interfaz.png', 'Interfaz de SIMPCCe'),
     },
   ],
 });

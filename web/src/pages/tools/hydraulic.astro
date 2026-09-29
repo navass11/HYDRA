@@ -608,8 +608,11 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
     }
 
     // Re-render when dark/light mode OR language changes
-    new MutationObserver(() => { if (lastData) renderAll(lastData); })
-      .observe(document.documentElement, { attributes:true, attributeFilter:['class', 'lang'] });
+    const themeRoot = document.documentElement;
+    if (themeRoot) {
+      new MutationObserver(() => { if (lastData) renderAll(lastData); })
+        .observe(themeRoot, { attributes:true, attributeFilter:['class', 'lang'] });
+    }
 
     // ── Boot ──────────────────────────────────────────────────────────────────
     runCompute();
