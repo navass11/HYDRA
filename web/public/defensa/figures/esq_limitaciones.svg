@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" role="img" aria-labelledby="t" font-family="Avenir Next, Avenir, Segoe UI, Helvetica, sans-serif">
+  <title id="t">Dónde actúa cada limitación en la cadena y qué desarrollo la aborda</title>
+
+  <!-- chain -->
+  <g font-size="17" font-weight="600" text-anchor="middle">
+    <rect x="10" y="20" width="148" height="56" fill="#8CC2BE"/><text x="84" y="54" fill="#13323A">Datos</text>
+    <rect x="168" y="20" width="148" height="56" fill="#5FA3A4"/><text x="242" y="54" fill="#fff">Extremos</text>
+    <rect x="326" y="20" width="148" height="56" fill="#3F8E93"/><text x="400" y="54" fill="#fff">Escenarios</text>
+    <rect x="484" y="20" width="148" height="56" fill="#23697A"/><text x="558" y="54" fill="#fff">Modelos físicos</text>
+    <rect x="642" y="20" width="148" height="56" fill="#0E4A57"/><text x="716" y="54" fill="#fff">Impacto</text>
+  </g>
+
+  <text x="10" y="116" font-size="16" font-weight="600" fill="#B5334B">Limitación</text>
+  <g font-size="15" fill="#13323A">
+    <g transform="translate(10 128)"><rect width="148" height="150" fill="#F6E6E9"/><rect width="148" height="5" fill="#B5334B"/><text x="12" y="34">Series cortas</text><text x="12" y="56">y fuentes de</text><text x="12" y="78">calidad desigual</text></g>
+    <g transform="translate(168 128)"><rect width="148" height="150" fill="#F6E6E9"/><rect width="148" height="5" fill="#B5334B"/><text x="12" y="34">Cola de la</text><text x="12" y="56">distribución</text><text x="12" y="78">poco informada</text></g>
+    <g transform="translate(326 128)"><rect width="148" height="150" fill="#F6E6E9"/><rect width="148" height="5" fill="#B5334B"/><text x="12" y="34">Generadores</text><text x="12" y="56">estacionarios</text></g>
+    <g transform="translate(484 128)"><rect width="148" height="150" fill="#F6E6E9"/><rect width="148" height="5" fill="#B5334B"/><text x="12" y="34">Licencias,</text><text x="12" y="56">versiones y coste</text><text x="12" y="78">de los ensembles</text></g>
+    <g transform="translate(642 128)"><rect width="148" height="150" fill="#F6E6E9"/><rect width="148" height="5" fill="#B5334B"/><text x="12" y="34">Sin contraste</text><text x="12" y="56">sistemático con</text><text x="12" y="78">observaciones</text></g>
+  </g>
+
+  <text x="10" y="322" font-size="16" font-weight="600" fill="#0E4A57">Siguiente etapa</text>
+  <g font-size="15" fill="#13323A">
+    <g transform="translate(10 334)"><rect width="148" height="150" fill="#DCEBE8"/><rect width="148" height="5" fill="#0E4A57"/><text x="12" y="34">Control de</text><text x="12" y="56">calidad y</text><text x="12" y="78">trazabilidad</text></g>
+    <g transform="translate(168 334)"><rect width="148" height="150" fill="#DCEBE8"/><rect width="148" height="5" fill="#0E4A57"/><text x="12" y="34">Bandas de</text><text x="12" y="56">credibilidad</text><text x="12" y="78">explícitas</text></g>
+    <g transform="translate(326 334)"><rect width="148" height="150" fill="#DCEBE8"/><rect width="148" height="5" fill="#0E4A57"/><text x="12" y="34">Generación</text><text x="12" y="56">condicionada</text><text x="12" y="78">al clima</text></g>
+    <g transform="translate(484 334)"><rect width="148" height="150" fill="#DCEBE8"/><rect width="148" height="5" fill="#0E4A57"/><text x="12" y="34">Emuladores y</text><text x="12" y="56">ejecución</text><text x="12" y="78">distribuida</text></g>
+    <g transform="translate(642 334)"><rect width="148" height="150" fill="#DCEBE8"/><rect width="148" height="5" fill="#0E4A57"/><text x="12" y="34">Métricas de</text><text x="12" y="56">acierto y ahorro</text><text x="12" y="78">medido</text></g>
+  </g>
+  <text x="10" y="530" font-size="16" fill="#4A6870">La automatización organiza la incertidumbre; no elimina los límites de los datos ni de los modelos.</text>
+</svg>

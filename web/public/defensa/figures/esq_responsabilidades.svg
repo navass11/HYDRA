@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" role="img" aria-labelledby="t" font-family="Avenir Next, Avenir, Segoe UI, Helvetica, sans-serif">
+  <title id="t">Cada responsabilidad científica y los submódulos de pyhydra que la materializan</title>
+
+  <g font-size="17" font-weight="600" fill="#13323A">
+    <rect x="10" y="10" width="148" height="8" fill="#8CC2BE"/><text x="10" y="44">Datos</text>
+    <rect x="168" y="10" width="148" height="8" fill="#5FA3A4"/><text x="168" y="44">Extremos y clima</text>
+    <rect x="326" y="10" width="148" height="8" fill="#3F8E93"/><text x="326" y="44">Escenarios</text>
+    <rect x="484" y="10" width="148" height="8" fill="#23697A"/><text x="484" y="44">Respuesta física</text>
+    <rect x="642" y="10" width="148" height="8" fill="#0E4A57"/><text x="642" y="44">Impacto</text>
+  </g>
+
+  <g font-size="14.5" fill="#13323A">
+    <!-- data -->
+    <g transform="translate(10 66)">
+      <rect width="148" height="66" fill="#F8FBFA" stroke="#C6D8D4"/><text x="10" y="28">Lluvia</text><text x="10" y="50" fill="#4A6870" font-size="12.5">rainfall</text>
+      <rect y="76" width="148" height="66" fill="#F8FBFA" stroke="#C6D8D4"/><text x="10" y="104">Caudal fluvial</text><text x="10" y="126" fill="#4A6870" font-size="12.5">river_discharge</text>
+      <rect y="152" width="148" height="66" fill="#F8FBFA" stroke="#C6D8D4"/><text x="10" y="180">Cambio climático</text><text x="10" y="202" fill="#4A6870" font-size="12.5">climate_change</text>
+      <rect y="228" width="148" height="66" fill="#F8FBFA" stroke="#C6D8D4"/><text x="10" y="256">Suelos</text><text x="10" y="278" fill="#4A6870" font-size="12.5">soils</text>
+    </g>
+    <!-- extremes & climate -->
+    <g transform="translate(168 66)">
+      <rect width="148" height="66" fill="#F8FBFA" stroke="#C6D8D4"/><text x="10" y="28">Series y extremos</text><text x="10" y="50" fill="#4A6870" font-size="12.5">time_series</text>
+      <rect y="76" width="148" height="66" fill="#F8FBFA" stroke="#C6D8D4"/><text x="10" y="104">Análisis regional</text><text x="10" y="126" fill="#4A6870" font-size="12.5">spatial_analysis</text>
+      <rect y="152" width="148" height="66" fill="#F8FBFA" stroke="#C6D8D4"/><text x="10" y="180">Sesgo climático</text><text x="10" y="202" fill="#4A6870" font-size="12.5">bias_correction</text>
+    </g>
+    <!-- scenarios -->
+    <g transform="translate(326 66)">
+      <rect width="148" height="66" fill="#F8FBFA" stroke="#C6D8D4"/><text x="10" y="28">Generación</text><text x="10" y="50" fill="#4A6870" font-size="12.5">stochastic_generation</text>
+      <rect y="76" width="148" height="66" fill="#F8FBFA" stroke="#C6D8D4"/><text x="10" y="104">Downscaling</text><text x="10" y="126" fill="#4A6870" font-size="12.5">hybrid_downscaling</text>
+    </g>
+    <!-- physics -->
+    <g transform="translate(484 66)">
+      <rect width="148" height="66" fill="#F8FBFA" stroke="#C6D8D4"/><text x="10" y="28">HEC-HMS</text><text x="10" y="50" fill="#4A6870" font-size="12.5">hydrology.hec_hms</text>
+      <rect y="76" width="148" height="66" fill="#F8FBFA" stroke="#C6D8D4"/><text x="10" y="104">SWAT+</text><text x="10" y="126" fill="#4A6870" font-size="12.5">hydrology.swat</text>
+      <rect y="152" width="148" height="66" fill="#F8FBFA" stroke="#C6D8D4"/><text x="10" y="180">SFINCS</text><text x="10" y="202" fill="#4A6870" font-size="12.5">hydraulic.sfincs</text>
+      <rect y="228" width="148" height="66" fill="#F8FBFA" stroke="#C6D8D4"/><text x="10" y="256">HEC-RAS</text><text x="10" y="278" fill="#4A6870" font-size="12.5">hydraulic.hec_ras</text>
+    </g>
+    <!-- impact -->
+    <g transform="translate(642 66)">
+      <rect width="148" height="66" fill="#F8FBFA" stroke="#C6D8D4"/><text x="10" y="28">Reconstrucción</text><text x="10" y="50" fill="#4A6870" font-size="12.5">MaxDiss y k-NN</text>
+      <rect y="76" width="148" height="66" fill="#F8FBFA" stroke="#C6D8D4"/><text x="10" y="104">Sensibilidad</text><text x="10" y="126" fill="#4A6870" font-size="12.5">hydraulic.sensitivity</text>
+      <rect y="152" width="148" height="66" fill="#F8FBFA" stroke="#C6D8D4"/><text x="10" y="180">T sobre el calado</text><text x="10" y="202" fill="#4A6870" font-size="12.5">por píxel</text>
+    </g>
+  </g>
+
+  <!-- bottom band -->
+  <rect x="10" y="400" width="780" height="2" fill="#A9D2CC"/>
+  <g font-size="18" fill="#13323A">
+    <text x="10" y="440">14 submódulos en tres bloques: fuentes de datos (4),</text>
+    <text x="10" y="466">clima y estadística (5) y modelización (5).</text>
+    <text x="10" y="508" font-size="16" fill="#4A6870">Cada caso activa solo la combinación que necesita.</text>
+  </g>
+</svg>

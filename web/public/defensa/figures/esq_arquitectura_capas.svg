@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" role="img" aria-labelledby="t" font-family="Avenir Next, Avenir, Segoe UI, Helvetica, sans-serif">
+  <title id="t">Arquitectura de HYDRA en tres niveles sobre el núcleo pyhydra</title>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#3F8E93"/></marker>
+  </defs>
+
+  <!-- container -->
+  <rect x="10" y="62" width="780" height="488" fill="none" stroke="#4A6870" stroke-width="2" stroke-dasharray="8 6"/>
+  <text x="24" y="54" font-size="16" fill="#4A6870">Entorno en contenedores: el mismo en un portátil o en la nube</text>
+
+  <!-- users -->
+  <g font-size="16" fill="#13323A" text-anchor="middle">
+    <circle cx="520" cy="22" r="9" fill="#A9D2CC"/><text x="536" y="28" text-anchor="start">Ingeniería</text>
+    <circle cx="650" cy="22" r="9" fill="#A9D2CC"/><text x="666" y="28" text-anchor="start">Investigación</text>
+  </g>
+
+  <!-- level 3: web -->
+  <g transform="translate(40 86)">
+    <rect width="720" height="104" fill="#F8FBFA" stroke="#C6D8D4"/>
+    <rect width="8" height="104" fill="#A9D2CC"/>
+    <text x="28" y="34" font-size="21" font-weight="600" fill="#13323A">Interfaz web</text>
+    <text x="28" y="60" font-size="16" fill="#4A6870">documentación, herramientas y casos navegables</text>
+    <g transform="translate(470 18)">
+      <rect width="226" height="70" rx="6" fill="#fff" stroke="#13323A" stroke-width="1.5"/>
+      <rect width="226" height="16" rx="6" fill="#DCEBE8"/>
+      <circle cx="12" cy="8" r="3" fill="#4A6870"/><circle cx="24" cy="8" r="3" fill="#4A6870"/>
+      <rect x="12" y="26" width="90" height="10" fill="#3F8E93"/><rect x="12" y="44" width="200" height="6" fill="#C6D8D4"/><rect x="12" y="56" width="160" height="6" fill="#C6D8D4"/>
+    </g>
+  </g>
+
+  <line x1="400" y1="196" x2="400" y2="222" stroke="#3F8E93" stroke-width="3" marker-end="url(#a)"/>
+
+  <!-- level 2: services -->
+  <g transform="translate(40 228)">
+    <rect width="720" height="104" fill="#F8FBFA" stroke="#C6D8D4"/>
+    <rect width="8" height="104" fill="#3F8E93"/>
+    <text x="28" y="34" font-size="21" font-weight="600" fill="#13323A">Servicios de ejecución</text>
+    <g transform="translate(28 48)" font-size="17" fill="#13323A">
+      <rect width="300" height="40" fill="#DCEBE8"/><text x="16" y="26">API REST para las herramientas</text>
+      <rect x="320" width="352" height="40" fill="#DCEBE8"/><text x="336" y="26">JupyterLab con notebooks reproducibles</text>
+    </g>
+  </g>
+
+  <line x1="400" y1="338" x2="400" y2="364" stroke="#3F8E93" stroke-width="3" marker-end="url(#a)"/>
+
+  <!-- level 1: pyhydra -->
+  <g transform="translate(40 370)">
+    <rect width="720" height="164" fill="#F8FBFA" stroke="#C6D8D4"/>
+    <rect width="8" height="164" fill="#0E4A57"/>
+    <text x="28" y="34" font-size="21" font-weight="600" fill="#13323A">Núcleo científico pyhydra</text>
+    <text x="300" y="34" font-size="16" fill="#4A6870">14 submódulos, instalable con pip</text>
+    <g transform="translate(28 52)" font-size="17">
+      <rect width="210" height="94" fill="#0E4A57"/>
+      <text x="16" y="34" fill="#fff" font-weight="600">Fuentes de datos</text><text x="16" y="62" fill="#DCEBE8">4 submódulos</text>
+      <rect x="226" width="210" height="94" fill="#0E4A57"/>
+      <text x="242" y="34" fill="#fff" font-weight="600">Clima y estadística</text><text x="242" y="62" fill="#DCEBE8">5 submódulos</text>
+      <rect x="452" width="220" height="94" fill="#0E4A57"/>
+      <text x="468" y="34" fill="#fff" font-weight="600">Modelización</text><text x="468" y="62" fill="#DCEBE8">5 submódulos</text>
+    </g>
+  </g>
+</svg>

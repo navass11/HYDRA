@@ -21,6 +21,7 @@ export interface Slide {
   figurePosition?: 'full' | 'right' | 'left';
   // Slide texts
   script: string;        // Presenter speech / guion
+  quote?: string;        // Short on-screen statement for quote slides (the script stays in the notes)
   notes?: string;        // Private presenter guide notes
   bullets?: string[];    // Bullet points shown on slide
   mathBlock?: string;    // Custom HTML/MathML for mathematical equations
@@ -46,8 +47,8 @@ export const slideLibrary: Slide[] = [
     subtitle: 'Tesis Doctoral con Mención Industrial, presentada para la obtención del título de Doctor por la Universidad de Cantabria',
     estimatedMinutes: 3,
     type: 'title',
-    script: 'Buenos días, miembros del tribunal, director, tutor, profesores, compañeros, familiares y amigos. Muchas gracias por acompañarme. Soy Salvador Navas Fernández y voy a presentar mi tesis doctoral, titulada "Desarrollo de un modelo automático de inundación estocástica bajo incertidumbre hidrológica y climática". La he realizado en IHCantabria, dentro del programa de doctorado IH2O y con Mención Industrial. La tesis ha sido dirigida por el doctor Manuel del Jesus Peñil y tutorizada por el doctor César Álvarez Díaz. A lo largo de la exposición explicaré qué problema científico la origina, cómo se construyó la solución y qué evidencia permite valorar su utilidad.',
-    notes: 'Iniciar con tono formal y pausado. Agradecer la presencia del tribunal.\n\nDatos de portada clave:\n- Autor: Salvador Navas Fernández\n- Director: Manuel del Jesus Peñil\n- Tutor: César Álvarez Díaz\n- Programa: IH2O\n- Universidad: UC / IHCantabria\n\n💡 El nombre "HYDRA" no es casual: evoca a la criatura mitológica de múltiples cabezas que actúa como un solo organismo coordinado — exactamente la metáfora de una arquitectura modular pero unificada. Puede servir como imagen mental para el tribunal desde el primer minuto.\n\n❓ Pregunta típica: "¿Esto es ingeniería de software o ciencia?" → La propia tesis estratifica sus aportaciones en tres niveles (metodologías incorporadas / desarrollos implementados / contribución original, cap. 9) precisamente para anticipar esta pregunta: la novedad se reivindica en la integración, no en algoritmos nuevos.',
+    script: 'Buenos días, miembros del tribunal, director, tutor, profesores, compañeros, familiares y amigos. Muchas gracias por acompañarme. Soy Salvador Navas Fernández y voy a presentar mi tesis doctoral, titulada "Desarrollo de un modelo automático de inundación estocástica". La he realizado en IHCantabria, dentro del programa de Doctorado en Ingeniería de Costas, Hidrobiología y Gestión de Sistemas Acuáticos (IH2O) y con Mención Industrial. La tesis ha sido dirigida por el doctor Manuel del Jesus Peñil y tutorizada por el doctor César Álvarez Díaz. A lo largo de la exposición explicaré qué problema científico la origina, cómo se construyó la solución y qué evidencia permite valorar su utilidad.',
+    notes: 'Iniciar con tono formal y pausado. Agradecer la presencia del tribunal.\n\nDatos de portada clave:\n- Autor: Salvador Navas Fernández\n- Director: Manuel del Jesus Peñil\n- Tutor: César Álvarez Díaz\n- Programa: Doctorado en Ingeniería de Costas, Hidrobiología y Gestión de Sistemas Acuáticos (IH2O)\n- Universidad: UC / IHCantabria\n\n💡 El nombre "HYDRA" no es casual: evoca a la criatura mitológica de múltiples cabezas que actúa como un solo organismo coordinado — exactamente la metáfora de una arquitectura modular pero unificada. Puede servir como imagen mental para el tribunal desde el primer minuto.\n\n❓ Pregunta típica: "¿Esto es ingeniería de software o ciencia?" → La propia tesis estratifica sus aportaciones en tres niveles (metodologías incorporadas / desarrollos implementados / contribución original, cap. 9) precisamente para anticipar esta pregunta: la novedad se reivindica en la integración, no en algoritmos nuevos.\n\n❓ «¿En qué se basa formalmente la Mención Industrial?» → Preparar una respuesta de 20 s con la base normativa (RD 99/2011, art. 15 bis) y el contrato o convenio concreto que la sustenta. La memoria declara IHCantabria como contexto industrial; la transferencia se ilustra con Calle 30 (Ferrovial/FORESEE), Panamá (Ministerio de Ambiente + BID) y SIMPCCe (guía de Fundación Canal).',
     bullets: [
       'Salvador Navas Fernández',
       'Dr. Manuel del Jesus Peñil',
@@ -62,7 +63,7 @@ export const slideLibrary: Slide[] = [
     subtitle: 'Correspondencia directa con los capítulos de la memoria doctoral',
     estimatedMinutes: 1,
     type: 'index',
-    script: 'La exposición sigue el argumento académico de la memoria. Empieza con el problema, los antecedentes, la pregunta y las hipótesis; continúa con el estado de la técnica y la arquitectura de HYDRA. Los tres capítulos metodológicos se agrupan en datos, análisis climático y estadístico, y modelización. Después presento los casos como evidencia de validación y cierro con contribuciones, límites y trabajo futuro. La demostración de la plataforma es un apoyo práctico, no un capítulo principal independiente.',
+    script: 'La exposición sigue los seis capítulos de la memoria, en este orden. Primero, la introducción: el problema, la pregunta, las hipótesis y los objetivos. Después, el estado de la técnica y la brecha que justifica la tesis. En tercer lugar, la arquitectura de HYDRA. En cuarto, la metodología: datos, análisis climático y estadístico, y modelización, con una breve demostración. En quinto, los casos como evidencia de validación. Y por último, las conclusiones: contribución, límites y trabajo futuro. Esta misma ruta aparece arriba en cada diapositiva para que sepan en qué punto estamos.',
     notes: 'Este es el único índice. Mantener el orden del cuerpo principal de la memoria: introducción, estado de la técnica, arquitectura, metodología, casos y validación, conclusiones. El manual práctico es material complementario y la demostración se integra como apoyo, no como bloque que interrumpa el argumento.',
     bullets: [
       '1. Introducción — Origen, motivación, problema, hipótesis y objetivos',
@@ -125,12 +126,12 @@ export const slideLibrary: Slide[] = [
     subtitle: 'De metodologías avanzadas pero fragmentadas a una capacidad de ingeniería reproducible',
     estimatedMinutes: 2,
     type: 'normal',
-    script: 'La tesis no reivindica como nuevos los métodos estadísticos, los generadores de lluvia ni los modelos hidrológicos e hidráulicos utilizados. Su aportación consiste en hacerlos trabajar dentro de una única arquitectura operativa. Primero, integra extremo a extremo la adquisición de datos, el análisis de extremos, la generación de escenarios, la simulación física y el cálculo de impactos. Segundo, establece reproducibilidad sistemática: cada resultado puede trazarse hasta su fuente, su método y su configuración. Tercero, demuestra transferencia operativa en problemas con escalas y necesidades muy diferentes, sin reconstruir los componentes centrales para cada proyecto. Más adelante presentaré cómo se materializa técnicamente esta arquitectura.',
-    notes: 'Esta diapositiva anticipa la respuesta a “¿qué aporta realmente la tesis?” y se recupera al final. No enumerar librerías. Explicar los tres pilares con una frase y un ejemplo: integración — Calle 30; reproducibilidad — Besaya/Valencia; transferencia — Panamá y SIMPCCe.',
+    script: 'Con los objetivos fijados, anticipo qué aporta la tesis. No reivindica como nuevos los métodos estadísticos, los generadores ni los modelos físicos; su aportación es hacerlos trabajar juntos, y tiene tres partes. Integración: una sola cadena, de los datos al impacto, como muestra la franja superior. Reproducibilidad: cada resultado deja registro de su fuente, su método, su configuración y su salida, de modo que un tercero puede repetirlo. Y transferencia: el mismo núcleo resuelve problemas distintos, desde un túnel urbano hasta la escala nacional. Al presentar los casos distinguiré cuáles originaron la arquitectura y cuáles pueden reproducirse hoy con ella.',
+    notes: 'Esta diapositiva anticipa la respuesta a “¿qué aporta realmente la tesis?” y se recupera al final. No enumerar librerías. Explicar los tres pilares con una frase y un ejemplo: integración — Calle 30; reproducibilidad — Besaya/Valencia; transferencia — Panamá y SIMPCCe.\n\nOrden: esta diapositiva se presenta después de la pregunta y los objetivos, como anticipo de la respuesta; así la aportación no aparece antes de haber planteado el problema.',
     bullets: [
       'Integración: una sola cadena desde el dato hasta el impacto.',
       'Reproducibilidad: resultados auditables por terceros.',
-      'Transferencia: nueve aplicaciones reales con un núcleo común.',
+      'Transferencia: el mismo núcleo aplicado a problemas de escala y finalidad distintas.',
     ],
   },
 
@@ -168,10 +169,10 @@ export const slideLibrary: Slide[] = [
     script: 'La aportación principal de este trabajo no es solo teórica; se entrega como un ecosistema reproducible completo. Consta de la librería modular de Python "pyhydra" y la plataforma "HYDRA" que permite ejecutar todo el flujo desde el navegador de manera reproducible gracias a la contenedorización Docker.',
     notes: 'Llamar la atención del tribunal sobre la web de fondo (si se usa modo online). Señalar los badges reales.\n\n❓ "¿Esto es reproducible o es solo una demo personal?" → Distinguir la instancia cloud efímera (no citable, solo demostrativa) de las versiones archivadas en Zenodo (navas2026pyhydra, navas2026hydrarepo, v0.1.0) como referencia de reproducibilidad permanente — la propia tesis hace esta distinción explícita (cap. 3, Estructura del paquete).',
     bullets: [
-      'Núcleo científico · concentra los métodos de datos, clima y modelización.',
-      'Plataforma web · permite explorar documentación, herramientas y casos.',
-      'Ejecución reproducible · reúne API, notebooks y servicios en un entorno controlado.',
-      'Distribución abierta · código versionado y software archivado con DOI.',
+      'Núcleo científico: concentra los métodos de datos, clima y modelización.',
+      'Plataforma web: permite explorar documentación, herramientas y casos.',
+      'Ejecución reproducible: reúne API, notebooks y servicios en un entorno controlado.',
+      'Distribución abierta: código versionado y software archivado con DOI.',
     ],
   },
 
@@ -196,11 +197,11 @@ export const slideLibrary: Slide[] = [
     id: 6,
     block: 'Motivación', blockColor: '#3b82f6',
     title: 'El problema científico',
-    subtitle: 'Insuficiencia de los métodos clásicos ante el cambio climático',
+    subtitle: 'Cuando la frecuencia del forzamiento se toma por la frecuencia del impacto',
     estimatedMinutes: 2,
     type: 'normal',
-    script: 'El problema científico aparece cuando la frecuencia de una variable de entrada se interpreta como si fuera directamente la frecuencia del daño. En el procedimiento convencional se selecciona una lluvia o un hidrograma asociado a un período de retorno y se simula su respuesta. Pero el mismo forzamiento puede producir impactos distintos según la humedad antecedente, la distribución espacial de la lluvia, la coincidencia de ondas en una confluencia y la respuesta no lineal del terreno y del modelo hidráulico. Por eso no basta con preguntar cada cuánto ocurre una lluvia de diseño. Hay que preguntar cada cuánto se supera un calado, un caudal o una extensión inundada relevantes para la decisión. La tesis parte de esa diferencia entre T del forzamiento y T del impacto.',
-    notes: 'Explicar por qué es peligroso usar un único evento clásico. Si hay DANA previa, el suelo está saturado, lo que convierte una lluvia media en catástrofe.\n\nEsta idea nace del caso Besaya (2018): fue la primera confirmación física, con modelos Iber, de que T_forzante ≠ T_impacto.',
+    script: 'El problema científico se ve en este esquema. En las dos filas cae la misma lluvia, con un período de retorno de cien años. En la fila de arriba el suelo está seco y el agua queda dentro del cauce. En la de abajo el suelo está saturado y el afluente llega en crecida: el río desborda. El forzamiento es idéntico; el impacto, no. Por eso no basta con preguntar cada cuánto ocurre una lluvia de diseño. Hay que preguntar cada cuánto se supera un calado, un caudal o una extensión inundada relevantes para la decisión. La tesis parte de esa diferencia: el período de retorno del forzamiento no es el del impacto.',
+    notes: 'Explicar por qué es peligroso usar un único evento clásico. Si hay DANA previa, el suelo está saturado, lo que convierte una lluvia media en catástrofe.\n\nEsta idea nace del caso Besaya (2018): fue la primera confirmación física, con modelos Iber, de que T_forzante ≠ T_impacto.\n\n❓ «T(forzante) ≠ T(impacto) se conoce desde hace décadas» → Cierto: es la idea de la distribución derivada de crecidas (Eagleson, 1972) y de la simulación continua (Blazkova y Beven; Falter et al., 2015, este último citado en el cap. 2). La tesis no reivindica el principio, sino su aplicación operativa: frecuencia calculada sobre calado y extensión con motores profesionales, de forma automática, repetible y auditable. ⚠️ Eagleson y Blazkova-Beven no están en la bibliografía de la memoria: mencionarlos solo de palabra, como contexto.',
     mathBlock: `
       <div class="impact-equation">
         T<sub>forzante</sub>(P) &ne; T<sub>impacto</sub>(Q, h)
@@ -219,13 +220,14 @@ export const slideLibrary: Slide[] = [
     block: 'Motivación', blockColor: '#3b82f6',
     title: 'La hipótesis central',
     type: 'quote',
+    quote: 'La principal barrera para aplicar metodologías avanzadas de análisis probabilístico de inundaciones no es la falta de conocimiento científico, sino integrarlas en flujos de trabajo reproducibles.',
     estimatedMinutes: 2,
-    script: 'La hipótesis de partida es que la principal barrera para aplicar metodologías avanzadas de análisis probabilístico de inundaciones no es la falta de conocimiento científico. El obstáculo es integrar métodos, datos y modelos físicos en un flujo operativo que pueda ejecutarse de forma eficiente y repetirse sin reconstruirlo manualmente en cada proyecto. Si los componentes se organizan de manera modular, se comunican mediante contratos claros y conservan la trazabilidad de sus entradas y configuraciones, entonces la incertidumbre puede propagarse hasta el impacto y la metodología puede transferirse entre casos. Esta hipótesis no presupone que todos los modelos den la misma respuesta: propone una arquitectura para comparar esas respuestas de forma explícita y auditable.',
-    notes: 'Detenerse aquí. Esta frase resume el por qué de una tesis industrial. El objetivo no es inventar la rueda estadística, sino hacerla rodar de verdad en la industria.',
+    script: 'La hipótesis central es que la barrera para aplicar estos métodos no es la falta de conocimiento científico, sino su integración. El esquema lo resume. Arriba están los métodos que ya existen —extremos, cópulas, generadores, proyecciones, corrección de sesgo y motores hidráulicos—, pero desconectados: en cada proyecto hay que reconstruir a mano los enlaces que aparecen en rojo. Abajo, la misma ciencia organizada en una cadena modular y reproducible, desde los datos hasta el impacto. Como enunciado general no se contrasta directamente; se descompone en las tres hipótesis operativas de la parte inferior, que cerraré al final con evidencia concreta.',
+    notes: 'Detenerse aquí. Esta frase resume el por qué de una tesis industrial. El objetivo no es inventar la rueda estadística, sino hacerla rodar de verdad en la industria.\n\n❓ «¿Cómo se refutaría la hipótesis central?» → A través de H1–H3: si la automatización no permitiera encadenar la cadena sin intervención manual, si los módulos no pudieran reutilizarse entre problemas distintos o si la cadena estocástica no cambiara el resultado de diseño frente al método convencional.',
     bullets: [
-      'H1 · Automatizar el flujo completo mejora eficiencia, reproducibilidad y aplicabilidad práctica.',
-      'H2 · Integrar análisis estocástico, clima y simulación hidrofísica en una librería modular reduce barreras técnicas.',
-      'H3 · Coordinar metodologías avanzadas representa la incertidumbre de forma más consistente que un único escenario de diseño.',
+      'H1: automatizar el flujo completo mejora eficiencia, reproducibilidad y aplicabilidad práctica.',
+      'H2: integrar análisis estocástico, clima y simulación hidrofísica en una librería modular reduce barreras técnicas.',
+      'H3: coordinar metodologías avanzadas representa la incertidumbre de forma más consistente que un único escenario de diseño.',
     ],
   },
 
@@ -234,14 +236,15 @@ export const slideLibrary: Slide[] = [
     block: 'Motivación', blockColor: '#3b82f6',
     title: 'Pregunta de investigación',
     type: 'quote',
+    quote: '¿Es posible automatizar de forma reproducible la cadena completa del análisis probabilístico del riesgo de inundación bajo incertidumbre hidrológica y climática, integrando metodologías previamente desarrolladas en un marco transferible a proyectos reales de ingeniería?',
     estimatedMinutes: 2,
-    script: 'La pregunta de investigación es: ¿es posible automatizar de forma reproducible la cadena completa del análisis probabilístico del riesgo de inundación bajo incertidumbre hidrológica y climática, integrando metodologías previamente desarrolladas en un marco transferible a proyectos reales de ingeniería? La pregunta reúne cuatro exigencias. La cadena debe conectar datos, análisis estadístico, escenarios y modelos físicos; debe conservar la incertidumbre en lugar de perderla entre etapas; debe poder repetirse y auditarse; y debe funcionar en casos reales con escalas, fuentes de información y motores diferentes. No se busca proponer un método universal que sustituya a todos los existentes, sino comprobar si una arquitectura común puede hacerlos trabajar juntos con rigor.',
+    script: 'La pregunta de investigación es la que aparece a la izquierda: ¿es posible automatizar de forma reproducible la cadena completa del análisis probabilístico del riesgo de inundación bajo incertidumbre hidrológica y climática, integrando metodologías previamente desarrolladas en un marco transferible a proyectos reales de ingeniería? A la derecha está la cadena que exige: datos climáticos con su incertidumbre; una cadena automática que, con las mismas entradas, dé el mismo resultado; modelos físicos adecuados a cada caso; y un proyecto real en el que la frecuencia se decide sobre el impacto. La cuña recuerda la condición esencial: la incertidumbre tiene que llegar hasta el final, sin perderse entre etapas.',
     notes: 'Pronunciar despacio: es la formulación literal de la memoria (cap. 1). El foco está en "automatizar de forma reproducible" e "integrando metodologías previamente desarrolladas" — de ahí que la tesis no reivindique algoritmos nuevos, sino su operacionalización conjunta.',
     bullets: [
-      'Objetivo general · Desarrollar y validar un marco automático, modular y reproducible para el análisis estocástico de inundaciones.',
-      'Integrar datos y modelos de cambio climático en flujos estocásticos de evaluación de inundaciones.',
-      'Conectar generación estocástica, análisis probabilístico y motores físicos mediante interfaces reproducibles.',
-      'Validar la transferencia del mismo núcleo en nueve casos con escalas, climas y necesidades operativas distintas.',
+      'Conectar datos, análisis estadístico, escenarios y modelos físicos.',
+      'Conservar la incertidumbre entre etapas en lugar de perderla.',
+      'Repetir y auditar el cálculo completo.',
+      'Funcionar en casos reales con escalas, datos y motores diferentes.',
     ],
   },
 
@@ -257,9 +260,9 @@ export const slideLibrary: Slide[] = [
     script: 'El objetivo general es desarrollar y validar un marco automático y reproducible para el análisis estocástico de inundaciones bajo incertidumbre hidrológica y climática. Ese objetivo se concreta en cuatro compromisos. Integrar fuentes de datos heterogéneas; encapsular los métodos estadísticos y estocásticos en un núcleo reutilizable; acoplarlos con modelos hidrológicos e hidráulicos sin imponer un único motor; y demostrar su transferencia mediante casos reales de distinta escala. Esta formulación permite que cada parte de la defensa responda a un objetivo y termine en evidencia, no en una mera descripción de herramientas.',
     notes: 'Subrayar que “desarrollar” incluye arquitectura, implementación y validación, no la invención de todos los métodos incorporados. Relacionar OE1-OE4 con los bloques que siguen y recuperar esta estructura en la diapositiva de cierre de hipótesis.',
     bullets: [
-      'Objetivo general · Desarrollar y validar un marco automático y reproducible para analizar inundaciones estocásticas bajo incertidumbre hidrológica y climática.',
-      'OE1–OE2 · Integrar datos heterogéneos y convertir los métodos científicos en componentes reutilizables.',
-      'OE3–OE4 · Acoplar motores físicos y demostrar transferencia mediante casos, resultados e implicaciones de ingeniería.',
+      'Objetivo general: desarrollar y validar un marco automático y reproducible para analizar inundaciones estocásticas bajo incertidumbre hidrológica y climática.',
+      'OE1–OE2: integrar datos heterogéneos y convertir los métodos científicos en componentes reutilizables.',
+      'OE3–OE4: acoplar motores físicos y demostrar transferencia mediante casos, resultados e implicaciones de ingeniería.',
     ],
   },
 
@@ -274,7 +277,7 @@ export const slideLibrary: Slide[] = [
     notes: 'Esta diapositiva pertenece todavía a la introducción. No mencionar aquí nombres de paquetes, herramientas o casos. Leer por filas: necesidad → estrategia → criterio de éxito. Los nombres técnicos se presentan más adelante, después del estado de la técnica y de la arquitectura.',
     mathBlock: `
       <div class="traceability-matrix">
-        <div class="traceability-head">NECESIDAD</div><div class="traceability-head">ESTRATEGIA</div><div class="traceability-head">CRITERIO DE ÉXITO</div>
+        <div class="traceability-head">Necesidad</div><div class="traceability-head">Estrategia</div><div class="traceability-head">Criterio de éxito</div>
         <div class="traceability-goal"><strong>Representar la incertidumbre</strong><span>Un escenario único no describe todas las respuestas posibles</span></div>
         <div class="traceability-build"><strong>Múltiples escenarios plausibles</strong><span>Propagar variabilidad de entradas, estados y parámetros</span></div>
         <div class="traceability-proof"><strong>Frecuencia sobre el impacto</strong><span>Calcularla en caudal, calado, extensión o nivel</span></div>
@@ -320,18 +323,31 @@ export const slideLibrary: Slide[] = [
   {
     id: 10,
     block: 'Estado del arte', blockColor: '#6366f1',
-    title: 'Posicionamiento y originalidad de HYDRA',
-    subtitle: 'Frente a Stan/PyMC/R-INLA, HydroMT y las bases de datos globales de referencia',
+    title: 'Posicionamiento frente a los marcos integrados más próximos',
+    subtitle: 'Cobertura funcional comparada en el capítulo 2 de la memoria',
     estimatedMinutes: 2,
     type: 'normal',
-    script: '"La brecha principal no es la ausencia de métodos aislados, sino la falta de integración operativa entre datos climáticos, análisis estadístico, generación estocástica, modelos físicos y documentación utilizable." Herramientas como Stan, PyMC, R-INLA o extRemes resuelven muy bien la inferencia bayesiana, pero de forma aislada del modelado hidráulico. HYDRA no compite con ellas: las orquesta. De hecho, el patrón de adaptadores de pyhydra está inspirado explícitamente en el proyecto HydroMT, un precedente reconocido en la propia memoria.',
-    notes: 'Dejar claro al tribunal: "No hemos reinventado HEC-RAS, ni Stan, ni PyMC: hemos construido el director de orquesta que les permite trabajar juntos de forma reproducible."\n\n❓ "¿Por qué no usar directamente HydroMT o Stan en vez de construir HYDRA?" → La propia tesis argumenta que la fragmentación es la barrera: HydroMT es el precedente reconocido para el patrón de adaptadores, pero no cubre extremo a extremo la cadena estocástica/cópulas/clima (cap. 2, Brecha identificada).',
+    script: 'La brecha no es la ausencia de métodos, sino la falta de integración operativa. Para comprobarlo, la memoria compara HYDRA con los marcos integrados más próximos. CLIMADA es la referencia para el riesgo climático global, pero trabaja con funciones de impacto agregadas y sin una cadena hidrológico-hidráulica explícita. RainyDay genera tormentas estocásticas por transposición, pero delega la simulación física y el análisis de impactos. wflow y HydroMT automatizan la construcción de modelos a partir de datos globales, pero no abordan los extremos multivariantes ni el período de retorno sobre el impacto. Los marcos de simulación continua, como el de Falter y colaboradores, sí calculan el riesgo de extremo a extremo, pero son implementaciones ligadas a un dominio y a un equipo concretos. Ninguno cubre a la vez las ocho capacidades de la tabla, y esa combinación es la que HYDRA integra. Herramientas como Stan, PyMC o extRemes no son competidores: son componentes que la arquitectura utiliza.',
+    notes: 'La tabla reproduce la comparación del cap. 2 (tab:marcos_comparativa). «Parcial» significa que la capacidad existe de forma limitada o requiere herramientas externas. Recorrer por columnas: cada marco cubre una parte; solo la columna de HYDRA está completa.\n\n❓ «¿Por qué no usar directamente HydroMT o Stan?» → HydroMT es el precedente reconocido del patrón de adaptadores de pyhydra y Stan/PyMC se usan dentro de HYDRA; ninguno cubre la cadena estocástica, las cópulas, el clima y el período de retorno sobre el impacto (cap. 2, Brecha identificada).\n\n❓ «T(forzante) ≠ T(impacto) es una idea antigua» → Ver notas de «El problema científico»: distribución derivada (Eagleson, 1972) y simulación continua; la aportación es su operacionalización, no el principio.\n\nBase metodológica citada en la memoria: Hosking y Wallis (1997, L-momentos/RFA), Rodríguez-Iturbe (1987-88, NSRP), Aas et al. (2009, cópulas vine), Teutschbein y Seibert (2012, corrección de sesgo).',
+    mathBlock: `
+      <table class="thesis-matrix positioning-matrix">
+        <thead><tr><th>Capacidad</th><th class="tm-hydra">HYDRA</th><th>CLIMADA</th><th>RainyDay</th><th>wflow / HydroMT</th><th>Sim. continua</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Adquisición automática de datos globales</th><td class="tm-yes">●</td><td class="tm-yes">●</td><td class="tm-part">◐</td><td class="tm-yes">●</td><td class="tm-no">—</td></tr>
+          <tr><th scope="row">Extremos con incertidumbre (bayesiano, AFR)</th><td class="tm-yes">●</td><td class="tm-part">◐</td><td class="tm-no">—</td><td class="tm-no">—</td><td class="tm-part">◐</td></tr>
+          <tr><th scope="row">Análisis multivariante (cópulas)</th><td class="tm-yes">●</td><td class="tm-no">—</td><td class="tm-no">—</td><td class="tm-no">—</td><td class="tm-part">◐</td></tr>
+          <tr><th scope="row">Generación estocástica de eventos</th><td class="tm-yes">●</td><td class="tm-no">—</td><td class="tm-yes">●</td><td class="tm-no">—</td><td class="tm-yes">●</td></tr>
+          <tr><th scope="row">Corrección de sesgo de proyecciones</th><td class="tm-yes">●</td><td class="tm-part">◐</td><td class="tm-no">—</td><td class="tm-part">◐</td><td class="tm-part">◐</td></tr>
+          <tr><th scope="row">Motores profesionales (HEC, SWAT, SFINCS)</th><td class="tm-yes">●</td><td class="tm-no">—</td><td class="tm-no">—</td><td class="tm-part">◐</td><td class="tm-no">—</td></tr>
+          <tr><th scope="row">Período de retorno basado en impacto</th><td class="tm-yes">●</td><td class="tm-part">◐</td><td class="tm-no">—</td><td class="tm-no">—</td><td class="tm-yes">●</td></tr>
+          <tr><th scope="row">Producto transferible (Docker, web, notebooks)</th><td class="tm-yes">●</td><td class="tm-yes">●</td><td class="tm-part">◐</td><td class="tm-yes">●</td><td class="tm-no">—</td></tr>
+        </tbody>
+      </table>
+      <p class="thesis-matrix-legend">● Sí · ◐ Parcial (limitada o con herramientas externas) · — No. Fuente: memoria, cap. 2.</p>
+    `,
     bullets: [
-      '📊 Inferencia bayesiana aislada: Stan, PyMC, R-INLA, OpenTURNS, extRemes → excelentes en estadística, sin acoplamiento a motores hidráulicos.',
-      '🌐 Precedente arquitectónico: HydroMT inspira explícitamente el patrón de adaptadores de pyhydra, pero no cubre la cadena estocástica-cópulas-clima.',
-      '🛰️ Fuentes de datos globales: GloFAS, GRDC, SoilGrids, PERSIANN → homogeneizadas y encadenadas automáticamente, no solo descargadas.',
-      '📚 Base metodológica citada: Hosking & Wallis (1997, L-momentos/RFA), Rodríguez-Iturbe (1987-88, NSRP), Aas et al. (2009, cópulas vine), Teutschbein & Seibert (2012, bias correction).',
-      '🚀 Posicionamiento propio: "Esta tesis no propone nuevos métodos... demuestra que es posible integrar y operacionalizar este conjunto de metodologías dentro de un marco reproducible común."',
+      'Ningún marco revisado cubre a la vez las ocho capacidades de la tabla.',
+      'Stan, PyMC o extRemes se integran como componentes; no compiten con HYDRA.',
     ],
   },
 
@@ -343,17 +359,17 @@ export const slideLibrary: Slide[] = [
     id: 11,
     block: 'Arquitectura', blockColor: '#0891b2',
     title: 'La arquitectura del sistema de tres niveles',
-    subtitle: 'Nivel científico · Nivel operativo/servicios · Nivel de interfaz',
+    subtitle: 'Nivel científico, nivel de servicios y nivel de interfaz',
     estimatedMinutes: 2,
     url: '/', anchor: '#modulos', highlight: '#modulos .grid',
     type: 'normal',
-    script: 'El sistema se organiza en tres capas. En la base, la librería pyhydra escrita en Python que encapsula la lógica científica en 14 submódulos. En la capa intermedia, una API REST con FastAPI que expone las operaciones y un contenedor JupyterLab que permite a científicos depurar. En la superficie, la web interactiva Astro/Tailwind, con un catálogo de 26 notebooks generales y 23 entradas de casos piloto.',
+    script: 'La arquitectura tiene tres niveles. Abajo, el núcleo científico pyhydra: catorce submódulos en tres bloques —fuentes de datos, clima y estadística, y modelización—, instalable como una librería de Python. En medio, los servicios de ejecución: una API que alimenta las herramientas web y un entorno JupyterLab con los notebooks reproducibles. Arriba, la interfaz web, con documentación, herramientas y casos navegables. Todo se ejecuta dentro del mismo entorno en contenedores, el recuadro discontinuo, para que el cálculo sea idéntico en un portátil o en la nube.',
     notes: 'Explicar las ventajas del desacoplamiento: si la interfaz cambia, el motor científico (pyhydra) sigue siendo totalmente independiente y utilizable en scripts de terminal.\n\nDependencias en tres niveles: núcleo pip instalable (NumPy, pandas, xarray, dask, scikit-learn, OpenTURNS...), extensiones Docker (PyMC, pyvinecopulib, NEOPRENE, CoSMoS_py, pykrige, lmoments3, hydromt_sfincs, hecdss, pySWATPlus, spotpy), y motores externos (HEC-HMS/RAS, SFINCS, SWAT+).',
     bullets: [
-      '🔬 pyhydra (Core Python) → 14 submódulos en 3 bloques (fuentes de datos, clima, modelización). Instalable por pip.',
-      '⚡ FastAPI API → Expone analítica compleja para herramientas web.',
-      '📓 JupyterLab Workspace → 26 notebooks generales + 23 entradas de casos piloto, sesiones aisladas por usuario.',
-      '🎨 Web (Astro) → Frontend modular enfocado en la experiencia de usuario.',
+      'pyhydra (Core Python) → 14 submódulos en 3 bloques (fuentes de datos, clima, modelización). Instalable por pip.',
+      'FastAPI API → Expone analítica compleja para herramientas web.',
+      'JupyterLab Workspace → 26 notebooks generales + 23 entradas de casos piloto, sesiones aisladas por usuario.',
+      'Web (Astro) → Frontend modular enfocado en la experiencia de usuario.',
     ],
   },
 
@@ -361,12 +377,12 @@ export const slideLibrary: Slide[] = [
     id: 12,
     block: 'Arquitectura', blockColor: '#0891b2',
     title: 'Infraestructura de despliegue industrial',
-    subtitle: 'Docker Compose + Nginx Reverse Proxy + CI/CD en Azure',
+    subtitle: 'El mismo entorno de cálculo en un portátil o en la nube',
     estimatedMinutes: 2,
     figure: 'fig_hydra_azure_infraestructura.png', figurePosition: 'full',
     figureCaption: 'Esquema de la infraestructura de contenedores para despliegue local o en Azure ACA',
     type: 'figure',
-    script: 'Para garantizar la reproducibilidad y facilidad de despliegue, todo el stack se empaqueta en tres contenedores de Docker coordinados por un proxy Nginx: JupyterLab, la API FastAPI y el frontend web. La integración continua en GitHub Actions construye las imágenes linux/amd64 y las publica en Azure Container Registry, desde donde se despliegan en Azure Container Apps. Esto permite ejecutar la plataforma idénticamente en un portátil local sin conexión a internet, o escalarla en la nube.',
+    script: 'Para que un resultado no dependa del ordenador de quien lo calcula, la plataforma se empaqueta en contenedores: el entorno de notebooks, la API y la web, coordinados por un proxy. Una canalización de integración continua construye esas imágenes y las publica en la nube. Lo relevante para la tesis no es la tecnología concreta, sino que la misma configuración se ejecuta igual en un portátil sin conexión o en un servidor, que es lo que permite repetir los cálculos.',
     notes: 'Señalar las partes de la figura de infraestructura. Destacar el volumen compartido de datos `/data` (montado desde Azure Files en producción) que permite a Jupyter y a la API leer las mismas series sin duplicados. Cada usuario recibe una sesión de notebooks aislada mediante una cookie anónima (hydra_jupyter_session), copiando los notebooks a una carpeta de sesión propia — así nadie edita el catálogo compartido.',
   },
 
@@ -395,14 +411,14 @@ export const slideLibrary: Slide[] = [
     estimatedMinutes: 3,
     url: '/modules/fuentes-datos',
     type: 'normal',
-    script: 'El primer módulo automatiza la descarga y estructuración de datos. Evita la descarga manual de portales inconexos. Se conecta mediante APIs a Copernicus, satélites de la NASA y redes de estaciones locales, devolviendo datos listos en memoria con formato, huso horario (UTC) y proyección (WGS84) estandarizados, junto a metadatos de trazabilidad (fuente, fecha de descarga, parámetros de consulta).',
+    script: 'El primer bloque resuelve la entrada de datos. A la izquierda están las cinco familias de fuentes: estaciones, reanálisis como ERA5, satélite, ríos y suelos, y proyecciones climáticas. Cada una tiene su formato, su resolución y su forma de acceso. Los adaptadores de pyhydra las descargan, controlan su calidad y las entregan con una salida común: hora en UTC, coordenadas WGS84 y la fuente, la fecha y la consulta registradas como metadatos. Así, cualquier análisis posterior parte de datos homogéneos y trazables.',
     notes: 'En modo online: navegar a /modules/fuentes-datos. Mostrar la lista de fuentes soportadas.\nEnfatizar el valor del control de calidad integrado: los códigos de estación OMM compartidos entre OGIMET y Meteostat permiten validación cruzada automática entre fuentes.\n\nDetalle de ingeniería real para el módulo de suelos: `find_usda_soilclass` clasifica texturalmente (USDA) a partir de las fracciones SNDPPT/SLTPPT/CLYPPT de SoilGrids, y `extract_mode_soilclass` agrega por moda entre las 7 profundidades estándar — no es solo "descargar suelos", hay lógica de agregación real detrás.',
     bullets: [
-      '🌧️ Precipitación: ERA5 (0.25°, horaria, desde 1940), GPM-IMERG (0.1°, 30 min, desde 2000, hasta 60°N/S), PERSIANN-CCS (~0.04°, horaria, desde 2003).',
-      '📈 Caudales fluviales: GloFAS-ERA5 (0.1°, desde 1979, modelo de tránsito H-TESSEL), GRDC, USGS.',
-      '🌡️ Cambio Climático: Modelos CMIP6 (ESGF y Copernicus Climate Data Store).',
-      '🌱 Suelos: SoilGrids (250 m, archivo estático 2017, 7 profundidades), clasificación textural USDA automática.',
-      '📡 Estaciones: Meteostat agrega ~70.000 estaciones globales (NOAA ISD, DWD, AEMET, Environment Canada) con códigos OMM cruzables entre fuentes.',
+      'Precipitación: ERA5 (0.25°, horaria, desde 1940), GPM-IMERG (0.1°, 30 min, desde 2000, hasta 60°N/S), PERSIANN-CCS (~0.04°, horaria, desde 2003).',
+      'Caudales fluviales: GloFAS-ERA5 (0.1°, desde 1979, modelo de tránsito H-TESSEL), GRDC, USGS.',
+      'Cambio Climático: Modelos CMIP6 (ESGF y Copernicus Climate Data Store).',
+      'Suelos: SoilGrids (250 m, archivo estático 2017, 7 profundidades), clasificación textural USDA automática.',
+      'Estaciones: Meteostat agrega ~70.000 estaciones globales (NOAA ISD, DWD, AEMET, Environment Canada) con códigos OMM cruzables entre fuentes.',
     ],
   },
 
@@ -416,8 +432,8 @@ export const slideLibrary: Slide[] = [
     figure: 'fig_gev_comparacion.png', figurePosition: 'right',
     figureCaption: 'Comparación empírica de ajustes GEV (Máx. Verosimilitud vs L-Momentos vs Bayesiana)',
     type: 'split',
-    script: 'Para calcular caudales o precipitaciones asociadas a períodos de retorno se implementa la función de distribución GEV con cuatro vías de ajuste: MLE (scipy.stats.genextreme), L-momentos (Hosking & Wallis, la opción por defecto con series cortas de menos de 30 años), inferencia bayesiana vía PyMC con muestreador NUTS y parametrización no centrada (4 cadenas de 2.000 muestras), y una aproximación más económica basada en la matriz de información de Fisher. La inferencia bayesiana resulta superior porque no depende puramente de la muestra observada corta y proporciona curvas de credibilidad completas, fundamentales para el diseño bajo incertidumbre. Una clase `HierarchicalGEV` permite además el análisis regional agrupado, con respaldo en PyStan.',
-    notes: 'Explicar brevemente la fórmula en pantalla. El caso Valencia 2024 es la demostración más contundente: sin el evento en la serie, MLE estima un período de retorno superior a 11.000 años para la precipitación observada (un valor sin sentido físico); el estimador bayesiano ya lo situaba en ~3.069 años antes del evento, y en 66-91 años al incluirlo.\n\n❓ "¿Por qué NUTS y no Metropolis-Hastings clásico?" → NUTS explora mejor la geometría de la posterior en distribuciones de cola pesada como la GEV, reduciendo autocorrelación entre muestras; la parametrización no centrada evita patologías de "embudo" (funnel) típicas de estos modelos jerárquicos.\n\nPara diagnósticos regionales se usa el estadístico de discordancia y la heterogeneidad H₁ de Hosking-Wallis.',
+    script: 'Para estimar los cuantiles de diseño, el módulo de extremos ajusta la distribución GEV con cuatro estimadores. Máxima verosimilitud es rápida y útil con series largas, pero sensible a extremos aislados. Los L-momentos son más estables con registros cortos, de menos de treinta años. La inferencia bayesiana comunica la incertidumbre paramétrica como una banda de credibilidad, a cambio de revisar la convergencia y la sensibilidad a las distribuciones a priori. La aproximación de Fisher ofrece una estimación de incertidumbre más económica para análisis exploratorios. La memoria no elige un estimador universal: comparar métodos, y no elegir uno de forma automática, es lo que permite valorar la fiabilidad del cuantil. Para el análisis regional, un modelo jerárquico comparte información entre estaciones.',
+    notes: 'Explicar brevemente la fórmula en pantalla. El caso Valencia 2024 lo ilustra: sin el evento en la serie, MLE sitúa la precipitación observada en más de 11.000 años y L-momentos en más de 31.000; el bayesiano, en unos 3.069 años. Al incluirlo, los tres convergen entre 66 y 91 años (Bayes 66, MLE 80, L-momentos 91).\n\nDetalle de implementación (decir solo si preguntan): MLE con scipy.stats.genextreme; L-momentos por defecto con menos de 30 años; PyMC con NUTS y parametrización no centrada (4 cadenas × 2.000 muestras); clase HierarchicalGEV para el análisis regional, con respaldo en PyStan.\n\n❓ «¿Qué priors usa y cuánto influyen?» → En el caso Valencia, priors débiles: μ∼N(0,10⁴), σ∼Cauchy(0,5) y ξ∼N(0, 0,25). La memoria (cap. 5) reconoce que MCMC exige revisar convergencia y sensibilidad a priors; no presentar el bayesiano como superior en general.\n\n❓ «¿Por qué NUTS y no Metropolis-Hastings clásico?» → NUTS explora mejor la geometría de la posterior en distribuciones de cola pesada como la GEV y reduce la autocorrelación entre muestras; la parametrización no centrada evita el «embudo» típico de los modelos jerárquicos.\n\nPara diagnósticos regionales se usa el estadístico de discordancia y la heterogeneidad H₁ de Hosking-Wallis.',
     mathBlock: `
       <div class="gev-equation">
         <span>F(x; &mu;, &sigma;, &xi;) =</span>
@@ -426,10 +442,10 @@ export const slideLibrary: Slide[] = [
       <p class="gev-equation-caption">&mu;: localización · &sigma;: escala · &xi;: forma</p>
     `,
     bullets: [
-      'Máxima verosimilitud · ajuste rápido, sensible a extremos aislados.',
-      'L-momentos · opción robusta para registros cortos (menos de 30 años).',
-      'Inferencia bayesiana · representa la incertidumbre ante eventos excepcionales.',
-      'Aproximación de Fisher · alternativa de menor coste para análisis exploratorios.',
+      'Máxima verosimilitud: ajuste rápido, sensible a extremos aislados.',
+      'L-momentos: opción robusta para registros cortos (menos de 30 años).',
+      'Inferencia bayesiana: banda de credibilidad; exige revisar priors y convergencia.',
+      'Aproximación de Fisher: alternativa de menor coste para análisis exploratorios.',
     ],
   },
 
@@ -443,14 +459,13 @@ export const slideLibrary: Slide[] = [
     figure: 'fig_copula_joint_ret.png', figurePosition: 'right',
     figureCaption: 'Período de retorno conjunto (AND en rojo, OR en azul) para confluencias fluviales costeras',
     type: 'split',
-    script: 'El riesgo real a menudo surge de la combinación de eventos (e.g. lluvia intensa simultánea con nivel alto de marea). pyhydra incorpora cópulas Gaussianas (pico-duración-volumen) y Gumbel/Clayton/Frank para eventos compuestos como oleaje y lluvia, parametrizadas mediante la tau de Kendall. Esto permite calcular el período de retorno conjunto AND y OR, y localizar el Evento de Diseño Más Probable (MPDE) como el máximo de la densidad conjunta sobre la isolínea de un período de retorno dado, siguiendo la formulación de Salvadori y De Michele.',
-    notes: 'Explicar las cópulas implementadas: Gaussiana, Gumbel, Clayton, Frank. Las cópulas permiten separar las marginales (distribuciones de cada variable) de su estructura de dependencia.\n\nDato de impacto (extensión vine-cópula sobre Besaya, Urrea 2026): un vine flexible logra un AIC mediano de -5,04 frente a 3,91 de la cópula gaussiana con agrupación regional, y un RMSE de cola superior de 0,11 frente a 0,30. Para un período de retorno conjunto de 100 años, el nivel crítico de Kendall pasa de τ=0,778 (gaussiana) a τ=0,993 (vine), lo que implica una tormenta de diseño un 36% más intensa (63,45 mm frente a 46,49 mm) — una diferencia de diseño nada trivial. Un emulador basado en Procesos Gaussianos con kernel racional cuadrático reduce el coste de calcular la función de distribución conjunta (JCDF) en un 94%, con un error medio absoluto de 9,25·10⁻⁴.',
+    script: 'El riesgo real a menudo surge de la combinación de eventos (e.g. lluvia intensa simultánea con nivel alto de marea). El módulo incorpora cópulas gaussianas para describir conjuntamente pico, duración y volumen, y cópulas de Gumbel, Clayton y Frank para eventos compuestos como oleaje y lluvia. Esto permite calcular el período de retorno conjunto AND y OR, y localizar el Evento de Diseño Más Probable (MPDE) como el máximo de la densidad conjunta sobre la isolínea de un período de retorno dado, siguiendo la formulación de Salvadori y De Michele.',
+    notes: 'Explicar las cópulas implementadas: Gaussiana, Gumbel, Clayton, Frank. Las cópulas permiten separar las marginales (distribuciones de cada variable) de su estructura de dependencia.\n\n⚠️ Línea de extensión del grupo SIN autoría del doctorando (Urrea et al., 2026; la memoria la excluye expresamente de sus contribuciones en la tabla de autoría del cap. 9). No presentarla como resultado propio; usar solo si preguntan por extensiones: un vine flexible logra un AIC mediano de -5,04 frente a 3,91 de la cópula gaussiana con agrupación regional, y un RMSE de cola superior de 0,11 frente a 0,30. Para un período de retorno conjunto de 100 años, el nivel crítico de Kendall pasa de τ=0,778 (gaussiana) a τ=0,993 (vine), lo que implica una tormenta de diseño un 36% más intensa (63,45 mm frente a 46,49 mm) — una diferencia de diseño nada trivial. Un emulador basado en Procesos Gaussianos con kernel racional cuadrático reduce el coste de calcular la función de distribución conjunta (JCDF) en un 94%, con un error medio absoluto de 9,25·10⁻⁴.',
     bullets: [
-      '🔗 Familias implementadas: Gaussiana (FloodEventCopula, pico-duración-volumen) y Gumbel/Clayton/Frank (BivariateCopula, eventos compuestos), parametrizadas vía τ de Kendall.',
-      '📊 T_OR: probabilidad de que al menos una variable exceda el umbral (diseño conservador).',
-      '📊 T_AND: probabilidad de excedencia simultánea (crítico en confluencias fluviales).',
-      '📍 MPDE: máximo de la densidad conjunta sobre la isolínea del período de retorno de diseño (Salvadori & De Michele).',
-      '🚀 Extensión vine (Besaya): AIC -5,04 vs 3,91 gaussiano; tormenta de diseño un 36% más intensa a T=100 años.',
+      'Familias: gaussiana para pico, duración y volumen; Gumbel, Clayton y Frank para eventos compuestos.',
+      'T_OR: al menos una variable supera el umbral (diseño conservador).',
+      'T_AND: superación simultánea (crítica en confluencias fluviales).',
+      'Evento de diseño más probable: máximo de la densidad conjunta sobre la isolínea del período de retorno (Salvadori y De Michele).',
     ],
   },
 
@@ -467,10 +482,10 @@ export const slideLibrary: Slide[] = [
     script: 'El módulo estocástico permite crear ensembles de series meteorológicas coherentes en espacio y tiempo. El generador espacial NSRP (proceso de pulsos rectangulares de Neyman-Scott, Rodríguez-Iturbe 1987-88) se calibra para reproducir la media, la varianza, la probabilidad de día seco, la autocorrelación de orden 1 y el coeficiente de variación de la serie observada, con una versión multisitio (STNSRP) para campos espacialmente coherentes. El generador temporal CoSMoS (Papalexiou 2018) ajusta por separado la distribución marginal y la estructura de autocorrelación estacional, y las combina para simular series manteniendo ambas propiedades y la estacionalidad simultáneamente.',
     notes: 'Explicar la diferencia:\n- NSRPModel (puntual) vs STNSRPModel (multisitio): se calibran con datos minutales u horarios para modelar celdas de tormenta espaciales.\n- CoSMoS: fit_distribution + fit_acs calibran marginal y autocorrelación por separado; analyze_ts encadena ambos; simulate_ts/generate_ts producen las realizaciones finales.\n\nLa reducción del ensemble se apoya en MaxDiss (Camus 2011): maximiza iterativamente la distancia mínima entre escenarios seleccionados. La reconstrucción de los eventos no simulados usa un k-NN implementado en FloodMapInterpolator, y la clasificación de formas de hidrograma se apoya en PCA + k-means (HydrographClassifier).',
     bullets: [
-      '🌧️ NSRP / STNSRP (Rodríguez-Iturbe 1987-88): calibrado sobre media, varianza, prob. de día seco, autocorrelación lag-1 y coeficiente de variación.',
-      '📈 CoSMoS (Papalexiou 2018): ajuste independiente de marginal (fit_distribution) y autocorrelación estacional (fit_acs), combinados en analyze_ts/simulate_ts.',
-      '🔵 MaxDiss (Camus 2011): maximiza iterativamente la distancia mínima entre escenarios seleccionados de un ensemble de N realizaciones.',
-      '🔄 Reconstrucción k-NN (FloodMapInterpolator) y clasificación de hidrogramas vía PCA + k-means (HydrographClassifier).',
+      'NSRP / STNSRP: lluvia puntual y multisitio calibrada con media, varianza, probabilidad de día seco y autocorrelación.',
+      'CoSMoS: reproduce a la vez la distribución marginal y la autocorrelación estacional.',
+      'MaxDiss: selecciona un subconjunto de escenarios que cubre todo el rango del ensemble.',
+      'k-NN y clasificación de hidrogramas: reconstruyen los impactos de los escenarios no simulados.',
     ],
   },
 
@@ -482,14 +497,14 @@ export const slideLibrary: Slide[] = [
     estimatedMinutes: 2,
     url: '/modules/modelizacion',
     type: 'normal',
-    script: 'El último bloque actúa como puente con los modelos numéricos de ingeniería mediante un patrón de adaptador con cuatro responsabilidades fijas: preparar las entradas en formato nativo, ejecutar el motor vía API, controlador o subproceso con registro de versión y código de salida, leer las salidas (DSS, HDF, NetCDF, GeoTIFF o texto) en estructuras comunes, y validar la finalización y la plausibilidad física de los resultados. La calibración de HEC-HMS, por ejemplo, edita el fichero .basin como factores multiplicativos envueltos en una clase spotpy que ejecuta el algoritmo SCE-UA (evolución compleja mezclada).',
-    notes: 'En modo online: navegar a /modules/modelizacion. Explicar el concepto de patrón adaptador: permite acoplar nuevos modelos sin alterar la estadística extrema.\n\nHonestidad científica: Iber, usado en Besaya y Mallorca, NO tiene adaptador — carece de API programable para ejecución por lotes, a diferencia de HEC-RAS y SFINCS. Es una limitación reconocida explícitamente, buen contraste si el tribunal pregunta por la cobertura real de automatización.',
+    script: 'El último bloque conecta la cadena con los motores de ingeniería mediante un adaptador común. Los escenarios entran por arriba y el adaptador cumple siempre cuatro pasos: prepara las entradas en el formato de cada motor, lo ejecuta registrando versión y resultado, lee las salidas en estructuras comunes y valida que la simulación es físicamente plausible. A la derecha están los motores conectados: HEC-HMS, SWAT+, SFINCS y HEC-RAS. Añadir o cambiar un motor no obliga a rehacer la estadística ni los escenarios. Iber aparece en rojo porque no permite ejecución por lotes: en los casos iniciales se utilizó de forma manual.',
+    notes: 'En modo online: navegar a /modules/modelizacion. Explicar el concepto de patrón adaptador: permite acoplar nuevos modelos sin alterar la estadística extrema.\n\nHonestidad científica: Iber, usado en Besaya y Mallorca, NO tiene adaptador — carece de API programable para ejecución por lotes, a diferencia de HEC-RAS y SFINCS. Es una limitación reconocida explícitamente, buen contraste si el tribunal pregunta por la cobertura real de automatización.\n\nDetalle de implementación (solo si preguntan): la calibración de HEC-HMS edita el fichero .basin con factores multiplicativos dentro de una clase spotpy que ejecuta SCE-UA; HEC-RAS prepara los caudales con create_flow_series (máximo móvil centrado); SWAT+ escribe .pcp/.tmp o pcp.cli/tmp.cli y lee channel_sd.',
     bullets: [
-      '🏔️ HEC-HMS (Lluvia-Escorrentía): calibración automática vía spotpy + SCE-UA sobre el fichero .basin (factores multiplicativos), con NSE/PBIAS/RMSE configurable.',
-      '🌱 SWAT+ (Simulación continua): escritura automática de ficheros climáticos (.pcp/.tmp o pcp.cli/tmp.cli) y lectura de salidas channel_sd.',
-      '🌊 SFINCS (Hidráulico 2D ultra-rápido): motor ideal para simulación Monte Carlo de miles de escenarios.',
-      '🏙️ HEC-RAS 1D/2D: generación automática de geometría y suavizado de caudales (create_flow_series, máximo móvil centrado).',
-      '⚠️ Límite honesto: Iber (Besaya, Mallorca) no tiene adaptador — sin API de ejecución por lotes.',
+      'HEC-HMS: calibración automática de parámetros frente a NSE, PBIAS o RMSE.',
+      'SWAT+: simulación continua con forzamientos climáticos generados automáticamente.',
+      'SFINCS: motor 2D rápido para campañas Monte Carlo de miles de escenarios.',
+      'HEC-RAS 1D/2D: geometría e hidrogramas de entrada preparados automáticamente.',
+      'Límite: Iber (Besaya, Mallorca) no tiene adaptador por falta de ejecución por lotes.',
     ],
   },
 
@@ -505,13 +520,13 @@ export const slideLibrary: Slide[] = [
     estimatedMinutes: 1,
     url: '/', anchor: '#herramientas', highlight: '#herramientas .grid',
     type: 'normal',
-    script: 'Para transferir el conocimiento a usuarios que no programan, HYDRA incorpora herramientas interactivas conectadas con la API y con el núcleo pyhydra. En la defensa no recorreré el catálogo: utilizaré una única demostración, el ajuste estadístico ligado al caso Valencia, para probar que el motor científico es accesible, reproducible y operativo. El resto de herramientas queda como material de apoyo para las preguntas del tribunal.',
+    script: 'Para que quien no programa pueda aplicar estos métodos, HYDRA ofrece herramientas interactivas: extremos GEV, cópulas, series sintéticas, curvas IDF, análisis regional y corrección de sesgo. Lo importante es lo que hay debajo: cada herramienta llama, a través de la API, al mismo núcleo pyhydra que usan los notebooks y los casos, no a una copia simplificada. En la defensa utilizaré solo una, el ajuste de extremos ligado al caso Valencia; el resto queda como apoyo para las preguntas.',
     notes: 'No navegar por la cuadrícula de herramientas. Esta diapositiva explica la estrategia: una demo principal (estadística/Valencia) y el resto como reserva. Si el tribunal pregunta por generación estocástica, sensibilidad, RFA, interpolación o sesgo, abrir entonces la herramienta correspondiente.',
     bullets: [
-      '🎲 Simulación estocástica CoSMoS en 3 pasos',
-      '📊 Estimación de GEV bayesiana y curvas de retorno',
-      '🔗 Cópulas compuestas y curvas AND/OR en confluencias',
-      '🧭 Una demostración principal; el resto, preparado como material de reserva para preguntas',
+      'Simulación estocástica CoSMoS en 3 pasos',
+      'Estimación de GEV bayesiana y curvas de retorno',
+      'Cópulas compuestas y curvas AND/OR en confluencias',
+      'Una demostración principal; el resto, preparado como material de reserva para preguntas',
     ],
   },
 
@@ -527,8 +542,8 @@ export const slideLibrary: Slide[] = [
     webPurpose: 'Enseñar una sola cadena científica completa, conectada con el caso Valencia.',
     webAction: 'Ejecutar un ajuste preparado y señalar resultado, incertidumbre y trazabilidad. Máximo 3 minutos.',
     type: 'normal',
-    script: 'Voy a mostrar un solo recorrido, vinculado al análisis de extremos de Valencia. Primero cargo la serie preparada y explico qué observaciones se consideran extremas; en este ejemplo, el umbral POT separa los eventos que entran en el ajuste. Después inicio el cálculo y señalo tres cosas: qué método se ha ejecutado, qué cuantil de diseño produce y cómo cambia su incertidumbre. La comparación entre la estimación bayesiana y el ajuste de máxima verosimilitud ayuda a ver que no debemos comunicar solo una cifra puntual. La banda de credibilidad forma parte del resultado. No recorreré ahora todas las herramientas: esta demostración sirve para comprobar que el método descrito también puede ejecutarse y documentarse desde la plataforma. Si la conexión falla, explicaré la secuencia y continuaré sin convertir la defensa en una prueba técnica.',
-    notes: 'Si la API está disponible, subir serie diaria y ajustar. Resaltar la banda de credibilidad (el área sombreada). Si no hay internet, explicar que el componente está listo en localhost.',
+    script: 'En pantalla está la interfaz real de la herramienta. Voy a mostrar un solo recorrido, vinculado al análisis de extremos de Valencia. Primero cargo la serie preparada y fijo qué observaciones se consideran extremas. Después ejecuto el ajuste y señalo tres cosas: qué método se ha aplicado, qué cuantil de diseño produce y cuál es su banda de credibilidad. La comparación con máxima verosimilitud muestra por qué no debemos comunicar una cifra puntual: la banda forma parte del resultado. Si la conexión falla, mostraré la grabación de este mismo ajuste y su resultado ya calculado.',
+    notes: 'Si la API está disponible, cargar la serie preparada y ajustar. Resaltar la banda de credibilidad (área sombreada).\n\nPlan B obligatorio: llevar grabado en local un vídeo de 60–90 s de este mismo ajuste y una captura del resultado final con la banda de credibilidad. Ensayar el paso a la grabación sin pedir disculpas ni improvisar.',
     bullets: [
       '→ Selección de datos y extracción de máximos anuales o POT.',
       '→ Ajuste numérico instantáneo de MLE y L-Momentos.',
@@ -671,21 +686,21 @@ export const slideLibrary: Slide[] = [
     id: 27,
     block: 'Casos de estudio', blockColor: '#f59e0b',
     title: 'Nueve casos, tres dimensiones de validación',
-    subtitle: 'Inundación estocástica · extremos e incertidumbre · clima y escalabilidad',
+    subtitle: 'Tres reproducibles con notebooks en HYDRA; seis documentados desde su publicación o proyecto',
     estimatedMinutes: 2,
     type: 'table',
-    script: 'El capítulo de validación organiza los casos en tres dimensiones. Besaya, Mallorca y Calle 30 comprueban la cadena de inundación estocástica basada en impactos. Valencia contrasta estimadores de extremos ante un evento sin precedente. Tanganica, Andes, IAHR 2022, SIMPCCe y Panamá prueban el tratamiento del clima, la disponibilidad desigual de datos y la transferencia a escalas diferentes. La tabla muestra qué bloques metodológicos intervienen en cada caso; no es una clasificación de importancia.',
-    notes: 'Mantener las tres agrupaciones de la memoria: (1) núcleo de inundación estocástica basada en impacto — Besaya, Mallorca y Calle 30; (2) incertidumbre estadística y extremos — Valencia; (3) cambio climático, datos globales y escalabilidad — Tanganica, Andes, IAHR 2022, SIMPCCe y Panamá. Abrir la web solo en los momentos de evidencia ya señalados.',
+    script: 'El capítulo de validación organiza los casos en tres dimensiones. Besaya, Mallorca y Calle 30 comprueban la cadena de inundación estocástica basada en impactos. Valencia contrasta estimadores de extremos ante un evento sin precedente. Tanganica, Andes, IAHR 2022, SIMPCCe y Panamá prueban el tratamiento del clima, la disponibilidad desigual de datos y la transferencia a escalas diferentes. Conviene distinguir además dos tipos de evidencia. Besaya, Calle 30 y Valencia pueden reproducirse hoy con notebooks ejecutables sobre pyhydra, como indica la última columna. Los otros seis se documentan desde su publicación o proyecto; varios son anteriores a la librería y son, precisamente, los trabajos que revelaron qué módulos había que construir. La tabla muestra qué bloques intervienen en cada caso; no es una clasificación de importancia.',
+    notes: 'Recorrer la tabla por columnas, no caso a caso. Señalar la última columna: distingue validación reproducible de antecedentes documentados.\n\n❓ «¿Cuántos casos se han ejecutado realmente con pyhydra?» → Tres con notebooks en el repositorio: Besaya (cadena fundacional y estudio de rugosidad), Calle 30 y Valencia. Mallorca, Andes e IAHR 2022 usaron Iber o flujos anteriores a la librería; Tanganica, SIMPCCe y Panamá se documentan desde su publicación o proyecto. Los primeros validan la arquitectura; los segundos la originan y amplían. Decirlo así, sin defender que los nueve se ejecutaron «sin modificar el núcleo».',
     bullets: [
-      'Frecuencia sobre el impacto · cuenca fluvial cantábrica (Besaya).',
-      'Cadena en cuenca sin aforo · precipitación espacial y modelización 2D (Mallorca).',
-      'Infraestructura urbana crítica · de la lluvia multisitio al calado en túneles (Madrid Calle 30).',
-      'Valencia · estimación de extremos e incertidumbre tras la DANA de 2024.',
-      'Niveles lacustres con registros limitados · clima, caudal y cotas futuras (lago Tanganica).',
-      'Calibración hidrológica regional · transformación lluvia–caudal a gran escala (Andes).',
-      'Contraste IAHR 2022 · procedimiento convencional frente a cadena estocástica completa.',
-      'Gestión climática de embalses · caudales mínimos y apoyo a decisiones (SIMPCCe).',
-      'Automatización nacional · cientos de combinaciones climáticas y capas de riesgo (Panamá).',
+      'Frecuencia sobre el impacto: cuenca fluvial cantábrica (Besaya).',
+      'Cadena en cuenca sin aforo: precipitación espacial y modelización 2D (Mallorca).',
+      'Infraestructura urbana crítica: de la lluvia multisitio al calado en túneles (Madrid Calle 30).',
+      'Valencia: estimación de extremos e incertidumbre tras la DANA de 2024.',
+      'Niveles lacustres con registros limitados: clima, caudal y cotas futuras (lago Tanganica).',
+      'Calibración hidrológica regional: transformación lluvia–caudal a gran escala (Andes).',
+      'Contraste IAHR 2022: procedimiento convencional frente a cadena estocástica completa.',
+      'Gestión climática de embalses: caudales mínimos y apoyo a decisiones (SIMPCCe).',
+      'Automatización nacional: cientos de combinaciones climáticas y capas de riesgo (Panamá).',
     ],
   },
 
@@ -700,7 +715,7 @@ export const slideLibrary: Slide[] = [
     figureCaption: 'El collado topográfico a cota 60,1 m s.n.m. controla la activación del compartimento secundario',
     secondaryFigure: 'besaya_fig04_intermodel_comparison.png',
     secondaryFigureCaption: 'Las 995 realizaciones emparejadas muestran diferencias entre HEC-RAS y SFINCS',
-    caseReference: 'Referencia · Memoria doctoral, cap. 8 (Besaya) · manuscrito enviado a Environmental Modelling & Software',
+    caseReference: 'Referencia: Memoria doctoral, cap. 8 (Besaya); manuscrito enviado a Environmental Modelling & Software',
     type: 'split',
     results: [
       { value:'1.990', label:'simulaciones hidráulicas 2D', implication:'995 realizaciones emparejadas en HEC-RAS y SFINCS' },
@@ -713,10 +728,10 @@ export const slideLibrary: Slide[] = [
     script: 'Conviene separar dos etapas del Besaya. El trabajo fundacional de 2018 partió de aforos y utilizó Iber para trasladar la frecuencia desde los hidrogramas hacia los calados. Años después, sobre el mismo dominio, se estudió la incertidumbre estructural mediante 995 simulaciones emparejadas de SFINCS y HEC-RAS 2D, variando la rugosidad de Manning en nueve usos de suelo. Esta segunda etapa reveló una respuesta bimodal en HEC-RAS y un compartimento secundario de unas 7,4 hectáreas asociado a un collado a cota 60,1 metros. La correlación entre motores fue solo moderada: 0,52 en calado y 0,49 en área. El mensaje no es que este sea el origen de la metodología, sino que el dominio fundacional se convirtió también en banco de pruebas para automatización y sensibilidad hidráulica.',
     notes: 'Hito Besaya clave:\n- La bifurcación bimodal de HEC-RAS es indetectable con una simulación determinista convencional.\n- Sesgo entre modelos: HEC-RAS da +0,172 m de calado y +0,149 km² de área frente a SFINCS.\n- Este caso dio pie al estudio de sensibilidad Manning (navas2025roughness) que fundamenta toda la comparativa.\n\nEn modo online: navegar a /cases/manning-rugosidades, la página real y publicada de este estudio (1.000 combinaciones Monte Carlo, 9 clases de uso de suelo, Mezcla Gaussiana de 2 componentes). Los hallazgos clave de la sección resaltada son estos mismos números.',
     bullets: [
-      '📐 Enfoque Monte Carlo: 995 simulaciones hidráulicas emparejadas sobre 9 usos de suelo (Manning).',
-      '⚖️ Incertidumbre: Variabilidad inter-modelo (motores) > Variabilidad intra-modelo (rugosidad, <2% de la varianza).',
-      '🔀 Bifurcación: un collado a cota 60,1 m s.n.m. controla la conexión con una llanura secundaria de unas 7,4 ha.',
-      '📊 Respuesta bimodal: HEC-RAS muestra saltos discretos (sesgo +0,172 m, r=0,52) no capturados por SFINCS.',
+      'Enfoque Monte Carlo: 995 simulaciones hidráulicas emparejadas sobre 9 usos de suelo (Manning).',
+      'Incertidumbre: Variabilidad inter-modelo (motores) > Variabilidad intra-modelo (rugosidad, <2% de la varianza).',
+      'Bifurcación: un collado a cota 60,1 m s.n.m. controla la conexión con una llanura secundaria de unas 7,4 ha.',
+      'Respuesta bimodal: HEC-RAS muestra saltos discretos (sesgo +0,172 m, r=0,52) no capturados por SFINCS.',
     ],
   },
 
@@ -733,7 +748,7 @@ export const slideLibrary: Slide[] = [
     webAction: 'Señalar el flujo fundacional y distinguirlo expresamente del estudio posterior de rugosidades.',
     figure: 'fig_besaya_cadena_fundacional.svg', figurePosition: 'right',
     figureCaption: 'Cadena fundacional documentada en la memoria: el retorno se estima sobre el resultado hidráulico',
-    caseReference: 'Referencia · TFM (2017) · Revista de Obras Públicas 3598 (2018) · memoria doctoral, cap. 8',
+    caseReference: 'Referencia: TFM (2017); Revista de Obras Públicas 3598 (2018); memoria doctoral, cap. 8',
     type: 'split',
     results: [
       { value:'3 variables', label:'pico, volumen y duración', implication:'dos avenidas con el mismo pico pueden causar impactos distintos' },
@@ -744,7 +759,7 @@ export const slideLibrary: Slide[] = [
     pyhydraModules:['pyhydra.climate','pyhydra.climate.time_series','cópulas','Iber'],
     processSteps:['Aforos','Qp + V + duración','Cópula gaussiana','Hidrogramas','Iber → T(calado)'],
     script: 'Este es el origen conceptual de la tesis. A partir de series de aforo se extraen avenidas independientes y cada una se describe mediante pico, volumen y duración. Una cópula gaussiana conserva la dependencia entre esas variables y permite generar hidrogramas plausibles. En la aplicación de 2018, Iber transforma esos hidrogramas en manchas y calados. Solo entonces se estima el período de retorno sobre la variable de impacto. pyhydra no existía todavía con su arquitectura actual: surge precisamente de la necesidad de repetir y conectar estas etapas de forma consistente.',
-    notes: 'Momento de navegación: mostrar el flujo conceptual del caso. Ser transparente: la aplicación de 2018 usó Iber manualmente; los notebooks internos y el estudio HEC-RAS/SFINCS aportan evidencia posterior, pero no deben presentarse como una sola campaña.',
+    notes: 'Momento de navegación: mostrar el flujo conceptual del caso. Ser transparente: la aplicación de 2018 usó Iber manualmente; los notebooks internos y el estudio HEC-RAS/SFINCS aportan evidencia posterior, pero no deben presentarse como una sola campaña.\n\n❓ «¿Se ha contrastado con observaciones?» → En el notebook del caso, la ortofoto histórica de 1946 se usa como referencia externa para comprobar que la mancha T10 reproduce la llanura de inundación histórica del Besaya. Es un contraste cualitativo, no una métrica de acierto.',
     bullets: [
       'Los datos de partida son caudales observados, no precipitación.',
       'La dependencia conjunta se modela entre caudal pico, volumen y duración.',
@@ -762,7 +777,7 @@ export const slideLibrary: Slide[] = [
     url: '/cases/mallorca-sant-llorenc', anchor: '#case-findings-heading', highlight: '#case-findings-heading',
     figure: 'fig_mallorca_comparativa.png', figurePosition: 'right',
     figureCaption: 'Calados en Sant Llorenç: Metodología clásica (izquierda) vs Enfoque Estocástico Completo (derecha)',
-    caseReference: 'Referencia · Caso Sant Llorenç (2019) · memoria doctoral, cap. 8',
+    caseReference: 'Referencia: Caso Sant Llorenç (2019); memoria doctoral, cap. 8',
     type: 'split',
     results: [
       { value:'Miles', label:'de tormentas sintéticas', implication:'amplían registros horarios cortos' },
@@ -772,13 +787,13 @@ export const slideLibrary: Slide[] = [
     pyhydraRole:'Une lluvia sintética, interpolación espacial, simulación física y reconstrucción de impactos en una cuenca sin aforos.',
     pyhydraModules:['pyhydra.data_sources','pyhydra.climate','pyhydra.climate.spatial_analysis','Iber 2D'],
     processSteps:['Lluvia observada','Cópulas + kriging','MaxDiss + Iber 2D','k-NN','T sobre calado'],
-    script: 'El 9 de octubre de 2018 cayeron cerca de 220 L/m² en pocas horas en una cuenca sin estaciones de aforo, con la extensión de Copernicus como única referencia de validación. Se aplicó el downscaling híbrido: clasificación de 25 formas de hietograma histórico mediante PCA y k-means, acoplamiento de máximos, duración y tipo de tormenta entre pluviómetros vía cópula gaussiana, y reconstrucción espacial por kriging a 25 m. La hidrología se resolvió en una malla de 25 m y la hidráulica en una malla de 8 m derivada de LiDAR (Iber), calibrada contra la extensión de Copernicus, alcanzando un calado máximo simulado de 5,85 m en el núcleo urbano.',
-    notes: 'Explicar la figura: la imagen de la derecha muestra calados variables y mayor dispersión del flujo en calles secundarias que el modelo determinista clásico (izquierda) ignoraba por completo. Los eventos no simulados se reconstruyen con k-NN de 6 vecinos, eligiendo k por minimización del error sobre los últimos 10 eventos simulados.\n\nEn modo online: navegar a /cases/mallorca-sant-llorenc. Es un caso de 2019, anterior a pyhydra — la página lo marca honestamente como "documentado" (sin notebooks ejecutables) en vez de fingir reproducibilidad que no existe.',
+    script: 'El 9 de octubre de 2018 cayeron cerca de 220 L/m² en pocas horas en una cuenca sin estaciones de aforo, con la extensión de Copernicus como única referencia de validación. Se aplicó el downscaling híbrido: clasificación de 25 formas de hietograma histórico mediante PCA y k-means, acoplamiento de máximos, duración y tipo de tormenta entre pluviómetros vía cópula gaussiana, y reconstrucción espacial por kriging a 25 m. La hidrología se resolvió en una malla de 25 m y la hidráulica en una malla de 8 m derivada de LiDAR (Iber), contrastada con la extensión observada por Copernicus, que reproduce de forma razonable, y alcanza un calado máximo simulado de 5,85 m en el núcleo urbano.',
+    notes: 'Explicar la figura: la imagen de la derecha muestra calados variables y mayor dispersión del flujo en calles secundarias que el modelo determinista clásico (izquierda) ignoraba por completo. Los eventos no simulados se reconstruyen con k-NN de 6 vecinos, eligiendo k por minimización del error sobre los últimos 10 eventos simulados.\n\nEn modo online: navegar a /cases/mallorca-sant-llorenc. Es un caso de 2019, anterior a pyhydra — la página lo marca honestamente como "documentado" (sin notebooks ejecutables) en vez de fingir reproducibilidad que no existe.\n\n❓ «¿Con qué métrica valida la mancha?» → La memoria habla de «reproducción razonable de la mancha observada»; no hay un índice de acierto (CSI, F1 o similar) publicado. Reconocerlo y proponerlo como trabajo futuro. Si se calcula antes de la defensa, añadir aquí la cifra.',
     bullets: [
-      '🛰️ Sin aforo: validación frente a la extensión Copernicus y a marcas documentadas del episodio.',
-      '🧮 Clasificación PCA + k-means: 25 formas representativas de hietograma histórico.',
-      '🔗 Cópula gaussiana: acopla máximo, media, duración y tipo de tormenta entre pluviómetros.',
-      '🗺️ Doble malla: hidrología a 25 m, hidráulica a 8 m (LiDAR, Iber) — calado máximo simulado 5,85 m.',
+      'Sin aforo: contraste cualitativo con la mancha Copernicus y con marcas documentadas del episodio.',
+      'Clasificación PCA + k-means: 25 formas representativas de hietograma histórico.',
+      'Cópula gaussiana: acopla máximo, media, duración y tipo de tormenta entre pluviómetros.',
+      'Doble malla: hidrología a 25 m, hidráulica a 8 m (LiDAR, Iber); calado máximo simulado de 5,85 m.',
     ],
   },
 
@@ -786,13 +801,13 @@ export const slideLibrary: Slide[] = [
     id: 31,
     block: 'Casos de estudio', blockColor: '#f59e0b',
     title: 'Calle 30, Madrid: Infraestructura crítica urbana',
-    subtitle: 'Túneles de la M-30 · Pipeline E2E completo · Proyecto FORESEE (Ferrovial)',
+    subtitle: 'Túneles de la M-30: la cadena completa, en el proyecto FORESEE con Ferrovial',
     estimatedMinutes: 3,
     figure: 'fig_m30_metodologia_auditorio.svg', figurePosition: 'right',
     figureCaption: 'Cadena Calle 30: lluvia multisitio → HEC-HMS → selección MaxDiss → HEC-RAS 1D → reconstrucción k-NN',
     secondaryFigure: 'fig_m30_localizacion.png',
     secondaryFigureCaption: 'Ámbito de la infraestructura urbana y red de túneles analizada',
-    caseReference: 'Referencia · Navas et al., Ingeniería del Agua (2024) · proyecto FORESEE/Ferrovial · memoria, cap. 8',
+    caseReference: 'Referencia: Navas et al., Ingeniería del Agua (2024); proyecto FORESEE/Ferrovial; memoria, cap. 8',
     type: 'split',
     results: [
       { value:'1D', label:'modelo hidráulico HEC-RAS', implication:'representa la red de túneles de Calle 30' },
@@ -805,11 +820,11 @@ export const slideLibrary: Slide[] = [
     script: 'Calle 30 es la cadena metodológica más completa de los casos aplicados. A partir de ERA5 y pluviómetros AEMET, pyhydra ajusta extremos de precipitación multiduración y genera miles de eventos sintéticos multisitio mediante cópulas gaussianas. Primero se toma un subconjunto de eventos para ejecutar HEC-HMS y convertir la lluvia en hidrogramas. Después, MaxDiss actúa sobre esos hidrogramas y selecciona el subconjunto hidráulicamente representativo que se simula en HEC-RAS 1D. Para los escenarios no simulados, k-NN reconstruye los calados. El producto final no es un retorno heredado de la lluvia, sino un mapa de período de retorno del calado para cada píxel.',
     notes: 'La memoria no documenta en este capítulo un número fijo de colectores, un tamaño exacto del subconjunto ni un RMSE único. No citar 18, 1.000→50, 95% o 0,038 m como resultados de la tesis. La evidencia defendible es: miles de eventos multisitio, selección representativa, HEC-HMS, HEC-RAS 1D, reconstrucción k-NN y mapas de período de retorno del calado.\n\nValor industrial: la aplicación aborda una infraestructura crítica y encadena automáticamente lluvia, hidrología, hidráulica y postproceso con trazabilidad.',
     bullets: [
-      '🌧️ Multisitio: Precipitación espacialmente correlacionada (cópulas gaussianas) en los distritos de Madrid.',
-      '📐 Cadena física: HEC-HMS genera los caudales de entrada y HEC-RAS 1D modela la red de túneles.',
-      '🔵 Eficiencia computacional: MaxDiss evita simular exhaustivamente los miles de eventos sintéticos.',
-      '🔄 Reconstrucción: k-NN estima los calados de los escenarios no simulados explícitamente.',
-      '🤝 Transferencia industrial directa: caso desarrollado con Ferrovial dentro del proyecto FORESEE.',
+      'Multisitio: Precipitación espacialmente correlacionada (cópulas gaussianas) en los distritos de Madrid.',
+      'Cadena física: HEC-HMS genera los caudales de entrada y HEC-RAS 1D modela la red de túneles.',
+      'Eficiencia computacional: MaxDiss evita simular exhaustivamente los miles de eventos sintéticos.',
+      'Reconstrucción: k-NN estima los calados de los escenarios no simulados explícitamente.',
+      'Transferencia industrial directa: caso desarrollado con Ferrovial dentro del proyecto FORESEE.',
     ],
   },
 
@@ -827,7 +842,7 @@ export const slideLibrary: Slide[] = [
     type: 'split',
     figure: 'foto_tunel_infraestructura_critica.png', figurePosition: 'right',
     figureCaption: 'La variable relevante para la operación no es solo la lluvia: es la cota alcanzada dentro de una infraestructura crítica',
-    caseReference: 'Referencia · Navas et al., Ingeniería del Agua (2024) · proyecto FORESEE/Ferrovial',
+    caseReference: 'Referencia: Navas et al., Ingeniería del Agua (2024); proyecto FORESEE/Ferrovial',
     results: [
       { value:'HEC-RAS 1D', label:'modelo de la red de túneles', implication:'no es una simulación hidráulica 2D' },
       { value:'MaxDiss + k-NN', label:'selección y reconstrucción', implication:'hacen viable explorar miles de eventos' },
@@ -838,10 +853,10 @@ export const slideLibrary: Slide[] = [
     script: 'La ficha web permite auditar la cadena completa de Calle 30. Lo esencial es distinguir los dos modelos: HEC-HMS transforma la precipitación multisitio en caudales y HEC-RAS 1D calcula los calados a lo largo de la red canalizada y de túneles. MaxDiss selecciona los escenarios que se simulan explícitamente y k-NN reconstruye el resto. Así se obtiene la frecuencia sobre el calado hidráulico, que es la variable de impacto relevante para el diseño.',
     notes: 'Momento de navegación en vivo en /cases/m30-manzanares. Resaltar la cadena lluvia → HEC-HMS → HEC-RAS 1D → k-NN y el cálculo final del período de retorno del calado.',
     bullets: [
-      '📄 Hallazgos clave publicados en la propia web, no solo en la memoria.',
-      '🔗 Referencias del caso enlazadas: navas2024calle30 y el proyecto FORESEE.',
-      '🗂️ El flujo completo (precipitación → HEC-HMS → HEC-RAS 1D → k-NN) es navegable paso a paso.',
-      '🏢 Página pensada para un ingeniero de Ferrovial que quiera auditar el caso sin acceso a la memoria completa.',
+      'Hallazgos clave publicados en la propia web, no solo en la memoria.',
+      'Referencias del caso enlazadas: navas2024calle30 y el proyecto FORESEE.',
+      'El flujo completo (precipitación → HEC-HMS → HEC-RAS 1D → k-NN) es navegable paso a paso.',
+      'Página pensada para un ingeniero de Ferrovial que quiera auditar el caso sin acceso a la memoria completa.',
     ],
   },
 
@@ -849,28 +864,28 @@ export const slideLibrary: Slide[] = [
     id: 33,
     block: 'Casos de estudio', blockColor: '#f59e0b',
     title: 'Valencia: Análisis rápido ante la DANA del 2024',
-    subtitle: 'Inferencia bayesiana con eventos sin precedente histórico',
+    subtitle: 'Qué cambia en los estimadores de extremos cuando entra un evento sin precedente',
     estimatedMinutes: 3,
     figure: 'fig_valencia_curvas_retorno.png', figurePosition: 'right',
-    figureCaption: 'Curva de retorno en la estación de Turís (8337X): El cuantil T100 bayesiano salta un 266% al incluir la DANA',
-    caseReference: 'Referencia · VIII Jornadas de Ingeniería del Agua (2025) · memoria doctoral, cap. 8',
+    figureCaption: 'Curva de retorno en Turís (8337X): el cuantil T100 bayesiano pasa de 260 a 952 mm al incluir la DANA',
+    caseReference: 'Referencia: VIII Jornadas de Ingeniería del Agua (2025); memoria doctoral, cap. 8',
     type: 'split',
     results: [
-      { value:'710,8 mm', label:'precipitación en 24 h', implication:'récord observado en Turís' },
-      { value:'+266 %', label:'cambio del cuantil T100', implication:'de 260 a 952 mm al incorporar la DANA' },
-      { value:'66–91 años', label:'retorno estimado tras el evento', implication:'frente a miles de años antes de incorporarlo' },
+      { value:'710,8 mm', label:'precipitación en 24 h', implication:'máximo de la serie de Turís, muy por encima de los valores previos' },
+      { value:'+266 %', label:'cambio del cuantil T100 bayesiano', implication:'de 260 a 952 mm al incorporar la DANA' },
+      { value:'66–91 años', label:'retorno con el evento incluido', implication:'los tres estimadores convergen; sin él, de 3.069 (Bayes) a 31.345 años (L-mom.)' },
     ],
     pyhydraRole:'Permite recalcular rápidamente extremos e incertidumbre cuando entra en la serie un evento sin precedente histórico.',
     pyhydraModules:['pyhydra.data_sources','pyhydra.climate.time_series','PyMC','análisis regional'],
     processSteps:['224 estaciones','Máximos anuales','GEV: 3 estimadores','RFA local/global','Antes ↔ después'],
-    script: 'La DANA de Valencia del 29 de octubre de 2024 dejó 710,8 mm en 24 horas en la estación de Turís, un récord nacional. Al aplicar el ajuste clásico (MLE) sin el evento en la serie, el período de retorno estimado para esa precipitación supera los 11.000 años; un valor sin sentido práctico que evidencia la inestabilidad del método ante outliers históricos. El estimador bayesiano implementado en HYDRA asimiló el evento de manera consistente, recalculando el cuantil T100 de diseño (de 260 mm a 952 mm, un salto del 266%) e incrementando realistamente las bandas de incertidumbre operacional.',
-    notes: 'Resaltar la figura de Valencia: la línea verde (bayesiana con DANA) es estable y el área verde muestra la incertidumbre calculada de manera formal. MLE (máxima verosimilitud clásica) colapsa ante outliers tan severos.\n\nDato adicional de contraste: el análisis regional de frecuencia (RFA) con 224 estaciones (30 AEMET, 41 SIAR, 153 AVAMET) es aún más extremo a escala local (9 estaciones): antes de la DANA, el período de retorno del evento llegaba a 7,5 millones de años — un valor sin ningún sentido físico que ilustra la fragilidad de la extrapolación clásica ante muestras cortas.',
+    script: 'La DANA del 29 de octubre de 2024 dejó 710,8 milímetros en 24 horas en la estación de Turís, muy por encima de cualquier valor previo de su serie. Sin incluir el evento, máxima verosimilitud le asigna un período de retorno superior a 11.000 años y los L-momentos, superior a 31.000; el estimador bayesiano lo sitúa en unos 3.069 años. Ninguna de esas cifras debe leerse como la frecuencia real del evento: muestran que, con series cortas, la cola de la distribución está mal informada. Al incorporar el evento, los tres estimadores convergen entre 66 y 91 años, y el cuantil T100 bayesiano pasa de 260 a 952 milímetros. La aportación no es que un método acierte, sino poder recalcular rápidamente, comparar estimadores y comunicar la incertidumbre como una banda de credibilidad en lugar de una cifra única.',
+    notes: 'Resaltar la figura de Valencia: el área verde muestra la incertidumbre bayesiana calculada de manera formal; con la DANA, la banda se ensancha mucho en los períodos de retorno altos. Sin el evento, MLE y L-momentos extrapolan una cola casi plana y asignan períodos de retorno sin sentido físico.\n\nDato adicional de contraste: el análisis regional de frecuencia (RFA) con 224 estaciones (30 AEMET, 41 SIAR, 153 AVAMET) es aún más extremo a escala local (9 estaciones): antes de la DANA, el período de retorno del evento llegaba a 7,5 millones de años — un valor sin ningún sentido físico que ilustra la fragilidad de la extrapolación clásica ante muestras cortas.\n\n⚠️ No decir «récord nacional»: el máximo en 24 h que se cita habitualmente en España es Oliva (1987, ≈817 mm); verificarlo. Si se quiere usar la palabra «récord», llevar la fuente de AEMET y precisar la duración.\n\n⚠️ No decir que el bayesiano es «más estable» sin matiz: su salto (3.069 → 66 años) es menor que el de MLE (11.453 → 80) y L-momentos (31.345 → 91), pero también es grande. Lo defendible es que, sin el evento, da una cola menos degenerada y que comunica la incertidumbre como banda.\n\n❓ «¿Un récord con 34 años de retorno?» → Tener preparada la explicación del notebook 03 (RFA local) y reconocer que el RFA global (10–19 años) suaviza en exceso el extremo local: es una limitación del agrupamiento, no un valor de diseño.',
     bullets: [
-      '⚠️ Valencia (29-Oct-2024): 710,8 mm en 24h en Turís (8337X), récord nacional sin precedentes instrumentales.',
-      '⚡ Respuesta rápida: Curvas de retorno generadas en pocas horas mediante pyhydra.',
-      '📈 Salto de diseño: El cuantil T100 bayesiano pasa de 260 mm a 952 mm (+266%) al incluir la DANA.',
-      '📊 MLE clásico vs Bayesiano: Sin la DANA, MLE situaba el período de retorno del evento en >11.000 años; el bayesiano ya lo estimaba en ~3.069 años.',
-      '🗺️ RFA (224 estaciones): el análisis local pre-DANA llega a periodos de retorno de hasta 7,5 millones de años.',
+      'Valencia (29-10-2024): 710,8 mm en 24 h en Turís (8337X), máximo de su serie.',
+      'Sin el evento: retorno > 11.000 años (MLE), > 31.000 (L-momentos) y ≈ 3.069 (bayesiano).',
+      'Con el evento: los tres estimadores convergen en 66–91 años; T100 bayesiano de 260 a 952 mm.',
+      'Análisis regional: el local (9 estaciones) da 34–41 años; el global suaviza el evento hasta 10–19 años.',
+      'Lección: con series cortas, comparar estimadores y comunicar bandas, no una cifra puntual.',
     ],
   },
 
@@ -887,22 +902,22 @@ export const slideLibrary: Slide[] = [
     webAction: 'Señalar 710,8 mm, el cambio de T100 y el enlace al notebook; no abandonar la sección de resultados.',
     figure: 'fig_valencia_return_levels_8337X_clean.png', figurePosition: 'right',
     figureCaption: 'Niveles de retorno de Turís y cambio de incertidumbre tras incorporar la DANA',
-    caseReference: 'Referencia · VIII Jornadas de Ingeniería del Agua (2025) · notebook reproducible del caso Valencia',
+    caseReference: 'Referencia: VIII Jornadas de Ingeniería del Agua (2025); notebook reproducible del caso Valencia',
     type: 'split',
     results: [
-      { value:'224', label:'estaciones analizadas', implication:'30 AEMET · 41 SIAR · 153 AVAMET' },
+      { value:'224', label:'estaciones analizadas', implication:'30 AEMET, 41 SIAR y 153 AVAMET' },
       { value:'34–41 años', label:'retorno RFA local', implication:'estimación estable con 9 estaciones próximas' },
-      { value:'3 métodos', label:'GEV comparados', implication:'MLE · L-momentos · Bayesiano' },
+      { value:'3 métodos', label:'GEV comparados', implication:'MLE, L-momentos y bayesiano' },
     ],
     pyhydraRole:'Mantiene una cadena única y auditable para comparar métodos, escalas regionales y resultados antes/después de la DANA.',
     pyhydraModules:['pyhydra.climate.time_series','pyhydra.climate.spatial_analysis','PyMC','notebook trazable'],
     script: 'La cabecera de esta ficha resume en cifras lo que acabamos de ver: los mismos números —710,8 mm, el salto del cuantil T100— están publicados aquí, trazables hasta el notebook que los calculó.',
     notes: 'Momento de navegación en vivo en /cases/valencia-dana. Resaltar la fila de estadísticas de la cabecera. El tercer notebook del caso (migración a pyhydra/PyMC) ya aparece en el flujo de trabajo de la página.',
     bullets: [
-      '🔢 Cifras publicadas directamente desde el análisis reproducible, no copiadas a mano.',
-      '📓 Trazabilidad completa hasta pilot_cases/valencia_dana/03_real_regional_study_pyhydra.ipynb.',
-      '🆕 Tercer notebook añadido tras la migración a pyhydra/PyMC: contrasta el resultado contra las tablas históricas de Stan.',
-      '⏱️ De la DANA (29-Oct-2024) a esta ficha publicada: el mismo margen de horas que se reivindica como aportación en el capítulo 8.',
+      'Cifras publicadas directamente desde el análisis reproducible, no copiadas a mano.',
+      'Trazabilidad completa hasta pilot_cases/valencia_dana/03_real_regional_study_pyhydra.ipynb.',
+      'Tercer notebook añadido tras la migración a pyhydra/PyMC: contrasta el resultado contra las tablas históricas de Stan.',
+      'De la DANA (29-Oct-2024) a esta ficha publicada: el mismo margen de horas que se reivindica como aportación en el capítulo 8.',
     ],
   },
 
@@ -917,7 +932,7 @@ export const slideLibrary: Slide[] = [
     figureCaption: 'Cambio del nivel extremo para T5-T500, cuatro horizontes y los escenarios SSP2-4.5 y SSP5-8.5',
     secondaryFigure: 'fig_tanganika_proyecciones.png',
     secondaryFigureCaption: 'Proyecciones climáticas que alimentan la estimación de niveles futuros',
-    caseReference: 'Referencia · VIII Jornadas de Ingeniería del Agua (2025) · manuscrito enviado a Ingeniería del Agua',
+    caseReference: 'Referencia: VIII Jornadas de Ingeniería del Agua (2025); manuscrito enviado a Ingeniería del Agua',
     type: 'split',
     results: [
       { value:'R² > 0,85', label:'AdaBoost en validación cruzada', implication:'R² = 0,96 sobre el conjunto completo' },
@@ -946,7 +961,7 @@ export const slideLibrary: Slide[] = [
     url: '/cases/andes-hidroelectrico', anchor: '#case-findings-heading', highlight: '#case-findings-heading',
     figure: 'fig_andes_caudales_cc.png', figurePosition: 'right',
     figureCaption: 'Influencia proyectada del cambio climático en el caudal mensual de Colombia, Bolivia, Perú y Ecuador (RCP4.5/8.5, tres horizontes)',
-    caseReference: 'Referencia · Estudios hidroeléctricos andinos · memoria doctoral, cap. 8',
+    caseReference: 'Referencia: Estudios hidroeléctricos andinos; memoria doctoral, cap. 8',
     type: 'split',
     results: [
       { value:'SPOTPY', label:'calibración automática', implication:'PSO, DREAM y SCE-UA para evitar ajustes manuales cuenca a cuenca' },
@@ -970,29 +985,29 @@ export const slideLibrary: Slide[] = [
     id: 37,
     block: 'Casos de estudio', blockColor: '#f59e0b',
     title: 'Atlas de Panamá: automatización a escala nacional',
-    subtitle: 'Ministerio de Ambiente + BID · 52 cuencas en ambas vertientes',
+    subtitle: 'Ministerio de Ambiente y BID: 52 cuencas en ambas vertientes',
     estimatedMinutes: 2,
     url: '/cases/atlas-panama', anchor: '#case-findings-heading', highlight: '#case-findings-heading',
     figure: 'fig_panama_precipitacion.png', figurePosition: 'right',
     figureCaption: 'Precipitación media por subcuencas, obtenida mediante el flujo nacional de descarga, control de calidad e interpolación espacial',
-    caseReference: 'Referencia · Atlas Nacional de Riesgo de Inundación de Panamá · memoria doctoral, cap. 8',
+    caseReference: 'Referencia: Atlas Nacional de Riesgo de Inundación de Panamá; memoria doctoral, cap. 8',
     type: 'split',
     results: [
       { value:'52', label:'cuencas con capas de inundación', implication:'escala nacional y tres períodos de retorno' },
-      { value:'414', label:'correcciones de sesgo', implication:'23 modelos · 2 SSP · 6 variables · 3 períodos' },
+      { value:'414', label:'correcciones de sesgo', implication:'23 modelos, 2 SSP, 6 variables y 3 períodos' },
       { value:'1.464', label:'puntos costeros analizados', implication:'52 escenarios de nivel de agua total' },
     ],
     pyhydraRole:'Escala la misma arquitectura desde una cuenca piloto hasta un encargo nacional con cientos de combinaciones climáticas.',
     pyhydraModules:['pyhydra.data_sources','pyhydra.climate','NEOPRENE','SFINCS'],
     processSteps:['73 estaciones','NEOPRENE + kriging','414 correcciones','LEM + SFINCS','Capas de riesgo'],
     script: 'Encargado por el Ministerio de Ambiente de Panamá y el BID, este es el caso de mayor escala del catálogo: 52 cuencas de hasta 13.400 km² en ambas vertientes, más 1.464 puntos costeros analizados frente a inundación costera y viento extremo sobre el área metropolitana. NEOPRENE/STNSRP rellenó 73 estaciones nacionales (1950-2022), y el kriging universal generó una malla de 1 km. Sobre esta base se corrigieron automáticamente 414 combinaciones de sesgo (23 modelos CMIP6 × 2 escenarios SSP × 6 variables × 3 horizontes) mediante QDM y SDM, alimentando el modelo hidrológico LEM (NS=0,87) y ejecuciones masivas de SFINCS nacional, con modelos 2D de alta resolución en el área metropolitana.',
-    notes: 'Citado como navas2024ihcantabria/ihcantabria2023panama. Es el ejemplo explícito de la memoria para la hipótesis H1: automatización que hace viable un estudio regional antes inabordable de forma manual.\n\n❓ "¿Cómo se garantiza la trazabilidad de 414 combinaciones sin supervisión manual?" → El patrón adaptador (Módulo 4) registra versión, código de salida y validación de rangos por cada combinación ejecutada — la automatización no elimina la auditoría, la sistematiza.\n\nEn modo online: navegar a /cases/atlas-panama, con enlace directo al atlas interactivo público del Ministerio de Ambiente.',
+    notes: 'Citado como navas2024ihcantabria/ihcantabria2023panama. Es el ejemplo explícito de la memoria para la hipótesis H1: automatización que hace viable un estudio regional antes inabordable de forma manual.\n\n❓ "¿Cómo se garantiza la trazabilidad de 414 combinaciones sin supervisión manual?" → El patrón adaptador (Módulo 4) registra versión, código de salida y validación de rangos por cada combinación ejecutada — la automatización no elimina la auditoría, la sistematiza.\n\nEn modo online: navegar a /cases/atlas-panama, con enlace directo al atlas interactivo público del Ministerio de Ambiente.\n\n⚠️ Revisar antes de la defensa: la memoria (cap. 8) da 414 correcciones como 23 modelos × 2 escenarios × 6 variables × 3 períodos, pero ese producto es 828. O el número es 828 o la descomposición es otra (por ejemplo, 3 variables o un solo escenario). Ten la cifra correcta preparada: es fácil que el tribunal haga la multiplicación.',
     bullets: [
-      '🌎 52 cuencas (hasta 13.400 km²) en ambas vertientes de Panamá, encargo del Ministerio de Ambiente y el BID.',
-      '📡 NEOPRENE/STNSRP rellena 73 estaciones nacionales (1950-2022); kriging universal a malla de 1 km.',
-      '🔁 414 combinaciones de corrección de sesgo (23 modelos CMIP6 × 2 SSP × 6 variables × 3 horizontes).',
-      '💧 Modelo hidrológico LEM (NS=0,87) + SFINCS nacional y 2D de alta resolución en el área metropolitana.',
-      '🌊 1.464 puntos costeros analizados en ambas costas frente a inundación costera.',
+      '52 cuencas (hasta 13.400 km²) en ambas vertientes de Panamá, encargo del Ministerio de Ambiente y el BID.',
+      'NEOPRENE/STNSRP rellena 73 estaciones nacionales (1950-2022); kriging universal a malla de 1 km.',
+      '414 combinaciones de corrección de sesgo (23 modelos CMIP6 × 2 SSP × 6 variables × 3 horizontes).',
+      'Modelo hidrológico LEM (NS=0,87) + SFINCS nacional y 2D de alta resolución en el área metropolitana.',
+      '1.464 puntos costeros analizados en ambas costas frente a inundación costera.',
     ],
   },
 
@@ -1000,19 +1015,19 @@ export const slideLibrary: Slide[] = [
     id: 38,
     block: 'Casos de estudio', blockColor: '#f59e0b',
     title: 'SIMPCCe: caudales mínimos de embalses ante el cambio climático',
-    subtitle: 'Herramienta nacional para la red de embalses española · Fundación Canal',
+    subtitle: 'Herramienta nacional para la red de embalses española, según la guía metodológica de Fundación Canal',
     estimatedMinutes: 2,
     url: '/cases/simpcce', anchor: '#case-findings-heading', highlight: '#case-findings-heading',
     figure: 'fig_simpcce_interfaz.png', figurePosition: 'right',
     figureCaption: 'Interfaz de entrenamiento y validación de la red neuronal de SIMPCCe',
     secondaryFigure: 'fig_simpcce_resultados.png',
     secondaryFigureCaption: 'Resultados de aportaciones y caudales mínimos bajo escenarios climáticos',
-    caseReference: 'Referencia · Navas et al., Ingeniería del Agua (2025) · proyecto SIMPCCe · Fundación Botín',
+    caseReference: 'Referencia: Navas et al., Ingeniería del Agua (2025); guía de Fundación Canal; premio del Observatorio del Agua de la Fundación Botín',
     type: 'split',
     results: [
-      { value:'60', label:'series corregidas por variable', implication:'10 modelos · 2 RCP · 3 horizontes' },
+      { value:'60', label:'series corregidas por variable', implication:'10 modelos, 2 RCP y 3 horizontes' },
       { value:'20', label:'realizaciones futuras por punto', implication:'aplicables a la red hídrica nacional' },
-      { value:'Premio 2023', label:'Talento Joven “M.R. Llamas”', implication:'Fundación Botín · candidatura colectiva por la guía metodológica que enmarca SIMPCCe' },
+      { value:'Premio 2023', label:'Talento Joven “M.R. Llamas”', implication:'Observatorio del Agua de la Fundación Botín; candidatura colectiva por la guía que enmarca SIMPCCe' },
     ],
     pyhydraRole:'Transforma proyecciones climáticas en aportaciones y fichas de decisión para cualquier punto de la red hídrica española.',
     pyhydraModules:['pyhydra.data_sources','pyhydra.climate','SDM','red neuronal'],
@@ -1020,23 +1035,23 @@ export const slideLibrary: Slide[] = [
     script: 'SIMPCCe es una herramienta de ámbito nacional, aplicable a cualquier punto de la red hidrográfica española, desarrollada según la guía metodológica para estimar aportaciones mínimas a embalses bajo cambio climático. En 2023, el Observatorio del Agua de la Fundación Botín concedió a esa guía el Premio al Talento Joven “M.R. Llamas” mediante la candidatura colectiva de Manuel del Jesus Peñil, Salvador Navas Fernández y Dina V. Gómez Rave. SIMPCCe operacionaliza ese marco: descarga SPAIN02, SIMPA-CEDEX y 10 modelos CORDEX-AEMET; entrena una red neuronal sobre las componentes principales de precipitación y temperatura; corrige el sesgo climático y genera simulaciones futuras e informes automáticos de sequía y fiabilidad.',
     notes: 'El proyecto recibió el Premio al Talento Joven M.R. Llamas (Fundación Botín, Observatorio del Agua). Citas: navas2023simpce (VII JIA 2023), navas2024iahrsimpcce (IAHR Europe 2024), navas2025simpce (Ingeniería del Agua, 2025).\n\n❓ "¿Por qué una red neuronal y no un modelo físico distribuido?" → Coste computacional: SIMPCCe necesita reentrenarse rápidamente para cualquier cuenca española, algo inviable con un modelo físico distribuido calibrado caso a caso.\n\nNota interna: el capítulo 8 (metodología detallada) describe una red neuronal (ANN); el capítulo 9 la menciona de pasada junto a SWAT en el resumen de conclusiones. Ante una pregunta directa, remitirse a la metodología del capítulo 8 como referencia autorizada.\n\nResultado principal: el cambio climático reduce las aportaciones medias anuales en la mayoría de cuencas españolas, y los mínimos de estiaje caen incluso donde la precipitación media no muestra cambio significativo — la severidad y duración de la sequía hidrológica aumenta en ambos escenarios.\n\nEn modo online: navegar a /cases/simpcce, con enlace directo a la publicación DOI en Ingeniería del Agua (2025).',
     bullets: [
-      '🏞️ Herramienta nacional aplicable a cualquier punto de la red hidrográfica española (guía metodológica Fundación Canal).',
-      '🤖 Red neuronal (ANN) sobre componentes principales (95% varianza) de precipitación y temperatura distribuidas.',
-      '🔁 10 modelos CORDEX-AEMET × RCP4.5/8.5 × 3 horizontes → 60 series corregidas por variable (SDM).',
-      '📉 Los caudales mínimos de estiaje caen incluso donde la precipitación media no muestra cambio significativo.',
-      '🏆 Premio al Talento Joven “M.R. Llamas” 2023: candidatura colectiva de Manuel del Jesus Peñil, Salvador Navas Fernández y Dina V. Gómez Rave por la guía metodológica que enmarca SIMPCCe.',
+      'Herramienta nacional aplicable a cualquier punto de la red hidrográfica española (guía metodológica Fundación Canal).',
+      'Red neuronal (ANN) sobre componentes principales (95% varianza) de precipitación y temperatura distribuidas.',
+      '10 modelos CORDEX-AEMET × RCP4.5/8.5 × 3 horizontes → 60 series corregidas por variable (SDM).',
+      'Los caudales mínimos de estiaje caen incluso donde la precipitación media no muestra cambio significativo.',
+      'Premio al Talento Joven “M.R. Llamas” 2023: candidatura colectiva de Manuel del Jesus Peñil, Salvador Navas Fernández y Dina V. Gómez Rave por la guía metodológica que enmarca SIMPCCe.',
     ],
   },
 
   {
     id: 39,
     block: 'Casos de estudio', blockColor: '#f59e0b',
-    title: 'IAHR 2022: Evidencia cuantitativa de la hipótesis H3',
+    title: 'IAHR 2022: evidencia cuantitativa de la hipótesis H3',
     subtitle: 'Estudio comparativo: Método convencional (IDF) vs Enfoque Estocástico',
     estimatedMinutes: 2,
     figure: 'fig_iahr2022_comparativa_es.svg', figurePosition: 'right',
-    figureCaption: 'Subestimación del caudal de diseño convencional frente al estocástico',
-    caseReference: 'Referencia · 39th IAHR World Congress, Granada (2022) · memoria doctoral, cap. 8',
+    figureCaption: 'El caudal de diseño convencional queda por debajo del estocástico en todos los escenarios',
+    caseReference: 'Referencia: 39th IAHR World Congress, Granada (2022); memoria doctoral, cap. 8',
     type: 'split',
     results: [
       { value:'+30–37 %', label:'caudal de diseño estocástico', implication:'superior al método IDF en todos los escenarios' },
@@ -1046,13 +1061,13 @@ export const slideLibrary: Slide[] = [
     pyhydraRole:'Demuestra por qué la frecuencia debe propagarse por toda la cadena y evaluarse sobre el impacto, no heredarse de la lluvia.',
     pyhydraModules:['pyhydra.climate','pyhydra.climate.bias_correction','cópulas','MaxDiss + k-NN','Iber'],
     processSteps:['EURO-CORDEX','Sesgo + cópulas','10.000 años','MaxDiss + Iber','IDF ↔ estocástico'],
-    script: 'El artículo presentado en el 39º Congreso Mundial IAHR (Granada, 2022) aporta la prueba numérica de la hipótesis H3. Con 15 modelos EURO-CORDEX bajo RCP4.5/8.5 y corrección de sesgo por quantile-mapping, se generaron 10.000 años sintéticos de precipitación sobre la cuenca del Besaya; 200 casos se seleccionaron mediante MaxDiss para simulación completa no estacionaria en Iber, y el resto se reconstruyó por k-NN. El método convencional (curvas IDF con único pico de lluvia) subestima los caudales de diseño entre un 30% y un 37% de forma sistemática frente al pipeline estocástico completo, en todos los períodos de retorno, escenarios y horizontes analizados —por ejemplo, 208,8 m³/s frente a 278,5 m³/s para T100 en el horizonte 2011-2040 bajo RCP4.5.',
-    notes: 'Punto crítico: la subestimación del método tradicional (30-37%) es mayor que la dispersión intermodelo de los escenarios de cambio climático RCP4.5 vs RCP8.5. Esto prueba que la metodología de cálculo tiene más impacto en el riesgo que la propia incertidumbre climática futura.\n\nMatiz adicional para profundizar: la diferencia de calado inundado NO es proporcional a la diferencia de caudal — no existe un factor de corrección uniforme aplicable a posteriori, lo que refuerza que la simulación estocástica completa no puede sustituirse por un simple factor de mayoración sobre el método clásico.',
+    script: 'El trabajo presentado en el 39.º Congreso Mundial de la IAHR, en Granada en 2022, aporta la prueba numérica de la hipótesis H3. Con 15 modelos EURO-CORDEX bajo RCP4.5 y RCP8.5 y corrección de sesgo por quantile mapping, se generaron 10.000 años sintéticos de precipitación; 200 casos se seleccionaron mediante MaxDiss para simulación completa en Iber y el resto se reconstruyó por k-NN. El método convencional, basado en curvas IDF con un único pico de lluvia, produce caudales de diseño sistemáticamente menores: los de la cadena estocástica completa son entre un 30 y un 37 por ciento superiores en todos los períodos de retorno, escenarios y horizontes. Por ejemplo, para T100 en 2011-2040 bajo RCP4.5, 278,5 frente a 208,8 metros cúbicos por segundo. Esta diferencia no demuestra por sí sola cuál de los dos valores es el correcto, porque no hay observaciones de esos caudales futuros; demuestra que la elección metodológica es una fuente de incertidumbre de primer orden, mayor que la dispersión entre modelos climáticos.',
+    notes: 'Punto crítico: la diferencia entre métodos (caudal estocástico un 30–37 % superior) es mayor que la dispersión intermodelo de los escenarios de cambio climático RCP4.5 vs RCP8.5. Esto prueba que la metodología de cálculo tiene más impacto en el riesgo que la propia incertidumbre climática futura.\n\nMatiz adicional para profundizar: la diferencia de calado inundado NO es proporcional a la diferencia de caudal — no existe un factor de corrección uniforme aplicable a posteriori, lo que refuerza que la simulación estocástica completa no puede sustituirse por un simple factor de mayoración sobre el método clásico.\n\n⚠️ Cómo decir la cifra: «el estocástico es un 30–37 % superior». No decir que la IDF «subestima un 30–37 %»: con 208,8 frente a 278,5 m³/s, la IDF queda un 25 % por debajo.\n\n⚠️ Errata en la memoria: el cap. 9 (verificación de H3) dice que la IDF «subestima los caudales de diseño entre un 30 % y un 37 % respecto a la estocástica». Si el tribunal lo señala, reconocerlo como errata; la formulación correcta es la del cap. 8.\n\n⚠️ Revisar la tabla del cap. 8 frente al artículo IAHR original: en las 24 celdas el cociente IDF/estocástico es exactamente 0,75 (+33,3 %), lo que no refleja el rango 30–37 % del texto.\n\n❓ «¿Más alto significa más correcto?» → No necesariamente; la evidencia es que el método cambia el diseño más que el propio escenario climático, y que la diferencia espacial no se corrige con un factor.',
     bullets: [
-      '📊 Resultados numéricos: Subestimación sistemática del caudal máximo de diseño (30-37%), p.ej. 208,8 vs 278,5 m³/s a T100 (RCP4.5, 2011-2040).',
-      '🎲 10.000 años sintéticos generados; 200 casos seleccionados por MaxDiss para simulación completa en Iber, resto por k-NN.',
-      '🌱 Causa física: El método convencional no captura el volumen ni la saturación antecedente de la cuenca.',
-      '⚖️ Impacto en diseño: la diferencia de calado no es proporcional a la de caudal — no existe un factor de corrección uniforme válido.',
+      'Caudal de diseño estocástico entre un 30 y un 37 % superior al convencional; p. ej. 278,5 frente a 208,8 m³/s (T100, RCP4.5, 2011-2040).',
+      '10.000 años sintéticos; 200 casos seleccionados por MaxDiss y simulados en Iber; el resto, reconstruido por k-NN.',
+      'Causa física: el método convencional no representa el volumen ni la saturación antecedente de la cuenca.',
+      'La diferencia de calado no es proporcional a la de caudal: no existe un factor de corrección uniforme.',
     ],
   },
 
@@ -1062,7 +1077,7 @@ export const slideLibrary: Slide[] = [
     title: 'Qué demuestra el conjunto de casos',
     subtitle: 'La modelación estocástica es el hilo que conecta datos, clima, física e impacto',
     estimatedMinutes: 2,
-    script: 'Al reunir los casos aparece con claridad el argumento central de la tesis. La modelación estocástica no es una herramienta aislada que se añade al final del cálculo. Es el principio que obliga a representar múltiples forzamientos plausibles, propagarlos por la hidrología y la hidráulica, y estimar la frecuencia sobre la variable que realmente condiciona la decisión: el caudal, el calado, la extensión inundada o el nivel del lago. Los casos abarcan más asuntos que la generación estocástica —datos globales, cambio climático, inferencia bayesiana, aprendizaje automático o automatización de motores— porque todos son necesarios para que ese análisis probabilístico pueda funcionar en problemas reales. pyhydra aporta el núcleo común y HYDRA hace visible, reproducible y transferible la cadena completa.',
+    script: 'Este gráfico sitúa los nueve casos según su escala espacial, de una infraestructura a varios países, y según la dimensión que validan. Los puntos rellenos son los casos que hoy se reproducen con notebooks en HYDRA: Calle 30, Besaya y Valencia; los demás se documentan desde su publicación o su proyecto. El argumento común es que la modelación estocástica no es una herramienta aislada, sino el principio que obliga a representar muchos forzamientos, propagarlos por la hidrología y la hidráulica y estimar la frecuencia sobre la variable que decide: caudal, calado, extensión o nivel. pyhydra aporta el núcleo común y HYDRA hace visible, reproducible y transferible la cadena.',
     notes: 'Esta es la diapositiva de síntesis del bloque. Hacer una pausa antes de pasar a las hipótesis. No enumerar otra vez los nueve casos: responder a “¿qué aprendemos de todos ellos juntos?”.',
     bullets: [
       'La lluvia de diseño es una entrada; el riesgo se decide con la distribución del impacto.',
@@ -1079,42 +1094,53 @@ export const slideLibrary: Slide[] = [
     estimatedMinutes: 2,
     type: 'normal',
     results: [
-      { value:'2 artículos', label:'propios de la tesis y publicados', implication:'Calle 30 (2024) · SIMPCCe (2025), Ingeniería del Agua' },
-      { value:'2 enviados', label:'manuscritos en evaluación', implication:'Tanganica, Ingeniería del Agua · rugosidades, Environmental Modelling & Software' },
-      { value:'5 comunicaciones', label:'presentadas entre 2023 y 2025', implication:'VII JIA · HIC 2024 · InterJIA 2024 · dos trabajos en VIII JIA' },
+      { value:'2 artículos', label:'propios de la tesis y publicados', implication:'Calle 30 (2024) y SIMPCCe (2025), en Ingeniería del Agua' },
+      { value:'2 enviados', label:'manuscritos en evaluación', implication:'Tanganica, en Ingeniería del Agua; rugosidades, en Environmental Modelling & Software' },
+      { value:'5 comunicaciones', label:'presentadas entre 2023 y 2025', implication:'VII JIA, HIC 2024, InterJIA 2024 y dos trabajos en VIII JIA' },
       { value:'2 DOI', label:'software científico publicado', implication:'pyhydra e HYDRA preservados y versionados en Zenodo' },
     ],
     script: 'La producción científica debe distinguir resultados publicados, comunicaciones y trabajos actualmente enviados. Hay dos artículos publicados en Ingeniería del Agua: la aplicación de Calle 30, en 2024, y SIMPCCe, en 2025. La investigación también se ha presentado en cinco comunicaciones: SIMPCCe en las séptimas Jornadas de Ingeniería del Agua de 2023 y en Hydroinformatics 2024, HYDRA en InterJIA 2024, y los trabajos de Valencia y del lago Tanganica en las octavas Jornadas de Ingeniería del Agua de 2025. Además, se han enviado dos manuscritos: “Proyección de niveles extremos del lago Tanganica bajo cambio climático en una cuenca poco instrumentada” a Ingeniería del Agua, y el estudio de incertidumbre de rugosidad y estructura de modelo a Environmental Modelling & Software. Finalmente, pyhydra e HYDRA cuentan con versiones publicadas y citables en Zenodo.',
     notes: 'Mantener con precisión el estado editorial. Calle 30 y SIMPCCe están publicados. Tanganica y rugosidades están enviados y en evaluación; no presentarlos como aceptados ni publicados. El DAD aportado registra los dos artículos y tres comunicaciones hasta 2024. La actualización incorpora las dos comunicaciones de VIII JIA 2025 y los dos envíos indicados por el doctorando.',
     bullets: [
-      'Infraestructura urbana · cadena estocástica completa con transformación lluvia–caudal y modelización 1D.',
-      'Gestión de embalses · transferencia de clima, corrección de sesgo y emulación de caudales mínimos.',
-      'Eventos y niveles extremos · incertidumbre, datos globales y respuesta ante problemas recientes.',
-      'Sensibilidad hidráulica · automatización masiva para revelar incertidumbre entre motores.',
+      'Infraestructura urbana: cadena estocástica completa con transformación lluvia–caudal y modelización 1D.',
+      'Gestión de embalses: transferencia de clima, corrección de sesgo y emulación de caudales mínimos.',
+      'Eventos y niveles extremos: incertidumbre, datos globales y respuesta ante problemas recientes.',
+      'Sensibilidad hidráulica: automatización masiva para revelar incertidumbre entre motores.',
     ],
   },
 
   {
     id: 39.7,
     block: 'Contribuciones científicas', blockColor: '#0ea5e9',
-    title: 'Una línea de investigación consolidada entre 2017 y 2026',
-    subtitle: 'Artículos, congresos, informe técnico y software con una contribución doctoral identificable',
+    title: 'Qué es mío en cada trabajo de la línea',
+    subtitle: 'Rol del doctorando en cada publicación, según la tabla de autoría del capítulo 9',
     estimatedMinutes: 2,
     type: 'normal',
-    figure: 'fig_trayectoria_cientifica.svg', figurePosition: 'right',
-    figureCaption: 'Del TFM del Besaya a la publicación versionada de pyhydra e HYDRA',
-    results: [
-      { value:'7 trabajos', label:'liderados como primer autor', implication:'desde V JIA 2017 hasta Tanganica y el manuscrito Besaya 2025' },
-      { value:'4 trabajos', label:'en coautoría o como segundo autor', implication:'calibración regional · software estocástico · downscaling · extremos' },
-      { value:'2017–2026', label:'continuidad de la investigación', implication:'del concepto inicial a la publicación de pyhydra e HYDRA' },
-    ],
-    script: 'Como parte de la evidencia procede de trabajos compartidos, la memoria delimita expresamente mi contribución. Soy primer autor en siete trabajos de la línea: la formulación inicial de 2017, Besaya, Mallorca, Calle 30, SIMPCCe, Tanganica y el manuscrito de rugosidad del Besaya. En los trabajos andinos contribuí a la calibración automática y al procesamiento climático; en NEOPRENE, al desarrollo, validación y documentación del software; en el trabajo de downscaling de EGU, a la generación estocástica y la reconstrucción; y en Valencia, a los módulos de extremos y análisis regional y a la ejecución de los cálculos. Finalmente, pyhydra e HYDRA condensan esa trayectoria en dos productos de software científico diseñados, desarrollados y documentados como parte de la tesis.',
+    script: 'Como parte de la evidencia procede de trabajos compartidos, la memoria delimita expresamente mi contribución, y esta tabla la resume. Soy primer autor en siete trabajos de la línea: la formulación inicial de 2017, Besaya, Mallorca, Calle 30, SIMPCCe, Tanganica y el manuscrito de rugosidad del Besaya. En los trabajos andinos contribuí a la calibración automática y al procesamiento climático; en NEOPRENE, al desarrollo, validación y documentación del software; en el trabajo de downscaling de EGU, a la generación estocástica y la reconstrucción; y en Valencia, a los módulos de extremos y análisis regional y a la ejecución de los cálculos. El trabajo de cópulas vine del grupo se cita como extensión, sin autoría mía. Finalmente, pyhydra e HYDRA son software de autor único, diseñado, desarrollado y documentado como parte de la tesis.',
     notes: 'Esta diapositiva responde preventivamente a dos preguntas: qué resultados pertenecen al doctorando y cómo se relacionan las publicaciones previas con la contribución doctoral. No atribuirse el trabajo Vine cópulas/GPR de 2026: la memoria lo cita como línea de extensión sin autoría del doctorando.',
+    mathBlock: `
+      <table class="thesis-matrix authorship-matrix">
+        <thead><tr><th>Trabajo</th><th>Posición</th><th>Contribución del doctorando</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">V JIA (2017)</th><td class="tm-yes">Primer autor</td><td>Conceptualización de la cadena estocástica, análisis y redacción</td></tr>
+          <tr><th scope="row">Besaya, ROP (2018)</th><td class="tm-yes">Primer autor</td><td>Metodología, modelización hidrológico-hidráulica, impactos y redacción</td></tr>
+          <tr><th scope="row">Mallorca (2019)</th><td class="tm-yes">Primer autor</td><td>Downscaling híbrido, geoestadística, simulación y redacción</td></tr>
+          <tr><th scope="row">Andes, BID e IA (2019–2020)</th><td class="tm-part">Coautor</td><td>Calibración automática y procesamiento climático</td></tr>
+          <tr><th scope="row">NEOPRENE, GMD (2023)</th><td class="tm-part">Segundo autor</td><td>Desarrollo, validación y documentación del software</td></tr>
+          <tr><th scope="row">Calle 30, IA (2024)</th><td class="tm-yes">Primer autor</td><td>Metodología completa, automatización HEC-HMS/HEC-RAS y redacción</td></tr>
+          <tr><th scope="row">Downscaling, EGU (2024)</th><td class="tm-part">Coautor</td><td>Generación estocástica y reconstrucción integradas en pyhydra</td></tr>
+          <tr><th scope="row">SIMPCCe, IA (2025)</th><td class="tm-yes">Primer autor</td><td>Diseño y desarrollo íntegro, validación nacional y redacción</td></tr>
+          <tr><th scope="row">Valencia (2025)</th><td class="tm-part">Segundo autor</td><td>Módulos de extremos y AFR y ejecución de los cálculos</td></tr>
+          <tr><th scope="row">Tanganica (2025)</th><td class="tm-yes">Primer autor</td><td>Metodología, datos globales, aprendizaje automático y redacción</td></tr>
+          <tr><th scope="row">Rugosidad Besaya, EMS (2025)</th><td class="tm-yes">Primer autor</td><td>Ensemble Monte Carlo, automatización de ambos motores y redacción</td></tr>
+          <tr><th scope="row">Vine cópulas y GPR (2026)</th><td class="tm-no">Sin autoría</td><td>Trabajo del grupo citado como extensión; no es contribución de la tesis</td></tr>
+          <tr><th scope="row">pyhydra e HYDRA, Zenodo (2026)</th><td class="tm-yes">Autor único</td><td>Diseño, desarrollo, documentación y publicación del software</td></tr>
+        </tbody>
+      </table>
+      <p class="thesis-matrix-legend">Fuente: memoria, cap. 9, tabla de rol del doctorando en las publicaciones de la línea.</p>
+    `,
     bullets: [
-      'Primer autor · concepto, metodología, automatización, análisis y redacción en los trabajos liderados.',
-      'Coautoría · aportaciones delimitadas en calibración, software, generación estocástica y extremos.',
-      'Software · diseño, desarrollo, documentación y publicación de pyhydra e HYDRA.',
-      'Resultado conjunto · una trayectoria científica que desemboca en una infraestructura industrial reproducible.',
+      'Siete trabajos como primer autor, cuatro con aportación delimitada y software de autor único.',
     ],
   },
 
@@ -1126,15 +1152,15 @@ export const slideLibrary: Slide[] = [
     id: 40,
     block: 'Validación', blockColor: '#8b5cf6',
     title: 'Las hipótesis se cierran con evidencia acumulada',
-    subtitle: 'Eficiencia, modularidad y representación consistente de la incertidumbre',
+    subtitle: 'Evidencia acumulada, con el alcance de cada una',
     estimatedMinutes: 3,
     type: 'normal',
-    script: 'Las hipótesis no se verifican con una única cifra ni con una demostración de software. Se cierran mediante evidencia acumulada. La primera queda respaldada por campañas que encadenan cientos o miles de ejecuciones sin intervención manual, tanto en una infraestructura urbana como en un atlas nacional. La segunda se apoya en la reutilización de los mismos bloques de datos, clima y modelización en problemas de escala y finalidad muy diferentes. La tercera es cuantitativa: la comparación con el procedimiento convencional muestra una subestimación del 30 al 37 por ciento en los caudales de diseño, y el análisis de un evento sin precedente evidencia la mayor estabilidad de la inferencia bayesiana. El resultado no es eliminar la incertidumbre, sino representarla, propagarla y auditarla de forma más consistente.',
-    notes: 'Explicar primero la evidencia y solo después citar el caso que la documenta: H1 — infraestructura urbana y atlas nacional; H2 — gestión de embalses, escala regional y clima; H3 — comparación metodológica y evento sin precedente.',
+    script: 'Las hipótesis se cierran con evidencia acumulada, y el esquema muestra cuál y con qué alcance. Para la primera, la automatización: campañas como las 1.990 simulaciones del Besaya, los 10.000 años sintéticos de IAHR 2022 o los miles de eventos de Calle 30, encadenados sin intervención manual. Es una prueba de viabilidad; la medida del ahorro de tiempo queda pendiente. Para la segunda, la modularidad: la matriz muestra los mismos bloques en los nueve casos. Para la tercera, la incertidumbre: en el ejemplo, la cadena estocástica da un caudal un 33 por ciento superior al del método IDF, y en Valencia el cuantil T100 pasa de 260 a 952 milímetros al incorporar la DANA. El resultado no es eliminar la incertidumbre, sino representarla, propagarla y auditarla de forma más consistente.',
+    notes: 'Explicar primero la evidencia y solo después citar el caso que la documenta: H1 — infraestructura urbana y atlas nacional; H2 — gestión de embalses, escala regional y clima; H3 — comparación metodológica y evento sin precedente.\n\n❓ «¿Cuánto tiempo ahorra la automatización?» → La memoria no aporta una medida comparativa. Responder con lo que sí puede afirmarse (1.990 simulaciones hidráulicas emparejadas en Besaya, 414 correcciones de sesgo en Panamá, encadenadas sin intervención manual) y reconocer que medir el ahorro frente a un flujo manual es trabajo futuro. Si tienes una estimación propia (horas por caso antes y después), dila aquí.',
     bullets: [
-      'H1 · Automatización viable: una cadena extensa puede ejecutarse y auditarse sin intervención manual entre etapas.',
-      'H2 · Arquitectura reutilizable: los mismos bloques resuelven problemas climáticos, regionales, urbanos y nacionales.',
-      'H3 · Incertidumbre mejor representada: −30–37 % frente al método convencional y mayor estabilidad ante un evento extraordinario.',
+      'H1: automatización viable: cadenas de cientos o miles de ejecuciones sin intervención manual entre etapas.',
+      'H2: arquitectura reutilizable: los mismos bloques en problemas climáticos, regionales, urbanos y nacionales.',
+      'H3: incertidumbre mejor representada: caudal estocástico un 30–37 % superior al convencional; bandas en lugar de cifras únicas ante un evento extraordinario.',
     ],
   },
 
@@ -1145,12 +1171,12 @@ export const slideLibrary: Slide[] = [
     subtitle: 'Integración extremo a extremo, reproducibilidad sistemática y transferencia demostrada',
     estimatedMinutes: 3,
     type: 'normal',
-    script: 'La memoria estratifica sus aportaciones en tres niveles, precisamente para responder a la pregunta de qué hay de nuevo. Primero, las metodologías incorporadas: NEOPRENE/CoSMoS, GEV/GPD con L-momentos y estimación bayesiana, cópulas gaussianas y vine, CMIP6/SSP, corrección de sesgo, MaxDiss/k-NN, y los motores HEC-HMS/SWAT/SFINCS/HEC-RAS/Iber — todas preexistentes. Segundo, los desarrollos implementados: los bloques modulares en Python, los adaptadores y las tuberías automatizadas. Y tercero, la contribución original propiamente dicha: la integración extremo a extremo, la reproducibilidad sistemática, y la transferibilidad operativa demostrada en 9 casos de estudio sin modificar el núcleo. Cierro esta idea con la frase que resume la mención industrial de la tesis: no reside únicamente en los resultados de los casos de estudio, sino en que esos mismos resultados son reproducibles por terceros con los mismos datos y la misma infraestructura.',
+    script: 'La memoria separa sus aportaciones en tres niveles, precisamente para responder a la pregunta de qué hay de nuevo. En la base, las metodologías incorporadas, que reconozco como conocimiento previo: extremos, L-momentos, inferencia bayesiana, cópulas, generadores, corrección de sesgo, MaxDiss y k-NN, y los motores externos. En medio, los desarrollos de la tesis: los catorce submódulos, los adaptadores para cuatro motores y los flujos reproducibles. Y arriba, la contribución original: la integración extremo a extremo, la reproducibilidad sistemática y la transferencia a proyectos reales. La mención industrial reside en que esos resultados pueden reproducirse por terceros con los mismos datos y la misma infraestructura, con la salvedad, que la propia memoria reconoce, de los motores sujetos a licencia.',
     notes: 'Leer las aportaciones despacio. Destacar la transferencia industrial como valor principal.\n\n❓ "¿Qué hay de nuevo aquí si todos los métodos están tomados de otros trabajos?" → Esta es precisamente la pregunta que la memoria anticipa con esta taxonomía de tres niveles: la novedad es la integración de extremo a extremo con interfaces estandarizadas, y la transferencia demostrada en 9 casos heterogéneos sin tocar el núcleo — no un algoritmo nuevo.\n\nCierra el arco narrativo abierto en la diapositiva 2 (origen y mención industrial): allí se planteó la mención industrial como pregunta, aquí se cierra como conclusión verificada.',
     results: [
       { value:'Extremo a extremo', label:'integración funcional', implication:'datos, estadística, escenarios, modelos físicos e impacto' },
       { value:'Trazable', label:'reproducibilidad sistemática', implication:'cada resultado conserva fuente, método y configuración' },
-      { value:'9 casos', label:'transferibilidad operativa', implication:'problemas reales sin modificar los módulos centrales' },
+      { value:'9 casos', label:'transferibilidad operativa', implication:'tres reproducibles con notebooks; seis documentados desde su publicación o proyecto' },
     ],
     bullets: [
       'Las metodologías científicas incorporadas son reconocidas explícitamente como conocimiento previo.',
@@ -1167,14 +1193,15 @@ export const slideLibrary: Slide[] = [
     subtitle: 'La automatización organiza la incertidumbre; no elimina los límites de los datos ni de los modelos',
     estimatedMinutes: 2,
     type: 'normal',
-    script: 'Identificamos con honestidad las limitaciones actuales del sistema para marcar la hoja de ruta de los próximos desarrollos: la sensibilidad de los ajustes extremos a series cortas, la dependencia de licencias comerciales para HEC-RAS, el supuesto de estacionariedad en los generadores estocásticos, el coste computacional de los grandes ensembles hidráulicos, y la calidad heterogénea de las fuentes de datos globales (ERA5, CMIP6, GRDC, GloFAS).',
+    script: 'Las limitaciones se entienden mejor colocadas sobre la cadena. En los datos, series cortas y fuentes de calidad desigual. En los extremos, una cola de la distribución poco informada. En los escenarios, generadores que suponen estacionariedad. En los modelos, licencias, versiones y el coste de los grandes ensembles. Y en el impacto, la limitación principal: falta un contraste sistemático con observaciones. Debajo de cada una está el desarrollo que la aborda: control de calidad, bandas de credibilidad explícitas, generación condicionada al clima, emuladores y ejecución distribuida, y métricas de acierto junto con una medida real del ahorro de tiempo.',
     notes: 'Mencionar las limitaciones antes de que el tribunal pregunte por ellas. Demuestra autocrítica científica. Cada una tiene su mitigación explícita en la memoria (cap. 9): no son huecos ignorados, son líneas de trabajo activas.',
     bullets: [
-      'Datos · Las series cortas y los extremos raros mantienen una incertidumbre irreducible en la cola.',
-      'Dependencias · Licencias, versiones e instalación de motores externos condicionan la reproducibilidad completa.',
-      'Método · Los generadores estacionarios no representan por sí solos tendencias climáticas no estacionarias.',
-      'Cómputo · MaxDiss, k-NN y emuladores reducen carga, pero no sustituyen la validación física.',
-      'Siguiente etapa · Generación no estacionaria, eventos compuestos, ejecución distribuida y más documentación transferible.',
+      'Datos: las series cortas y los extremos raros mantienen una incertidumbre irreducible en la cola.',
+      'Validación: falta un contraste sistemático de manchas y frecuencias de impacto con observaciones.',
+      'Dependencias: licencias, versiones e instalación de motores externos condicionan la reproducibilidad completa.',
+      'Método: los generadores estacionarios no representan por sí solos tendencias climáticas no estacionarias.',
+      'Cómputo: MaxDiss, k-NN y emuladores reducen carga, pero no sustituyen la validación física.',
+      'Siguiente etapa: generación no estacionaria, métricas de acierto, ahorro medido, ejecución distribuida y suite de tests.',
     ],
   },
 
@@ -1210,11 +1237,11 @@ export const slideLibrary: Slide[] = [
     script: 'La tesis demuestra que es posible convertir una década de metodologías probabilísticas en una cadena completa, reproducible y transferible, desde la adquisición de los datos hasta los mapas de período de retorno del impacto. El reto que queda abierto es que HYDRA deje de ser la herramienta de su equipo de desarrollo y se convierta en la herramienta de su comunidad. Muchas gracias por su atención. Quedo a disposición del tribunal para las preguntas que deseen formular.',
     notes: 'Mantenerse de pie en silencio. Esperar las preguntas del tribunal. Dejar proyectada esta diapositiva de cierre con las referencias de contacto e instalación en pantalla.',
     bullets: [
-      '📦 GitHub Librería: github.com/navass11/pyhydra (Licencia MIT)',
-      '🌐 GitHub Plataforma: github.com/navass11/HYDRA',
-      '📄 DOI pyhydra: 10.5281/zenodo.20932555',
-      '📄 DOI HYDRA: 10.5281/zenodo.21138151',
-      '📧 Contacto: s.navas11@gmail.com',
+      'GitHub Librería: github.com/navass11/pyhydra (Licencia MIT)',
+      'GitHub Plataforma: github.com/navass11/HYDRA',
+      'DOI pyhydra: 10.5281/zenodo.20932555',
+      'DOI HYDRA: 10.5281/zenodo.21138151',
+      'Contacto: s.navas11@gmail.com',
     ],
   },
 
@@ -1272,7 +1299,7 @@ export const slideLibrary: Slide[] = [
     subtitle: 'La generación de escenarios solo adquiere valor cuando se conecta con datos, clima y modelos físicos',
     estimatedMinutes: 1,
     type: 'normal',
-    script: 'El carácter estocástico de la tesis no se limita a generar números aleatorios o tormentas sintéticas. Para estudiar inundaciones hacen falta series observadas y proyecciones climáticas coherentes, métodos que preserven la dependencia espacial y temporal, modelos que transformen lluvia en caudal y agua en calado, y un postproceso que asigne frecuencia al impacto. Estas herramientas auxiliares explican por qué la tesis abarca más temas que la generación estocástica estricta. Todos forman parte de la misma pregunta probabilística.',
+    script: 'Este esquema recorre la cadena estocástica completa. Partimos de una serie observada, normalmente corta y con pocos extremos. A partir de ella se generan miles de escenarios que conservan el clima y la dependencia entre variables. Cada escenario pasa por los modelos físicos, que convierten lluvia en caudal y caudal en calado. El resultado es un mapa de calado por escenario y, al reunirlos, una curva de frecuencia sobre el impacto con su banda de incertidumbre. Por eso la tesis abarca más que la generación estocástica: datos, clima, extremos y modelos son eslabones necesarios de la misma pregunta.',
     notes: 'Esta diapositiva responde de manera explícita a por qué aparecen clima, datos, aprendizaje automático y motores físicos en una tesis titulada sobre inundación estocástica. Mantener el lenguaje funcional; las librerías concretas aparecen después.',
     bullets: [
       'Representar escenarios plausibles exige datos y relaciones de dependencia.',
@@ -1288,7 +1315,7 @@ export const slideLibrary: Slide[] = [
     subtitle: 'Cinco responsabilidades científicas que después se materializan en la arquitectura',
     estimatedMinutes: 1,
     type: 'normal',
-    script: 'Antes de presentar la arquitectura técnica, este es el mapa metodológico de la tesis. La primera responsabilidad consiste en adquirir y controlar las fuentes de datos. La segunda caracteriza extremos, tendencias y señal climática. La tercera genera escenarios que preservan las relaciones relevantes. La cuarta propaga esos escenarios por los modelos físicos. La quinta calcula frecuencia e incertidumbre sobre la variable de impacto. La arquitectura que veremos a continuación existe para mantener conectadas estas cinco responsabilidades sin ocultar qué método actúa en cada etapa.',
+    script: 'Antes de la arquitectura técnica, este es el mapa metodológico: cinco responsabilidades y los submódulos de pyhydra que las materializan. Los datos: lluvia, caudal, cambio climático y suelos. Los extremos y el clima: series, análisis regional y corrección de sesgo. Los escenarios: generación estocástica y downscaling híbrido. La respuesta física: HEC-HMS, SWAT+, SFINCS y HEC-RAS. Y el impacto: reconstrucción de escenarios no simulados, sensibilidad y período de retorno sobre el calado. Son catorce submódulos en tres bloques, y cada caso activa solo la combinación que necesita.',
     notes: 'Utilizar esta diapositiva como orientación. No enumerar aún clases ni submódulos. En la diapositiva siguiente se explica que la arquitectura asigna una capa técnica a estas responsabilidades.',
   },
 
@@ -1299,7 +1326,7 @@ export const slideLibrary: Slide[] = [
     subtitle: 'Los casos aportan evidencias distintas y complementarias',
     estimatedMinutes: 2,
     type: 'normal',
-    script: 'Antes de cerrar el bloque, conviene reunir las evidencias que dan valor a la contribución. La comparación metodológica muestra diferencias del 30 al 37 por ciento en el caudal de diseño. La incorporación de un evento sin precedente eleva en un 266 por ciento el cuantil T100 estimado en la estación analizada. Una campaña de 1.990 simulaciones hidráulicas permite separar sensibilidad paramétrica y diferencias entre motores. Y 414 correcciones climáticas automáticas muestran que la arquitectura puede operar a escala nacional. Son resultados distintos, pero todos dependen de una cadena reproducible que conecta datos, incertidumbre, modelos y decisión.',
+    script: 'Antes de cerrar el bloque reúno cuatro resultados, cada uno con su figura. En IAHR 2022, los caudales de diseño de la cadena estocástica son entre un 30 y un 37 por ciento superiores a los del método convencional. En Valencia, incorporar la DANA eleva un 266 por ciento el cuantil T100 bayesiano de Turís. En el Besaya, 1.990 simulaciones emparejadas separan la sensibilidad a la rugosidad de las diferencias entre motores. Y en Panamá, más de cuatrocientas correcciones climáticas automáticas muestran que la arquitectura opera a escala nacional. Son resultados distintos, pero todos dependen de la misma cadena reproducible.',
     notes: 'Presentar las cifras como evidencia, no como competición entre casos. Aclarar el dominio de cada cifra si el tribunal pregunta. Esta diapositiva prepara la síntesis conceptual de la siguiente.',
     bullets: [
       'La evidencia combina contraste metodológico, actualización estadística, sensibilidad hidráulica y escalabilidad.',
@@ -1325,6 +1352,9 @@ const presentationRank = (slide: Slide) => {
   if (slide.id === 46) return 8.7;
   if (slide.id === 47) return 10.5;
   if (slide.id === 48) return 39.4;
+  // La aportación se anticipa después de la pregunta y los objetivos, no antes
+  // de haber planteado el problema.
+  if (slide.id === 4.6) return 8.55;
   // El producto se presenta después de explicar el problema, el estado de la
   // técnica y la arquitectura. En la introducción todavía no se adelantan
   // nombres de librerías ni detalles de implementación.

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" role="img" aria-labelledby="t" font-family="Avenir Next, Avenir, Segoe UI, Helvetica, sans-serif">
+  <title id="t">Los nueve casos según escala espacial y dimensión de validación</title>
+
+  <!-- rows -->
+  <g font-size="16" font-weight="600" fill="#13323A">
+    <text x="10" y="112">Inundación</text><text x="10" y="132">basada en impacto</text>
+    <text x="10" y="252">Extremos e</text><text x="10" y="272">incertidumbre</text>
+    <text x="10" y="392">Clima y</text><text x="10" y="412">escalabilidad</text>
+  </g>
+  <g stroke="#C6D8D4" stroke-width="1.5">
+    <line x1="160" y1="60" x2="790" y2="60"/><line x1="160" y1="190" x2="790" y2="190"/>
+    <line x1="160" y1="330" x2="790" y2="330"/><line x1="160" y1="470" x2="790" y2="470"/>
+  </g>
+
+  <!-- scale axis -->
+  <defs><linearGradient id="s" x1="0" x2="1"><stop stop-color="#A9D2CC"/><stop offset="1" stop-color="#0E4A57"/></linearGradient>
+  <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0E4A57"/></marker></defs>
+  <rect x="160" y="22" width="626" height="10" fill="url(#s)"/>
+  <text x="160" y="16" font-size="15" fill="#4A6870">escala espacial creciente</text>
+  <g font-size="14" fill="#4A6870" text-anchor="middle">
+    <text x="212" y="500">Infraestructura</text>
+    <text x="317" y="500">Municipio</text>
+    <text x="422" y="500">Cuenca</text>
+    <text x="527" y="500">Región</text>
+    <text x="632" y="500">País o</text><text x="632" y="518">gran cuenca</text>
+    <text x="737" y="500">Varios</text><text x="737" y="518">países</text>
+  </g>
+
+  <!-- dots: filled = reproducible notebook, hollow = documented -->
+  <g font-size="15" fill="#13323A" text-anchor="middle">
+    <circle cx="212" cy="112" r="16" fill="#0E4A57"/><text x="212" y="152">Calle 30</text>
+    <circle cx="300" cy="112" r="16" fill="#0E4A57"/><text x="300" y="152">Besaya</text>
+    <circle cx="350" cy="112" r="16" fill="#fff" stroke="#0E4A57" stroke-width="3"/><text x="360" y="176">Sant Llorenç</text>
+    <circle cx="527" cy="252" r="16" fill="#0E4A57"/><text x="527" y="292">Valencia</text>
+    <circle cx="422" cy="392" r="16" fill="#fff" stroke="#0E4A57" stroke-width="3"/><text x="422" y="432">IAHR 2022</text>
+    <circle cx="600" cy="372" r="16" fill="#fff" stroke="#0E4A57" stroke-width="3"/><text x="574" y="410">Panamá</text>
+    <circle cx="664" cy="372" r="16" fill="#fff" stroke="#0E4A57" stroke-width="3"/><text x="664" y="410">SIMPCCe</text>
+    <circle cx="632" cy="444" r="14" fill="#fff" stroke="#0E4A57" stroke-width="3"/><text x="608" y="450" text-anchor="end">Tanganica</text>
+    <circle cx="737" cy="392" r="16" fill="#fff" stroke="#0E4A57" stroke-width="3"/><text x="737" y="432">Andes</text>
+  </g>
+
+  <!-- legend -->
+  <g font-size="15" fill="#13323A">
+    <circle cx="170" cy="545" r="9" fill="#0E4A57"/><text x="186" y="550">reproducible con notebooks en HYDRA</text>
+    <circle cx="500" cy="545" r="9" fill="#fff" stroke="#0E4A57" stroke-width="3"/><text x="516" y="550">documentado desde su publicación</text>
+  </g>
+</svg>

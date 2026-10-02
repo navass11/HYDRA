@@ -13,83 +13,95 @@ const routeStageFor = (block: string) => {
   if (['Casos de estudio','Validación'].includes(block)) return 4;
   return 5;
 };
-const visualSlides: Record<number, { kind: string; metric?: string; items: { label: string; detail: string }[] }> = {
+// Line icons for the six chapters of the index (one family, 24px grid).
+const chapterIcons = [
+  '<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/><path d="M8.8 8.6a1.9 1.9 0 1 1 2.6 1.8c-.6.3-.9.7-.9 1.3"/><path d="M10.5 13.6v.1"/>',
+  '<path d="M4 19V5.5A1.5 1.5 0 0 1 5.5 4H9v15H5.5A1.5 1.5 0 0 0 4 20.5"/><path d="M9 4h4v16H9"/><path d="m14.5 5.2 3.4-.9 3.6 13.6-3.4.9z"/>',
+  '<path d="m12 3 9 4.5-9 4.5-9-4.5z"/><path d="m3 12 9 4.5 9-4.5"/><path d="m3 16.5 9 4.5 9-4.5"/>',
+  '<path d="M4 4v16h16"/><path d="M7 16c3-1 5-3 7-6s3.5-4 6-4.5"/><circle cx="9" cy="14.5" r=".9"/><circle cx="13" cy="11.2" r=".9"/><circle cx="17" cy="7.2" r=".9"/>',
+  '<path d="M12 21s-6.5-6.2-6.5-11a6.5 6.5 0 0 1 13 0c0 4.8-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/>',
+  '<circle cx="12" cy="12" r="8.5"/><path d="m8 12.3 2.7 2.7L16.2 9.5"/>',
+];
+const quoteFigures: Record<number, string> = { 7: 'esq_hipotesis_central.svg', 8: 'esq_pregunta.svg' };
+const visualSlides: Record<number, { kind: string; metric?: string; figure?: string; figures?: { src: string; caption: string }[]; items: { label: string; detail: string }[] }> = {
   2: { kind:'flow', metric:'El título describe una arquitectura reproducible, no un único algoritmo', items:[
     {label:'Modelo',detail:'una cadena completa de cálculo'}, {label:'Automático',detail:'reduce tareas manuales frágiles'},
     {label:'Inundación',detail:'calcula la frecuencia sobre el impacto'}, {label:'Estocástica',detail:'propaga múltiples escenarios plausibles'} ] },
-  4.6: { kind:'layers', metric:'La originalidad está en convertir conocimiento disperso en capacidad operativa', items:[
+  4.6: { kind:'layers', figure:'esq_aporta.svg', metric:'La originalidad está en convertir conocimiento disperso en capacidad operativa', items:[
     {label:'Integración extremo a extremo',detail:'datos → estadística → escenarios → modelos → impacto'},
     {label:'Reproducibilidad sistemática',detail:'fuente, método, configuración y salida quedan trazados'},
-    {label:'Transferencia demostrada',detail:'nueve casos reales sin reconstruir el núcleo'} ] },
-  6: { kind:'problem', metric:'T(forzante) ≠ T(impacto)', items:[
+    {label:'Transferencia demostrada',detail:'problemas de escala y finalidad distintas'} ] },
+  6: { kind:'problem', figure:'esq_tforzante_timpacto.svg', metric:'T(forzante) ≠ T(impacto)', items:[
     {label:'Evento único',detail:'un pico de lluvia no describe todas las avenidas plausibles'},
     {label:'Estado antecedente',detail:'humedad y confluencias cambian la respuesta de la cuenca'},
     {label:'Impacto hidráulico',detail:'la frecuencia se estima tras simular calados y extensión'} ] },
-  11: { kind:'layers', metric:'Un núcleo científico, tres capas que lo hacen transferible', items:[
+  11: { kind:'layers', figure:'esq_arquitectura_capas.svg', metric:'Un núcleo científico, tres capas que lo hacen transferible', items:[
     {label:'Métodos científicos',detail:'datos, extremos, escenarios y modelos físicos'},
     {label:'Servicios de ejecución',detail:'API y notebooks sobre el mismo núcleo'},
     {label:'Interfaz web',detail:'acceso, documentación y casos navegables'} ] },
-  6: { kind:'problem', metric:'T(forzante) ≠ T(impacto)', items:[
+  6: { kind:'problem', figure:'esq_tforzante_timpacto.svg', metric:'T(forzante) ≠ T(impacto)', items:[
     {label:'Evento único',detail:'un pico de lluvia no describe todas las avenidas plausibles'},
     {label:'Estado antecedente',detail:'humedad y confluencias cambian la respuesta de la cuenca'},
     {label:'Impacto hidráulico',detail:'la frecuencia se estima después de simular calados y extensión'} ] },
-  11: { kind:'layers', metric:'Un núcleo científico, tres capas que lo hacen transferible', items:[
+  11: { kind:'layers', figure:'esq_arquitectura_capas.svg', metric:'Un núcleo científico, tres capas que lo hacen transferible', items:[
     {label:'Métodos científicos',detail:'datos, extremos, escenarios y modelos físicos'},
     {label:'Servicios de ejecución',detail:'API y notebooks sobre el mismo núcleo'},
     {label:'Interfaz web',detail:'acceso, documentación y casos navegables'} ] },
-  10: { kind:'gap', metric:'La novedad es la integración operativa', items:[
-    {label:'Inferencia',detail:'Stan · PyMC · R-INLA'}, {label:'Datos',detail:'GloFAS · GRDC · ERA5'},
-    {label:'Generación',detail:'NSRP · cópulas'}, {label:'Modelos',detail:'HEC · SFINCS · Iber'},
-    {label:'Brecha',detail:'herramientas potentes, flujo fragmentado'} ] },
-  13: { kind:'sources', metric:'Salida homogénea y trazable', items:[
-    {label:'Estación',detail:'AEMET · Meteostat · OGIMET'}, {label:'Reanálisis',detail:'ERA5 · cobertura global'},
-    {label:'Satélite',detail:'GPM · PERSIANN'}, {label:'Ríos y suelo',detail:'GloFAS · GRDC · SoilGrids'},
-    {label:'Proyecciones',detail:'CMIP6 · escenarios SSP'} ] },
-  17: { kind:'flow', metric:'Un contrato común conecta motores distintos sin rehacer el núcleo', items:[
+  13: { kind:'sources', figure:'esq_fuentes_datos.svg', metric:'Cualquier fuente llega con el mismo formato y su procedencia registrada', items:[
+    {label:'Estaciones',detail:'AEMET, Meteostat y OGIMET'}, {label:'Reanálisis',detail:'ERA5, con cobertura global'},
+    {label:'Satélite',detail:'GPM y PERSIANN'}, {label:'Ríos y suelo',detail:'GloFAS, GRDC y SoilGrids'},
+    {label:'Proyecciones',detail:'CMIP6 con escenarios SSP'} ] },
+  17: { kind:'flow', figure:'esq_adaptadores.svg', metric:'Un contrato común conecta motores distintos sin rehacer el núcleo', items:[
     {label:'Preparar',detail:'adaptar entradas al formato del motor'},
     {label:'Ejecutar',detail:'registrar versión, proceso y resultado'},
     {label:'Homogeneizar',detail:'leer salidas en estructuras comunes'},
     {label:'Validar',detail:'comprobar ejecución y plausibilidad física'} ] },
-  18: { kind:'tools', metric:'Interfaz web → API → mismo núcleo pyhydra', items:[
+  18: { kind:'tools', figure:'esq_herramientas.svg', metric:'Las herramientas web llaman al mismo núcleo pyhydra que los notebooks', items:[
     {label:'Extremos',detail:'GEV/GPD bayesiana'}, {label:'Dependencia',detail:'cópulas multivariantes'},
     {label:'Espacio',detail:'kriging e interpolación'}, {label:'Diseño',detail:'curvas IDF'},
     {label:'Modelos',detail:'sensibilidad hidráulica'} ] },
-  39.5: { kind:'layers', metric:'Nueve casos · un núcleo reutilizable · resultados contrastables', items:[
+  19: { kind:'flow', figure:'shot_herramienta_gev.jpg', metric:'El método descrito se ejecuta desde la plataforma, con su incertidumbre', items:[
+    {label:'Datos',detail:'serie de Turís y selección de máximos anuales o POT'},
+    {label:'Ajuste clásico',detail:'máxima verosimilitud y L-momentos'},
+    {label:'Ajuste bayesiano',detail:'MCMC con priors documentados'},
+    {label:'Resultado',detail:'cuantil de diseño con banda de credibilidad'} ] },
+  39.5: { kind:'layers', figure:'esq_casos_escala.svg', metric:'Tres casos se reproducen hoy con notebooks; los nueve aportan resultados contrastables', items:[
     {label:'Principio común',detail:'frecuencia estimada sobre el impacto'},
     {label:'Contextos distintos',detail:'escalas, climas y modelos diferentes'},
     {label:'Transferencia',detail:'módulos auditables sin reconstruir la cadena'} ] },
-  46: { kind:'flow', metric:'Los escenarios aportan valor cuando su impacto puede estimarse', items:[
+  46: { kind:'flow', figure:'esq_cadena_estocastica.svg', metric:'Los escenarios aportan valor cuando su impacto puede estimarse', items:[
     {label:'Datos',detail:'observaciones y proyecciones climáticas'},
     {label:'Dependencia',detail:'relaciones espaciales y temporales plausibles'},
     {label:'Modelos físicos',detail:'transformar lluvia en caudal y calado'},
     {label:'Decisión',detail:'estimar frecuencia sobre la variable de impacto'} ] },
-  32: { kind:'flow', metric:'HEC-RAS 1D · frecuencia calculada sobre el calado', items:[
+  32: { kind:'flow', metric:'En Calle 30 la frecuencia se calcula sobre el calado, con HEC-RAS 1D', items:[
     {label:'Lluvia',detail:'eventos multisitio con cópulas'}, {label:'Caudal',detail:'transformación HEC-HMS'},
     {label:'Selección',detail:'subconjunto representativo MaxDiss'}, {label:'Hidráulica',detail:'HEC-RAS 1D'},
     {label:'Reconstrucción',detail:'miles de impactos con k-NN'} ] },
-  40: { kind:'evidence', metric:'3 hipótesis · 3 verificadas', items:[
-    {label:'H1 · Eficiencia',detail:'cadenas urbanas y nacionales · automatización viable'},
-    {label:'H2 · Modularidad',detail:'mismos bloques · problemas y escalas diferentes'},
-    {label:'H3 · Incertidumbre',detail:'−30–37 % con el método convencional · evidencia cuantitativa'} ] },
-  47: { kind:'method-map', metric:'La procedencia se conserva en cada transformación', items:[
+  40: { kind:'evidence', figure:'esq_hipotesis_evidencia.svg', metric:'Las tres hipótesis se sostienen, cada una con el alcance de su evidencia', items:[
+    {label:'H1 Automatización',detail:'miles de ejecuciones encadenadas sin intervención manual: viabilidad demostrada'},
+    {label:'H2 Modularidad',detail:'los mismos bloques resuelven problemas y escalas diferentes'},
+    {label:'H3 Incertidumbre',detail:'caudal estocástico un 30–37 % superior al convencional; bandas en lugar de cifras únicas'} ] },
+  47: { kind:'method-map', figure:'esq_responsabilidades.svg', metric:'La procedencia se conserva en cada transformación', items:[
     {label:'Datos',detail:'observar, reunir y controlar fuentes'},
     {label:'Extremos y clima',detail:'caracterizar frecuencia y condiciones'},
     {label:'Escenarios',detail:'generar combinaciones plausibles'},
     {label:'Respuesta física',detail:'simular lluvia, caudal y calado'},
     {label:'Impacto',detail:'estimar frecuencia para decidir'} ] },
-  48: { kind:'evidence', metric:'Cuatro resultados · una cadena científica reproducible', items:[
-    {label:'+30–37 %',detail:'subestimación del caudal de diseño · IAHR 2022'},
-    {label:'+266 %',detail:'actualización de T100 al incorporar la DANA · Valencia'},
-    {label:'1.990',detail:'simulaciones hidráulicas emparejadas · Besaya'},
-    {label:'414',detail:'correcciones climáticas automáticas · Panamá'} ] },
-  41: { kind:'layers', metric:'9 casos heterogéneos · sin modificar el núcleo', items:[
+  48: { kind:'evidence', figures:[{src:'fig_iahr2022_comparativa_es.svg',caption:'IAHR 2022: caudal estocástico frente a IDF'},{src:'fig_valencia_curvas_retorno.png',caption:'Valencia: curva de retorno en Turís'},{src:'besaya_fig04_intermodel_comparison.png',caption:'Besaya: HEC-RAS frente a SFINCS'},{src:'fig_panama_precipitacion.png',caption:'Panamá: precipitación por subcuencas'}], metric:'Cuatro resultados distintos sostenidos por una misma cadena reproducible', items:[
+    {label:'+30–37 %',detail:'caudal de diseño estocástico frente al convencional (IAHR 2022)'},
+    {label:'+266 %',detail:'actualización de T100 al incorporar la DANA (Valencia)'},
+    {label:'1.990',detail:'simulaciones hidráulicas emparejadas (Besaya)'},
+    {label:'414',detail:'correcciones climáticas automáticas (Panamá)'} ] },
+  41: { kind:'layers', figure:'esq_niveles_contribucion.svg', metric:'Lo original es la integración; los métodos de base son conocimiento previo', items:[
     {label:'Base científica',detail:'metodologías preexistentes incorporadas'},
     {label:'Desarrollo',detail:'módulos, adaptadores y pipelines'},
     {label:'Contribución original',detail:'integración, reproducibilidad y transferencia'} ] },
-  42: { kind:'roadmap', metric:'Limitación reconocida → desarrollo verificable', items:[
+  42: { kind:'roadmap', figure:'esq_limitaciones.svg', metric:'Cada limitación reconocida abre un desarrollo verificable', items:[
     {label:'Series cortas',detail:'incertidumbre explícita en la cola'}, {label:'Motores externos',detail:'adaptadores y versiones registradas'},
     {label:'Estacionariedad',detail:'generación condicionada al clima'}, {label:'Coste',detail:'emuladores + ejecución distribuida'},
-    {label:'Datos globales',detail:'control de calidad y trazabilidad'} ] },
+    {label:'Datos globales',detail:'control de calidad y trazabilidad'},
+    {label:'Validación observacional',detail:'métricas de acierto y ahorro medido'} ] },
   42.5: { kind:'acknowledgements', metric:'A todos, gracias', items:[
     {label:'Mi familia',detail:'el apoyo que sostuvo todo el recorrido'},
     {label:'Manuel del Jesus Peñil',detail:'rigor, confianza y vocación de utilidad'},
@@ -508,6 +520,7 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
   .semantic-visual.evidence .semantic-card::after { content:'VERIFICADA ✓'; position:absolute; right:14px; top:14px; color:#4ade80; font-size:12px; font-weight:900; letter-spacing:.07em; }
   .semantic-visual.layers .semantic-card:nth-child(3) { border-color:var(--visual-color); background:color-mix(in srgb,var(--visual-color) 10%,#0f172a); }
   .semantic-visual.roadmap .semantic-items { grid-template-columns:repeat(3,1fr); }
+  .semantic-visual.acknowledgements .semantic-items { grid-template-columns:repeat(3,minmax(0,1fr)); }
   .semantic-visual.roadmap .semantic-card::after { content:'→'; position:absolute; right:10px; top:11px; color:var(--visual-color); }
   .semantic-metric { align-self:center; padding:10px 18px; border-radius:99px; color:var(--visual-color); background:#020617; border:1px solid color-mix(in srgb,var(--visual-color) 38%,transparent); font-size:15px; font-weight:900; letter-spacing:.04em; text-transform:uppercase; text-align:center; }
   .case-results { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; width:100%; margin-bottom:12px; }
@@ -889,7 +902,7 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
     --deck-white: #fbfdfc;
     --deck-water: #197b80;
     --deck-water-pale: #dcebe7;
-    --deck-alert: #bd5b3c;
+    --deck-alert: #B5334B;
     background: #0e303a;
     color: var(--deck-ink);
     font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
@@ -1085,9 +1098,9 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
     color: #1d6568;
   }
   .quote-node[style] {
-    background: #f5e9e4 !important;
-    border-color: #d2a08d !important;
-    color: #914831 !important;
+    background: #F6E6E9 !important;
+    border-color: #DDA3AE !important;
+    color: #8E2438 !important;
   }
   .quote-arrow {
     align-self: center;
@@ -1168,7 +1181,7 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
     line-height: 1.35;
     max-width: 620px;
   }
-  .case-reference { color: #3f5d64; border-left-color: #bd795f; background: #e2ece9; }
+  .case-reference { color: #3f5d64; border-left-color: #A9D2CC; background: #e2ece9; }
   .case-result {
     background: #fbfdfc;
     border-color: #cbdad7;
@@ -1236,10 +1249,10 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
   .semantic-visual.problem .semantic-card { min-height: 210px; padding: 22px; justify-content: flex-start; }
   .semantic-visual.problem .semantic-metric { font: 600 clamp(27px, 2.4vw, 36px)/1.2 Georgia, "Times New Roman", serif; }
   .semantic-visual.gap .semantic-card:last-child {
-    border-color: #d2a08d;
-    background: #f5e9e4;
+    border-color: #DDA3AE;
+    background: #F6E6E9;
   }
-  .semantic-visual.gap .semantic-card:last-child .semantic-label { color: #914831; }
+  .semantic-visual.gap .semantic-card:last-child .semantic-label { color: #8E2438; }
   .semantic-visual.evidence .semantic-card { border-left: 4px solid #4b9484; }
   .semantic-visual.evidence .semantic-card::after { color: #397963; }
   .semantic-visual.evidence:has(.semantic-card:nth-child(4)) .semantic-items {
@@ -1290,11 +1303,24 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
   :global(.traceability-head) { color: #246b6e; background: #dcebe7; }
   :global(.traceability-goal) { background: #fbfdfc; }
   :global(.traceability-build) { background: #e6f0ed; }
-  :global(.traceability-proof) { background: #f2eae6; }
+  :global(.traceability-proof) { background: #F6E6E9; }
   :global(.traceability-matrix strong) { color: var(--deck-ink); }
   :global(.traceability-build strong) { color: #246b6e; }
-  :global(.traceability-proof strong) { color: #914831; }
+  :global(.traceability-proof strong) { color: #8E2438; }
   :global(.traceability-matrix span) { color: #4e6870; }
+  :global(.thesis-matrix) { width:100%; border-collapse:collapse; margin:4px 0 6px; background:#fbfdfc; border:1px solid #cbdad7; font-size:clamp(12px,1.05vw,15px); line-height:1.2; color:#405f67; }
+  :global(.thesis-matrix th), :global(.thesis-matrix td) { padding:6px 10px; border-bottom:1px solid #dce7e4; text-align:left; }
+  :global(.thesis-matrix thead th) { color:#246b6e; background:#dcebe7; font-weight:800; }
+  :global(.thesis-matrix tbody th) { color:#173b45; font-weight:700; }
+  :global(.positioning-matrix td) { text-align:center; font-size:1.15em; }
+  :global(.positioning-matrix thead th:not(:first-child)) { text-align:center; }
+  :global(.thesis-matrix .tm-hydra) { color:#fbfdfc; background:#197b80; }
+  :global(.thesis-matrix .tm-yes) { color:#197b80; font-weight:800; }
+  :global(.thesis-matrix .tm-part) { color:#b07a1f; font-weight:700; }
+  :global(.thesis-matrix .tm-no) { color:#8a9ea3; }
+  :global(.authorship-matrix) { font-size:clamp(11px,.9vw,13px); }
+  :global(.authorship-matrix th), :global(.authorship-matrix td) { padding:4px 9px; }
+  :global(.thesis-matrix-legend) { margin:0; color:#4e6870; font-size:12px; }
   .pres-table { color: #31515a; background: #fbfdfc; border-color: #cbdad7; }
   .pres-table th { color: #246b6e !important; background: #dcebe7; border-color: #b7d2cc; }
   .pres-table td {
@@ -1406,6 +1432,480 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
     outline-offset: 3px;
   }
   .pres-exit-btn:hover { background: rgba(189, 91, 60, .2); color: #ffe2d7; border-color: #d9977e; }
+
+  /* Comparison and authorship tables: projection-size type. */
+  :global(.thesis-matrix) { font-size: clamp(14px, 1.2vw, 19px); }
+  :global(.thesis-matrix th), :global(.thesis-matrix td) { padding: clamp(4px, .8vh, 10px) 14px; }
+  :global(.positioning-matrix td) { font-size: 1.3em; line-height: 1; }
+  :global(.authorship-matrix) { font-size: clamp(13px, 1.08vw, 17px); }
+  :global(.authorship-matrix th), :global(.authorship-matrix td) { padding: clamp(3px, .6vh, 7px) 12px; }
+  :global(.thesis-matrix-legend) { font-size: clamp(12px, .95vw, 15px); margin-top: 4px; }
+  @media (max-height: 800px) {
+    :global(.traceability-matrix > div) { padding: 9px 14px; }
+  }
+
+  /* ════════════════════════════════════════════════════════════════════
+     Limnímetro — flood-depth art direction.
+     Colour is a water-depth ramp (somero → profundo) and encodes position
+     along the modelling chain; one crimson is reserved for risk, T(impacto)
+     and limitations. Titles use a condensed face, as map lettering does.
+     ════════════════════════════════════════════════════════════════════ */
+  .pres-shell {
+    --paper: #EEF3F1;
+    --ink: #13323A;
+    --muted: #4A6870;
+    --shallow: #A9D2CC;
+    --mid: #3F8E93;
+    --deep: #0E4A57;
+    --risk: #B5334B;
+    --risk-pale: #F6E6E9;
+    --font-display: "Avenir Next Condensed", "Avenir Next", "Arial Narrow", sans-serif;
+    --font-text: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+    --font-math: Charter, "Iowan Old Style", Georgia, serif;
+    --deck-ink: var(--ink);
+    --deck-muted: var(--muted);
+    --deck-paper: var(--paper);
+    --deck-water: var(--mid);
+    --deck-alert: var(--risk);
+    font-family: var(--font-text);
+  }
+
+  /* ── Type ── */
+  .pres-shell .slide-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(34px, 3.35vw, 58px);
+    line-height: 1.02;
+    letter-spacing: -.005em;
+    color: var(--ink);
+  }
+  .pres-shell .slide-type-title .slide-main-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -.01em;
+    line-height: .98;
+  }
+  .pres-shell .slide-subtitle {
+    font-family: var(--font-text);
+    font-weight: 400;
+    font-size: clamp(17px, 1.35vw, 23px);
+    color: var(--muted);
+    max-width: 62ch;
+  }
+  .pres-shell .case-result-value,
+  .pres-shell .timeline-dot,
+  .pres-shell :global(.thesis-matrix) { font-variant-numeric: tabular-nums lining-nums; }
+
+  /* No tracked capitals anywhere on the canvas */
+  .pres-shell .case-process-label,
+  .pres-shell .pyhydra-role-title,
+  .pres-shell .semantic-metric,
+  .pres-shell .cover-role {
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  /* ── Bullets: a short water-level dash, no boxes ── */
+  .pres-shell .slide .slide-bullets li {
+    position: relative;
+    padding: 6px 0 6px 30px;
+    background: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    color: var(--ink);
+    font-size: clamp(18px, 1.45vw, 24px);
+    line-height: 1.35;
+  }
+  .pres-shell .slide .slide-bullets li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: calc(6px + .68em);
+    width: 16px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--mid);
+  }
+
+  /* ── Visual slides as a map legend ── */
+  .pres-shell .visual-normal-body { align-items: center; }
+  .pres-shell .semantic-visual {
+    flex: 1;
+    justify-content: center;
+    gap: clamp(26px, 4.5vh, 52px);
+    padding: 0;
+    --tone: var(--mid);
+  }
+  .pres-shell .semantic-visual .semantic-items {
+    gap: clamp(22px, 2.4vw, 42px);
+    grid-auto-rows: auto;
+    row-gap: clamp(26px, 4vh, 44px);
+  }
+  .pres-shell .semantic-visual .semantic-card {
+    min-height: 0 !important;
+    padding: 18px 6px 0 0;
+    background: none !important;
+    border: 0 !important;
+    border-top: 6px solid var(--tone) !important;
+    border-radius: 0 !important;
+    box-shadow: none;
+    justify-content: flex-start;
+  }
+  .pres-shell .semantic-visual .semantic-card::after { content: none !important; }
+  .pres-shell .semantic-visual .semantic-label {
+    font-family: var(--font-text);
+    font-weight: 600;
+    font-size: clamp(26px, 2.3vw, 40px);
+    line-height: 1.12;
+    margin-top: 0;
+    color: var(--ink);
+  }
+  .pres-shell .semantic-visual .semantic-detail {
+    font-size: clamp(20px, 1.7vw, 29px);
+    line-height: 1.38;
+    margin-top: 12px;
+    color: var(--muted);
+  }
+  /* Numbers only where the content is a sequence */
+  .pres-shell .semantic-visual .semantic-index { display: none; }
+  .pres-shell .semantic-visual.flow .semantic-index,
+  .pres-shell .semantic-visual.method-map .semantic-index {
+    display: inline;
+    width: auto;
+    height: auto;
+    margin-right: 10px;
+    padding: 0;
+    background: none;
+    border-radius: 0;
+    color: var(--tone);
+    font: 600 1em/1 var(--font-display);
+    vertical-align: baseline;
+  }
+  /* Depth tones: along a chain the water gets deeper */
+  .pres-shell .semantic-visual.flow .semantic-items,
+  .pres-shell .semantic-visual.method-map .semantic-items { gap: 10px; }
+  .pres-shell .semantic-visual.flow .semantic-card,
+  .pres-shell .semantic-visual.method-map .semantic-card { padding-right: 18px; }
+  .pres-shell .semantic-visual.flow .semantic-card:nth-child(1),
+  .pres-shell .semantic-visual.method-map .semantic-card:nth-child(1) { --tone: #8CC2BE; }
+  .pres-shell .semantic-visual.flow .semantic-card:nth-child(2),
+  .pres-shell .semantic-visual.method-map .semantic-card:nth-child(2) { --tone: #5FA3A4; }
+  .pres-shell .semantic-visual.flow .semantic-card:nth-child(3),
+  .pres-shell .semantic-visual.method-map .semantic-card:nth-child(3) { --tone: #3F8E93; }
+  .pres-shell .semantic-visual.flow .semantic-card:nth-child(4),
+  .pres-shell .semantic-visual.method-map .semantic-card:nth-child(4) { --tone: #23697A; }
+  .pres-shell .semantic-visual.flow .semantic-card:last-child,
+  .pres-shell .semantic-visual.method-map .semantic-card:last-child { --tone: var(--deep); }
+  .pres-shell .semantic-visual.flow .semantic-card:nth-child(3):last-child { --tone: var(--deep); }
+  .pres-shell .semantic-visual.layers .semantic-card { --tone: var(--shallow); }
+  .pres-shell .semantic-visual.layers .semantic-card:nth-child(3) { --tone: var(--deep); }
+  .pres-shell .semantic-visual.roadmap .semantic-card { --tone: var(--risk); }
+  .pres-shell .semantic-visual.acknowledgements .semantic-card { --tone: var(--shallow); }
+  .pres-shell .semantic-visual.problem .semantic-card { --tone: var(--mid); }
+  .pres-shell .semantic-visual.evidence:has(.semantic-card:nth-child(4)) .semantic-label { font-family: var(--font-display); font-size: clamp(30px, 2.6vw, 44px); }
+
+  /* The takeaway is the slide's assertion: it leads, the legend supports it */
+  .pres-shell .semantic-visual { justify-content: space-evenly; }
+  .pres-shell .semantic-visual .semantic-metric {
+    order: -1;
+    align-self: flex-start;
+    max-width: 34ch;
+    padding: 0 0 0 22px;
+    background: none;
+    border: 0;
+    border-left: 6px solid var(--deep);
+    border-radius: 0;
+    color: var(--ink);
+    font: 500 clamp(28px, 2.6vw, 46px)/1.18 var(--font-text);
+    letter-spacing: -.01em;
+    text-align: left;
+  }
+  .pres-shell .semantic-visual.problem .semantic-metric {
+    max-width: none;
+    border-left-color: var(--risk);
+    font: 600 clamp(40px, 3.8vw, 64px)/1.1 var(--font-math);
+  }
+
+  /* ── Index: the six chapters as a sequence ── */
+  .index-list {
+    counter-reset: chapter;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(3, auto);
+    gap: clamp(22px, 4vh, 44px) clamp(40px, 5vw, 90px);
+    margin: auto 0;
+    padding: 0;
+    list-style: none;
+  }
+  .index-item {
+    counter-increment: chapter;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 18px;
+    align-items: baseline;
+  }
+  .index-item::before {
+    content: counter(chapter);
+    grid-row: span 2;
+    font: 600 clamp(44px, 4.2vw, 72px)/.9 var(--font-display);
+    color: var(--tone, var(--mid));
+  }
+  .index-item:nth-child(1) { --tone: #8CC2BE; }
+  .index-item:nth-child(2) { --tone: #6FADAD; }
+  .index-item:nth-child(3) { --tone: #4F999D; }
+  .index-item:nth-child(4) { --tone: #3F8E93; }
+  .index-item:nth-child(5) { --tone: #23697A; }
+  .index-item:nth-child(6) { --tone: var(--deep); }
+  .index-title { font: 600 clamp(22px, 1.9vw, 32px)/1.15 var(--font-text); color: var(--ink); }
+  .index-desc { font-size: clamp(16px, 1.3vw, 21px); line-height: 1.35; color: var(--muted); margin-top: 4px; }
+  .slide-type-index { justify-content: flex-start; }
+  .pres-shell .slide-type-index .slide-heading-area { margin-top: clamp(30px, 4.5vh, 52px); }
+
+  /* ── Timeline: years on a single river line ── */
+  .pres-shell .timeline-list { position: relative; padding-left: 0; }
+  .pres-shell .timeline-item { gap: 26px; }
+  .pres-shell .timeline-dot {
+    width: clamp(120px, 11vw, 170px);
+    min-width: clamp(120px, 11vw, 170px);
+    min-height: 0;
+    padding: 0 18px 0 0;
+    justify-content: flex-end;
+    background: none;
+    border: 0;
+    border-right: 4px solid var(--mid);
+    border-radius: 0;
+    color: var(--deep);
+    font: 600 clamp(20px, 1.7vw, 28px)/1.1 var(--font-display);
+  }
+  .pres-shell .timeline-text strong { font-weight: 500; font-size: clamp(18px, 1.45vw, 24px); color: var(--ink); }
+
+  /* ── Quote diagram: same legend language ── */
+  .pres-shell .quote-node {
+    background: none;
+    border: 0;
+    border-top: 5px solid var(--mid);
+    border-radius: 0;
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .pres-shell .quote-node.accent { border-top-color: var(--deep); background: none; color: var(--deep); }
+  .pres-shell .quote-node.risk { border-top-color: var(--risk); color: var(--risk); }
+  .pres-shell .quote-node small { color: var(--muted); font-weight: 400; }
+  .pres-shell .quote-arrow { color: var(--mid); }
+
+  /* ── Case slides: results, role and process without boxes ── */
+  .pres-shell .case-result {
+    background: none;
+    border: 0;
+    border-top: 3px solid var(--mid);
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .pres-shell .slide-split-left .case-result-value { font-family: var(--font-display); font-weight: 600; color: var(--deep); font-size: clamp(22px, 1.8vw, 32px); white-space: nowrap; }
+  /* The value column grows to fit its figure, so a value never runs into its label */
+  .pres-shell .slide-split-left:has(.case-results) .case-result { grid-template-columns: minmax(max-content, .42fr) minmax(0, 1fr); column-gap: 14px; }
+  .pres-shell .slide-split-left .case-result-label { font-weight: 600; color: var(--ink); font-size: clamp(16px, 1.25vw, 21px); }
+  .pres-shell .slide-split-left .case-result-implication { color: var(--muted); font-size: clamp(14px, 1.05vw, 18px); }
+  .pres-shell .slide-split-left .pyhydra-role-text { font-size: clamp(15px, 1.15vw, 19px); }
+  .pres-shell .slide-split-left .pyhydra-role {
+    background: none;
+    border: 0;
+    border-left: 3px solid var(--shallow);
+    border-radius: 0;
+    padding: 2px 0 2px 14px;
+  }
+  .pres-shell .slide-split-left .pyhydra-role-title { font-weight: 600; font-size: 13px; color: var(--muted); }
+  .pres-shell .slide-split-left .pyhydra-module {
+    background: none;
+    padding: 0 8px 0 0;
+    color: var(--deep);
+    font-family: "SF Mono", Menlo, monospace;
+  }
+  .pres-shell .case-reference { background: none; border-left-color: var(--shallow); color: var(--muted); }
+  .pres-shell .case-process-label { font-weight: 600; font-size: 13px; color: var(--muted); }
+  .pres-shell .case-process-step {
+    background: none;
+    border: 0;
+    border-top: 4px solid var(--mid);
+    border-radius: 0;
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .pres-shell .case-process-step:nth-child(1) { border-top-color: #8CC2BE; }
+  .pres-shell .case-process-step:nth-child(2) { border-top-color: #5FA3A4; }
+  .pres-shell .case-process-step:nth-child(3) { border-top-color: #3F8E93; }
+  .pres-shell .case-process-step:nth-child(4) { border-top-color: #23697A; }
+  .pres-shell .case-process-step:last-child { border-top-color: var(--deep); }
+  .pres-shell .case-process-step:not(:last-child)::after { content: none; }
+  .pres-shell .case-thesis-bridge { background: none; border-left-color: var(--deep); color: var(--ink); }
+
+  /* ── Closing ── */
+  .pres-shell .closing-takeaway { background: none; border-radius: 0; font-family: var(--font-text); }
+  .pres-shell .closing-link { background: none; border: 0; padding: 0 26px 0 0; color: #c9dcd8; font-size: clamp(14px, 1.05vw, 17px); }
+  .pres-shell .closing-takeaway { font-weight: 500; font-size: clamp(20px, 1.7vw, 28px); line-height: 1.3; }
+
+
+  /* Strategy matrix: success criteria are the deepest column, not a risk */
+  .pres-shell :global(.traceability-head) { letter-spacing: 0; font-size: clamp(14px, 1.05vw, 17px); font-weight: 700; }
+  .pres-shell :global(.traceability-proof) { background: #DCEBE8; }
+  .pres-shell :global(.traceability-proof strong) { color: var(--deep); }
+  .pres-shell :global(.traceability-goal strong) { color: var(--ink); }
+
+  /* Quote diagram nodes at projection size */
+  .pres-shell .quote-node { font-size: clamp(16px, 1.3vw, 22px); padding: 12px 4px 4px 0; }
+  .pres-shell .quote-node small { font-size: clamp(13px, 1vw, 16px); }
+  .pres-shell .quote-arrow { font-size: clamp(18px, 1.4vw, 24px); }
+
+  /* Cases table at reading size */
+  .pres-shell .slide-type-table .pres-table { font-size: clamp(13px, 1.02vw, 17px); line-height: 1.2; }
+  .pres-shell .slide-type-table .pres-table th,
+  .pres-shell .slide-type-table .pres-table td { padding: clamp(3px, .55vh, 8px) 12px !important; }
+  .pres-shell .slide-type-table .pres-table th { color: var(--deep) !important; background: #DCEBE8; font-weight: 700; }
+
+  /* Results outside case slides (e.g. scientific output) */
+  .pres-shell .slide-type-normal .case-results {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: clamp(18px, 2vw, 36px);
+    margin-bottom: clamp(18px, 3vh, 34px);
+  }
+  .pres-shell .slide-type-normal .case-result { padding: 14px 0 0; }
+  .pres-shell .slide-type-normal .case-result-value { font: 600 clamp(30px, 2.7vw, 46px)/1 var(--font-display); color: var(--deep); margin-bottom: 8px; }
+  .pres-shell .slide-type-normal .case-result-label { font-weight: 600; font-size: clamp(16px, 1.3vw, 22px); color: var(--ink); }
+  .pres-shell .slide-type-normal .case-result-implication { display: block; margin-top: 4px; font-size: clamp(14px, 1.1vw, 18px); color: var(--muted); }
+
+  @media (max-width: 760px) {
+    .index-list { grid-template-columns: 1fr; grid-auto-flow: row; grid-template-rows: none; }
+  }
+
+  /* Projection floor: secondary text scales with the screen and never drops
+     below a size that reads from the back of a room. Earlier rules use
+     :has() and ids with high specificity, so sizes here are !important. */
+  .pres-shell .slide-route-step { font-size: clamp(13px, 1vw, 19px) !important; }
+  .pres-shell .slide-route-number { width: 1.6em !important; height: 1.6em !important; font-size: .8em !important; }
+  .pres-shell .slide-block { font-size: clamp(13px, .95vw, 18px) !important; padding: .3em .7em !important; }
+  .pres-shell .cover-role { font-size: clamp(13px, .95vw, 18px) !important; }
+  /* Cover: one column for roles, air under the title, programme on its own line */
+  .pres-shell .cover-person { grid-template-columns: 8em 1fr !important; column-gap: 1em; }
+  .pres-shell .slide-type-title[data-idx="0"] .slide-main-title { line-height: 1.04; margin-bottom: clamp(14px, 2vh, 24px); }
+  .pres-shell .slide-type-title[data-idx="0"] .slide-main-subtitle { margin-bottom: clamp(16px, 2.6vh, 30px); line-height: 1.4; }
+  .pres-shell .cover-footer { flex-wrap: wrap; row-gap: clamp(10px, 1.6vh, 18px); column-gap: clamp(20px, 2.4vw, 40px); }
+  .pres-shell .cover-program { flex-basis: 100%; max-width: 46em; }
+  .pres-shell .cover-name { font-size: clamp(17px, 1.3vw, 25px) !important; }
+  .pres-shell .cover-program { font-size: clamp(13px, .95vw, 18px) !important; }
+  .pres-shell .case-process-label { font-size: clamp(14px, 1vw, 19px) !important; }
+  .pres-shell .case-process-step { font-size: clamp(13px, .95vw, 18px) !important; padding: 8px 6px !important; }
+  .pres-shell .pyhydra-role-title { font-size: clamp(14px, 1vw, 19px) !important; }
+  .pres-shell .pyhydra-role-text { font-size: clamp(15px, 1.15vw, 22px) !important; }
+  .pres-shell .pyhydra-module { font-size: clamp(13px, .95vw, 18px) !important; }
+  .pres-shell .case-reference { font-size: clamp(14px, 1.05vw, 20px) !important; }
+  .pres-shell .slide-figure-caption { font-size: clamp(14px, 1.1vw, 20px) !important; }
+  .pres-shell .case-result-implication { font-size: clamp(14px, 1.05vw, 20px) !important; }
+  .pres-shell .case-thesis-bridge { font-size: clamp(15px, 1.15vw, 21px) !important; }
+  .pres-shell .quote-node small { font-size: clamp(14px, 1.1vw, 20px) !important; }
+  .pres-shell :global(.gev-equation-caption) { font-size: clamp(15px, 1.1vw, 20px) !important; }
+  .pres-shell :global(.traceability-head) { font-size: clamp(14px, 1.1vw, 20px) !important; }
+  .pres-shell :global(.traceability-matrix strong) { font-size: clamp(16px, 1.25vw, 23px) !important; }
+  .pres-shell :global(.traceability-matrix span) { font-size: clamp(14px, 1.1vw, 20px) !important; }
+  .pres-shell :global(.thesis-matrix-legend) { font-size: clamp(13px, 1vw, 18px) !important; }
+  .pres-shell .slide-type-table .pres-table { font-size: clamp(13px, 1.02vw, 19px) !important; }
+  .pres-shell :global(.authorship-matrix) { font-size: clamp(13px, 1.08vw, 19px) !important; }
+
+  /* Visual slides with an illustration: assertion and legend on the left,
+     schematic or figure on the right. */
+  .pres-shell .visual-normal-body.has-figure {
+    display: grid;
+    grid-template-columns: minmax(0, .66fr) minmax(0, 1.34fr);
+    gap: clamp(22px, 2.6vw, 48px);
+    align-items: center;
+    min-height: 0;
+  }
+  .pres-shell .has-figure .semantic-visual { gap: clamp(14px, 2.4vh, 28px); min-height: 0; }
+  .pres-shell .has-figure .semantic-visual .semantic-items {
+    grid-template-columns: 1fr !important;
+    gap: clamp(8px, 1.5vh, 18px) !important;
+    row-gap: clamp(8px, 1.5vh, 18px) !important;
+  }
+  .pres-shell .has-figure .semantic-visual .semantic-card {
+    border-top: 0 !important;
+    border-left: 5px solid var(--tone) !important;
+    padding: 2px 0 2px 16px !important;
+  }
+  .pres-shell .has-figure .semantic-visual .semantic-label { font-size: clamp(18px, 1.5vw, 27px); }
+  .pres-shell .has-figure .semantic-visual .semantic-detail { font-size: clamp(14px, 1.15vw, 20px); margin-top: 3px; }
+  .pres-shell .has-figure .semantic-visual .semantic-metric { font-size: clamp(21px, 1.85vw, 32px); max-width: none; }
+  .pres-shell .has-figure .semantic-visual.problem .semantic-metric { font-size: clamp(28px, 2.5vw, 42px); }
+  .pres-shell .visual-figure { margin: 0; align-self: stretch; min-height: 0; display: flex; align-items: center; justify-content: center; }
+  .pres-shell .visual-figure img { display: block; max-width: 100%; max-height: 100%; object-fit: contain; }
+  .pres-shell .visual-figure-grid { align-self: stretch; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: clamp(10px, 1.4vw, 20px); }
+  .pres-shell .visual-figure-grid figure { margin: 0; min-height: 0; display: flex; flex-direction: column; gap: 6px; }
+  .pres-shell .visual-figure-grid img { flex: 1; min-height: 0; width: 100%; object-fit: contain; background: #F8FBFA; border: 1px solid #C6D8D4; }
+  .pres-shell .visual-figure-grid figcaption { font-size: clamp(13px, 1vw, 17px); color: var(--muted); }
+
+  /* Quote slides (question, central hypothesis): statement left, schematic
+     right, the formal items as a legend underneath. */
+  .pres-shell .slide-type-quote:has(.quote-figure) {
+    display: grid !important;
+    grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    column-gap: clamp(28px, 3.5vw, 64px);
+    row-gap: clamp(12px, 2vh, 24px);
+    align-items: stretch;
+  }
+  .pres-shell .slide-type-quote:has(.quote-figure) > .slide-block { grid-column: 1; grid-row: 1; justify-self: start; align-self: start; width: auto; margin: 0; }
+  .pres-shell .slide-type-quote:has(.quote-figure) .quote-heading { grid-column: 1; grid-row: 2; align-self: center; }
+  .pres-shell .quote-figure { grid-column: 2; grid-row: 1 / span 2; margin: 0; min-height: 0; display: flex; align-items: center; justify-content: center; }
+  .pres-shell .quote-figure img { display: block; max-width: 100%; max-height: 100%; object-fit: contain; }
+  .pres-shell .slide-type-quote:has(.quote-figure) .slide-bullets { grid-column: 1 / -1; grid-row: 3; max-width: none !important; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: clamp(14px, 1.8vw, 32px); margin: 0; }
+  .pres-shell .slide-type-quote:has(.quote-figure) .slide-bullets li {
+    min-height: 0;
+    padding: 10px 0 10px 18px !important;
+    border-left: 5px solid var(--mid) !important;
+    font-size: clamp(16px, 1.3vw, 22px);
+  }
+  .pres-shell .slide-type-quote:has(.quote-figure) .slide-bullets li::before { content: none; }
+
+  /* Index: six chapter panels that fill the canvas, each with its icon */
+  .pres-shell .slide-type-index .index-list {
+    flex: 1;
+    min-height: 0;
+    margin: clamp(14px, 2.4vh, 28px) 0 0;
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    gap: clamp(12px, 2vh, 22px) clamp(16px, 2vw, 32px);
+    align-content: stretch;
+  }
+  .pres-shell .slide-type-index .index-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: clamp(16px, 1.6vw, 28px);
+    align-items: center;
+    padding: 0 clamp(16px, 1.6vw, 28px);
+    background: #F8FBFA;
+    border: 1px solid #C6D8D4;
+    border-left: 8px solid var(--tone);
+  }
+  .pres-shell .slide-type-index .index-item::before { content: none; }
+  .pres-shell .index-icon {
+    display: flex; align-items: center; justify-content: center;
+    width: clamp(64px, 6.2vw, 112px); height: clamp(64px, 6.2vw, 112px);
+    border-radius: 50%;
+    border: 3px solid var(--tone);
+    color: var(--deep);
+    background: #fff;
+  }
+  .pres-shell .index-icon svg { width: 52%; height: 52%; }
+  .pres-shell .index-text { display: flex; flex-direction: column; min-width: 0; }
+  .pres-shell .index-title { counter-increment: none; font-size: clamp(24px, 2.35vw, 42px); }
+  .pres-shell .index-title::before { content: counter(chapter) "  "; color: var(--tone); font-family: var(--font-display); font-weight: 600; }
+  .pres-shell .index-desc { font-size: clamp(17px, 1.55vw, 27px); margin-top: 8px; }
+
+  /* Keyboard focus on presenter controls */
+  .pres-shell button:focus-visible,
+  .pres-shell input:focus-visible,
+  .pres-shell a:focus-visible { outline: 3px solid var(--shallow); outline-offset: 2px; }
 
   @media (max-width: 760px) {
     .pres-topbar { gap: 8px; padding-inline: 10px; }
@@ -1555,9 +2055,6 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
             {/* ── TITLE ── */}
             {isTitle && (
               <>
-                <span class="slide-block" style={`background:${slide.blockColor}22; color:${slide.blockColor}; border:1px solid ${slide.blockColor}44; margin-bottom:24px`}>
-                  {slide.block}
-                </span>
                 <div class="slide-main-title">{slide.title}</div>
                 {slide.subtitle && <div class="slide-main-subtitle">{slide.subtitle}</div>}
                 
@@ -1570,15 +2067,10 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
                 {slide.id === 43 && (
                   <>
                     <div class="closing-takeaway">Una cadena reproducible que convierte incertidumbre climática e hidrológica en evidencia útil para decidir.</div>
-                    <div class="closing-metrics">
-                      <div class="closing-metric"><strong>14</strong><span>submódulos científicos integrados en pyhydra</span></div>
-                      <div class="closing-metric"><strong>9</strong><span>casos de estudio que validan el mismo núcleo</span></div>
-                      <div class="closing-metric"><strong>3/3</strong><span>hipótesis verificadas con evidencia operativa</span></div>
-                    </div>
                     <div class="closing-links">
                       <span class="closing-link">github.com/navass11/pyhydra</span>
                       <span class="closing-link">github.com/navass11/HYDRA</span>
-                      <span class="closing-link">DOI · 10.5281/zenodo.20932555</span>
+                      <span class="closing-link">doi.org/10.5281/zenodo.20932555</span>
                     </div>
                   </>
                 )}
@@ -1594,7 +2086,7 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
                   <div class="cover-footer">
                     <img src={asset('/defensa/figures/logo_uc_escuela_doctorado.png')} style="height:42px;" alt="Universidad de Cantabria" />
                     <img src={asset('/defensa/figures/logo_ihcantabria_actual.png')} style="width:190px; height:auto; object-fit:contain;" alt="IHCantabria · Instituto de Hidráulica Ambiental, Universidad de Cantabria" />
-                    <div class="cover-program">Programa de Doctorado en Ingeniería de Costas, Hidrobiología y Gestión · Tesis Doctoral con Mención Industrial · 2026</div>
+                    <div class="cover-program">Doctorado en Ingeniería de Costas, Hidrobiología y Gestión de Sistemas Acuáticos (IH2O)<br />Tesis doctoral con Mención Industrial, 2026</div>
                   </div>
                   </>
                 )}
@@ -1603,39 +2095,24 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
 
             {/* ── INDEX ── */}
             {isIndex && (
-              <div style="padding:0 32px; display:flex; flex-direction:column; height:100%; box-sizing:border-box; width:100%;">
-                <span class="slide-block" style={`background:${slide.blockColor}22; color:${slide.blockColor}; border:1px solid ${slide.blockColor}44; align-self:flex-start;`}>
-                  {slide.block}
-                </span>
-                <div class="slide-heading-area" style="margin-top:16px;">
+              <>
+                <div class="slide-heading-area">
                   <div class="slide-title">{slide.title}</div>
                   {slide.subtitle && <div class="slide-subtitle">{slide.subtitle}</div>}
                 </div>
-                <div class="index-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:16px; flex:1; overflow-y:auto; margin-top:20px;">
+                <ol class="index-list">
                   {slide.bullets?.map((b, bi) => {
-                    const parts = b.split(' — ');
-                    const numAndTitle = parts[0] || '';
-                    const desc = parts[1] || '';
-                    const num = numAndTitle.split('.')[0] || (bi + 1);
-                    const title = numAndTitle.substring(numAndTitle.indexOf('.') + 1).trim();
-                    
-                    const colors = ['#0d9488', '#3b82f6', '#6366f1', '#0891b2', '#10b981', '#f59e0b', '#ef4444'];
-                    const col = colors[bi % colors.length];
-
+                    const [head, desc = ''] = b.split(' — ');
+                    const title = head.substring(head.indexOf('.') + 1).trim();
                     return (
-                      <div class="index-card" style="padding:16px 20px; border-radius:12px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); display:flex; gap:16px; align-items:start;">
-                        <div style={`width:36px; height:36px; border-radius:10px; background:${col}22; border:1px solid ${col}44; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:800; color:${col}; flex-shrink:0;`}>
-                          {num}
-                        </div>
-                        <div>
-                          <div style="font-size:16px; font-weight:700; color:#f1f5f9; margin-bottom:4px;">{title}</div>
-                          <div style="font-size:14px; color:#64748b; line-height:1.4;">{desc}</div>
-                        </div>
-                      </div>
+                      <li class="index-item">
+                        <span class="index-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" set:html={chapterIcons[bi] ?? ''} /></span>
+                        <span class="index-text"><span class="index-title">{title}</span><span class="index-desc">{desc}</span></span>
+                      </li>
                     );
                   })}
-                </div>
-              </div>
+                </ol>
+              </>
             )}
 
     {/* ── QUOTE ── */}
@@ -1643,15 +2120,18 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
               <>
                 <div class="quote-heading">
                   <div class="slide-title">{slide.title}</div>
-                  <div class="quote-text">{slide.script}</div>
+                  <div class="quote-text">{slide.quote ?? slide.script}</div>
                 </div>
+                {quoteFigures[slide.id] ? (
+                  <figure class="quote-figure"><img src={asset(`/defensa/figures/${quoteFigures[slide.id]}`)} alt={slide.title} /></figure>
+                ) : (
                 <div class="quote-logic" aria-label={slide.id === 7 ? 'Esquema de validación de hipótesis' : 'Esquema de la pregunta de investigación'}>
                   {slide.id === 7 ? (
                     <>
-                      <div class="quote-node">Métodos científicos<br/><small>ya disponibles</small></div><div class="quote-arrow">＋</div>
-                      <div class="quote-node" style="border-color:#f59e0b;color:#fcd34d">Fragmentación<br/><small>barrera real</small></div><div class="quote-arrow">→</div>
+                      <div class="quote-node">Métodos científicos<br/><small>ya disponibles</small></div><div class="quote-arrow">+</div>
+                      <div class="quote-node risk">Fragmentación<br/><small>barrera real</small></div><div class="quote-arrow">→</div>
                       <div class="quote-node accent">Arquitectura integrada<br/><small>reproducible</small></div><div class="quote-arrow">→</div>
-                      <div class="quote-node">Transferencia<br/><small>9 casos</small></div>
+                      <div class="quote-node">Contraste<br/><small>H1, H2 y H3</small></div>
                     </>
                   ) : (
                     <>
@@ -1662,6 +2142,7 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
                     </>
                   )}
                 </div>
+                )}
                 {slide.bullets?.length ? (
                   <ul class="slide-bullets" style="max-width:650px; text-align:left">
                     {slide.bullets.map(b => <li>{b}</li>)}
@@ -1677,17 +2158,18 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
                   <div class="slide-title">{slide.title}</div>
                   {slide.subtitle && <div class="slide-subtitle">{slide.subtitle}</div>}
                 </div>
-                <div class="case-thesis-bridge">Una cadena reproducible conecta datos, clima, escenarios y modelos físicos hasta la frecuencia del impacto.</div>
+                <div class="case-thesis-bridge">La columna «En HYDRA» separa los casos que validan la arquitectura de los que la originaron y ampliaron.</div>
                 <div class="pres-table-container">
                   <table class="pres-table">
                     <thead>
                       <tr>
-                        <th>Caso de Estudio</th>
+                        <th>Caso de estudio</th>
                         <th>Aplicación principal</th>
                         <th style="text-align:center;">Datos (M1)</th>
                         <th style="text-align:center;">Clima (M2)</th>
                         <th style="text-align:center;">Estocástica (M3)</th>
                         <th style="text-align:center;">Modelado (M4)</th>
+                        <th style="text-align:center;">En HYDRA</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1718,6 +2200,7 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
                         else if (caseName.includes('SIMPCCe')) { m1=check; m2=check; m3=cross; m4=check; }
                         else if (caseName.includes('Andes')) { m1=check; m2=check; m3=cross; m4=check; }
                         else if (caseName.includes('IAHR')) { m1=check; m2=check; m3=check; m4=check; }
+                        const reproducible = ['Besaya', 'Calle 30', 'Valencia'].some(name => caseName.includes(name));
 
                         return (
                           <tr style={`background:${bi % 2 === 0 ? 'rgba(255,255,255,0.01)' : 'transparent'}`}>
@@ -1727,6 +2210,7 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
                             <td style={`text-align:center; color:${m2==='✔' ? '#10b981' : '#475569'}; font-weight:bold;`}>{m2}</td>
                             <td style={`text-align:center; color:${m3==='✔' ? '#10b981' : '#475569'}; font-weight:bold;`}>{m3}</td>
                             <td style={`text-align:center; color:${m4==='✔' ? '#10b981' : '#475569'}; font-weight:bold;`}>{m4}</td>
+                            <td style={`text-align:center; color:${reproducible ? '#10b981' : '#64748b'}; font-weight:${reproducible ? 'bold' : 'normal'};`}>{reproducible ? 'Notebook' : 'Documentado'}</td>
                           </tr>
                         );
                       })}
@@ -1752,7 +2236,7 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
                   <div class="pyhydra-role"><div class="pyhydra-role-title">Papel de pyhydra en este caso</div><div class="pyhydra-role-text">{slide.pyhydraRole}</div><div class="pyhydra-modules">{slide.pyhydraModules?.map(module => <span class="pyhydra-module">{module}</span>)}</div></div>
                 )}
                 {visual ? (
-                  <div class="visual-normal-body">
+                  <div class={`visual-normal-body ${visual.figure || visual.figures ? 'has-figure' : ''}`}>
                     <div class={`semantic-visual ${visual.kind}`} style={`--visual-color:${slide.blockColor}`}>
                       <div class="semantic-items">
                         {visual.items.map((item, itemIndex) => (
@@ -1764,6 +2248,14 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
                       </div>
                       {visual.metric && <div class="semantic-metric">{visual.metric}</div>}
                     </div>
+                    {visual.figure && (
+                      <figure class="visual-figure"><img src={asset(`/defensa/figures/${visual.figure}`)} alt={visual.metric ?? slide.title} /></figure>
+                    )}
+                    {visual.figures && (
+                      <div class="visual-figure-grid">
+                        {visual.figures.map(fig => <figure><img src={asset(`/defensa/figures/${fig.src}`)} alt={fig.caption} /><figcaption>{fig.caption}</figcaption></figure>)}
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <>

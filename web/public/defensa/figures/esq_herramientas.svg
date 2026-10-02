@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" role="img" aria-labelledby="t" font-family="Avenir Next, Avenir, Segoe UI, Helvetica, sans-serif">
+  <title id="t">Las herramientas web llaman al mismo núcleo pyhydra que los notebooks</title>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#3F8E93"/></marker></defs>
+
+  <!-- browser window with tool tiles -->
+  <g transform="translate(10 10)">
+    <rect width="780" height="300" rx="8" fill="#fff" stroke="#13323A" stroke-width="2"/>
+    <rect width="780" height="34" rx="8" fill="#DCEBE8"/>
+    <circle cx="20" cy="17" r="5" fill="#4A6870"/><circle cx="38" cy="17" r="5" fill="#4A6870"/><circle cx="56" cy="17" r="5" fill="#4A6870"/>
+    <text x="90" y="23" font-size="14" fill="#4A6870">HYDRA, herramientas interactivas</text>
+    <g font-size="16" fill="#13323A">
+      <g transform="translate(20 52)"><rect width="236" height="110" fill="#F8FBFA" stroke="#C6D8D4"/><rect width="236" height="5" fill="#0E4A57"/><text x="14" y="34" font-weight="600">Extremos GEV</text><text x="14" y="58" font-size="14" fill="#4A6870">ajuste bayesiano y bandas</text>
+        <path d="M14 98 C70 92 130 80 222 62" fill="none" stroke="#0E4A57" stroke-width="2.5"/></g>
+      <g transform="translate(272 52)"><rect width="236" height="110" fill="#F8FBFA" stroke="#C6D8D4"/><rect width="236" height="5" fill="#3F8E93"/><text x="14" y="34" font-weight="600">Cópulas</text><text x="14" y="58" font-size="14" fill="#4A6870">retorno conjunto AND y OR</text>
+        <g fill="#3F8E93"><circle cx="40" cy="92" r="3"/><circle cx="62" cy="86" r="3"/><circle cx="80" cy="90" r="3"/><circle cx="100" cy="78" r="3"/><circle cx="124" cy="80" r="3"/><circle cx="150" cy="70" r="3"/><circle cx="178" cy="72" r="3"/><circle cx="204" cy="64" r="3"/></g></g>
+      <g transform="translate(524 52)"><rect width="236" height="110" fill="#F8FBFA" stroke="#C6D8D4"/><rect width="236" height="5" fill="#5FA3A4"/><text x="14" y="34" font-weight="600">Series sintéticas</text><text x="14" y="58" font-size="14" fill="#4A6870">CoSMoS en tres pasos</text>
+        <polyline points="14,98 34,86 54,94 74,72 94,90 114,80 134,96 154,68 174,88 194,82 222,92" fill="none" stroke="#5FA3A4" stroke-width="2"/></g>
+      <g transform="translate(20 176)"><rect width="236" height="104" fill="#F8FBFA" stroke="#C6D8D4"/><rect width="236" height="5" fill="#8CC2BE"/><text x="14" y="34" font-weight="600">Curvas IDF</text><text x="14" y="58" font-size="14" fill="#4A6870">intensidad, duración y frecuencia</text></g>
+      <g transform="translate(272 176)"><rect width="236" height="104" fill="#F8FBFA" stroke="#C6D8D4"/><rect width="236" height="5" fill="#8CC2BE"/><text x="14" y="34" font-weight="600">Análisis regional</text><text x="14" y="58" font-size="14" fill="#4A6870">frecuencia con varias estaciones</text></g>
+      <g transform="translate(524 176)"><rect width="236" height="104" fill="#F8FBFA" stroke="#C6D8D4"/><rect width="236" height="5" fill="#8CC2BE"/><text x="14" y="34" font-weight="600">Corrección de sesgo</text><text x="14" y="58" font-size="14" fill="#4A6870">proyecciones climáticas</text></g>
+    </g>
+  </g>
+
+  <line x1="400" y1="316" x2="400" y2="350" stroke="#3F8E93" stroke-width="3" marker-end="url(#a)"/>
+  <g transform="translate(200 356)">
+    <rect width="400" height="60" fill="#3F8E93"/>
+    <text x="200" y="38" font-size="19" font-weight="600" fill="#fff" text-anchor="middle">API REST</text>
+  </g>
+  <line x1="400" y1="420" x2="400" y2="454" stroke="#3F8E93" stroke-width="3" marker-end="url(#a)"/>
+  <g transform="translate(120 460)">
+    <rect width="560" height="80" fill="#0E4A57"/>
+    <text x="280" y="36" font-size="20" font-weight="600" fill="#fff" text-anchor="middle">Núcleo pyhydra</text>
+    <text x="280" y="62" font-size="15" fill="#DCEBE8" text-anchor="middle">el mismo código que usan los notebooks y los casos</text>
+  </g>
+</svg>

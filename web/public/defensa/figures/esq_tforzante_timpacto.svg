@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" role="img" aria-labelledby="t" font-family="Avenir Next, Avenir, Segoe UI, Helvetica, sans-serif">
+  <title id="t">La misma lluvia de diseño produce impactos distintos según el estado de la cuenca</title>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#3F8E93"/></marker>
+  </defs>
+
+  <!-- column heads -->
+  <g font-size="19" font-weight="600" fill="#13323A">
+    <text x="20" y="30">Forzamiento</text>
+    <text x="268" y="30">Estado de la cuenca</text>
+    <text x="548" y="30">Impacto hidráulico</text>
+  </g>
+  <line x1="20" y1="44" x2="780" y2="44" stroke="#A9D2CC" stroke-width="2"/>
+
+  <!-- ── Row A ── -->
+  <g transform="translate(0 70)">
+    <!-- hyetograph -->
+    <g fill="#3F8E93">
+      <rect x="30" y="98" width="18" height="22"/><rect x="52" y="70" width="18" height="50"/><rect x="74" y="30" width="18" height="90"/>
+      <rect x="96" y="52" width="18" height="68"/><rect x="118" y="82" width="18" height="38"/><rect x="140" y="104" width="18" height="16"/>
+    </g>
+    <line x1="24" y1="120" x2="172" y2="120" stroke="#13323A" stroke-width="2"/>
+    <text x="30" y="148" font-size="16" fill="#4A6870">Lluvia T = 100 años</text>
+    <line x1="190" y1="70" x2="250" y2="70" stroke="#3F8E93" stroke-width="3" marker-end="url(#a)"/>
+    <!-- catchment, dry -->
+    <path d="M268 120 L330 40 L400 82 L460 30 L520 120 Z" fill="#E4EEEB" stroke="#13323A" stroke-width="2"/>
+    <path d="M268 120 L520 120 L520 132 L268 132 Z" fill="#D8C9A8"/>
+    <text x="268" y="160" font-size="16" fill="#4A6870">Suelo seco, cauce sin aportes</text>
+    <line x1="526" y1="70" x2="546" y2="70" stroke="#3F8E93" stroke-width="3" marker-end="url(#a)"/>
+    <!-- cross-section, low water -->
+    <path d="M556 60 H606 L640 122 H712 L746 60 H790" fill="none" stroke="#13323A" stroke-width="3"/>
+    <path d="M628 100 L640 122 H712 L724 100 Z" fill="#3F8E93" opacity=".85"/>
+    <text x="560" y="160" font-size="16" fill="#4A6870">El agua queda en el cauce</text>
+  </g>
+
+  <!-- ── Row B ── -->
+  <g transform="translate(0 280)">
+    <g fill="#3F8E93">
+      <rect x="30" y="98" width="18" height="22"/><rect x="52" y="70" width="18" height="50"/><rect x="74" y="30" width="18" height="90"/>
+      <rect x="96" y="52" width="18" height="68"/><rect x="118" y="82" width="18" height="38"/><rect x="140" y="104" width="18" height="16"/>
+    </g>
+    <line x1="24" y1="120" x2="172" y2="120" stroke="#13323A" stroke-width="2"/>
+    <text x="30" y="148" font-size="16" fill="#4A6870">La misma lluvia</text>
+    <line x1="190" y1="70" x2="250" y2="70" stroke="#3F8E93" stroke-width="3" marker-end="url(#a)"/>
+    <!-- catchment, saturated with confluence -->
+    <path d="M268 120 L330 40 L400 82 L460 30 L520 120 Z" fill="#C9DEDA" stroke="#13323A" stroke-width="2"/>
+    <path d="M268 120 L520 120 L520 132 L268 132 Z" fill="#0E4A57"/>
+    <path d="M330 40 C345 80 380 100 394 118 M460 30 C440 70 410 100 396 118" fill="none" stroke="#0E4A57" stroke-width="4" stroke-linecap="round"/>
+    <text x="268" y="160" font-size="16" fill="#4A6870">Suelo saturado y afluente en crecida</text>
+    <line x1="526" y1="70" x2="546" y2="70" stroke="#3F8E93" stroke-width="3" marker-end="url(#a)"/>
+    <!-- cross-section, overflow -->
+    <path d="M556 60 H606 L640 122 H712 L746 60 H790" fill="none" stroke="#13323A" stroke-width="3"/>
+    <path d="M556 44 H790 V60 H746 L712 122 H640 L606 60 H556 Z" fill="#0E4A57" opacity=".85"/>
+    <path d="M556 44 H790" stroke="#B5334B" stroke-width="4"/>
+    <text x="556" y="160" font-size="16" fill="#B5334B" font-weight="600">Desborda a las márgenes</text>
+  </g>
+
+  <!-- conclusion -->
+  <line x1="20" y1="478" x2="780" y2="478" stroke="#A9D2CC" stroke-width="2"/>
+  <text x="20" y="512" font-size="20" fill="#13323A">Un mismo período de retorno de la lluvia da lugar a impactos</text>
+  <text x="20" y="540" font-size="20" fill="#13323A">con períodos de retorno distintos: la frecuencia se calcula sobre el calado.</text>
+</svg>

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" role="img" aria-labelledby="t" font-family="Avenir Next, Avenir, Segoe UI, Helvetica, sans-serif">
+  <title id="t">Un adaptador común conecta los escenarios con cada motor físico</title>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#3F8E93"/></marker>
+  </defs>
+
+  <!-- input / output -->
+  <g transform="translate(10 40)">
+    <rect width="140" height="100" fill="#F8FBFA" stroke="#C6D8D4"/>
+    <text x="70" y="44" font-size="18" font-weight="600" fill="#13323A" text-anchor="middle">Escenarios</text>
+    <text x="70" y="70" font-size="15" fill="#4A6870" text-anchor="middle">lluvia y caudal</text>
+  </g>
+  <path d="M154 90 C230 90 240 155 266 155" fill="none" stroke="#3F8E93" stroke-width="3" marker-end="url(#a)"/>
+
+  <!-- adapter cycle -->
+  <g transform="translate(330 280)">
+    <circle r="112" fill="#F8FBFA" stroke="#0E4A57" stroke-width="3"/>
+    <text y="-6" font-size="19" font-weight="600" fill="#13323A" text-anchor="middle">Adaptador</text>
+    <text y="18" font-size="19" font-weight="600" fill="#13323A" text-anchor="middle">común</text>
+    <g font-size="15" font-weight="600" fill="#fff" text-anchor="middle">
+      <rect x="-56" y="-142" width="112" height="34" fill="#8CC2BE"/><text y="-119" fill="#13323A">1 Preparar</text>
+      <rect x="84" y="-17" width="112" height="34" fill="#3F8E93"/><text x="140" y="6">2 Ejecutar</text>
+      <rect x="-56" y="108" width="112" height="34" fill="#23697A"/><text y="131">3 Leer</text>
+      <rect x="-196" y="-17" width="112" height="34" fill="#0E4A57"/><text x="-140" y="6">4 Validar</text>
+    </g>
+  </g>
+
+  <!-- engines -->
+  <g font-size="17" fill="#13323A">
+    <g transform="translate(560 40)"><rect width="230" height="72" fill="#F8FBFA" stroke="#C6D8D4"/><rect width="6" height="72" fill="#3F8E93"/><text x="20" y="32" font-weight="600">HEC-HMS</text><text x="20" y="56" font-size="14" fill="#4A6870">hidrología y calibración</text></g>
+    <g transform="translate(560 124)"><rect width="230" height="72" fill="#F8FBFA" stroke="#C6D8D4"/><rect width="6" height="72" fill="#3F8E93"/><text x="20" y="32" font-weight="600">SWAT+</text><text x="20" y="56" font-size="14" fill="#4A6870">simulación continua</text></g>
+    <g transform="translate(560 208)"><rect width="230" height="72" fill="#F8FBFA" stroke="#C6D8D4"/><rect width="6" height="72" fill="#0E4A57"/><text x="20" y="32" font-weight="600">SFINCS</text><text x="20" y="56" font-size="14" fill="#4A6870">hidráulica 2D rápida</text></g>
+    <g transform="translate(560 292)"><rect width="230" height="72" fill="#F8FBFA" stroke="#C6D8D4"/><rect width="6" height="72" fill="#0E4A57"/><text x="20" y="32" font-weight="600">HEC-RAS 1D/2D</text><text x="20" y="56" font-size="14" fill="#4A6870">hidráulica detallada</text></g>
+    <g transform="translate(560 376)"><rect width="230" height="72" fill="none" stroke="#B5334B" stroke-width="2" stroke-dasharray="7 5"/><text x="20" y="32" font-weight="600" fill="#B5334B">Iber</text><text x="20" y="56" font-size="14" fill="#B5334B">sin ejecución por lotes: manual</text></g>
+  </g>
+  <g fill="none" stroke="#3F8E93" stroke-width="2.5">
+    <path d="M444 250 C500 250 500 76 556 76" marker-end="url(#a)"/>
+    <path d="M444 262 C500 262 500 160 556 160" marker-end="url(#a)"/>
+    <path d="M444 274 C500 274 500 244 556 244" marker-end="url(#a)"/>
+    <path d="M444 290 C500 290 500 328 556 328" marker-end="url(#a)"/>
+  </g>
+  <path d="M444 304 C500 304 500 412 556 412" fill="none" stroke="#B5334B" stroke-width="2" stroke-dasharray="6 5"/>
+
+  <!-- output -->
+  <g transform="translate(560 478)">
+    <rect width="230" height="66" fill="#0E4A57"/>
+    <text x="115" y="30" font-size="17" font-weight="600" fill="#fff" text-anchor="middle">Calados y caudales</text>
+    <text x="115" y="52" font-size="14" fill="#DCEBE8" text-anchor="middle">en estructuras comunes</text>
+  </g>
+</svg>

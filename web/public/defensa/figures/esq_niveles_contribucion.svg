@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" role="img" aria-labelledby="t" font-family="Avenir Next, Avenir, Segoe UI, Helvetica, sans-serif">
+  <title id="t">Tres niveles de aportación: métodos previos, desarrollos propios y contribución original</title>
+
+  <!-- top: original -->
+  <g transform="translate(150 10)">
+    <rect width="500" height="132" fill="#0E4A57"/>
+    <text x="24" y="38" font-size="21" font-weight="600" fill="#fff">Contribución original</text>
+    <text x="24" y="70" font-size="17" fill="#DCEBE8">Integración extremo a extremo</text>
+    <text x="24" y="94" font-size="17" fill="#DCEBE8">Reproducibilidad sistemática</text>
+    <text x="24" y="118" font-size="17" fill="#DCEBE8">Transferencia a proyectos reales</text>
+  </g>
+
+  <!-- middle: developments -->
+  <g transform="translate(80 156)">
+    <rect width="640" height="150" fill="#3F8E93"/>
+    <text x="24" y="38" font-size="21" font-weight="600" fill="#fff">Desarrollos implementados en la tesis</text>
+    <g font-size="17" fill="#fff">
+      <rect x="24" y="58" width="180" height="70" fill="#23697A"/><text x="40" y="88">14 submódulos</text><text x="40" y="112" font-size="14" fill="#DCEBE8">pyhydra</text>
+      <rect x="220" y="58" width="190" height="70" fill="#23697A"/><text x="236" y="88">Adaptadores</text><text x="236" y="112" font-size="14" fill="#DCEBE8">para cuatro motores</text>
+      <rect x="426" y="58" width="190" height="70" fill="#23697A"/><text x="442" y="88">Flujos y notebooks</text><text x="442" y="112" font-size="14" fill="#DCEBE8">reproducibles</text>
+    </g>
+  </g>
+
+  <!-- base: incorporated methods -->
+  <g transform="translate(10 320)">
+    <rect width="780" height="230" fill="#F8FBFA" stroke="#C6D8D4"/>
+    <rect width="780" height="6" fill="#A9D2CC"/>
+    <text x="24" y="42" font-size="21" font-weight="600" fill="#13323A">Metodologías incorporadas: conocimiento previo</text>
+    <g font-size="15" fill="#13323A">
+      <g transform="translate(24 62)">
+        <rect width="140" height="36" fill="#DCEBE8"/><text x="12" y="24">GEV y GPD</text>
+        <rect x="150" width="140" height="36" fill="#DCEBE8"/><text x="162" y="24">L-momentos</text>
+        <rect x="300" width="170" height="36" fill="#DCEBE8"/><text x="312" y="24">Inferencia bayesiana</text>
+        <rect x="480" width="120" height="36" fill="#DCEBE8"/><text x="492" y="24">Cópulas</text>
+        <rect x="610" width="122" height="36" fill="#DCEBE8"/><text x="622" y="24">NSRP</text>
+      </g>
+      <g transform="translate(24 108)">
+        <rect width="140" height="36" fill="#DCEBE8"/><text x="12" y="24">CoSMoS</text>
+        <rect x="150" width="190" height="36" fill="#DCEBE8"/><text x="162" y="24">Corrección de sesgo</text>
+        <rect x="350" width="150" height="36" fill="#DCEBE8"/><text x="362" y="24">MaxDiss, k-NN</text>
+        <rect x="510" width="222" height="36" fill="#DCEBE8"/><text x="522" y="24">CMIP6 y escenarios SSP</text>
+      </g>
+      <g transform="translate(24 154)">
+        <rect width="732" height="36" fill="#DCEBE8"/><text x="12" y="24">Motores externos: HEC-HMS, SWAT, SFINCS, HEC-RAS e Iber</text>
+      </g>
+    </g>
+  </g>
+</svg>

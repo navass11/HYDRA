@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 440" role="img" aria-labelledby="t" font-family="Avenir Next, Avenir, Segoe UI, Helvetica, sans-serif">
+  <title id="t">De métodos disponibles pero fragmentados a una arquitectura integrada que se contrasta con H1, H2 y H3</title>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#3F8E93"/></marker>
+  </defs>
+
+  <!-- fragmented methods -->
+  <text x="10" y="30" font-size="21" font-weight="600" fill="#13323A">Métodos disponibles, pero fragmentados</text>
+  <g font-size="17" font-weight="600" fill="#13323A">
+    <g transform="translate(20 56) rotate(-4)"><rect width="150" height="50" fill="#F8FBFA" stroke="#5FA3A4" stroke-width="2"/><text x="16" y="32">Extremos GEV</text></g>
+    <g transform="translate(220 50) rotate(3)"><rect width="120" height="50" fill="#F8FBFA" stroke="#5FA3A4" stroke-width="2"/><text x="16" y="32">Cópulas</text></g>
+    <g transform="translate(400 60) rotate(-2)"><rect width="150" height="50" fill="#F8FBFA" stroke="#3F8E93" stroke-width="2"/><text x="16" y="32">Generadores</text></g>
+    <g transform="translate(610 52) rotate(5)"><rect width="140" height="50" fill="#F8FBFA" stroke="#8CC2BE" stroke-width="2"/><text x="16" y="32">CMIP6</text></g>
+    <g transform="translate(60 150) rotate(3)"><rect width="200" height="50" fill="#F8FBFA" stroke="#8CC2BE" stroke-width="2"/><text x="16" y="32">Corrección de sesgo</text></g>
+    <g transform="translate(320 156) rotate(-5)"><rect width="140" height="50" fill="#F8FBFA" stroke="#23697A" stroke-width="2"/><text x="16" y="32">HEC-RAS</text></g>
+    <g transform="translate(520 148) rotate(2)"><rect width="130" height="50" fill="#F8FBFA" stroke="#23697A" stroke-width="2"/><text x="16" y="32">SFINCS</text></g>
+  </g>
+  <!-- broken links -->
+  <g stroke="#B5334B" stroke-width="3" stroke-linecap="round">
+    <path d="M178 80 l14 -6 M200 86 l14 -6"/>
+    <path d="M350 84 l14 -6 M372 90 l14 -6"/>
+    <path d="M560 86 l14 -6 M582 92 l14 -6"/>
+    <path d="M268 178 l14 -6 M290 184 l14 -6"/>
+    <path d="M470 180 l14 -6 M492 186 l14 -6"/>
+  </g>
+  <text x="10" y="248" font-size="17" fill="#B5334B">Cada paso se reconstruye a mano en cada proyecto</text>
+
+  <!-- transition -->
+  <line x1="400" y1="262" x2="400" y2="312" stroke="#3F8E93" stroke-width="4" marker-end="url(#a)"/>
+
+  <!-- integrated chain -->
+  <text x="10" y="346" font-size="21" font-weight="600" fill="#0E4A57">Arquitectura integrada y reproducible</text>
+  <g font-size="16" font-weight="600" fill="#fff" text-anchor="middle">
+    <rect x="10" y="364" width="146" height="58" fill="#8CC2BE"/><text x="83" y="399" fill="#13323A">Datos</text>
+    <rect x="164" y="364" width="146" height="58" fill="#5FA3A4"/><text x="237" y="399">Extremos</text>
+    <rect x="318" y="364" width="146" height="58" fill="#3F8E93"/><text x="391" y="399">Escenarios</text>
+    <rect x="472" y="364" width="146" height="58" fill="#23697A"/><text x="545" y="399">Modelos</text>
+    <rect x="626" y="364" width="164" height="58" fill="#0E4A57"/><text x="708" y="399">Impacto</text>
+  </g>
+
+</svg>

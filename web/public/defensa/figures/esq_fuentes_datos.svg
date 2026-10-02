@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" role="img" aria-labelledby="t" font-family="Avenir Next, Avenir, Segoe UI, Helvetica, sans-serif">
+  <title id="t">Fuentes heterogéneas que pyhydra convierte en datos homogéneos y trazables</title>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#3F8E93"/></marker>
+  </defs>
+
+  <text x="10" y="28" font-size="19" font-weight="600" fill="#13323A">Fuentes</text>
+  <text x="560" y="28" font-size="19" font-weight="600" fill="#13323A">Salida común</text>
+
+  <!-- sources -->
+  <g font-size="17" fill="#13323A">
+    <g transform="translate(10 50)">
+      <rect width="250" height="76" fill="#F8FBFA" stroke="#C6D8D4"/>
+      <path d="M30 52 C22 40 16 34 16 26 a14 14 0 1 1 28 0 C44 34 38 40 30 52 Z" fill="#0E4A57"/><circle cx="30" cy="26" r="5" fill="#F8FBFA"/>
+      <text x="60" y="32" font-weight="600">Estaciones</text><text x="60" y="56" font-size="15" fill="#4A6870">AEMET, Meteostat, OGIMET</text>
+    </g>
+    <g transform="translate(10 136)">
+      <rect width="250" height="76" fill="#F8FBFA" stroke="#C6D8D4"/>
+      <g stroke="#0E4A57" stroke-width="2" fill="none"><rect x="16" y="18" width="30" height="30"/><path d="M26 18V48M36 18V48M16 28H46M16 38H46"/></g>
+      <text x="60" y="32" font-weight="600">Reanálisis</text><text x="60" y="56" font-size="15" fill="#4A6870">ERA5, horario desde 1940</text>
+    </g>
+    <g transform="translate(10 222)">
+      <rect width="250" height="76" fill="#F8FBFA" stroke="#C6D8D4"/>
+      <g fill="#0E4A57"><rect x="24" y="26" width="14" height="14"/><rect x="10" y="29" width="12" height="8"/><rect x="40" y="29" width="12" height="8"/></g>
+      <text x="60" y="32" font-weight="600">Satélite</text><text x="60" y="56" font-size="15" fill="#4A6870">GPM-IMERG, PERSIANN</text>
+    </g>
+    <g transform="translate(10 308)">
+      <rect width="250" height="76" fill="#F8FBFA" stroke="#C6D8D4"/>
+      <path d="M14 36 q8 -8 16 0 t16 0" fill="none" stroke="#0E4A57" stroke-width="3"/><rect x="14" y="44" width="32" height="6" fill="#D8C9A8"/>
+      <text x="60" y="32" font-weight="600">Ríos y suelos</text><text x="60" y="56" font-size="15" fill="#4A6870">GloFAS, GRDC, SoilGrids</text>
+    </g>
+    <g transform="translate(10 394)">
+      <rect width="250" height="76" fill="#F8FBFA" stroke="#C6D8D4"/>
+      <path d="M14 50 C24 46 30 30 46 22" fill="none" stroke="#B5334B" stroke-width="3"/>
+      <text x="60" y="32" font-weight="600">Proyecciones</text><text x="60" y="56" font-size="15" fill="#4A6870">CMIP6, escenarios SSP</text>
+    </g>
+  </g>
+
+  <!-- funnel -->
+  <g fill="none" stroke="#3F8E93" stroke-width="2.5">
+    <path d="M262 88 C320 88 320 260 360 260" marker-end="url(#a)"/>
+    <path d="M262 174 C310 174 320 262 360 262" marker-end="url(#a)"/>
+    <path d="M262 260 H360" marker-end="url(#a)"/>
+    <path d="M262 346 C310 346 320 258 360 258" marker-end="url(#a)"/>
+    <path d="M262 432 C320 432 320 256 360 256" marker-end="url(#a)"/>
+  </g>
+  <g transform="translate(368 196)">
+    <rect width="150" height="128" fill="#0E4A57"/>
+    <text x="75" y="48" font-size="18" font-weight="600" fill="#fff" text-anchor="middle">Adaptadores</text>
+    <text x="75" y="74" font-size="18" font-weight="600" fill="#fff" text-anchor="middle">pyhydra</text>
+    <text x="75" y="104" font-size="14" fill="#DCEBE8" text-anchor="middle">descarga y control</text>
+  </g>
+  <line x1="522" y1="260" x2="552" y2="260" stroke="#3F8E93" stroke-width="3" marker-end="url(#a)"/>
+
+  <!-- data cube -->
+  <g transform="translate(570 120)">
+    <path d="M20 40 L180 40 L210 10 L50 10 Z" fill="#A9D2CC" stroke="#13323A" stroke-width="1.5"/>
+    <path d="M180 40 L210 10 L210 160 L180 190 Z" fill="#3F8E93" stroke="#13323A" stroke-width="1.5"/>
+    <rect x="20" y="40" width="160" height="150" fill="#DCEBE8" stroke="#13323A" stroke-width="1.5"/>
+    <g stroke="#3F8E93" stroke-width="1"><path d="M20 80H180M20 120H180M20 160H180M60 40V190M100 40V190M140 40V190"/></g>
+    <text x="100" y="222" font-size="16" fill="#13323A" text-anchor="middle">tiempo × espacio × variable</text>
+  </g>
+  <g transform="translate(570 368)" font-size="16" fill="#13323A">
+    <rect width="220" height="102" fill="#F8FBFA" stroke="#C6D8D4"/>
+    <text x="14" y="28">Hora en UTC</text>
+    <text x="14" y="52">Coordenadas WGS84</text>
+    <text x="14" y="76">Fuente, fecha y consulta</text>
+    <text x="14" y="96" font-size="13" fill="#4A6870">registradas como metadatos</text>
+  </g>
+</svg>

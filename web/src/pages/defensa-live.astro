@@ -39,6 +39,19 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   body.projection-view .live-shell { background:#0e303a; }
   body.projection-view .live-left-viewport,
   body.projection-view .live-slide-wrap { background:#0e303a; }
+
+  /* Comparison and authorship tables injected through slide.mathBlock. */
+  .thesis-matrix { width:100%; border-collapse:collapse; margin:4px 0 6px; font-size:13px; line-height:1.2; color:#cbd5e1; border:1px solid rgba(148,163,184,.25); }
+  .thesis-matrix th, .thesis-matrix td { padding:5px 9px; border-bottom:1px solid rgba(148,163,184,.15); text-align:left; }
+  .thesis-matrix thead th { color:#5eead4; background:rgba(13,148,136,.15); font-weight:800; }
+  .thesis-matrix tbody th { color:#f1f5f9; font-weight:700; }
+  .positioning-matrix td, .positioning-matrix thead th:not(:first-child) { text-align:center; }
+  .thesis-matrix .tm-hydra { color:#0f172a; background:#5eead4; }
+  .thesis-matrix .tm-yes { color:#34d399; font-weight:800; }
+  .thesis-matrix .tm-part { color:#fbbf24; font-weight:700; }
+  .thesis-matrix .tm-no { color:#64748b; }
+  .authorship-matrix { font-size:12px; }
+  .thesis-matrix-legend { margin:0; color:#94a3b8; font-size:11px; }
 </style>
 
 <style>
@@ -1125,7 +1138,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
             <div style="display:flex;gap:24px;align-items:center;margin-top:18px;animation:fadeInUp .7s ease .3s both;">
               <img src="${base.replace(/\/$/, '')}/defensa/figures/logo_uc_escuela_doctorado.png" style="height:40px;" />
               <img src="${base.replace(/\/$/, '')}/defensa/figures/logo_ihcantabria_actual.png" style="width:190px; height:auto; object-fit:contain;" alt="IHCantabria · Instituto de Hidráulica Ambiental, Universidad de Cantabria" />
-              <span style="color:#94a3b8;font-size:12px;max-width:420px;">Programa IH2O · Tesis Doctoral con Mención Industrial · 2026</span>
+              <span style="color:#94a3b8;font-size:12px;max-width:420px;">Doctorado en Ingeniería de Costas, Hidrobiología y Gestión de Sistemas Acuáticos (IH2O)<br />Tesis doctoral con Mención Industrial, 2026</span>
             </div>
           ` : ''}
         </div>
@@ -1172,7 +1185,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
         <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:82vh; padding:40px;">
           <div class="quote-text" style="font-size:clamp(25px, 3vw, 38px); font-weight:600; color:#e2e8f0; line-height:1.45; text-align:center; max-width:980px; margin-bottom:32px; position:relative; animation:fadeIn 0.6s ease both;">
             <span aria-hidden="true" style="font-size:82px; color:${slide.blockColor}55; position:absolute; top:-48px; left:-48px; font-family:Georgia,serif;">“</span>
-            ${slide.script}
+            ${slide.quote ?? slide.script}
           </div>
           ${slide.bullets?.length ? `
             <ul class="slide-bullets" style="display:flex; flex-direction:column; gap:8px; width:100%; max-width:650px; text-align:left; padding:0; margin:0; list-style:none;">
