@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 700" role="img" aria-labelledby="title desc">
+  <title id="title">Catorce módulos científicos en tres bloques funcionales</title>
+  <desc id="desc">Fuentes de datos, análisis climático y estadístico, y modelización hidrológica e hidráulica. Cada bloque muestra los nombres funcionales y la ruta del submódulo.</desc>
+  <defs>
+    <marker id="flow-arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0 0L12 6 0 12z" fill="#197b80"/>
+    </marker>
+  </defs>
+  <rect width="1600" height="700" rx="18" fill="#edf4f2"/>
+
+  <!-- Fuentes -->
+  <g font-family="Avenir Next,Segoe UI,Arial,sans-serif">
+    <rect x="36" y="42" width="468" height="584" rx="12" fill="#fbfdfc" stroke="#c7d9d5" stroke-width="2"/>
+    <path d="M48 43h444" stroke="#4d98aa" stroke-width="6"/>
+    <text x="62" y="93" fill="#173b45" font-size="28" font-weight="750">Fuentes de datos</text>
+    <text x="62" y="121" fill="#4d6870" font-size="18">4 módulos</text>
+    <g fill="#173b45" font-size="22" font-weight="650">
+      <text x="66" y="194">Lluvia</text>
+      <text x="66" y="314">Caudal fluvial</text>
+      <text x="66" y="434">Cambio climático</text>
+      <text x="66" y="554">Suelos</text>
+    </g>
+    <g fill="#45636a" font-family="SFMono-Regular,Consolas,monospace" font-size="16">
+      <text x="66" y="220">data_sources.rainfall</text>
+      <text x="66" y="340">data_sources.river_discharge</text>
+      <text x="66" y="460">data_sources.climate_change</text>
+      <text x="66" y="580">data_sources.soils</text>
+    </g>
+    <g stroke="#d5e2df" stroke-width="1">
+      <path d="M62 274h416M62 394h416M62 514h416"/>
+    </g>
+  </g>
+
+  <!-- Clima y estadística -->
+  <g font-family="Avenir Next,Segoe UI,Arial,sans-serif">
+    <rect x="566" y="42" width="468" height="584" rx="12" fill="#fbfdfc" stroke="#c7d9d5" stroke-width="2"/>
+    <path d="M578 43h444" stroke="#197b80" stroke-width="6"/>
+    <text x="592" y="93" fill="#173b45" font-size="28" font-weight="750">Clima y estadística</text>
+    <text x="592" y="121" fill="#4d6870" font-size="18">5 módulos</text>
+    <g fill="#173b45" font-size="21" font-weight="650">
+      <text x="596" y="184">Series temporales y extremos</text>
+      <text x="596" y="274">Análisis espacial y regional</text>
+      <text x="596" y="364">Generación estocástica</text>
+      <text x="596" y="454">Corrección de sesgo</text>
+      <text x="596" y="554">Downscaling híbrido</text>
+    </g>
+    <g fill="#45636a" font-family="SFMono-Regular,Consolas,monospace" font-size="15">
+      <text x="596" y="208">climate.time_series</text>
+      <text x="596" y="298">climate.spatial_analysis</text>
+      <text x="596" y="388">climate.stochastic_generation</text>
+      <text x="596" y="478">climate.bias_correction</text>
+      <text x="596" y="578">climate.hybrid_downscaling</text>
+    </g>
+    <g stroke="#d5e2df" stroke-width="1">
+      <path d="M592 235h416M592 325h416M592 415h416M592 505h416"/>
+    </g>
+  </g>
+
+  <!-- Modelización -->
+  <g font-family="Avenir Next,Segoe UI,Arial,sans-serif">
+    <rect x="1096" y="42" width="468" height="584" rx="12" fill="#fbfdfc" stroke="#c7d9d5" stroke-width="2"/>
+    <path d="M1108 43h444" stroke="#718e74" stroke-width="6"/>
+    <text x="1122" y="93" fill="#173b45" font-size="28" font-weight="750">Modelización</text>
+    <text x="1122" y="121" fill="#4d6870" font-size="18">5 módulos</text>
+    <g fill="#173b45" font-size="21" font-weight="650">
+      <text x="1126" y="184">HEC-HMS · hidrología</text>
+      <text x="1126" y="274">SWAT · hidrología</text>
+      <text x="1126" y="364">SFINCS · hidráulica</text>
+      <text x="1126" y="454">HEC-RAS · hidráulica</text>
+      <text x="1126" y="554">Sensibilidad hidráulica</text>
+    </g>
+    <g fill="#45636a" font-family="SFMono-Regular,Consolas,monospace" font-size="15">
+      <text x="1126" y="208">modeling.hydrology.hec_hms</text>
+      <text x="1126" y="298">modeling.hydrology.swat</text>
+      <text x="1126" y="388">modeling.hydraulic.sfincs</text>
+      <text x="1126" y="478">modeling.hydraulic.hec_ras</text>
+      <text x="1126" y="578">modeling.hydraulic.sensitivity</text>
+    </g>
+    <g stroke="#d5e2df" stroke-width="1">
+      <path d="M1122 235h416M1122 325h416M1122 415h416M1122 505h416"/>
+    </g>
+  </g>
+
+  <g fill="none" stroke="#197b80" stroke-width="4" marker-end="url(#flow-arrow)">
+    <path d="M510 334h42"/>
+    <path d="M1040 334h42"/>
+  </g>
+  <text x="800" y="674" text-anchor="middle" font-family="Avenir Next,Segoe UI,Arial,sans-serif" font-size="17" font-weight="650" fill="#31555d">Datos trazables → métodos estadísticos y climáticos → respuesta física</text>
+</svg>

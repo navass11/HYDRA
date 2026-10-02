@@ -241,9 +241,125 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       from { opacity: 0; transform: translateY(20px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+
+    /* The launcher borrows its visual language from the flood-map cover. */
+    .defensa-landing {
+      align-items: stretch;
+      justify-content: center;
+      padding: clamp(28px, 5vh, 56px) 0;
+      background: #123b4a;
+    }
+    .defensa-grid-bg {
+      background:
+        linear-gradient(90deg, rgba(18,59,74,.98) 0%, rgba(18,59,74,.94) 45%, rgba(18,59,74,.3) 100%),
+        var(--landing-image) center right / cover no-repeat;
+      mask-image: none;
+      opacity: 1;
+    }
+    .defensa-content {
+      width: min(1080px, calc(100vw - 96px));
+      max-width: 1080px;
+      margin: auto auto auto max(48px, calc((100vw - 1200px) / 2));
+      text-align: left;
+    }
+    .defensa-logo-wrap, .defensa-title-card, .defensa-stats,
+    .defensa-modes, .defensa-note { animation: none; }
+    .defensa-logo-wrap { justify-content: flex-start; gap: 12px; margin-bottom: 26px; }
+    .defensa-logo-img { width: 48px; height: 48px; border-radius: 50%; box-shadow: none; }
+    .defensa-logo-text { color: #d5ebe6; font-size: 32px; letter-spacing: -.045em; }
+    .defensa-title-card {
+      padding: 0 0 0 22px;
+      margin: 0 0 25px;
+      border: 0;
+      border-left: 2px solid #75b8aa;
+      border-radius: 0;
+      background: transparent;
+      backdrop-filter: none;
+    }
+    .defensa-thesis-title {
+      max-width: 850px;
+      color: #f4f8f6;
+      font-size: clamp(28px, 3.7vw, 46px);
+      font-weight: 650;
+      letter-spacing: -.04em;
+      line-height: 1.12;
+      margin-bottom: 12px;
+    }
+    .defensa-thesis-subtitle { color: #bdd3ce; margin-bottom: 18px; }
+    .defensa-meta { justify-content: flex-start; gap: 7px; }
+    .defensa-badge {
+      padding: 4px 9px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge-teal { color: #b8e2d9; background: rgba(103,183,170,.13); border-color: rgba(155,213,203,.3); }
+    .badge-blue { color: #c4dce1; background: rgba(131,183,197,.12); border-color: rgba(131,183,197,.3); }
+    .badge-slate { color: #c2d2cf; background: rgba(232,244,240,.06); border-color: rgba(232,244,240,.15); }
+    .defensa-stats { justify-content: flex-start; gap: 0; margin: 0 0 28px 24px; }
+    .defensa-stat { min-width: 100px; padding: 0 18px; text-align: left; border-left: 1px solid rgba(224,240,235,.2); }
+    .defensa-stat:first-child { padding-left: 0; border-left: 0; }
+    .defensa-stat-num { color: #9bd5cb; font-size: 25px; font-weight: 650; }
+    .defensa-stat-label { color: #bed1ce; font-size: 11px; }
+    .defensa-modes { max-width: 760px; gap: 12px; margin: 0 0 22px 24px; }
+    .mode-card {
+      min-height: 145px;
+      padding: 17px 18px;
+      border: 1px solid rgba(216,237,231,.24);
+      border-radius: 4px;
+      background: rgba(9,39,49,.44);
+      backdrop-filter: blur(4px);
+      transition: background .18s ease, border-color .18s ease;
+    }
+    .mode-card::before { display: none; }
+    .mode-card:hover { transform: none; background: rgba(9,39,49,.72); }
+    .mode-online:hover { border-color: #75b8aa; box-shadow: none; }
+    .mode-offline:hover { border-color: #a5c4cc; box-shadow: none; }
+    .mode-icon { margin-bottom: 8px; font-size: 22px; }
+    .mode-label { color: #eff6f3; font-size: 16px; }
+    .mode-desc { color: #bed1ce; font-size: 12px; }
+    .mode-tag { border-radius: 3px; letter-spacing: 0; }
+    .tag-teal { color: #b8e2d9; background: rgba(103,183,170,.14); }
+    .tag-indigo { color: #c6dadd; background: rgba(131,183,197,.14); }
+    .mode-recommended {
+      color: #b8e2d9;
+      background: rgba(103,183,170,.12);
+      border: 1px solid rgba(155,213,203,.28);
+      border-radius: 3px;
+      letter-spacing: 0;
+    }
+    .defensa-note { margin-left: 24px; color: #aec6c2; }
+    .defensa-note kbd { color: #e2efeb; }
+    .defensa-note a { color: #b8e2d9; }
+    .mode-card:focus-visible { outline: 3px solid #e1a184; outline-offset: 4px; }
+
+    @media (max-width: 700px) {
+      .defensa-landing { padding: 28px 0; }
+      .defensa-grid-bg {
+        background:
+          linear-gradient(90deg, rgba(18,59,74,.97), rgba(18,59,74,.82)),
+          var(--landing-image) 62% center / cover no-repeat;
+      }
+      .defensa-content { width: calc(100vw - 40px); margin: auto; }
+      .defensa-title-card { padding-left: 16px; }
+      .defensa-thesis-title { font-size: clamp(26px, 8vw, 38px); }
+      .defensa-thesis-title br { display: none; }
+      .defensa-stats { flex-wrap: wrap; gap: 12px 0; margin-left: 16px; }
+      .defensa-stat { min-width: 74px; padding-inline: 12px; }
+      .defensa-modes { grid-template-columns: 1fr; margin-left: 16px; }
+      .mode-card { min-height: 0; }
+      .defensa-note { margin-left: 16px; line-height: 2; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .defensa-landing *, .defensa-landing *::before, .defensa-landing *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
   </style>
 
-  <div class="defensa-landing">
+  <div class="defensa-landing" style={`--landing-image:url("${asset('/defensa/cover-stochastic-flood.png')}")`}>
     <div class="defensa-grid-bg" aria-hidden="true"></div>
 
     <div class="defensa-content">
@@ -264,9 +380,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
         </div>
         <div class="defensa-meta">
           <span class="defensa-badge badge-teal">Salvador Navas Fernández</span>
-          <span class="defensa-badge badge-blue">{totalSlides} slides · ~{totalMinutes} min</span>
           <span class="defensa-badge badge-slate">{backupSlides.length} anexos para preguntas</span>
-          <span class="defensa-badge badge-slate">9 casos de estudio</span>
           <span class="defensa-badge badge-slate">DOI: 10.5281/zenodo.21138151</span>
         </div>
       </div>
@@ -275,15 +389,15 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       <div class="defensa-stats">
         <div class="defensa-stat">
           <span class="defensa-stat-num">{totalSlides}</span>
-          <span class="defensa-stat-label">Slides</span>
+          <span class="defensa-stat-label">Diapositivas</span>
         </div>
         <div class="defensa-stat">
           <span class="defensa-stat-num">{totalMinutes}</span>
-          <span class="defensa-stat-label">Minutos</span>
+          <span class="defensa-stat-label">Min estimados</span>
         </div>
         <div class="defensa-stat">
           <span class="defensa-stat-num">9</span>
-          <span class="defensa-stat-label">Casos piloto</span>
+          <span class="defensa-stat-label">Casos</span>
         </div>
         <div class="defensa-stat">
           <span class="defensa-stat-num">4</span>

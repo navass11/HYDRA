@@ -1189,8 +1189,8 @@ pilotCases.push({
   accentColor: 'rose',
   icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21L8 13L12 17L16 10L21 21"/><path d="M4 8Q8 4 12 8T20 8" stroke-dasharray="2.5 2"/></svg>',
   summary: {
-    es: 'Caso piloto de 2019 (Navas & del Jesús, VI Jornadas de Ingeniería del Agua) que evalúa una metodología de downscaling híbrido para el episodio de precipitación extrema del 9 de octubre de 2018 en Sant Llorenç des Cardassar, cuando cayeron cerca de 220 L/m² en pocas horas sobre una cuenca sin estaciones de aforo. Se clasificaron 25 formas de hietograma histórico mediante PCA y k-means, se acopló el máximo, la duración y el tipo de tormenta entre pluviómetros vecinos con una cópula gaussiana, y se reconstruyó el campo espacial de precipitación por kriging a 25 m. La hidrología se resolvió en una malla de 25 m y la hidráulica en una malla de 8 m derivada de LiDAR (modelo Iber), calibrada contra la única referencia de validación disponible: la extensión de inundación observada por Copernicus EMS.',
-    en: 'Pilot case from 2019 (Navas & del Jesús, VI Jornadas de Ingeniería del Agua) evaluating a hybrid downscaling methodology for the extreme rainfall episode of 9 October 2018 in Sant Llorenç des Cardassar, when close to 220 L/m² fell within a few hours over an ungauged catchment. 25 historical hyetograph shapes were classified via PCA and k-means, peak, duration and storm type were coupled between neighbouring rain gauges with a Gaussian copula, and the spatial rainfall field was reconstructed by kriging at 25 m. Hydrology was resolved on a 25 m grid and hydraulics on an 8 m LiDAR-derived grid (Iber model), calibrated against the only available validation reference: the Copernicus EMS observed flood extent.',
+    es: 'Caso piloto de 2019 (Navas & del Jesus, VI Jornadas de Ingeniería del Agua) que evalúa una metodología de downscaling híbrido para el episodio de precipitación extrema del 9 de octubre de 2018 en Sant Llorenç des Cardassar, cuando cayeron cerca de 220 L/m² en pocas horas sobre una cuenca sin estaciones de aforo. Se clasificaron 25 formas de hietograma histórico mediante PCA y k-means, se acopló el máximo, la duración y el tipo de tormenta entre pluviómetros vecinos con una cópula gaussiana, y se reconstruyó el campo espacial de precipitación por kriging a 25 m. La hidrología se resolvió en una malla de 25 m y la hidráulica en una malla de 8 m derivada de LiDAR (modelo Iber), calibrada contra la única referencia de validación disponible: la extensión de inundación observada por Copernicus EMS.',
+    en: 'Pilot case from 2019 (Navas & del Jesus, VI Jornadas de Ingeniería del Agua) evaluating a hybrid downscaling methodology for the extreme rainfall episode of 9 October 2018 in Sant Llorenç des Cardassar, when close to 220 L/m² fell within a few hours over an ungauged catchment. 25 historical hyetograph shapes were classified via PCA and k-means, peak, duration and storm type were coupled between neighbouring rain gauges with a Gaussian copula, and the spatial rainfall field was reconstructed by kriging at 25 m. Hydrology was resolved on a 25 m grid and hydraulics on an 8 m LiDAR-derived grid (Iber model), calibrated against the only available validation reference: the Copernicus EMS observed flood extent.',
   },
   challenge: {
     es: 'Sant Llorenç des Cardassar carece de estaciones de aforo y de un registro pluviométrico denso, lo que impide aplicar un análisis de frecuencia clásico de estación única. El episodio del 9 de octubre de 2018 fue además un evento torrencial de mesoescala muy localizado, con fuerte variabilidad espacial entre los pocos pluviómetros disponibles en la comarca. Sin caudal observado ni serie larga, la única vía de validación independiente era la extensión de inundación detectada por satélite tras el evento.',
@@ -1265,8 +1265,8 @@ pilotCases.push({
   references: [
     {
       title: {
-        es: 'Navas & del Jesús (2019) — VI Jornadas de Ingeniería del Agua',
-        en: 'Navas & del Jesús (2019) — VI Jornadas de Ingeniería del Agua',
+        es: 'Navas & del Jesus (2019) — VI Jornadas de Ingeniería del Agua',
+        en: 'Navas & del Jesus (2019) — VI Jornadas de Ingeniería del Agua',
       },
       description: {
         es: 'Evaluación de una metodología para estudios de inundación basada en técnicas estadísticas avanzadas. Aplicación en Sant Llorenç des Cardassar, Mallorca.',
@@ -1306,8 +1306,8 @@ pilotCases.push({
   accentColor: 'sky',
   icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 16Q6 12 10 16T18 16T22 16" /><path d="M2 20Q6 16 10 20T18 20T22 20" /><path d="M12 3v8" stroke-dasharray="2 2"/></svg>',
   summary: {
-    es: 'Caso publicado en las VIII Jornadas de Ingeniería del Agua (Navas, del Jesús, Tomás & Martín, 2025) que estima niveles de diseño para el puerto de Kalundu en el Lago Tanganica. AdaBoost predice los caudales mensuales de entrada a partir de variables ERA5; una relación empírica N(Q), construida por regímenes, transforma caudal en nivel. La señal futura procede de 19 modelos CMIP6 corregidos mediante el método delta. El bootstrap se aplica a los residuos de N(Q) y los cambios extremos resultantes se combinan con los niveles históricos obtenidos de la altimetría Hydroweb de 1992-2023.',
-    en: 'Case published at the VIII Jornadas de Ingeniería del Agua (Navas, del Jesús, Tomás & Martín, 2025) estimating design levels for Kalundu Port on Lake Tanganyika. AdaBoost predicts monthly inflows from ERA5 variables; an empirical regime-based N(Q) relationship transforms discharge into level. The future signal comes from 19 CMIP6 models corrected with the delta method. Bootstrap is applied to residuals from N(Q), and the resulting extreme changes are combined with historical levels obtained from Hydroweb altimetry for 1992-2023.',
+    es: 'Caso publicado en las VIII Jornadas de Ingeniería del Agua (Navas, del Jesus, Tomás & Martín, 2025) que estima niveles de diseño para el puerto de Kalundu en el Lago Tanganica. AdaBoost predice los caudales mensuales de entrada a partir de variables ERA5; una relación empírica N(Q), construida por regímenes, transforma caudal en nivel. La señal futura procede de 19 modelos CMIP6 corregidos mediante el método delta. El bootstrap se aplica a los residuos de N(Q) y los cambios extremos resultantes se combinan con los niveles históricos obtenidos de la altimetría Hydroweb de 1992-2023.',
+    en: 'Case published at the VIII Jornadas de Ingeniería del Agua (Navas, del Jesus, Tomás & Martín, 2025) estimating design levels for Kalundu Port on Lake Tanganyika. AdaBoost predicts monthly inflows from ERA5 variables; an empirical regime-based N(Q) relationship transforms discharge into level. The future signal comes from 19 CMIP6 models corrected with the delta method. Bootstrap is applied to residuals from N(Q), and the resulting extreme changes are combined with historical levels obtained from Hydroweb altimetry for 1992-2023.',
   },
   challenge: {
     es: 'El Lago Tanganica es una cuenca transfronteriza de gran escala con instrumentación heterogénea entre los cuatro países ribereños, lo que dificulta construir una serie de caudales de entrada fiable y homogénea. Además, el diseño de infraestructura portuaria requiere niveles extremos bajo cambio climático, un problema no estacionario que ni la estadística de extremos clásica ni un único modelo climático pueden resolver por sí solos con la incertidumbre adecuadamente cuantificada.',
@@ -1392,8 +1392,8 @@ pilotCases.push({
   references: [
     {
       title: {
-        es: 'Navas, del Jesús, Tomás & Martín (2025) — VIII Jornadas de Ingeniería del Agua',
-        en: 'Navas, del Jesús, Tomás & Martín (2025) — VIII Jornadas de Ingeniería del Agua',
+        es: 'Navas, del Jesus, Tomás & Martín (2025) — VIII Jornadas de Ingeniería del Agua',
+        en: 'Navas, del Jesus, Tomás & Martín (2025) — VIII Jornadas de Ingeniería del Agua',
       },
       description: {
         es: 'Metodología innovadora para modelar el impacto del cambio climático en el Lago Tanganica con datos globales y regionales. Zaragoza, España.',
@@ -1442,7 +1442,7 @@ pilotCases.push({
   icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 20L7 10L11 16L15 6L19 14L22 20" /><path d="M4 8Q6 5 8 8" stroke-dasharray="2 1.5"/></svg>',
   summary: {
     es: 'Caso regional en Bolivia, Colombia, Ecuador y Perú cuya aportación operativa principal fue automatizar con SPOTPY la calibración de los modelos hidrológicos sobre numerosas cuencas, evitando ajustes manuales incompatibles con la escala del estudio. Tras reconstruir los campos climáticos mediante datos satelitales, kriging y corrección de sesgo, el modelo VIC transformó lluvia y temperatura en caudales. La cadena calibrada propagó 21 modelos CMIP5, dos escenarios RCP y tres horizontes sobre más de 200 subcuencas.',
-    en: 'Case published at the VI Jornadas de Ingeniería del Agua (del Jesús, Paz, Navas, Turienzo, Díez-Sierra & Peña, Toledo 2019) assessing the vulnerability of Andean hydropower plants to climate change in basins of Bolivia, Colombia, Ecuador and Peru. Sparse instrumentation in Amazonian areas required filling gaps with NASA satellite precipitation and universal kriging interpolation (1 km HydroSheds DEM as elevation covariate, ρ=0.42, RMSE=10.47 mm), while also correcting a systematic CFSR temperature bias of around 6°C. On this climate basis, 21 CMIP5 models were processed under RCP4.5 and RCP8.5 scenarios across three horizons, feeding the VIC hydrological model calibrated at the CachEsperanz gauge (NSE=0.65, PBIAS=14.17%).',
+    en: 'Case published at the VI Jornadas de Ingeniería del Agua (del Jesus, Paz, Navas, Turienzo, Díez-Sierra & Peña, Toledo 2019) assessing the vulnerability of Andean hydropower plants to climate change in basins of Bolivia, Colombia, Ecuador and Peru. Sparse instrumentation in Amazonian areas required filling gaps with NASA satellite precipitation and universal kriging interpolation (1 km HydroSheds DEM as elevation covariate, ρ=0.42, RMSE=10.47 mm), while also correcting a systematic CFSR temperature bias of around 6°C. On this climate basis, 21 CMIP5 models were processed under RCP4.5 and RCP8.5 scenarios across three horizons, feeding the VIC hydrological model calibrated at the CachEsperanz gauge (NSE=0.65, PBIAS=14.17%).',
   },
   challenge: {
     es: 'Las cuencas amazónicas que alimentan las centrales hidroeléctricas andinas están escasamente instrumentadas, con estaciones dispersas y series cortas o incompletas. Estimar el impacto del cambio climático en el caudal de diseño exige, primero, reconstruir un campo climático fiable donde apenas hay observaciones, y después propagar esa incertidumbre a través de un modelo hidrológico distribuido y de un ensemble multi-modelo de escenarios de cambio climático, sin perder trazabilidad de dónde se introduce cada fuente de error.',
@@ -1521,8 +1521,8 @@ pilotCases.push({
   references: [
     {
       title: {
-        es: 'del Jesús, Paz, Navas, Turienzo, Díez-Sierra & Peña (2019) — VI Jornadas de Ingeniería del Agua',
-        en: 'del Jesús, Paz, Navas, Turienzo, Díez-Sierra & Peña (2019) — VI Jornadas de Ingeniería del Agua',
+        es: 'del Jesus, Paz, Navas, Turienzo, Díez-Sierra & Peña (2019) — VI Jornadas de Ingeniería del Agua',
+        en: 'del Jesus, Paz, Navas, Turienzo, Díez-Sierra & Peña (2019) — VI Jornadas de Ingeniería del Agua',
       },
       description: {
         es: 'Vulnerabilidad de centrales hidroeléctricas andinas frente al cambio climático. Toledo, España.',
@@ -1681,8 +1681,8 @@ pilotCases.push({
   accentColor: 'purple',
   icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="9" rx="1.5" /><path d="M4 10L12 4L20 10" /><path d="M9 19v-5h6v5" stroke-dasharray="1.6 1.6"/></svg>',
   summary: {
-    es: 'SIMPCCe es una herramienta de ámbito nacional desarrollada según la guía metodológica de la Fundación Canal para estimar caudales mínimos de embalses bajo cambio climático, publicada en Ingeniería del Agua (Navas & del Jesús, 2025) tras comunicaciones previas en las VII Jornadas de Ingeniería del Agua (2023) y el 8th IAHR Europe Congress (2024). Descarga automáticamente SPAIN02 v5 y las aportaciones SIMPA-CEDEX (1950-2015), junto con 10 modelos CORDEX-AEMET bajo RCP4.5/8.5 en tres horizontes. Una red neuronal entrenada sobre componentes principales (95% de la varianza) de precipitación y temperatura distribuidas predice las aportaciones mensuales; la corrección de sesgo SDM genera 60 series corregidas por variable, que alimentan 20 simulaciones futuras de aportación con informes automáticos de índices de sequía (SPI) y fiabilidad. El proyecto recibió el Premio al Talento Joven M.R. Llamas (Fundación Botín, Observatorio del Agua).',
-    en: 'SIMPCCe is a national-scale tool developed following the Fundación Canal methodological guide to estimate reservoir minimum inflows under climate change, published in Ingeniería del Agua (Navas & del Jesús, 2025) after earlier communications at the VII Jornadas de Ingeniería del Agua (2023) and the 8th IAHR Europe Congress (2024). It automatically downloads SPAIN02 v5 and SIMPA-CEDEX contributions (1950-2015), together with 10 CORDEX-AEMET models under RCP4.5/8.5 across three horizons. A neural network trained on principal components (95% variance) of distributed precipitation and temperature predicts monthly inflows; SDM bias correction generates 60 corrected series per variable, feeding 20 future inflow simulations with automatic drought index (SPI) and reliability reports. The project received the M.R. Llamas Young Talent Award (Fundación Botín, Observatorio del Agua).',
+    es: 'SIMPCCe es una herramienta de ámbito nacional desarrollada según la guía metodológica de la Fundación Canal para estimar caudales mínimos de embalses bajo cambio climático, publicada en Ingeniería del Agua (Navas & del Jesus, 2025) tras comunicaciones previas en las VII Jornadas de Ingeniería del Agua (2023) y el 8th IAHR Europe Congress (2024). Descarga automáticamente SPAIN02 v5 y las aportaciones SIMPA-CEDEX (1950-2015), junto con 10 modelos CORDEX-AEMET bajo RCP4.5/8.5 en tres horizontes. Una red neuronal entrenada sobre componentes principales (95% de la varianza) de precipitación y temperatura distribuidas predice las aportaciones mensuales; la corrección de sesgo SDM genera 60 series corregidas por variable, que alimentan 20 simulaciones futuras de aportación con informes automáticos de índices de sequía (SPI) y fiabilidad. El proyecto recibió el Premio al Talento Joven M.R. Llamas (Fundación Botín, Observatorio del Agua).',
+    en: 'SIMPCCe is a national-scale tool developed following the Fundación Canal methodological guide to estimate reservoir minimum inflows under climate change, published in Ingeniería del Agua (Navas & del Jesus, 2025) after earlier communications at the VII Jornadas de Ingeniería del Agua (2023) and the 8th IAHR Europe Congress (2024). It automatically downloads SPAIN02 v5 and SIMPA-CEDEX contributions (1950-2015), together with 10 CORDEX-AEMET models under RCP4.5/8.5 across three horizons. A neural network trained on principal components (95% variance) of distributed precipitation and temperature predicts monthly inflows; SDM bias correction generates 60 corrected series per variable, feeding 20 future inflow simulations with automatic drought index (SPI) and reliability reports. The project received the M.R. Llamas Young Talent Award (Fundación Botín, Observatorio del Agua).',
   },
   challenge: {
     es: 'La guía metodológica de la Fundación Canal exige estimar caudales mínimos ambientales de cualquier embalse español bajo distintos escenarios de cambio climático, pero un modelo físico distribuido calibrado caso a caso es inviable para cubrir toda la red hidrográfica nacional en tiempo y coste razonables. Se necesita una herramienta lo bastante rápida como para reentrenarse en cualquier cuenca, sin sacrificar la fiabilidad de la señal de sequía hidrológica que la Fundación Canal necesita reportar.',
@@ -1757,8 +1757,8 @@ pilotCases.push({
   references: [
     {
       title: {
-        es: 'Navas & del Jesús (2025) — Ingeniería del Agua, vol. 29(2), 132-148',
-        en: 'Navas & del Jesús (2025) — Ingeniería del Agua, vol. 29(2), 132-148',
+        es: 'Navas & del Jesus (2025) — Ingeniería del Agua, vol. 29(2), 132-148',
+        en: 'Navas & del Jesus (2025) — Ingeniería del Agua, vol. 29(2), 132-148',
       },
       description: {
         es: 'SIMPCCe: A tool for the analysis of reservoir inflows under climate change scenarios. DOI: 10.4995/ia.2025.23217',
@@ -1769,8 +1769,8 @@ pilotCases.push({
     },
     {
       title: {
-        es: 'Navas & del Jesús (2023/2024) — VII Jornadas de Ingeniería del Agua / 8th IAHR Europe Congress',
-        en: 'Navas & del Jesús (2023/2024) — VII Jornadas de Ingeniería del Agua / 8th IAHR Europe Congress',
+        es: 'Navas & del Jesus (2023/2024) — VII Jornadas de Ingeniería del Agua / 8th IAHR Europe Congress',
+        en: 'Navas & del Jesus (2023/2024) — VII Jornadas de Ingeniería del Agua / 8th IAHR Europe Congress',
       },
       description: {
         es: 'Comunicaciones previas: Análisis de aportaciones a embalses ante escenarios de cambio climático: la aplicación SIMPCCe (Cartagena, 2023; Lisboa, 2024).',

@@ -4,15 +4,14 @@ import Layout from '../layouts/Layout.astro';
 import { slides, totalSlides, totalMinutes } from '../data/slides';
 const base = import.meta.env.BASE_URL;
 const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
-const routeStages = ['Introducción','Estado técnica','Arquitectura','Metodología','Uso HYDRA','Casos','Conclusiones'];
+const routeStages = ['Introducción','Estado de la técnica','Arquitectura','Metodología','Casos y validación','Conclusiones'];
 const routeStageFor = (block: string) => {
   if (['Apertura','Motivación'].includes(block)) return 0;
   if (block === 'Estado del arte') return 1;
   if (block === 'Arquitectura') return 2;
-  if (block === 'Módulos') return 3;
-  if (block === 'Demo en vivo') return 4;
-  if (block === 'Casos de estudio') return 5;
-  return 6;
+  if (['Bloque de datos','Bloque climático-estadístico','Bloque de modelización','Demo en vivo'].includes(block)) return 3;
+  if (['Casos de estudio','Validación'].includes(block)) return 4;
+  return 5;
 };
 const visualSlides: Record<number, { kind: string; metric?: string; items: { label: string; detail: string }[] }> = {
   2: { kind:'flow', metric:'El título describe una arquitectura reproducible, no un único algoritmo', items:[
@@ -22,6 +21,22 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
     {label:'Integración extremo a extremo',detail:'datos → estadística → escenarios → modelos → impacto'},
     {label:'Reproducibilidad sistemática',detail:'fuente, método, configuración y salida quedan trazados'},
     {label:'Transferencia demostrada',detail:'nueve casos reales sin reconstruir el núcleo'} ] },
+  6: { kind:'problem', metric:'T(forzante) ≠ T(impacto)', items:[
+    {label:'Evento único',detail:'un pico de lluvia no describe todas las avenidas plausibles'},
+    {label:'Estado antecedente',detail:'humedad y confluencias cambian la respuesta de la cuenca'},
+    {label:'Impacto hidráulico',detail:'la frecuencia se estima tras simular calados y extensión'} ] },
+  11: { kind:'layers', metric:'Un núcleo científico, tres capas que lo hacen transferible', items:[
+    {label:'Métodos científicos',detail:'datos, extremos, escenarios y modelos físicos'},
+    {label:'Servicios de ejecución',detail:'API y notebooks sobre el mismo núcleo'},
+    {label:'Interfaz web',detail:'acceso, documentación y casos navegables'} ] },
+  6: { kind:'problem', metric:'T(forzante) ≠ T(impacto)', items:[
+    {label:'Evento único',detail:'un pico de lluvia no describe todas las avenidas plausibles'},
+    {label:'Estado antecedente',detail:'humedad y confluencias cambian la respuesta de la cuenca'},
+    {label:'Impacto hidráulico',detail:'la frecuencia se estima después de simular calados y extensión'} ] },
+  11: { kind:'layers', metric:'Un núcleo científico, tres capas que lo hacen transferible', items:[
+    {label:'Métodos científicos',detail:'datos, extremos, escenarios y modelos físicos'},
+    {label:'Servicios de ejecución',detail:'API y notebooks sobre el mismo núcleo'},
+    {label:'Interfaz web',detail:'acceso, documentación y casos navegables'} ] },
   10: { kind:'gap', metric:'La novedad es la integración operativa', items:[
     {label:'Inferencia',detail:'Stan · PyMC · R-INLA'}, {label:'Datos',detail:'GloFAS · GRDC · ERA5'},
     {label:'Generación',detail:'NSRP · cópulas'}, {label:'Modelos',detail:'HEC · SFINCS · Iber'},
@@ -30,10 +45,24 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
     {label:'Estación',detail:'AEMET · Meteostat · OGIMET'}, {label:'Reanálisis',detail:'ERA5 · cobertura global'},
     {label:'Satélite',detail:'GPM · PERSIANN'}, {label:'Ríos y suelo',detail:'GloFAS · GRDC · SoilGrids'},
     {label:'Proyecciones',detail:'CMIP6 · escenarios SSP'} ] },
+  17: { kind:'flow', metric:'Un contrato común conecta motores distintos sin rehacer el núcleo', items:[
+    {label:'Preparar',detail:'adaptar entradas al formato del motor'},
+    {label:'Ejecutar',detail:'registrar versión, proceso y resultado'},
+    {label:'Homogeneizar',detail:'leer salidas en estructuras comunes'},
+    {label:'Validar',detail:'comprobar ejecución y plausibilidad física'} ] },
   18: { kind:'tools', metric:'Interfaz web → API → mismo núcleo pyhydra', items:[
     {label:'Extremos',detail:'GEV/GPD bayesiana'}, {label:'Dependencia',detail:'cópulas multivariantes'},
     {label:'Espacio',detail:'kriging e interpolación'}, {label:'Diseño',detail:'curvas IDF'},
     {label:'Modelos',detail:'sensibilidad hidráulica'} ] },
+  39.5: { kind:'layers', metric:'Nueve casos · un núcleo reutilizable · resultados contrastables', items:[
+    {label:'Principio común',detail:'frecuencia estimada sobre el impacto'},
+    {label:'Contextos distintos',detail:'escalas, climas y modelos diferentes'},
+    {label:'Transferencia',detail:'módulos auditables sin reconstruir la cadena'} ] },
+  46: { kind:'flow', metric:'Los escenarios aportan valor cuando su impacto puede estimarse', items:[
+    {label:'Datos',detail:'observaciones y proyecciones climáticas'},
+    {label:'Dependencia',detail:'relaciones espaciales y temporales plausibles'},
+    {label:'Modelos físicos',detail:'transformar lluvia en caudal y calado'},
+    {label:'Decisión',detail:'estimar frecuencia sobre la variable de impacto'} ] },
   32: { kind:'flow', metric:'HEC-RAS 1D · frecuencia calculada sobre el calado', items:[
     {label:'Lluvia',detail:'eventos multisitio con cópulas'}, {label:'Caudal',detail:'transformación HEC-HMS'},
     {label:'Selección',detail:'subconjunto representativo MaxDiss'}, {label:'Hidráulica',detail:'HEC-RAS 1D'},
@@ -42,6 +71,17 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
     {label:'H1 · Eficiencia',detail:'cadenas urbanas y nacionales · automatización viable'},
     {label:'H2 · Modularidad',detail:'mismos bloques · problemas y escalas diferentes'},
     {label:'H3 · Incertidumbre',detail:'−30–37 % con el método convencional · evidencia cuantitativa'} ] },
+  47: { kind:'method-map', metric:'La procedencia se conserva en cada transformación', items:[
+    {label:'Datos',detail:'observar, reunir y controlar fuentes'},
+    {label:'Extremos y clima',detail:'caracterizar frecuencia y condiciones'},
+    {label:'Escenarios',detail:'generar combinaciones plausibles'},
+    {label:'Respuesta física',detail:'simular lluvia, caudal y calado'},
+    {label:'Impacto',detail:'estimar frecuencia para decidir'} ] },
+  48: { kind:'evidence', metric:'Cuatro resultados · una cadena científica reproducible', items:[
+    {label:'+30–37 %',detail:'subestimación del caudal de diseño · IAHR 2022'},
+    {label:'+266 %',detail:'actualización de T100 al incorporar la DANA · Valencia'},
+    {label:'1.990',detail:'simulaciones hidráulicas emparejadas · Besaya'},
+    {label:'414',detail:'correcciones climáticas automáticas · Panamá'} ] },
   41: { kind:'layers', metric:'9 casos heterogéneos · sin modificar el núcleo', items:[
     {label:'Base científica',detail:'metodologías preexistentes incorporadas'},
     {label:'Desarrollo',detail:'módulos, adaptadores y pipelines'},
@@ -556,10 +596,6 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
     box-shadow: 0 16px 48px rgba(0,0,0,0.4);
     border: 1px solid rgba(255,255,255,0.06);
   }
-  .slide-split-right .slide-figure { width:100%; height:calc(100% - 38px); max-height:none; min-height:0; }
-  .slide-split-right:has(.case-process) .slide-figure { height:calc(100% - 112px); }
-  .slide-split-right:has(.case-reference) .slide-figure { height:calc(100% - 92px); }
-  .slide-split-right:has(.case-reference):has(.case-process) .slide-figure { height:calc(100% - 158px); }
   .slide-figure-caption {
     font-size: clamp(14px, 1.4vw, 16px);
     color: #94a3b8;
@@ -625,14 +661,15 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
   .timeline-item {
     display: flex;
     gap: 16px;
-    align-items: flex-start;
+    align-items: center;
     padding-left: 4px;
   }
   .timeline-dot {
-    width: clamp(82px, 8vw, 112px);
-    min-width: 82px;
-    height: 44px;
-    padding: 0 10px;
+    width: clamp(150px, 16vw, 210px);
+    min-width: clamp(150px, 16vw, 210px);
+    min-height: 44px;
+    height: auto;
+    padding: 9px 14px;
     box-sizing: border-box;
     border-radius: 12px;
     background: rgba(13,148,136,0.15);
@@ -644,9 +681,14 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
     font-weight: 700;
     color: #5eead4;
     flex-shrink: 0;
-    white-space: nowrap;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-align: center;
+    line-height: 1.2;
   }
   .timeline-text {
+    min-width: 0;
+    flex: 1;
     font-size: clamp(16px, 1.65vw, 20px);
     color: #cbd5e1;
     padding: 8px 0;
@@ -761,6 +803,8 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
     width: 6px; height: 6px;
     border-radius: 50%;
     background: rgba(255,255,255,0.08);
+    border: 0;
+    padding: 0;
     cursor: pointer;
     transition: all 0.2s;
     flex-shrink: 0;
@@ -808,6 +852,21 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
     border-radius: 8px;
     overflow: hidden;
   }
+  .slide-type-table .slide-heading-area { margin-bottom: 10px; }
+  .slide-type-table .slide-title { font-size: clamp(32px, 3vw, 44px); }
+  .slide-type-table .slide-subtitle { font-size: clamp(16px, 1.35vw, 19px); }
+  .slide-type-table .case-thesis-bridge {
+    padding: 8px 12px;
+    margin: 0 0 7px;
+    font-size: clamp(14px, 1.1vw, 16px);
+    line-height: 1.25;
+  }
+  .slide-type-table .pres-table {
+    font-size: clamp(12px, 1vw, 14px);
+    line-height: 1.12;
+  }
+  .slide-type-table .pres-table th,
+  .slide-type-table .pres-table td { padding: 5px 8px !important; }
   .pres-table th {
     padding: 7px 9px;
     background: rgba(13,148,136,0.15);
@@ -818,6 +877,615 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
   .pres-table td {
     padding: 6px 9px;
     border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+
+  /* ── Thesis defence art direction: flood-map on cold paper ──
+     The cover keeps its deep-water contrast; research slides move to a pale
+     plotting surface so maps, hydrographs and model output remain legible. */
+  .pres-shell {
+    --deck-ink: #173b45;
+    --deck-muted: #4e6870;
+    --deck-paper: #edf4f2;
+    --deck-white: #fbfdfc;
+    --deck-water: #197b80;
+    --deck-water-pale: #dcebe7;
+    --deck-alert: #bd5b3c;
+    background: #0e303a;
+    color: var(--deck-ink);
+    font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+  }
+  .pres-topbar, .pres-bottombar {
+    background: #103640;
+    border-color: rgba(226, 242, 238, .13);
+  }
+  .pres-topbar-logo { color: #9bd5cb; }
+  .pres-topbar-logo img { border-radius: 50%; }
+  .pres-progress-wrap { background: rgba(231, 247, 243, .17); }
+  .pres-progress-fill { background: #67b7aa; transition-duration: .28s; }
+  .pres-counter, .pres-timer { color: #b7cbc9; }
+  .pres-topbar-btn, .pres-nav-btn, .pres-go-input {
+    border-color: rgba(231, 247, 243, .2);
+    color: #e1eeeb;
+  }
+  .pres-topbar-btn:hover, .pres-nav-btn:hover {
+    background: rgba(103, 183, 170, .16);
+    border-color: #67b7aa;
+    color: #fff;
+  }
+  .pres-nav-next {
+    color: #d6f0e9;
+    background: rgba(103, 183, 170, .15);
+    border-color: rgba(103, 183, 170, .48);
+  }
+  .pres-main { background: #0e303a; }
+  .slide-viewport {
+    background: var(--deck-paper);
+    box-shadow: 0 18px 55px rgba(1, 20, 25, .3);
+  }
+  .slide {
+    padding: clamp(24px, 3.4vw, 50px) clamp(28px, 5vw, 72px);
+    color: var(--deck-ink);
+  }
+  .slide-type-normal, .slide-type-split, .slide-type-table,
+  .slide-type-quote, .slide-type-figure, .slide-type-timeline,
+  .slide-type-matrix, .slide-type-index {
+    background: var(--deck-paper);
+  }
+  .slide-block {
+    padding: 4px 10px;
+    margin-bottom: 15px;
+    border: 1px solid #c4d8d3 !important;
+    border-radius: 4px;
+    background: #e1eeea !important;
+    color: #246c6d !important;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .01em;
+    text-transform: none;
+  }
+  .slide-route { top: 26px; right: clamp(26px, 4vw, 58px); }
+  .slide-route-step { color: #789096; }
+  .slide-route-step::after { color: #a8bdb9; }
+  .slide-route-number { background: #f8fbfa; border-color: #b9ceca; color: #6d8589; }
+  .slide-route-step { font-size: clamp(12px, .9vw, 15px); }
+  .slide-route-number { width: 24px; height: 24px; font-size: 12px; }
+  .slide-route-step.past { color: #567d7b; }
+  .slide-route-step.past .slide-route-number {
+    color: #287875; background: #deeeea; border-color: #9fcac0;
+  }
+  .slide-route-step.current { color: var(--deck-water); }
+  .slide-route-step.current .slide-route-number {
+    color: #fff; background: var(--deck-water); border-color: var(--deck-water);
+    box-shadow: 0 0 0 3px #197b8024;
+  }
+  .slide-title {
+    color: var(--deck-ink);
+    font-size: clamp(38px, 3.5vw, 54px);
+    font-weight: 750;
+    letter-spacing: -.035em;
+    line-height: 1.08;
+  }
+  .slide-subtitle {
+    max-width: 860px;
+    color: var(--deck-muted);
+    font-size: clamp(19px, 1.6vw, 24px);
+    font-style: normal;
+    line-height: 1.4;
+  }
+  .slide-heading-area { margin-bottom: 20px; }
+  .slide-bullets { gap: 10px; }
+  .slide-bullets li {
+    padding: 10px 16px;
+    border: 0;
+    border-left: 3px solid #b8ceca;
+    border-radius: 0;
+    background: transparent;
+    color: #264751;
+    font-size: clamp(18px, 1.45vw, 22px);
+    line-height: 1.34;
+  }
+  .slide-bullets li.active-bullet {
+    border-left-color: var(--deck-water);
+    background: #e4efec;
+    color: #173b45;
+  }
+  .slide-type-title:not([data-idx="0"]):not(.closing-slide) {
+    background: radial-gradient(ellipse 55% 65% at 78% 30%, #d7e9e5 0, transparent 75%), var(--deck-paper);
+  }
+  .slide-type-title:not([data-idx="0"]):not(.closing-slide) .slide-main-title,
+  .slide-type-title:not([data-idx="0"]):not(.closing-slide) .slide-main-subtitle { color: var(--deck-ink); }
+  .slide-type-title:not([data-idx="0"]):not(.closing-slide) .slide-main-subtitle { color: var(--deck-muted); }
+  .slide-type-title[data-idx="0"] {
+    background:
+      linear-gradient(90deg, rgba(9, 34, 43, .97) 0%, rgba(9, 34, 43, .88) 43%, rgba(9, 34, 43, .24) 76%, rgba(9, 34, 43, .08) 100%),
+      var(--cover-image) center/cover no-repeat;
+  }
+  .slide-type-title[data-idx="0"] .slide-block,
+  .closing-slide .slide-block {
+    background: rgba(103, 183, 170, .16) !important;
+    border-color: rgba(155, 213, 203, .4) !important;
+    color: #b7e5dc !important;
+  }
+  .slide-type-title .slide-main-title {
+    font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+    font-weight: 720;
+    letter-spacing: -.04em;
+    line-height: 1.06;
+  }
+  .cover-identity { margin-top: 12px; }
+  .cover-person {
+    padding: 7px 0;
+    border: 0;
+    border-bottom: 1px solid rgba(222, 239, 234, .2);
+    border-radius: 0;
+    background: transparent;
+    backdrop-filter: none;
+    grid-template-columns: 92px 1fr;
+  }
+  .cover-role { color: #9bd5cb; font-size: 11px; letter-spacing: .02em; text-transform: none; }
+  .cover-name { color: #f0f6f4; }
+  .cover-program { color: #c1d4d0; }
+  .cover-footer { gap: 18px; }
+  .slide-type-quote {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    column-gap: clamp(22px, 3vw, 44px);
+    row-gap: 16px;
+    align-content: stretch;
+    align-items: center;
+    justify-content: stretch;
+  }
+  .slide-type-quote > .slide-block { grid-column: 1 / -1; grid-row: 1; margin: 0; }
+  .quote-heading { grid-column: 1; grid-row: 2; align-self: stretch; min-width: 0; }
+  .quote-heading .slide-title { margin-bottom: 16px; }
+  .quote-text {
+    max-width: 760px;
+    color: var(--deck-ink);
+    font-size: clamp(23px, 2.1vw, 31px);
+    font-weight: 650;
+    letter-spacing: -.025em;
+    line-height: 1.26;
+    text-align: left;
+    margin: 0;
+  }
+  .quote-text::before { display: none; }
+  .slide-type-quote .quote-logic {
+    grid-column: 2;
+    grid-row: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+    gap: 7px;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+  }
+  .quote-node {
+    display: flex;
+    min-width: 0;
+    min-height: 50px;
+    padding: 10px 15px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    color: #254751;
+    background: #fbfdfc;
+    border-color: #c7d9d5;
+    border-radius: 5px;
+    font-weight: 700;
+    text-align: left;
+    font-size: 17px;
+  }
+  .quote-node small { color: #587078; text-align: right; }
+  .quote-node.accent {
+    background: #dcebe7;
+    border-color: #79b5a9;
+    color: #1d6568;
+  }
+  .quote-node[style] {
+    background: #f5e9e4 !important;
+    border-color: #d2a08d !important;
+    color: #914831 !important;
+  }
+  .quote-arrow {
+    align-self: center;
+    height: 15px;
+    color: var(--deck-water);
+    font-size: 18px;
+    line-height: 15px;
+    transform: rotate(90deg);
+  }
+  .slide-type-quote .slide-bullets {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    width: 100%;
+    max-width: none !important;
+    margin: 0;
+    flex: none;
+  }
+  .slide-type-quote .slide-bullets li {
+    min-height: 96px;
+    padding: 12px 14px;
+    font-size: clamp(16px, 1.35vw, 20px);
+    line-height: 1.3;
+  }
+  .slide-id-8 .slide-bullets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  :global(.impact-equation) {
+    padding: 15px 16px;
+    margin: 10px 0;
+    border: 1px solid #a8ccc3;
+    border-left: 4px solid #197b80;
+    border-radius: 0 7px 7px 0;
+    background: #dcebe7;
+    color: #155e62;
+    font: 600 clamp(19px, 1.7vw, 25px)/1.2 Georgia, "Times New Roman", serif;
+    white-space: normal;
+  }
+  :global(.impact-equation-caption) {
+    margin: 5px 0 12px;
+    color: #4e6870;
+    font-size: 15px;
+    line-height: 1.4;
+  }
+  :global(.gev-equation) {
+    display: grid;
+    gap: 3px;
+    margin: 8px 0 5px;
+    padding: 14px 16px;
+    border: 1px solid #a8ccc3;
+    border-left: 4px solid #197b80;
+    border-radius: 0 6px 6px 0;
+    background: #dcebe7;
+    color: #155e62;
+    font: 600 clamp(17px, 1.55vw, 22px)/1.25 Georgia, "Times New Roman", serif;
+    overflow-wrap: anywhere;
+  }
+  :global(.gev-equation-caption) {
+    margin: 4px 0 8px;
+    color: #405f67;
+    font-size: 14px;
+    line-height: 1.35;
+  }
+  .slide-id-14 .slide-split-left .slide-bullets li {
+    padding: 7px 12px;
+    font-size: clamp(17px, 1.25vw, 19px);
+    line-height: 1.25;
+  }
+  .slide-figure, .slide-figure-full img {
+    border: 1px solid #cfddda;
+    border-radius: 5px;
+    box-shadow: 0 8px 22px rgba(24, 58, 65, .1);
+  }
+  .slide-figure-caption {
+    color: #405f67;
+    font-size: clamp(16px, 1.35vw, 20px);
+    font-style: normal;
+    line-height: 1.35;
+    max-width: 620px;
+  }
+  .case-reference { color: #3f5d64; border-left-color: #bd795f; background: #e2ece9; }
+  .case-result {
+    background: #fbfdfc;
+    border-color: #cbdad7;
+    border-radius: 4px;
+  }
+  .case-result-value { color: var(--deck-water); }
+  .case-result-label, .case-result-implication { color: #31515a; }
+  .case-result-value { font-size: clamp(25px, 2.4vw, 36px); }
+  .case-result-label { font-size: 17px; }
+  .case-result-implication { font-size: 16px; }
+  .slide-split-left:has(.case-results) .case-results { gap: 7px; }
+  .slide-split-left:has(.case-results) .case-result {
+    display: grid;
+    grid-template-columns: minmax(130px, .42fr) minmax(0, 1fr);
+    column-gap: 8px;
+    row-gap: 2px;
+    align-items: start;
+    padding: 7px 8px;
+  }
+  .slide-split-left:has(.case-results) .case-result-value {
+    display: block;
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    margin: 0;
+    font-size: clamp(20px, 1.5vw, 24px);
+    line-height: 1.05;
+  }
+  .slide-split-left:has(.case-results) .case-result-label {
+    display: block;
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 14px;
+    line-height: 1.2;
+  }
+  .slide-split-left:has(.case-results) .case-result-implication {
+    grid-column: 2;
+    grid-row: 2;
+    margin-top: 2px;
+    font-size: 12px;
+    line-height: 1.25;
+  }
+  .semantic-card {
+    min-height: 124px;
+    padding: 20px 22px;
+    border: 1px solid #c6d8d4;
+    border-radius: 4px;
+    background: var(--deck-white);
+  }
+  .semantic-label { color: var(--deck-ink); font-size: 22px; font-weight: 750; }
+  .semantic-detail { color: #4d6870; font-size: 19px; line-height: 1.4; }
+  .semantic-index { color: #246d70; background: #e1efeb; border-radius: 50%; }
+  .semantic-visual.flow .semantic-card:not(:last-child)::after { color: var(--deck-water); }
+  .semantic-visual.problem .semantic-items { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .semantic-visual.problem .semantic-card { min-height: 210px; padding: 22px; justify-content: flex-start; }
+  .semantic-visual.problem .semantic-metric { font: 600 clamp(27px, 2.4vw, 36px)/1.2 Georgia, "Times New Roman", serif; }
+  .semantic-visual.method-map .semantic-items { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+  .semantic-visual.method-map .semantic-card { min-height: 224px; padding: 22px 16px; justify-content: flex-start; }
+  .semantic-visual.method-map .semantic-card:not(:last-child)::after {
+    content: '›'; position: absolute; right: -11px; top: 50%; transform: translateY(-50%);
+    z-index: 2; color: var(--deck-water); font-size: 24px; font-weight: 800;
+  }
+  .semantic-visual.method-map .semantic-label { margin-top: 16px; font-size: clamp(18px, 1.55vw, 23px); }
+  .semantic-visual.method-map .semantic-detail { margin-top: 10px; font-size: clamp(15px, 1.25vw, 18px); }
+  .semantic-visual.problem .semantic-items { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .semantic-visual.problem .semantic-card { min-height: 210px; padding: 22px; justify-content: flex-start; }
+  .semantic-visual.problem .semantic-metric { font: 600 clamp(27px, 2.4vw, 36px)/1.2 Georgia, "Times New Roman", serif; }
+  .semantic-visual.gap .semantic-card:last-child {
+    border-color: #d2a08d;
+    background: #f5e9e4;
+  }
+  .semantic-visual.gap .semantic-card:last-child .semantic-label { color: #914831; }
+  .semantic-visual.evidence .semantic-card { border-left: 4px solid #4b9484; }
+  .semantic-visual.evidence .semantic-card::after { color: #397963; }
+  .semantic-visual.evidence:has(.semantic-card:nth-child(4)) .semantic-items {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .semantic-visual.evidence:has(.semantic-card:nth-child(4)) .semantic-card { min-height: 140px; }
+  .semantic-visual.evidence:has(.semantic-card:nth-child(4)) .semantic-index { display: none; }
+  .semantic-visual.evidence:has(.semantic-card:nth-child(4)) .semantic-label {
+    color: #197b80;
+    font-size: clamp(22px, 2vw, 29px);
+  }
+  .semantic-visual.layers .semantic-card:nth-child(3) {
+    border-color: #80b6aa; background: #e0efea;
+  }
+  .semantic-metric {
+    padding: 12px 18px;
+    border-color: #b7d2cc;
+    border-radius: 4px;
+    color: #246b6e;
+    background: #e2efec;
+    font-size: 18px;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .timeline-dot {
+    background: #e0efeb;
+    border: 1px solid #a9ccc3;
+    border-radius: 4px;
+    color: #246d70;
+  }
+  .timeline-text, .matrix-item { color: #31515a; }
+  .timeline-text strong, .matrix-item strong { color: var(--deck-ink); }
+  .matrix-item { border: 1px solid #cbdad7; border-radius: 4px; background: #fbfdfc; }
+  .case-process-step { color: #31515a; border-color: #c6d8d4; background: #e2efec; }
+  .case-process-label { color: var(--deck-water); }
+  .pyhydra-role { background: #e2efec; border-color: #b7d2cc; }
+  .pyhydra-role-title { color: #246b6e; }
+  .pyhydra-role-text { color: #31515a; }
+  .pyhydra-module { color: #246b6e; background: #d5e9e4; }
+  .slide-split-left:has(.pyhydra-role) .pyhydra-role { padding: 8px 10px; margin-bottom: 6px; }
+  .slide-split-left:has(.pyhydra-role) .pyhydra-role-title { margin-bottom: 3px; font-size: 12px; }
+  .slide-split-left:has(.pyhydra-role) .pyhydra-role-text { font-size: 14px; line-height: 1.28; }
+  .slide-split-left:has(.pyhydra-role) .pyhydra-modules { gap: 4px; margin-top: 5px; }
+  .slide-split-left:has(.pyhydra-role) .pyhydra-module { padding: 3px 6px; font-size: 12px; }
+  :global(.traceability-matrix) { border-color: #a8c9c1; }
+  :global(.traceability-matrix > div) { border-color: #c6d8d4; }
+  :global(.traceability-head) { color: #246b6e; background: #dcebe7; }
+  :global(.traceability-goal) { background: #fbfdfc; }
+  :global(.traceability-build) { background: #e6f0ed; }
+  :global(.traceability-proof) { background: #f2eae6; }
+  :global(.traceability-matrix strong) { color: var(--deck-ink); }
+  :global(.traceability-build strong) { color: #246b6e; }
+  :global(.traceability-proof strong) { color: #914831; }
+  :global(.traceability-matrix span) { color: #4e6870; }
+  .pres-table { color: #31515a; background: #fbfdfc; border-color: #cbdad7; }
+  .pres-table th { color: #246b6e !important; background: #dcebe7; border-color: #b7d2cc; }
+  .pres-table td {
+    color: #405f67 !important;
+    border-color: #dce7e4;
+    background: #fbfdfc;
+  }
+  .pres-table td:first-child { color: #173b45 !important; font-weight: 750; }
+  .case-thesis-bridge {
+    color: #284f55;
+    background: #deece8;
+    border-left-color: #197b80;
+  }
+  .slide-split-body {
+    grid-template-columns: minmax(0, .72fr) minmax(0, 1.28fr);
+    gap: clamp(18px, 2vw, 30px);
+    min-height: 0;
+    overflow: hidden;
+  }
+  .slide-split-left { min-height: 0; overflow-y: auto; padding-right: 5px; }
+  .slide-split-right {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto auto auto;
+    align-content: stretch;
+    align-items: stretch;
+    justify-content: stretch;
+    gap: 6px;
+    min-width: 0;
+    min-height: 0;
+    width: 100%;
+    overflow: hidden;
+  }
+  .slide-split-right > div { min-width: 0; min-height: 0; }
+  .slide-split-right > div:not(.slide-evidence-pair) { width: 100%; height: 100%; }
+  .slide-evidence-pair {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: minmax(0, 1fr);
+    gap: 12px;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    align-items: stretch;
+  }
+  .slide-split-right figure {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    align-items: stretch;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+  }
+  .slide-split-right .slide-figure {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    min-height: 0;
+    object-fit: contain;
+  }
+  .slide-split-right .slide-figure-caption {
+    max-width: none;
+    margin-top: 5px;
+    color: #405f67;
+    font-size: clamp(13px, 1.1vw, 16px);
+    line-height: 1.25;
+    text-align: center;
+  }
+  .slide-split-right .case-reference {
+    align-self: stretch;
+    height: auto;
+    min-height: 0;
+    margin: 0;
+    padding: 8px 11px;
+    font-size: clamp(13px, 1.05vw, 15px);
+    line-height: 1.3;
+  }
+  .slide-split-right .case-process-label { margin: 0; }
+  .slide-split-right .case-process { min-height: 0; margin: 0; }
+  .closing-slide {
+    background: linear-gradient(100deg, rgba(9, 34, 43, .97), rgba(9, 34, 43, .73)), var(--cover-image) center/cover no-repeat !important;
+  }
+  .closing-takeaway { border-color: #79b9ad; border-radius: 0 5px 5px 0; background: rgba(103, 183, 170, .15); }
+  .closing-metric { border-color: rgba(155, 213, 203, .25); border-radius: 5px; background: rgba(13, 50, 59, .8); }
+  .closing-metric strong { color: #9bd5cb; }
+  .closing-link { border-radius: 3px; }
+  .index-card { border-color: #cfddda !important; border-radius: 4px !important; background: #fbfdfc !important; }
+  .index-card > div:first-child {
+    border: 1px solid #b7d2cc !important;
+    border-radius: 50% !important;
+    background: #e1efeb !important;
+    color: #246b6e !important;
+  }
+  .index-card > div:last-child > div:first-child { color: var(--deck-ink) !important; }
+  .index-card > div:last-child > div:last-child { color: #526c72 !important; }
+  .pres-notes-panel { background: #123b45; border-color: rgba(226, 242, 238, .13); }
+  .notes-label, .notes-next-label { color: #9ac7c1; }
+  .notes-text { color: #e2eeeb; }
+  .notes-next-title { color: #c5d9d5; }
+  .pres-dot { background: rgba(231, 247, 243, .23); }
+  .pres-dot.active { background: #79c3b4; }
+  .pres-go-input { background: rgba(231, 247, 243, .08); }
+  .pres-go-input:focus { border-color: #79c3b4; }
+  .pres-shell button:focus-visible, .pres-shell a:focus-visible,
+  .pres-shell input:focus-visible, .pres-dot:focus-visible {
+    outline: 3px solid #e1a184;
+    outline-offset: 3px;
+  }
+  .pres-exit-btn:hover { background: rgba(189, 91, 60, .2); color: #ffe2d7; border-color: #d9977e; }
+
+  @media (max-width: 760px) {
+    .pres-topbar { gap: 8px; padding-inline: 10px; }
+    .pres-topbar-logo { font-size: 12px; }
+    .pres-topbar-logo img { width: 23px; height: 23px; }
+    .pres-topbar-btn { width: 30px; height: 30px; flex: 0 0 auto; }
+    .slide { padding: 24px 22px; }
+    .slide-title { font-size: clamp(28px, 5vw, 38px); }
+    .slide-subtitle { font-size: clamp(16px, 2.5vw, 20px); }
+    .slide-bullets li { font-size: clamp(16px, 2.3vw, 19px); }
+    .semantic-card { min-height: 90px; padding: 14px; }
+    .semantic-label { font-size: 18px; }
+    .semantic-detail { font-size: 15px; }
+    .slide-route { display: none; }
+    .slide-type-quote {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      gap: 12px;
+      overflow-y: auto;
+    }
+    .slide-type-quote .quote-logic { width: 100%; }
+    .slide-type-quote .slide-bullets,
+    .slide-id-8 .slide-bullets { grid-template-columns: 1fr; }
+    .slide-type-index > div { padding-inline: 0 !important; }
+    .slide-type-index .index-grid { grid-template-columns: 1fr !important; gap: 8px !important; }
+    .slide-split-body { grid-template-columns: 1fr; gap: 12px; overflow-y: auto; }
+    .slide-split-right { max-height: 42vh; }
+    .slide-split-right figure { height: auto; }
+    .slide-split-right .slide-figure { width: 100%; height: auto; max-height: 34vh; }
+    .quote-logic { flex-wrap: wrap; }
+    .quote-node { min-width: 116px; padding: 10px; }
+    .closing-metrics { grid-template-columns: 1fr; gap: 8px; }
+    .cover-footer { flex-wrap: wrap; }
+    .cover-identity { width: min(100%, 510px); }
+    .pres-bottombar { gap: 8px; padding-inline: 10px; }
+    .pres-nav-btn { padding: 7px 10px; font-size: 12px; }
+    .pres-slide-dots { display: none; }
+  }
+  /* The live presenter can leave a narrower audience viewport beside its
+     notes panel. Keep chapter navigation and the seven-part index readable
+     rather than letting them overflow the embedded 16:9 canvas. */
+  @media (min-width: 761px) and (max-width: 1200px) {
+    .slide-route {
+      right: 22px;
+      max-width: 54%;
+      gap: 4px;
+    }
+    .slide-route-step:not(.current) { display: none; }
+    .slide-route-step.current { font-size: 13px; }
+    .slide-route-number { width: 22px; height: 22px; }
+    .slide-type-index > div { min-height: 0; padding-inline: 0 !important; }
+    .slide-type-index .index-grid {
+      min-height: 0;
+      gap: 8px !important;
+      margin-top: 10px !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+    .slide-type-index .index-card {
+      min-height: 0;
+      padding: 9px 11px !important;
+      gap: 9px !important;
+      align-items: center !important;
+    }
+    .slide-type-index .index-card > div:first-child {
+      width: 28px !important;
+      height: 28px !important;
+      font-size: 14px !important;
+    }
+    .slide-type-index .index-card > div:last-child > div:first-child { font-size: 15px !important; }
+    .slide-type-index .index-card > div:last-child > div:last-child { font-size: 12px !important; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pres-shell *, .pres-shell *::before, .pres-shell *::after {
+      scroll-behavior: auto !important;
+      animation-duration: .01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .01ms !important;
+    }
   }
 </style>
 
@@ -832,11 +1500,11 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
     <div class="pres-progress-wrap">
       <div class="pres-progress-fill" id="pres-progress" style="width: 3.45%"></div>
     </div>
-    <span class="pres-counter" id="pres-counter">1 / {totalSlides}</span>
+    <span class="pres-counter" id="pres-counter" aria-live="polite">1 / {totalSlides}</span>
     <span class="pres-timer" id="pres-timer">⏱ 0:00</span>
-    <button class="pres-topbar-btn" id="btn-toggle-notes" title="Notas presentador">📝</button>
-    <button class="pres-topbar-btn" id="btn-fullscreen" title="Pantalla completa (F)">⛶</button>
-    <a href={asset('/defensa')} class="pres-topbar-btn pres-exit-btn" title="Volver">✕</a>
+    <button class="pres-topbar-btn" id="btn-toggle-notes" title="Notas del presentador" aria-label="Mostrar u ocultar notas del presentador">📝</button>
+    <button class="pres-topbar-btn" id="btn-fullscreen" title="Pantalla completa (F)" aria-label="Activar pantalla completa">⛶</button>
+    <a href={asset('/defensa')} class="pres-topbar-btn pres-exit-btn" title="Volver" aria-label="Volver a la pantalla de inicio">✕</a>
   </div>
 
   <!-- Main -->
@@ -920,7 +1588,7 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
                   <>
                   <div class="cover-identity">
                     <div class="cover-person"><span class="cover-role">Doctorando</span><span class="cover-name">Salvador Navas Fernández</span></div>
-                    <div class="cover-person"><span class="cover-role">Director</span><span class="cover-name">Dr. Manuel del Jesús Peñil</span></div>
+                    <div class="cover-person"><span class="cover-role">Director</span><span class="cover-name">Dr. Manuel del Jesus Peñil</span></div>
                     <div class="cover-person"><span class="cover-role">Tutor</span><span class="cover-name">Dr. César Álvarez Díaz</span></div>
                   </div>
                   <div class="cover-footer">
@@ -970,10 +1638,13 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
               </div>
             )}
 
-            {/* ── QUOTE ── */}
+    {/* ── QUOTE ── */}
             {isQuote && (
               <>
-                <div class="quote-text">{slide.script}</div>
+                <div class="quote-heading">
+                  <div class="slide-title">{slide.title}</div>
+                  <div class="quote-text">{slide.script}</div>
+                </div>
                 <div class="quote-logic" aria-label={slide.id === 7 ? 'Esquema de validación de hipótesis' : 'Esquema de la pregunta de investigación'}>
                   {slide.id === 7 ? (
                     <>
@@ -993,7 +1664,7 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
                 </div>
                 {slide.bullets?.length ? (
                   <ul class="slide-bullets" style="max-width:650px; text-align:left">
-                    {slide.bullets.slice(0, 2).map(b => <li>{b}</li>)}
+                    {slide.bullets.map(b => <li>{b}</li>)}
                   </ul>
                 ) : null}
               </>
@@ -1006,7 +1677,7 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
                   <div class="slide-title">{slide.title}</div>
                   {slide.subtitle && <div class="slide-subtitle">{slide.subtitle}</div>}
                 </div>
-                <div class="case-thesis-bridge">El método estocástico necesita una cadena completa: adquirir y homogeneizar datos, representar el clima, generar escenarios, ejecutar modelos físicos y calcular frecuencia sobre el impacto. pyhydra conecta esas tareas sin perder trazabilidad.</div>
+                <div class="case-thesis-bridge">Una cadena reproducible conecta datos, clima, escenarios y modelos físicos hasta la frecuencia del impacto.</div>
                 <div class="pres-table-container">
                   <table class="pres-table">
                     <thead>
@@ -1041,11 +1712,11 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
                         if (caseName.includes('Besaya')) { m1=check; m2=check; m3=check; m4=check; }
                         else if (caseName.includes('Calle 30')) { m1=check; m2=check; m3=check; m4=check; }
                         else if (caseName.includes('Mallorca')) { m1=check; m2=check; m3=check; m4=check; }
-                        else if (caseName.includes('Valencia')) { m1=check; m2=check; m3=cross; m4=cross; }
+                        else if (caseName.includes('Valencia') || caseName.includes('DANA')) { m1=check; m2=check; m3=cross; m4=cross; }
                         else if (caseName.includes('Tanganica')) { m1=check; m2=check; m3=cross; m4=check; }
                         else if (caseName.includes('Panamá')) { m1=check; m2=check; m3=cross; m4=check; }
                         else if (caseName.includes('SIMPCCe')) { m1=check; m2=check; m3=cross; m4=check; }
-                        else if (caseName.includes('Andes')) { m1=check; m2=check; m3=cross; m4=cross; }
+                        else if (caseName.includes('Andes')) { m1=check; m2=check; m3=cross; m4=check; }
                         else if (caseName.includes('IAHR')) { m1=check; m2=check; m3=check; m4=check; }
 
                         return (
@@ -1232,10 +1903,10 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
 
   <!-- Bottom nav -->
   <div class="pres-bottombar">
-    <button class="pres-nav-btn" id="pres-prev">← Anterior</button>
+    <button class="pres-nav-btn" id="pres-prev" aria-label="Ir a la diapositiva anterior">← Anterior</button>
     <div class="pres-slide-dots" id="pres-dots"></div>
     <input class="pres-go-input" id="pres-go" type="number" min="1" max={totalSlides} value="1" title="Ir al slide" />
-    <button class="pres-nav-btn pres-nav-next" id="pres-next">Siguiente →</button>
+    <button class="pres-nav-btn pres-nav-next" id="pres-next" aria-label="Ir a la diapositiva siguiente">Siguiente →</button>
   </div>
 </div>
 
@@ -1277,9 +1948,12 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
 
   // ── Build dots ──
   slides.forEach((_, i) => {
-    const dot = document.createElement('div');
+    const dot = document.createElement('button');
     dot.className = 'pres-dot' + (i === 0 ? ' active' : '');
     dot.title = slides[i].title;
+    dot.type = 'button';
+    dot.setAttribute('aria-label', `Ir a la diapositiva ${i + 1}: ${slides[i].title}`);
+    if (i === 0) dot.setAttribute('aria-current', 'step');
     dot.addEventListener('click', () => goTo(i));
     dotsEl.appendChild(dot);
   });
@@ -1328,6 +2002,8 @@ const visualSlides: Record<number, { kind: string; metric?: string; items: { lab
     // Dots
     document.querySelectorAll('.pres-dot').forEach((d, di) => {
       d.classList.toggle('active', di === idx);
+      if (di === idx) d.setAttribute('aria-current', 'step');
+      else d.removeAttribute('aria-current');
     });
 
     // Notes

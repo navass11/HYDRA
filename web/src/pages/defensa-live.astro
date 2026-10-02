@@ -36,6 +36,9 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   }
   .live-chapter.active { background:rgba(13,148,136,.16); border-color:rgba(94,234,212,.28); color:#5eead4; }
   .live-chapter:not(.active) { display:none; }
+  body.projection-view .live-shell { background:#0e303a; }
+  body.projection-view .live-left-viewport,
+  body.projection-view .live-slide-wrap { background:#0e303a; }
 </style>
 
 <style>
@@ -118,14 +121,14 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   .live-counter {
     font-size: 12px;
     font-weight: 700;
-    color: #475569;
+    color: #d0ddda;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
   .live-timer {
     font-size: 12px;
     font-weight: 600;
-    color: #475569;
+    color: #d0ddda;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
@@ -135,7 +138,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 7px;
     background: rgba(255,255,255,0.04);
-    color: #64748b;
+    color: #c2d2cf;
     cursor: pointer;
     font-size: 12px;
     font-family: inherit;
@@ -170,7 +173,8 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     flex: 1;
     position: relative;
     min-width: 0;
-    background: #020617;
+    background: #0e303a;
+    overflow: hidden;
   }
 
   /* ── Iframe wrap ── */
@@ -229,8 +233,10 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     inset: 0;
     display: flex;
     flex-direction: column;
-    background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(13,148,136,0.06) 0%, transparent 70%), #020617;
-    overflow-y: auto;
+    align-items: center;
+    justify-content: center;
+    background: #0e303a;
+    overflow: hidden;
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -263,39 +269,49 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
 
   /* ── Side panel (notes/controls) ── */
   .live-panel {
-    width: clamp(400px, 29vw, 470px);
+    width: clamp(360px, 30vw, 450px);
+    flex: 0 0 clamp(360px, 30vw, 450px);
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
     background: linear-gradient(180deg,rgba(8,12,24,.995),rgba(5,9,19,.995));
     border-left: 1px solid rgba(94,234,212,0.12);
     overflow: hidden;
-    position: absolute;
-    inset: 0 0 0 auto;
-    box-shadow: -24px 0 60px rgba(0,0,0,.48);
-    transition: transform 0.3s ease, opacity .2s ease;
+    position: relative;
+    inset: auto;
+    box-shadow: -12px 0 32px rgba(0,0,0,.3);
+    transition: flex-basis 0.28s ease, width 0.28s ease, opacity .2s ease;
     z-index: 8;
   }
-  .live-panel.collapsed { width:clamp(400px,29vw,470px); transform:translateX(102%); opacity:0; pointer-events:none; }
+  .live-panel.collapsed {
+    width: 0;
+    flex-basis: 0;
+    min-width: 0;
+    transform: none;
+    opacity: 0;
+    border: 0;
+    box-shadow: none;
+    pointer-events: none;
+  }
 
   .panel-scroll {
     flex: 1;
     overflow-y: auto;
-    padding: 20px;
+    padding: 18px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
   }
   .panel-scroll::-webkit-scrollbar { width: 4px; }
   .panel-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
 
   /* Slide info sections */
   .panel-section-label {
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
-    letter-spacing: 0.1em;
-    color: #64748b;
-    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #9bb7b2;
+    text-transform: none;
     margin-bottom: 6px;
   }
   .panel-title {
@@ -311,7 +327,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     margin-top: 3px;
   }
   .panel-script {
-    font-size: 13.5px;
+    font-size: 14px;
     line-height: 1.65;
     color: #cbd5e1;
     border-left: 3px solid;
@@ -327,7 +343,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     gap: 5px;
   }
   .panel-bullets li {
-    font-size: 12px;
+    font-size: 13px;
     color: #b8c1cf;
     padding: 8px 10px;
     border-radius: 7px;
@@ -378,9 +394,9 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   .panel-next-label {
     font-size: 10px;
     font-weight: 700;
-    color: #0d9488;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    color: #9bd5cb;
+    letter-spacing: 0.02em;
+    text-transform: none;
     margin-bottom: 6px;
   }
   .panel-next-title {
@@ -390,7 +406,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   }
   .panel-next-block {
     font-size: 10px;
-    color: #334155;
+    color: #9bb7b2;
     margin-top: 3px;
   }
 
@@ -481,12 +497,63 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   /* Keyboard shortcut hint */
   .live-keys {
     font-size: 10px;
-    color: #334155;
+    color: #a9bfbb;
     white-space: nowrap;
   }
   @media (max-width: 1450px) {
     .live-keys { display: none; }
     .live-chapter { padding-inline: 8px; font-size: 9px; }
+  }
+
+  /* Keep the control rail inside laptop-width viewports. Controls keep their
+     accessible names/titles while the visible chrome collapses to clear icons. */
+  @media (max-width: 1600px) {
+    .live-topbar { gap: 7px; padding-inline: 10px; }
+    .live-logo { gap: 6px; font-size: 11px; }
+    .live-logo img { width: 23px; height: 23px; }
+    .live-block-badge, .live-mode-badge {
+      max-width: 130px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 10px;
+      letter-spacing: 0;
+      padding: 3px 7px;
+    }
+    .live-topbar-btn:not(.live-topbar-btn-primary) {
+      width: 34px;
+      min-width: 34px;
+      padding: 0;
+      justify-content: center;
+      font-size: 0;
+      gap: 0;
+    }
+    .live-topbar-btn:not(.live-topbar-btn-primary)::before {
+      font-size: 15px;
+      line-height: 1;
+    }
+    #btn-panel-toggle::before { content: '▤'; }
+    #btn-projection::before { content: '◉'; }
+    #btn-notes::before { content: 'P'; font-weight: 800; }
+    #btn-fullscreen::before { content: '⛶'; font-size: 17px; }
+    .live-topbar-btn.exit::before { content: '×'; font-size: 20px; }
+    .live-topbar-btn-primary { padding-inline: 9px; font-size: 11px; }
+    .live-progress-wrap { min-width: 36px; }
+    .live-counter, .live-timer { font-size: 11px; }
+  }
+
+  @media (max-width: 1050px) {
+    .live-mode-badge { display: none; }
+    .live-logo { font-size: 0; }
+    .live-panel { width: min(320px, 38vw); flex-basis: min(320px, 38vw); }
+    .live-panel.collapsed { width: 0; flex-basis: 0; }
+    #btn-present { width: 34px; min-width: 34px; padding: 0; font-size: 0; justify-content: center; }
+    #btn-present::before { content: '▶'; font-size: 13px; }
+  }
+
+  .live-shell button:focus-visible, .live-shell a:focus-visible,
+  .live-shell input:focus-visible {
+    outline: 3px solid #e1a184;
+    outline-offset: 2px;
   }
 
   /* Floating audience tool tab (hidden unless hovered) */
@@ -582,14 +649,14 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     <div class="live-progress-wrap">
       <div class="live-progress-fill" id="live-progress" style="width:3.45%"></div>
     </div>
-    <span class="live-counter" id="live-counter">1 / {totalSlides}</span>
+    <span class="live-counter" id="live-counter" aria-live="polite">1 / {totalSlides}</span>
     <span class="live-timer" id="live-timer">⏱ 0:00</span>
-    <button class="live-topbar-btn live-topbar-btn-primary" id="btn-present" title="Abre la vista de presentador en otra ventana y pone esta pantalla en modo proyección">🎬 Presentar</button>
-    <button class="live-topbar-btn" id="btn-panel-toggle" title="Ocultar/Mostrar panel lateral (N)">Mostrar Panel</button>
-    <button class="live-topbar-btn active" id="btn-projection" title="Activar modo proyección (M)">📺 Proyectar</button>
-    <button class="live-topbar-btn" id="btn-notes" title="Abrir Notas en otra pantalla (P)">📝 Presentador (P)</button>
-    <button class="live-topbar-btn" id="btn-fullscreen" title="Pantalla completa (F)">⛶ Pantalla completa</button>
-    <a href={asset('/defensa')} class="live-topbar-btn exit" title="Volver">✕ Salir</a>
+    <button class="live-topbar-btn live-topbar-btn-primary" id="btn-present" title="Abre la vista de presentador en otra ventana y pone esta pantalla en modo proyección" aria-label="Abrir vista de presentador">🎬 Presentar</button>
+    <button class="live-topbar-btn" id="btn-panel-toggle" title="Mostrar u ocultar el panel lateral (N)" aria-label="Mostrar panel lateral" aria-expanded="false">Mostrar Panel</button>
+    <button class="live-topbar-btn active" id="btn-projection" title="Activar modo proyección (M)" aria-label="Activar modo proyección" aria-pressed="false">📺 Proyectar</button>
+    <button class="live-topbar-btn" id="btn-notes" title="Abrir notas en otra pantalla (P)" aria-label="Abrir vista de presentador">📝 Presentador (P)</button>
+    <button class="live-topbar-btn" id="btn-fullscreen" title="Pantalla completa (F)" aria-label="Activar pantalla completa" aria-pressed="false">⛶ Pantalla completa</button>
+    <a href={asset('/defensa')} class="live-topbar-btn exit" title="Volver" aria-label="Volver a la pantalla de inicio">✕ Salir</a>
   </div>
 
   <!-- Main view row -->
@@ -628,7 +695,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     </div>
 
     <!-- Right Side panel (hidden in projection mode) -->
-    <div class="live-panel collapsed" id="live-panel">
+    <div class="live-panel collapsed" id="live-panel" aria-label="Panel de apoyo al presentador">
       <div class="panel-scroll" id="panel-scroll">
 
         <!-- Slide title -->
@@ -851,8 +918,8 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     if (slide.figure) links.push({ label: `Abrir figura · ${slide.figureCaption ?? slide.figure}`, href: localHref(`/defensa/figures/${slide.figure}`) });
 
     if (slide.title.includes('Fuentes de datos')) links.push({ label: 'Módulo HYDRA · Fuentes de datos', href: localHref('/modules/fuentes-datos') });
-    else if (/GEV|Cópulas|estocástica|climátic/i.test(slide.title) && slide.block === 'Módulos') links.push({ label: 'Módulo HYDRA · Análisis climático', href: localHref('/modules/analisis-climatico') });
-    else if (/Modelización|acoplamiento/i.test(slide.title)) links.push({ label: 'Módulo HYDRA · Modelización', href: localHref('/modules/modelizacion') });
+    else if (/GEV|Cópulas|estocástica|climátic/i.test(slide.title) && ['Bloque climático-estadístico','Módulos'].includes(slide.block)) links.push({ label: 'Módulo HYDRA · Análisis climático', href: localHref('/modules/analisis-climatico') });
+    else if (/Modelización|Modelos hidrológicos|acoplamiento/i.test(slide.title)) links.push({ label: 'Módulo HYDRA · Modelización', href: localHref('/modules/modelizacion') });
 
     const caseRoutes: Array<[RegExp,string,string]> = [
       [/Besaya/i,'Caso reproducible · Besaya','/cases/los-corrales-buelna'],
@@ -883,6 +950,9 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       'Motivación':'Justificar el problema científico y formular la hipótesis.',
       'Estado del arte':'Delimitar la brecha que HYDRA resuelve.',
       'Arquitectura':'Explicar cómo se convierte la metodología en infraestructura reproducible.',
+      'Bloque de datos':'Mostrar qué fuentes entran en la cadena y cómo se normalizan.',
+      'Bloque climático-estadístico':'Explicar cómo se caracterizan extremos, dependencias y escenarios.',
+      'Bloque de modelización':'Mostrar cómo se conectan los motores físicos y sus salidas.',
       'Módulos':'Mostrar la función verificable de este componente dentro de la cadena.',
       'Demo en vivo':'Demostrar la operación real del núcleo científico.',
       'Casos de estudio':'Aportar evidencia empírica y transferencia industrial.',
@@ -1002,10 +1072,16 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     // Auto-minimize sidebar panel state
     if (val) {
       panel.classList.add('collapsed');
-      document.getElementById('btn-projection')!.textContent = '📺 Normal';
+      const projectionButton = document.getElementById('btn-projection')!;
+      projectionButton.textContent = '📺 Normal';
+      projectionButton.setAttribute('aria-label', 'Salir del modo proyección');
+      projectionButton.setAttribute('aria-pressed', 'true');
     } else {
       if (panelOpen) panel.classList.remove('collapsed');
-      document.getElementById('btn-projection')!.textContent = '📺 Proyectar';
+      const projectionButton = document.getElementById('btn-projection')!;
+      projectionButton.textContent = '📺 Proyectar';
+      projectionButton.setAttribute('aria-label', 'Activar modo proyección');
+      projectionButton.setAttribute('aria-pressed', 'false');
     }
   }
 
@@ -1043,7 +1119,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
           ${isFirst ? `
             <div style="width:min(760px,62%); display:grid; grid-template-columns:1.15fr 1fr 1fr; gap:10px; animation:fadeInUp .7s ease .2s both;">
               <div style="padding:12px 14px;border-radius:10px;background:rgba(15,23,42,.78);border:1px solid rgba(255,255,255,.1);"><span style="display:block;color:#5eead4;font-size:10px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;margin-bottom:4px;">Doctorando</span><strong>Salvador Navas Fernández</strong></div>
-              <div style="padding:12px 14px;border-radius:10px;background:rgba(15,23,42,.78);border:1px solid rgba(255,255,255,.1);"><span style="display:block;color:#5eead4;font-size:10px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;margin-bottom:4px;">Director</span><strong>Dr. Manuel del Jesús Peñil</strong></div>
+              <div style="padding:12px 14px;border-radius:10px;background:rgba(15,23,42,.78);border:1px solid rgba(255,255,255,.1);"><span style="display:block;color:#5eead4;font-size:10px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;margin-bottom:4px;">Director</span><strong>Dr. Manuel del Jesus Peñil</strong></div>
               <div style="padding:12px 14px;border-radius:10px;background:rgba(15,23,42,.78);border:1px solid rgba(255,255,255,.1);"><span style="display:block;color:#5eead4;font-size:10px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;margin-bottom:4px;">Tutor</span><strong>Dr. César Álvarez Díaz</strong></div>
             </div>
             <div style="display:flex;gap:24px;align-items:center;margin-top:18px;animation:fadeInUp .7s ease .3s both;">
@@ -1224,9 +1300,9 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
             ${slide.bullets?.map((b, bi) => {
               const [year, ...rest] = b.split(' — ');
               return `
-                <li class="timeline-item" style="display:flex; gap:16px; align-items:flex-start; transform:translateY(10px); opacity:0; animation:fadeInUp 0.3s ease forwards ${bi * 0.08}s;">
-                  <div class="timeline-dot" style="width:44px; height:44px; border-radius:50%; background:${slide.blockColor}22; border:2px solid ${slide.blockColor}aa; display:flex; align-items:center; justify-content:center; font-size:clamp(12px, 1.1vw, 14px); font-weight:700; color:${slide.blockColor}; flex-shrink:0;">${year.trim()}</div>
-                  <div class="timeline-text" style="font-size:clamp(17px, 1.9vw, 21px); color:#cbd5e1; padding:8px 0; line-height:1.4;"><strong style="color:#e2e8f0;">${rest.join(' — ')}</strong></div>
+                <li class="timeline-item" style="display:flex; gap:16px; align-items:center; transform:translateY(10px); opacity:0; animation:fadeInUp 0.3s ease forwards ${bi * 0.08}s;">
+                  <div class="timeline-dot" style="width:clamp(150px, 16vw, 210px); min-height:44px; height:auto; padding:9px 14px; box-sizing:border-box; border-radius:10px; background:${slide.blockColor}18; border:1px solid ${slide.blockColor}70; display:flex; align-items:center; justify-content:center; text-align:center; white-space:normal; overflow-wrap:anywhere; font-size:clamp(12px, 1.1vw, 14px); line-height:1.2; font-weight:700; color:${slide.blockColor}; flex:0 0 clamp(150px, 16vw, 210px);">${year.trim()}</div>
+                  <div class="timeline-text" style="min-width:0; flex:1; font-size:clamp(17px, 1.9vw, 21px); color:#cbd5e1; padding:8px 0; line-height:1.4;"><strong style="color:#e2e8f0;">${rest.join(' — ')}</strong></div>
                 </li>
               `;
             }).join('')}
@@ -1513,6 +1589,8 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       panel.classList.toggle('collapsed', !panelOpen);
       btnPanel.classList.toggle('active', panelOpen);
       btnPanel.textContent = panelOpen ? 'Ocultar Panel' : 'Mostrar Panel';
+      btnPanel.setAttribute('aria-label', panelOpen ? 'Ocultar panel lateral' : 'Mostrar panel lateral');
+      btnPanel.setAttribute('aria-expanded', String(panelOpen));
     });
   }
 
@@ -1541,6 +1619,10 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   function updateFullscreenButtons() {
     const active = isFullscreen();
     if (btnFullscreen) btnFullscreen.textContent = active ? '⛶ Salir de pantalla completa' : '⛶ Pantalla completa';
+    if (btnFullscreen) {
+      btnFullscreen.setAttribute('aria-label', active ? 'Salir de pantalla completa' : 'Activar pantalla completa');
+      btnFullscreen.setAttribute('aria-pressed', String(active));
+    }
   }
   ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'MSFullscreenChange'].forEach((evt) => {
     document.addEventListener(evt, updateFullscreenButtons);
@@ -1581,6 +1663,8 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
         panel.classList.toggle('collapsed', !panelOpen);
         btnPanel.classList.toggle('active', panelOpen);
         btnPanel.textContent = panelOpen ? 'Ocultar Panel' : 'Mostrar Panel';
+        btnPanel.setAttribute('aria-label', panelOpen ? 'Ocultar panel lateral' : 'Mostrar panel lateral');
+        btnPanel.setAttribute('aria-expanded', String(panelOpen));
       }
     }
     if (key === 'm' || key === 'M') {
