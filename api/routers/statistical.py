@@ -62,12 +62,21 @@ async def _load_series_async(file: UploadFile | None, use_demo: bool) -> pd.Seri
         raise HTTPException(status_code=400, detail="Selecciona un CSV o activa los datos demo.")
     try:
         contents = await uploaded_file.read()
-        df = pd.read_csv(io.BytesIO(contents), parse_dates=[0], index_col=0)
-        series = pd.to_numeric(df.iloc[:, 0], errors="coerce").dropna()
-        series.index = pd.DatetimeIndex(series.index)
+        df = pd.read_csv(io.BytesIO(contents))
+        if df.shape[1] < 2:
+            raise HTTPException(status_code=400, detail="El CSV debe contener una primera columna de fechas y una segunda columna de valores numéricos.")
+        dates = pd.to_datetime(df.iloc[:, 0], errors="coerce")
+        if dates.isna().any():
+            raise HTTPException(status_code=400, detail="Hay fechas no válidas en el CSV. Usa el formato AAAA-MM-DD en la primera columna.")
+        values = pd.to_numeric(df.iloc[:, 1], errors="coerce")
+        series = pd.Series(values.to_numpy(), index=pd.DatetimeIndex(dates)).replace([np.inf, -np.inf], np.nan).dropna()
+        if series.empty:
+            raise HTTPException(status_code=400, detail="La segunda columna del CSV no contiene valores numéricos válidos.")
         return series.sort_index()
-    except Exception as exc:
-        raise HTTPException(status_code=400, detail=f"Error leyendo CSV: {exc}")
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(status_code=400, detail="No se puede leer el CSV. Usa dos columnas, fecha y valor, separadas por comas.")
 
 
 def _event_payload(stats: pd.DataFrame, bounds: pd.DataFrame, value_col: str) -> list[dict]:

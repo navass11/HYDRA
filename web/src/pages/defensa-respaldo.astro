@@ -1,0 +1,17 @@
+---
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<!doctype html>
+<html lang="es">
+  <head><meta charset="utf-8" /><meta name="viewport" content="width=device-width" /><title>Respaldo local · Valencia</title></head>
+  <body>
+    <nav><a href={`${base}/defensa`}>Volver a la defensa</a></nav>
+    <main>
+      <h1>Valencia: resultado calculado del notebook</h1>
+      <p>Respaldo local para explicar el resultado si la API no responde. Esta figura procede del caso Valencia y representa su análisis bayesiano; es distinta del ajuste MAP con aproximación de Fisher que ejecuta la herramienta web.</p>
+      <figure><img src={`${base}/defensa/figures/fig_valencia_curvas_retorno.png`} alt="Curvas de retorno de Turís antes y después de incorporar la DANA" /><figcaption>Turís (8337X): el cuantil T100 bayesiano pasa de 260 a 952 mm al incorporar la DANA. Fuente: notebook del caso Valencia; VIII Jornadas de Ingeniería del Agua (2025); memoria doctoral, capítulo 8.</figcaption></figure>
+      <p><strong>Qué decir:</strong> «Este es un resultado ya calculado del caso Valencia. Permite explicar el cambio en la estimación de extremos y su incertidumbre al incorporar la DANA. La ejecución web que acabamos de describir utiliza MAP y bandas aproximadas mediante Fisher; esta figura pertenece al análisis bayesiano del notebook del caso».</p>
+    </main>
+    <style>body{margin:0;background:#edf3f2;color:#203d47;font-family:system-ui,sans-serif}nav,main{max-width:1200px;margin:auto;padding:20px 32px}h1{font-size:clamp(26px,3vw,42px)}p,figcaption{font-size:18px;line-height:1.5}figure{margin:24px 0}img{display:block;width:100%;max-height:66vh;object-fit:contain;background:white}a{color:#246b6e}a:focus-visible{outline:3px solid #246b6e;outline-offset:4px}</style>
+  </body>
+</html>

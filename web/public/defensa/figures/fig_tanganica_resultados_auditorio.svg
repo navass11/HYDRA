@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" role="img" aria-labelledby="title desc">
+ <title id="title">Tanganica: niveles históricos T100 y cambio futuro</title><desc id="desc">Bootstrap: 770,19 metros; GEV y Weibull: entre 771,55 y 771,76 metros. El máximo incremento futuro superior a 0,9 metros corresponde a T5 y T10 en 2041 a 2060.</desc>
+ <rect width="1000" height="620" fill="#f8fbfa"/>
+ <g font-family="Arial,sans-serif" fill="#203d47">
+ <text x="60" y="62" font-size="34" font-weight="bold">Nivel histórico de diseño para T100</text>
+ <text x="60" y="100" font-size="23">Los métodos producen cotas distintas (m s.n.m.)</text>
+ <path d="M270 320H910" stroke="#6f8c92" stroke-width="3"/>
+ <g font-size="24" text-anchor="middle"><text x="270" y="358">770</text><text x="590" y="358">771</text><text x="910" y="358">772</text></g>
+ <g stroke="#c6d8d4" stroke-width="2"><path d="M270 130V330M590 130V330M910 130V330"/></g>
+ <text x="60" y="188" font-size="29">Bootstrap</text><circle cx="330.8" cy="180" r="13" fill="#397f83"/><text x="355" y="190" font-size="30" font-weight="bold">770,19 m</text>
+ <text x="60" y="278" font-size="29">GEV / Weibull</text><path d="M766 270H833.2" stroke="#bc8450" stroke-width="12"/><path d="M766 250V290M833.2 250V290" stroke="#bc8450" stroke-width="4"/><text x="785" y="236" text-anchor="middle" font-size="29" font-weight="bold">771,55–771,76 m</text>
+ <rect x="60" y="405" width="880" height="157" rx="8" fill="#e0eeeb"/>
+ <text x="90" y="455" font-size="33" font-weight="bold">Cambio futuro máximo: &gt; 0,9 m</text>
+ <text x="90" y="498" font-size="28">2041–2060 · retornos cortos T5–T10</text>
+ <text x="90" y="537" font-size="23">Es una proyección distinta del nivel histórico T100.</text>
+ <text x="60" y="602" font-size="20">Fuente: memoria doctoral, capítulo 8 · caso lago Tanganica</text>
+ </g>
+</svg>

@@ -1562,16 +1562,16 @@ pilotCases.push({
   accentColor: 'emerald',
   icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4v16M20 4v16" /><path d="M4 12Q12 6 20 12" /><path d="M4 18Q12 22 20 18" stroke-dasharray="2 1.5"/></svg>',
   summary: {
-    es: 'Encargado por el Ministerio de Ambiente de Panamá y el BID (2023), este es el caso de mayor escala del catálogo: 52 cuencas de hasta 13.400 km² en ambas vertientes, más 1.464 puntos costeros analizados frente a inundación costera y viento extremo sobre el área metropolitana. NEOPRENE/STNSRP rellenó 73 estaciones nacionales (1950-2022) y el kriging universal generó una malla de 1 km. Sobre esta base se corrigieron automáticamente 414 combinaciones de sesgo (23 modelos CMIP6 × 2 escenarios SSP × 6 variables × 3 horizontes) mediante QDM y SDM, alimentando el modelo hidrológico LEM (NS=0,87) y ejecuciones masivas de SFINCS nacional, con modelos 2D de alta resolución en el área metropolitana.',
-    en: 'Commissioned by Panama’s Ministry of Environment and the IDB (2023), this is the largest-scale case in the catalogue: 52 basins up to 13,400 km² on both slopes, plus 1,464 coastal points analysed against coastal flooding and extreme wind over the metropolitan area. NEOPRENE/STNSRP filled 73 national stations (1950-2022) and universal kriging generated a 1 km grid. On this basis, 414 bias-correction combinations (23 CMIP6 models × 2 SSP scenarios × 6 variables × 3 horizons) were corrected automatically via QDM and SDM, feeding the LEM hydrological model (NS=0.87) and massive national SFINCS runs, with high-resolution 2D models over the metropolitan area.',
+    es: 'Encargado por el Ministerio de Ambiente de Panamá y el BID (2023), este es el caso de mayor escala del catálogo: 52 cuencas de hasta 13.400 km² en ambas vertientes, más 1.464 puntos costeros analizados frente a inundación costera y viento extremo sobre el área metropolitana. NEOPRENE/STNSRP rellenó 73 estaciones nacionales (1950-2022) y el kriging universal generó una malla de 1 km. Sobre esta base se corrigieron automáticamente cientos de combinaciones de sesgo (23 modelos CMIP6 × 2 escenarios SSP × 3 variables × 3 horizontes) mediante QDM y SDM, alimentando el modelo hidrológico LEM (NS=0,87) y ejecuciones masivas de SFINCS nacional, con modelos 2D de alta resolución en el área metropolitana.',
+    en: 'Commissioned by Panama’s Ministry of Environment and the IDB (2023), this is the largest-scale case in the catalogue: 52 basins up to 13,400 km² on both slopes, plus 1,464 coastal points analysed against coastal flooding and extreme wind over the metropolitan area. NEOPRENE/STNSRP filled 73 national stations (1950-2022) and universal kriging generated a 1 km grid. On this basis, hundreds of bias-correction combinations (23 CMIP6 models × 2 SSP scenarios × 3 variables × 3 horizons) were corrected automatically via QDM and SDM, feeding the LEM hydrological model (NS=0.87) and massive national SFINCS runs, with high-resolution 2D models over the metropolitan area.',
   },
   challenge: {
     es: 'Un atlas de riesgo climático de ámbito nacional exige procesar decenas de cuencas heterogéneas, cientos de combinaciones de modelo climático y escenario, y miles de simulaciones hidráulicas, todo con trazabilidad auditable para un organismo público. Hacerlo manualmente, cuenca a cuenca, es sencillamente inviable dentro de los plazos y el presupuesto de un encargo institucional de esta escala: automatizar el flujo de trabajo completo no es una comodidad, es la condición de viabilidad del proyecto.',
     en: 'A national-scale climate risk atlas requires processing dozens of heterogeneous basins, hundreds of climate model-scenario combinations, and thousands of hydraulic simulations, all with auditable traceability for a public institution. Doing it manually, basin by basin, is simply unfeasible within the timeline and budget of an institutional commission of this scale: automating the full workflow is not a convenience, it is the project’s condition of feasibility.',
   },
   approach: {
-    es: 'El flujo de trabajo nacional combina: (1) relleno de series con NEOPRENE/STNSRP sobre 73 estaciones (1950-2022) y regionalización por kriging universal a malla de 1 km; (2) corrección automática de sesgo de 414 combinaciones (23 modelos CMIP6 × 2 SSP × 6 variables × 3 horizontes) mediante Quantile Delta Mapping y Scaled Distribution Mapping; (3) modelo hidrológico LEM calibrado con NS=0,87 sobre las 52 cuencas; (4) ejecuciones masivas del modelo hidráulico SFINCS a escala nacional, con refinamiento 2D de alta resolución en el área metropolitana y análisis específico de 1.464 puntos costeros frente a inundación costera y viento extremo.',
-    en: 'The national workflow combines: (1) series gap-filling with NEOPRENE/STNSRP over 73 stations (1950-2022) and regionalisation by universal kriging onto a 1 km grid; (2) automatic bias correction of 414 combinations (23 CMIP6 models × 2 SSP × 6 variables × 3 horizons) via Quantile Delta Mapping and Scaled Distribution Mapping; (3) the LEM hydrological model calibrated with NS=0.87 across the 52 basins; (4) massive national-scale runs of the SFINCS hydraulic model, with high-resolution 2D refinement over the metropolitan area and a dedicated analysis of 1,464 coastal points against coastal flooding and extreme wind.',
+    es: 'El flujo de trabajo nacional combina: (1) relleno de series con NEOPRENE/STNSRP sobre 73 estaciones (1950-2022) y regionalización por kriging universal a malla de 1 km; (2) corrección automática de sesgo de cientos de combinaciones para distintos modelos CMIP6, variables, escenarios SSP y horizontes mediante Quantile Delta Mapping y Scaled Distribution Mapping; (3) modelo hidrológico LEM calibrado con NS=0,87 sobre las 52 cuencas; (4) ejecuciones masivas del modelo hidráulico SFINCS a escala nacional, con refinamiento 2D de alta resolución en el área metropolitana y análisis específico de 1.464 puntos costeros frente a inundación costera y viento extremo.',
+    en: 'The national workflow combines: (1) series gap-filling with NEOPRENE/STNSRP over 73 stations (1950-2022) and regionalisation by universal kriging onto a 1 km grid; (2) automatic bias correction of hundreds of combinations across CMIP6 models, variables, SSP scenarios and horizons via Quantile Delta Mapping and Scaled Distribution Mapping; (3) the LEM hydrological model calibrated with NS=0.87 across the 52 basins; (4) massive national-scale runs of the SFINCS hydraulic model, with high-resolution 2D refinement over the metropolitan area and a dedicated analysis of 1,464 coastal points against coastal flooding and extreme wind.',
   },
   steps: [
     {
@@ -1586,10 +1586,10 @@ pilotCases.push({
     },
     {
       number: 2,
-      title: { es: '414 correcciones de sesgo automáticas', en: '414 automatic bias corrections' },
+      title: { es: '414 combinaciones de análisis climático', en: '414 climate-analysis combinations' },
       description: {
-        es: '23 modelos CMIP6 × 2 escenarios SSP × 6 variables × 3 horizontes se corrigen automáticamente mediante QDM y SDM.',
-        en: '23 CMIP6 models × 2 SSP scenarios × 6 variables × 3 horizons are automatically corrected via QDM and SDM.',
+        es: 'El Producto 3 (pp. 3, 29–30) documenta 23 configuraciones GCM, 2 SSP, 3 variables y 3 horizontes: 414 combinaciones de análisis. Es un recuento de dimensiones, no un registro de ejecuciones de QDM/SDM.',
+        en: 'Product 3 (pp. 3, 29–30) documents 23 GCM configurations, 2 SSPs, 3 variables and 3 horizons: 414 analysis combinations. This counts analysis dimensions, not logged QDM/SDM runs.',
       },
       tags: ['CMIP6', 'Bias correction'],
       tagColor: 'bg-emerald-100 text-emerald-700',
@@ -1617,7 +1617,7 @@ pilotCases.push({
   ],
   stats: [
     { value: '52', label: { es: 'Cuencas (hasta 13.400 km²)', en: 'Basins (up to 13,400 km²)' } },
-    { value: '414', label: { es: 'Combinaciones de corrección de sesgo', en: 'Bias-correction combinations' } },
+    { value: '414', label: { es: 'Combinaciones de análisis climático', en: 'Climate-analysis combinations' } },
     { value: '1.464', label: { es: 'Puntos costeros analizados', en: 'Coastal points analysed' } },
     { value: 'NS=0,87', label: { es: 'Calibración modelo hidrológico LEM', en: 'LEM hydrological model calibration' } },
   ],
@@ -1627,8 +1627,8 @@ pilotCases.push({
       en: 'The largest-scale case in the catalogue: nationally viable automation (52 basins, both slopes) where a manual workflow would be unfeasible.',
     },
     {
-      es: '414 combinaciones de corrección de sesgo procesadas automáticamente, con registro de versión y validación de rangos por cada combinación — la automatización sistematiza la auditoría, no la elimina.',
-      en: '414 bias-correction combinations processed automatically, with version logging and range validation per combination — automation systematises auditing, it does not remove it.',
+      es: 'cientos de combinaciones de corrección de sesgo procesadas automáticamente, con registro de versión y validación de rangos por cada combinación — la automatización sistematiza la auditoría, no la elimina.',
+      en: 'hundreds of bias-correction combinations processed automatically, with version logging and range validation per combination — automation systematises auditing, it does not remove it.',
     },
     {
       es: 'Encargo institucional real (Ministerio de Ambiente de Panamá + BID) que demuestra la hipótesis H1 de eficiencia y automatización a escala regional.',

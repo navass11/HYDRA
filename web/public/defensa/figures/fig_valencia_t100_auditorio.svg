@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="792pt" height="432pt" viewBox="0 0 792 432" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-10-05T16:55:02.167366</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 432 
+L 792 432 
+L 792 0 
+L 0 0 
+z
+" style="fill: #eff5f3"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 158.4 332.64 
+L 752.4 332.64 
+L 752.4 99.36 
+L 158.4 99.36 
+z
+" style="fill: #eff5f3"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_1">
+      <path d="M 158.4 332.64 
+L 158.4 99.36 
+" clip-path="url(#p92de53690a)" style="fill: none; stroke: #ceddda; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_2"/>
+     <g id="text_1">
+      <text style="font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #203c45" x="158.4" y="358.315781" transform="rotate(-0 158.4 358.315781)">0</text>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_3">
+      <path d="M 293.4 332.64 
+L 293.4 99.36 
+" clip-path="url(#p92de53690a)" style="fill: none; stroke: #ceddda; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_4"/>
+     <g id="text_2">
+      <text style="font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #203c45" x="293.4" y="358.315781" transform="rotate(-0 293.4 358.315781)">250</text>
+     </g>
+    </g>
+    <g id="xtick_3">
+     <g id="line2d_5">
+      <path d="M 428.4 332.64 
+L 428.4 99.36 
+" clip-path="url(#p92de53690a)" style="fill: none; stroke: #ceddda; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_6"/>
+     <g id="text_3">
+      <text style="font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #203c45" x="428.4" y="358.315781" transform="rotate(-0 428.4 358.315781)">500</text>
+     </g>
+    </g>
+    <g id="xtick_4">
+     <g id="line2d_7">
+      <path d="M 563.4 332.64 
+L 563.4 99.36 
+" clip-path="url(#p92de53690a)" style="fill: none; stroke: #ceddda; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_8"/>
+     <g id="text_4">
+      <text style="font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #203c45" x="563.4" y="358.315781" transform="rotate(-0 563.4 358.315781)">750</text>
+     </g>
+    </g>
+    <g id="xtick_5">
+     <g id="line2d_9">
+      <path d="M 698.4 332.64 
+L 698.4 99.36 
+" clip-path="url(#p92de53690a)" style="fill: none; stroke: #ceddda; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_10"/>
+     <g id="text_5">
+      <text style="font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #203c45" x="698.4" y="358.315781" transform="rotate(-0 698.4 358.315781)">1000</text>
+     </g>
+    </g>
+    <g id="text_6">
+     <text style="font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #203c45" x="455.4" y="393.037188" transform="rotate(-0 455.4 393.037188)">Precipitación diaria (mm) · T100</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_11"/>
+     <g id="text_7">
+      <text style="font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #203c45" x="146.4" y="151.192402" transform="rotate(-0 146.4 151.192402)">Sin DANA</text>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_12"/>
+     <g id="text_8">
+      <text style="font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #203c45" x="146.4" y="294.484082" transform="rotate(-0 146.4 294.484082)">Con DANA</text>
+     </g>
+    </g>
+   </g>
+   <g id="patch_3">
+    <path d="M 158.4 109.963636 
+L 298.8 109.963636 
+L 298.8 178.74398 
+L 158.4 178.74398 
+z
+" clip-path="url(#p92de53690a)" style="fill: #729b9e"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 158.4 253.25602 
+L 672.48 253.25602 
+L 672.48 322.036364 
+L 158.4 322.036364 
+z
+" clip-path="url(#p92de53690a)" style="fill: #aa4a60"/>
+   </g>
+   <g id="text_9">
+    <text style="font-weight: 700; font-size: 23px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #203c45" x="309.6" y="150.328418" transform="rotate(-0 309.6 150.328418)">260 mm</text>
+   </g>
+   <g id="text_10">
+    <text style="font-weight: 700; font-size: 23px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #203c45" x="683.28" y="293.620801" transform="rotate(-0 683.28 293.620801)">952 mm</text>
+   </g>
+  </g>
+  <g id="text_11">
+   <text style="font-weight: 700; font-size: 25px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #203c45" x="63.36" y="28.636094" transform="rotate(-0 63.36 28.636094)">Turís: el evento cambia el nivel de diseño</text>
+  </g>
+  <g id="text_12">
+   <text style="font-size: 19px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #395c63" x="63.36" y="60.48" transform="rotate(-0 63.36 60.48)">Estimación bayesiana de T100 · 260 → 952 mm (+266 %)</text>
+  </g>
+  <g id="text_13">
+   <text style="font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #395c63" x="63.36" y="414.72" transform="rotate(-0 63.36 414.72)">Fuente: resultados del caso Valencia · VIII JIA (2025), memoria cap. 8</text>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p92de53690a">
+   <rect x="158.4" y="99.36" width="594" height="233.28"/>
+  </clipPath>
+ </defs>
+</svg>

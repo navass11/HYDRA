@@ -8,6 +8,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
 
 <Layout
   title="Defensa Tesis HYDRA — Presentación"
+  loadWebFonts={false}
   description="Presentación interactiva: navega la web de HYDRA alternando con diapositivas"
 >
 
@@ -657,6 +658,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       <img src={asset('/favicon.png')} alt="HYDRA" />
       HYDRA · Defensa
     </div>
+    <a class="live-topbar-btn" href={asset('/defensa-anexos')} target="_blank">Anexos</a><a class="live-topbar-btn" href={asset('/defensa-respaldo')} target="_blank">Respaldo</a>
     <span class="live-block-badge" id="top-block">Apertura</span>
     <span class="live-mode-badge" id="live-mode-badge">📄 Diapositiva</span>
     <div class="live-progress-wrap">
@@ -873,6 +875,10 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   // ── State ──
   let current = -1;
   let elapsed = 0;
+  const timerStartedAt = isPresenterWindow
+    ? Number(localStorage.getItem('defensa-live-timer-start')) || Date.now()
+    : Date.now();
+  if (!isPresenterWindow) localStorage.setItem('defensa-live-timer-start', String(timerStartedAt));
   let timerInterval: ReturnType<typeof setInterval> | null = null;
   let panelOpen = false;
   let notesOpen = true;
@@ -922,6 +928,25 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   const presWinPrevBtn     = document.getElementById('pres-win-prev') as HTMLButtonElement;
   const presWinNextBtn     = document.getElementById('pres-win-next') as HTMLButtonElement;
   const presPreviewIframe  = document.getElementById('pres-win-preview-iframe') as HTMLIFrameElement;
+
+  // Render the same 1920 × 1080 canvas on both screens, scaling the whole
+  // iframe rather than reflowing projection typography into a small preview.
+  for (const frame of [audienceSlideFrame, presPreviewIframe]) {
+    const container = frame.parentElement!;
+    const fitFrame = () => {
+      const { width, height } = container.getBoundingClientRect();
+      if (!width || !height) return;
+      const scale = Math.min(container.clientWidth / 1920, container.clientHeight / 1080);
+      Object.assign(frame.style, {
+        position: 'absolute', width: '1920px', height: '1080px',
+        left: `${(container.clientWidth - 1920 * scale) / 2}px`,
+        top: `${(container.clientHeight - 1080 * scale) / 2}px`,
+        transformOrigin: 'top left', transform: `scale(${scale})`,
+      });
+    };
+    new ResizeObserver(fitFrame).observe(container);
+    fitFrame();
+  }
 
   type PresenterLink = { label: string; href: string };
   const localHref = (path: string) => `${base.replace(/\/$/, '')}${path}`;
@@ -987,7 +1012,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   function startTimer() {
     if (timerInterval) return;
     timerInterval = setInterval(() => {
-      elapsed++;
+      elapsed = Math.floor((Date.now() - timerStartedAt) / 1000);
       const m = Math.floor(elapsed / 60);
       const s = elapsed % 60;
       const timeStr = `⏱ ${m}:${s.toString().padStart(2,'0')}`;

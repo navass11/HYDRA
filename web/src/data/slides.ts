@@ -63,7 +63,7 @@ export const slideLibrary: Slide[] = [
     subtitle: 'Correspondencia directa con los capítulos de la memoria doctoral',
     estimatedMinutes: 1,
     type: 'index',
-    script: 'La exposición sigue los seis capítulos de la memoria, en este orden. Primero, la introducción: el problema, la pregunta, las hipótesis y los objetivos. Después, el estado de la técnica y la brecha que justifica la tesis. En tercer lugar, la arquitectura de HYDRA. En cuarto, la metodología: datos, análisis climático y estadístico, y modelización, con una breve demostración. En quinto, los casos como evidencia de validación. Y por último, las conclusiones: contribución, límites y trabajo futuro. Esta misma ruta aparece arriba en cada diapositiva para que sepan en qué punto estamos.',
+    script: "La exposición sigue seis bloques que agrupan los capítulos de la memoria, en este orden. Primero, la introducción: el problema, la pregunta, las hipótesis y los objetivos. Después, el estado de la técnica y la brecha que justifica la tesis. En tercer lugar, la arquitectura de HYDRA. En cuarto, la metodología: datos, análisis climático y estadístico, y modelización, con una breve demostración. En quinto, los casos como evidencia de validación. Y por último, las conclusiones: contribución, límites y trabajo futuro. Esta misma ruta aparece arriba en cada diapositiva para que sepan en qué punto estamos.",
     notes: 'Este es el único índice. Mantener el orden del cuerpo principal de la memoria: introducción, estado de la técnica, arquitectura, metodología, casos y validación, conclusiones. El manual práctico es material complementario y la demostración se integra como apoyo, no como bloque que interrumpa el argumento.',
     bullets: [
       '1. Introducción — Origen, motivación, problema, hipótesis y objetivos',
@@ -301,6 +301,7 @@ export const slideLibrary: Slide[] = [
   // ════════════════════════════════════════════════════
 
   {
+    backup: true,
     id: 9,
     block: 'Estado del arte', blockColor: '#6366f1',
     title: 'Evolución de la investigación (2017–2026)',
@@ -533,8 +534,8 @@ export const slideLibrary: Slide[] = [
   {
     id: 19,
     block: 'Demo en vivo', blockColor: '#10b981',
-    title: 'Demostración guiada: ajuste bayesiano de extremos',
-    subtitle: 'Ajuste interactivo y bandas de credibilidad',
+    title: "Demostración guiada: GEV MAP e incertidumbre aproximada",
+    subtitle: "Máximos anuales, ajuste MAP y bandas mediante Fisher",
     estimatedMinutes: 2,
     url: '/tools/statistical',
     webMode: 'demo',
@@ -542,14 +543,9 @@ export const slideLibrary: Slide[] = [
     webPurpose: 'Enseñar una sola cadena científica completa, conectada con el caso Valencia.',
     webAction: 'Ejecutar un ajuste preparado y señalar resultado, incertidumbre y trazabilidad. Máximo 3 minutos.',
     type: 'normal',
-    script: 'En pantalla está la interfaz real de la herramienta. Voy a mostrar un solo recorrido, vinculado al análisis de extremos de Valencia. Primero cargo la serie preparada y fijo qué observaciones se consideran extremas. Después ejecuto el ajuste y señalo tres cosas: qué método se ha aplicado, qué cuantil de diseño produce y cuál es su banda de credibilidad. La comparación con máxima verosimilitud muestra por qué no debemos comunicar una cifra puntual: la banda forma parte del resultado. Si la conexión falla, mostraré la grabación de este mismo ajuste y su resultado ya calculado.',
-    notes: 'Si la API está disponible, cargar la serie preparada y ajustar. Resaltar la banda de credibilidad (área sombreada).\n\nPlan B obligatorio: llevar grabado en local un vídeo de 60–90 s de este mismo ajuste y una captura del resultado final con la banda de credibilidad. Ensayar el paso a la grabación sin pedir disculpas ni improvisar.',
-    bullets: [
-      '→ Selección de datos y extracción de máximos anuales o POT.',
-      '→ Ajuste numérico instantáneo de MLE y L-Momentos.',
-      '→ Inferencia bayesiana mediante MCMC (cadenas de Markov).',
-      '→ Visualización interactiva de la incertidumbre en el cuantil de diseño.',
-    ],
+    script: "Voy a mostrar el recorrido que ejecuta la herramienta web. Usaré su serie demo, que es sintética y sirve para explicar la operación; el análisis observado de Turís se presenta después en el caso Valencia. El umbral identifica eventos, pero la GEV se ajusta a los máximos anuales de la serie. La estimación puntual es MAP: el máximo de la distribución posterior. Las bandas se obtienen mediante una aproximación de Fisher; esta interfaz no ejecuta cadenas MCMC ni compara automáticamente MLE y L-momentos. Señalaré la estimación de diseño y sus bandas aproximadas. Si la API no responde, abriré el respaldo local: una figura ya calculada del notebook de Valencia, cuya metodología y procedencia están identificadas.",
+    notes: "Usar los datos demo sintéticos para el recorrido de la interfaz. No atribuirlos a Turís. La API ajusta GEV a máximos anuales con fit_gev_map y calcula bandas mediante fit_gev_fisher; el umbral controla la extracción de eventos, no las observaciones del ajuste GEV. Respaldo local disponible en /defensa-respaldo: resultado del notebook de Valencia, distinto del ajuste MAP de la interfaz.",
+    bullets: ["Serie demo sintética o CSV identificado.","Extracción de eventos por umbral; GEV sobre máximos anuales.","Ajuste puntual MAP y bandas aproximadas mediante Fisher.","Respaldo local: figura del notebook de Valencia, con método y procedencia."],
   },
 
   {
@@ -651,7 +647,7 @@ export const slideLibrary: Slide[] = [
     url: '/tools/bias',
     type: 'normal',
     backup: true,
-    script: 'Esta herramienta corrige el sesgo sistemático de un modelo climático frente a la observación mediante Quantile Delta Mapping y Scaled Distribution Mapping. Es el mismo módulo, sin ninguna modificación, que se reutilizó en las 414 combinaciones del Atlas de Panamá, en SIMPCCe y en el caso andino.',
+    script: 'Esta herramienta corrige el sesgo sistemático de un modelo climático frente a la observación mediante Quantile Delta Mapping y Scaled Distribution Mapping. Es el mismo módulo, sin ninguna modificación, que se reutilizó en las 414 combinaciones de análisis del Atlas de Panamá, en SIMPCCe y en el caso andino.',
     notes: 'Ilustra directamente la hipótesis H2 (modularidad): mismo código, cuatro casos de estudio distintos, cero cambios en el núcleo.',
     bullets: [
       '→ Comparación de funciones de distribución acumulada antes/después de corregir.',
@@ -711,10 +707,10 @@ export const slideLibrary: Slide[] = [
     subtitle: 'Dos trabajos sobre el mismo dominio que no deben confundirse',
     estimatedMinutes: 3,
     url: '/cases/manning-rugosidades', anchor: '#case-findings-heading', highlight: '#case-findings-heading',
-    figure: 'besaya_fig05_hydraulic_bifurcation_es.svg', figurePosition: 'right',
-    figureCaption: 'El collado topográfico a cota 60,1 m s.n.m. controla la activación del compartimento secundario',
-    secondaryFigure: 'besaya_fig04_intermodel_comparison.png',
-    secondaryFigureCaption: 'Las 995 realizaciones emparejadas muestran diferencias entre HEC-RAS y SFINCS',
+    figure: "besaya_fig04_intermodel_comparison.png", figurePosition: 'right',
+    figureCaption: "Las 995 realizaciones emparejadas muestran diferencias entre HEC-RAS y SFINCS",
+
+
     caseReference: 'Referencia: Memoria doctoral, cap. 8 (Besaya); manuscrito enviado a Environmental Modelling & Software',
     type: 'split',
     results: [
@@ -805,8 +801,6 @@ export const slideLibrary: Slide[] = [
     estimatedMinutes: 3,
     figure: 'fig_m30_metodologia_auditorio.svg', figurePosition: 'right',
     figureCaption: 'Cadena Calle 30: lluvia multisitio → HEC-HMS → selección MaxDiss → HEC-RAS 1D → reconstrucción k-NN',
-    secondaryFigure: 'fig_m30_localizacion.png',
-    secondaryFigureCaption: 'Ámbito de la infraestructura urbana y red de túneles analizada',
     caseReference: 'Referencia: Navas et al., Ingeniería del Agua (2024); proyecto FORESEE/Ferrovial; memoria, cap. 8',
     type: 'split',
     results: [
@@ -829,6 +823,7 @@ export const slideLibrary: Slide[] = [
   },
 
   {
+    backup: true,
     id: 32,
     block: 'Casos de estudio', blockColor: '#f59e0b',
     title: 'Calle 30 en HYDRA: hallazgos clave en la web',
@@ -866,8 +861,8 @@ export const slideLibrary: Slide[] = [
     title: 'Valencia: Análisis rápido ante la DANA del 2024',
     subtitle: 'Qué cambia en los estimadores de extremos cuando entra un evento sin precedente',
     estimatedMinutes: 3,
-    figure: 'fig_valencia_curvas_retorno.png', figurePosition: 'right',
-    figureCaption: 'Curva de retorno en Turís (8337X): el cuantil T100 bayesiano pasa de 260 a 952 mm al incluir la DANA',
+    figure: 'fig_valencia_t100_auditorio.svg', figurePosition: 'right',
+    figureCaption: 'Turís (8337X): T100 bayesiano pasa de 260 a 952 mm; las curvas completas están en los anexos',
     caseReference: 'Referencia: VIII Jornadas de Ingeniería del Agua (2025); memoria doctoral, cap. 8',
     type: 'split',
     results: [
@@ -890,6 +885,7 @@ export const slideLibrary: Slide[] = [
   },
 
   {
+    backup: true,
     id: 34,
     block: 'Casos de estudio', blockColor: '#f59e0b',
     title: 'Valencia en HYDRA: los números reales del caso',
@@ -928,10 +924,10 @@ export const slideLibrary: Slide[] = [
     subtitle: 'De variables climáticas a caudal, nivel del lago y extremos futuros',
     estimatedMinutes: 2,
     url: '/cases/lago-tanganica', anchor: '#case-findings-heading', highlight: '#case-findings-heading',
-    figure: 'fig_tanganika_variaciones_nivel.png', figurePosition: 'right',
-    figureCaption: 'Cambio del nivel extremo para T5-T500, cuatro horizontes y los escenarios SSP2-4.5 y SSP5-8.5',
-    secondaryFigure: 'fig_tanganika_proyecciones.png',
-    secondaryFigureCaption: 'Proyecciones climáticas que alimentan la estimación de niveles futuros',
+    figure: "fig_tanganica_resultados_auditorio.svg", figurePosition: 'right',
+    figureCaption: "T100 histórico: comparación de niveles por método; la proyección climática máxima corresponde a T5–T10, no a T100.",
+
+
     caseReference: 'Referencia: VIII Jornadas de Ingeniería del Agua (2025); manuscrito enviado a Ingeniería del Agua',
     type: 'split',
     results: [
@@ -990,22 +986,22 @@ export const slideLibrary: Slide[] = [
     url: '/cases/atlas-panama', anchor: '#case-findings-heading', highlight: '#case-findings-heading',
     figure: 'fig_panama_precipitacion.png', figurePosition: 'right',
     figureCaption: 'Precipitación media por subcuencas, obtenida mediante el flujo nacional de descarga, control de calidad e interpolación espacial',
-    caseReference: 'Referencia: Atlas Nacional de Riesgo de Inundación de Panamá; memoria doctoral, cap. 8',
+    caseReference: 'Fuente: Producto 3, Downscaling Estadístico (2023), pp. 3, 29–30; 414 = producto de sus dimensiones de análisis',
     type: 'split',
     results: [
       { value:'52', label:'cuencas con capas de inundación', implication:'escala nacional y tres períodos de retorno' },
-      { value:'414', label:'correcciones de sesgo', implication:'23 modelos, 2 SSP, 6 variables y 3 períodos' },
+      { value:'414', label:'combinaciones climáticas', implication:'23 GCM × 2 SSP × 3 variables × 3 horizontes' },
       { value:'1.464', label:'puntos costeros analizados', implication:'52 escenarios de nivel de agua total' },
     ],
     pyhydraRole:'Escala la misma arquitectura desde una cuenca piloto hasta un encargo nacional con cientos de combinaciones climáticas.',
     pyhydraModules:['pyhydra.data_sources','pyhydra.climate','NEOPRENE','SFINCS'],
-    processSteps:['73 estaciones','NEOPRENE + kriging','414 correcciones','LEM + SFINCS','Capas de riesgo'],
-    script: 'Encargado por el Ministerio de Ambiente de Panamá y el BID, este es el caso de mayor escala del catálogo: 52 cuencas de hasta 13.400 km² en ambas vertientes, más 1.464 puntos costeros analizados frente a inundación costera y viento extremo sobre el área metropolitana. NEOPRENE/STNSRP rellenó 73 estaciones nacionales (1950-2022), y el kriging universal generó una malla de 1 km. Sobre esta base se corrigieron automáticamente 414 combinaciones de sesgo (23 modelos CMIP6 × 2 escenarios SSP × 6 variables × 3 horizontes) mediante QDM y SDM, alimentando el modelo hidrológico LEM (NS=0,87) y ejecuciones masivas de SFINCS nacional, con modelos 2D de alta resolución en el área metropolitana.',
-    notes: 'Citado como navas2024ihcantabria/ihcantabria2023panama. Es el ejemplo explícito de la memoria para la hipótesis H1: automatización que hace viable un estudio regional antes inabordable de forma manual.\n\n❓ "¿Cómo se garantiza la trazabilidad de 414 combinaciones sin supervisión manual?" → El patrón adaptador (Módulo 4) registra versión, código de salida y validación de rangos por cada combinación ejecutada — la automatización no elimina la auditoría, la sistematiza.\n\nEn modo online: navegar a /cases/atlas-panama, con enlace directo al atlas interactivo público del Ministerio de Ambiente.\n\n⚠️ Revisar antes de la defensa: la memoria (cap. 8) da 414 correcciones como 23 modelos × 2 escenarios × 6 variables × 3 períodos, pero ese producto es 828. O el número es 828 o la descomposición es otra (por ejemplo, 3 variables o un solo escenario). Ten la cifra correcta preparada: es fácil que el tribunal haga la multiplicación.',
+    processSteps:['73 estaciones','NEOPRENE + kriging','414 combinaciones','LEM + SFINCS','Capas de riesgo'],
+    script: 'Encargado por el Ministerio de Ambiente de Panamá y el BID, este es el caso de mayor escala del catálogo: 52 cuencas de hasta 13.400 km² en ambas vertientes, más 1.464 puntos costeros analizados frente a inundación costera y viento extremo sobre el área metropolitana. NEOPRENE/STNSRP rellenó 73 estaciones nacionales (1950-2022), y el kriging universal generó una malla de 1 km. El informe de downscaling documenta 23 configuraciones GCM, dos escenarios SSP, tres variables —precipitación y temperaturas mínima y máxima— y tres horizontes. Su producto da 414 combinaciones de análisis, sobre las que se organiza la corrección de sesgo mediante QDM y SDM, alimentando el modelo hidrológico LEM (NS=0,87) y ejecuciones masivas de SFINCS nacional, con modelos 2D de alta resolución en el área metropolitana.',
+    notes: 'Producto 3 (2023), pp. 3, 29–30: 23 configuraciones GCM, 2 SSP, 3 variables y 3 horizontes. 414 es el producto de estas dimensiones, no un registro de ejecuciones ni de métodos duplicados. Citado como navas2024ihcantabria/ihcantabria2023panama. Es el ejemplo explícito de la memoria para la hipótesis H1: automatización que hace viable un estudio regional antes inabordable de forma manual.\n\n❓ "¿Cómo se garantiza la trazabilidad de cientos de combinaciones sin supervisión manual?" → El patrón adaptador (Módulo 4) registra versión, código de salida y validación de rangos por cada combinación ejecutada — la automatización no elimina la auditoría, la sistematiza.\n\nEn modo online: navegar a /cases/atlas-panama, con enlace directo al atlas interactivo público del Ministerio de Ambiente.',
     bullets: [
       '52 cuencas (hasta 13.400 km²) en ambas vertientes de Panamá, encargo del Ministerio de Ambiente y el BID.',
       'NEOPRENE/STNSRP rellena 73 estaciones nacionales (1950-2022); kriging universal a malla de 1 km.',
-      '414 combinaciones de corrección de sesgo (23 modelos CMIP6 × 2 SSP × 6 variables × 3 horizontes).',
+      '414 combinaciones de análisis: 23 GCM × 2 SSP × 3 variables × 3 horizontes.',
       'Modelo hidrológico LEM (NS=0,87) + SFINCS nacional y 2D de alta resolución en el área metropolitana.',
       '1.464 puntos costeros analizados en ambas costas frente a inundación costera.',
     ],
@@ -1018,10 +1014,8 @@ export const slideLibrary: Slide[] = [
     subtitle: 'Herramienta nacional para la red de embalses española, según la guía metodológica de Fundación Canal',
     estimatedMinutes: 2,
     url: '/cases/simpcce', anchor: '#case-findings-heading', highlight: '#case-findings-heading',
-    figure: 'fig_simpcce_interfaz.png', figurePosition: 'right',
-    figureCaption: 'Interfaz de entrenamiento y validación de la red neuronal de SIMPCCe',
-    secondaryFigure: 'fig_simpcce_resultados.png',
-    secondaryFigureCaption: 'Resultados de aportaciones y caudales mínimos bajo escenarios climáticos',
+    figure: 'fig_simpcce_resultados.png', figurePosition: 'right',
+    figureCaption: 'Resultados de aportaciones y caudales mínimos bajo escenarios climáticos; interfaz de entrenamiento en los anexos',
     caseReference: 'Referencia: Navas et al., Ingeniería del Agua (2025); guía de Fundación Canal; premio del Observatorio del Agua de la Fundación Botín',
     type: 'split',
     results: [
@@ -1112,33 +1106,13 @@ export const slideLibrary: Slide[] = [
   {
     id: 39.7,
     block: 'Contribuciones científicas', blockColor: '#0ea5e9',
-    title: 'Qué es mío en cada trabajo de la línea',
-    subtitle: 'Rol del doctorando en cada publicación, según la tabla de autoría del capítulo 9',
+    title: "Mi contribución científica y tecnológica",
+    subtitle: "Métodos aplicados, trabajo colaborativo y software propio",
     estimatedMinutes: 2,
     type: 'normal',
-    script: 'Como parte de la evidencia procede de trabajos compartidos, la memoria delimita expresamente mi contribución, y esta tabla la resume. Soy primer autor en siete trabajos de la línea: la formulación inicial de 2017, Besaya, Mallorca, Calle 30, SIMPCCe, Tanganica y el manuscrito de rugosidad del Besaya. En los trabajos andinos contribuí a la calibración automática y al procesamiento climático; en NEOPRENE, al desarrollo, validación y documentación del software; en el trabajo de downscaling de EGU, a la generación estocástica y la reconstrucción; y en Valencia, a los módulos de extremos y análisis regional y a la ejecución de los cálculos. El trabajo de cópulas vine del grupo se cita como extensión, sin autoría mía. Finalmente, pyhydra e HYDRA son software de autor único, diseñado, desarrollado y documentado como parte de la tesis.',
-    notes: 'Esta diapositiva responde preventivamente a dos preguntas: qué resultados pertenecen al doctorando y cómo se relacionan las publicaciones previas con la contribución doctoral. No atribuirse el trabajo Vine cópulas/GPR de 2026: la memoria lo cita como línea de extensión sin autoría del doctorando.',
-    mathBlock: `
-      <table class="thesis-matrix authorship-matrix">
-        <thead><tr><th>Trabajo</th><th>Posición</th><th>Contribución del doctorando</th></tr></thead>
-        <tbody>
-          <tr><th scope="row">V JIA (2017)</th><td class="tm-yes">Primer autor</td><td>Conceptualización de la cadena estocástica, análisis y redacción</td></tr>
-          <tr><th scope="row">Besaya, ROP (2018)</th><td class="tm-yes">Primer autor</td><td>Metodología, modelización hidrológico-hidráulica, impactos y redacción</td></tr>
-          <tr><th scope="row">Mallorca (2019)</th><td class="tm-yes">Primer autor</td><td>Downscaling híbrido, geoestadística, simulación y redacción</td></tr>
-          <tr><th scope="row">Andes, BID e IA (2019–2020)</th><td class="tm-part">Coautor</td><td>Calibración automática y procesamiento climático</td></tr>
-          <tr><th scope="row">NEOPRENE, GMD (2023)</th><td class="tm-part">Segundo autor</td><td>Desarrollo, validación y documentación del software</td></tr>
-          <tr><th scope="row">Calle 30, IA (2024)</th><td class="tm-yes">Primer autor</td><td>Metodología completa, automatización HEC-HMS/HEC-RAS y redacción</td></tr>
-          <tr><th scope="row">Downscaling, EGU (2024)</th><td class="tm-part">Coautor</td><td>Generación estocástica y reconstrucción integradas en pyhydra</td></tr>
-          <tr><th scope="row">SIMPCCe, IA (2025)</th><td class="tm-yes">Primer autor</td><td>Diseño y desarrollo íntegro, validación nacional y redacción</td></tr>
-          <tr><th scope="row">Valencia (2025)</th><td class="tm-part">Segundo autor</td><td>Módulos de extremos y AFR y ejecución de los cálculos</td></tr>
-          <tr><th scope="row">Tanganica (2025)</th><td class="tm-yes">Primer autor</td><td>Metodología, datos globales, aprendizaje automático y redacción</td></tr>
-          <tr><th scope="row">Rugosidad Besaya, EMS (2025)</th><td class="tm-yes">Primer autor</td><td>Ensemble Monte Carlo, automatización de ambos motores y redacción</td></tr>
-          <tr><th scope="row">Vine cópulas y GPR (2026)</th><td class="tm-no">Sin autoría</td><td>Trabajo del grupo citado como extensión; no es contribución de la tesis</td></tr>
-          <tr><th scope="row">pyhydra e HYDRA, Zenodo (2026)</th><td class="tm-yes">Autor único</td><td>Diseño, desarrollo, documentación y publicación del software</td></tr>
-        </tbody>
-      </table>
-      <p class="thesis-matrix-legend">Fuente: memoria, cap. 9, tabla de rol del doctorando en las publicaciones de la línea.</p>
-    `,
+    script: "Mi contribución se organiza en tres responsabilidades. En los trabajos que lidero, desarrollé la metodología aplicada, la modelización y el análisis de resultados. En las colaboraciones, mi aportación está delimitada: calibración hidrológica, procesamiento climático, análisis de extremos y desarrollo de software. Finalmente, diseñé, desarrollé, documenté y publiqué pyhydra e HYDRA como software de autor único. La tabla completa de autoría queda disponible en los anexos para precisar cualquier trabajo concreto.",
+    notes: "Presentar tres responsabilidades y remitir a /defensa-anexos para la tabla completa de autoría.",
+    mathBlock: "<table class=\"thesis-matrix authorship-matrix\"><thead><tr><th>Responsabilidad</th><th>Aportación</th></tr></thead><tbody><tr><th>Trabajos liderados</th><td>Metodología, simulación, análisis y redacción</td></tr><tr><th>Colaboraciones</th><td>Calibración, clima, extremos y software, con rol delimitado</td></tr><tr><th>pyhydra e HYDRA</th><td>Diseño, desarrollo, documentación y publicación como autor único</td></tr></tbody></table><p class=\"thesis-matrix-legend\">La tabla completa por publicación está disponible en los anexos.</p>",
     bullets: [
       'Siete trabajos como primer autor, cuatro con aportación delimitada y software de autor único.',
     ],
@@ -1156,7 +1130,7 @@ export const slideLibrary: Slide[] = [
     estimatedMinutes: 3,
     type: 'normal',
     script: 'Las hipótesis se cierran con evidencia acumulada, y el esquema muestra cuál y con qué alcance. Para la primera, la automatización: campañas como las 1.990 simulaciones del Besaya, los 10.000 años sintéticos de IAHR 2022 o los miles de eventos de Calle 30, encadenados sin intervención manual. Es una prueba de viabilidad; la medida del ahorro de tiempo queda pendiente. Para la segunda, la modularidad: la matriz muestra los mismos bloques en los nueve casos. Para la tercera, la incertidumbre: en el ejemplo, la cadena estocástica da un caudal un 33 por ciento superior al del método IDF, y en Valencia el cuantil T100 pasa de 260 a 952 milímetros al incorporar la DANA. El resultado no es eliminar la incertidumbre, sino representarla, propagarla y auditarla de forma más consistente.',
-    notes: 'Explicar primero la evidencia y solo después citar el caso que la documenta: H1 — infraestructura urbana y atlas nacional; H2 — gestión de embalses, escala regional y clima; H3 — comparación metodológica y evento sin precedente.\n\n❓ «¿Cuánto tiempo ahorra la automatización?» → La memoria no aporta una medida comparativa. Responder con lo que sí puede afirmarse (1.990 simulaciones hidráulicas emparejadas en Besaya, 414 correcciones de sesgo en Panamá, encadenadas sin intervención manual) y reconocer que medir el ahorro frente a un flujo manual es trabajo futuro. Si tienes una estimación propia (horas por caso antes y después), dila aquí.',
+    notes: 'Explicar primero la evidencia y solo después citar el caso que la documenta: H1 — infraestructura urbana y atlas nacional; H2 — gestión de embalses, escala regional y clima; H3 — comparación metodológica y evento sin precedente.\n\n❓ «¿Cuánto tiempo ahorra la automatización?» → La memoria no aporta una medida comparativa. Responder con lo que sí puede afirmarse (1.990 simulaciones hidráulicas emparejadas en Besaya, cientos de correcciones de sesgo en Panamá, encadenadas sin intervención manual) y reconocer que medir el ahorro frente a un flujo manual es trabajo futuro. Si tienes una estimación propia (horas por caso antes y después), dila aquí.',
     bullets: [
       'H1: automatización viable: cadenas de cientos o miles de ejecuciones sin intervención manual entre etapas.',
       'H2: arquitectura reutilizable: los mismos bloques en problemas climáticos, regionales, urbanos y nacionales.',
@@ -1293,6 +1267,7 @@ export const slideLibrary: Slide[] = [
   },
 
   {
+    backup: true,
     id: 46,
     block: 'Motivación', blockColor: '#3b82f6',
     title: 'Qué necesita una modelación estocástica de inundaciones',
@@ -1333,6 +1308,95 @@ export const slideLibrary: Slide[] = [
       'El valor conjunto reside en conservar la trazabilidad desde la entrada hasta la cifra final.',
     ],
   },
+
+{
+  "id": 55,
+  "block": "Contribuciones científicas",
+  "blockColor": "#0ea5e9",
+  "title": "Anexo: autoría completa de la línea de investigación",
+  "subtitle": "Rol del doctorando en cada publicación, según la tabla de autoría del capítulo 9",
+  "estimatedMinutes": 2,
+  "type": "normal",
+  "script": "Como parte de la evidencia procede de trabajos compartidos, la memoria delimita expresamente mi contribución, y esta tabla la resume. Soy primer autor en siete trabajos de la línea: la formulación inicial de 2017, Besaya, Mallorca, Calle 30, SIMPCCe, Tanganica y el manuscrito de rugosidad del Besaya. En los trabajos andinos contribuí a la calibración automática y al procesamiento climático; en NEOPRENE, al desarrollo, validación y documentación del software; en el trabajo de downscaling de EGU, a la generación estocástica y la reconstrucción; y en Valencia, a los módulos de extremos y análisis regional y a la ejecución de los cálculos. El trabajo de cópulas vine del grupo se cita como extensión, sin autoría mía. Finalmente, pyhydra e HYDRA son software de autor único, diseñado, desarrollado y documentado como parte de la tesis.",
+  "notes": "Esta diapositiva responde preventivamente a dos preguntas: qué resultados pertenecen al doctorando y cómo se relacionan las publicaciones previas con la contribución doctoral. No atribuirse el trabajo Vine cópulas/GPR de 2026: la memoria lo cita como línea de extensión sin autoría del doctorando.",
+  "mathBlock": "\n      <table class=\"thesis-matrix authorship-matrix\">\n        <thead><tr><th>Trabajo</th><th>Posición</th><th>Contribución del doctorando</th></tr></thead>\n        <tbody>\n          <tr><th scope=\"row\">V JIA (2017)</th><td class=\"tm-yes\">Primer autor</td><td>Conceptualización de la cadena estocástica, análisis y redacción</td></tr>\n          <tr><th scope=\"row\">Besaya, ROP (2018)</th><td class=\"tm-yes\">Primer autor</td><td>Metodología, modelización hidrológico-hidráulica, impactos y redacción</td></tr>\n          <tr><th scope=\"row\">Mallorca (2019)</th><td class=\"tm-yes\">Primer autor</td><td>Downscaling híbrido, geoestadística, simulación y redacción</td></tr>\n          <tr><th scope=\"row\">Andes, BID e IA (2019–2020)</th><td class=\"tm-part\">Coautor</td><td>Calibración automática y procesamiento climático</td></tr>\n          <tr><th scope=\"row\">NEOPRENE, GMD (2023)</th><td class=\"tm-part\">Segundo autor</td><td>Desarrollo, validación y documentación del software</td></tr>\n          <tr><th scope=\"row\">Calle 30, IA (2024)</th><td class=\"tm-yes\">Primer autor</td><td>Metodología completa, automatización HEC-HMS/HEC-RAS y redacción</td></tr>\n          <tr><th scope=\"row\">Downscaling, EGU (2024)</th><td class=\"tm-part\">Coautor</td><td>Generación estocástica y reconstrucción integradas en pyhydra</td></tr>\n          <tr><th scope=\"row\">SIMPCCe, IA (2025)</th><td class=\"tm-yes\">Primer autor</td><td>Diseño y desarrollo íntegro, validación nacional y redacción</td></tr>\n          <tr><th scope=\"row\">Valencia (2025)</th><td class=\"tm-part\">Segundo autor</td><td>Módulos de extremos y AFR y ejecución de los cálculos</td></tr>\n          <tr><th scope=\"row\">Tanganica (2025)</th><td class=\"tm-yes\">Primer autor</td><td>Metodología, datos globales, aprendizaje automático y redacción</td></tr>\n          <tr><th scope=\"row\">Rugosidad Besaya, EMS (2025)</th><td class=\"tm-yes\">Primer autor</td><td>Ensemble Monte Carlo, automatización de ambos motores y redacción</td></tr>\n          <tr><th scope=\"row\">Vine cópulas y GPR (2026)</th><td class=\"tm-no\">Sin autoría</td><td>Trabajo del grupo citado como extensión; no es contribución de la tesis</td></tr>\n          <tr><th scope=\"row\">pyhydra e HYDRA, Zenodo (2026)</th><td class=\"tm-yes\">Autor único</td><td>Diseño, desarrollo, documentación y publicación del software</td></tr>\n        </tbody>\n      </table>\n      <p class=\"thesis-matrix-legend\">Fuente: memoria, cap. 9, tabla de rol del doctorando en las publicaciones de la línea.</p>\n    ",
+  "bullets": [
+    "Siete trabajos como primer autor, cuatro con aportación delimitada y software de autor único."
+  ],
+  "backup": true
+},
+{
+  "id": 56,
+  "backup": true,
+  "type": "figure",
+  "block": "Casos de estudio",
+  "blockColor": "#f59e0b",
+  "title": "Anexo: bifurcación hidráulica del Besaya",
+  "estimatedMinutes": 1,
+  "figure": "besaya_fig05_hydraulic_bifurcation_es.svg",
+  "figureCaption": "El collado topográfico a cota 60,1 m s.n.m. controla la activación del compartimento secundario",
+  "script": "El collado a cota 60,1 metros controla la activación del compartimento secundario de 7,4 hectáreas. Esta figura permite explicar el mecanismo topográfico que origina la respuesta bimodal."
+},
+{
+  "id": 57,
+  "backup": true,
+  "type": "figure",
+  "block": "Casos de estudio",
+  "blockColor": "#f59e0b",
+  "title": "Anexo: proyecciones de niveles del lago Tanganica",
+  "estimatedMinutes": 1,
+  "figure": "fig_tanganika_variaciones_nivel.png",
+  "figureCaption": "Cambio del nivel extremo para T5-T500, cuatro horizontes y los escenarios SSP2-4.5 y SSP5-8.5",
+  "script": "El problema de Tanganica no es simular una inundación 2D, sino obtener cotas extremas de diseño para el puerto de Kalundu con una serie de altimetría satelital corta, de 1992 a 2023. La cadena tiene cinco pasos y conviene no mezclarlos. Primero, las variables climáticas de ERA5 se reducen mediante componentes principales y AdaBoost estima los caudales mensuales de entrada al lago. Segundo, esos caudales se convierten en niveles mediante una relación empírica N(Q): K-means separa tres regímenes de caudal y se ajustan funciones distintas para representar su respuesta no lineal. Tercero, 19 modelos CMIP6, bajo SSP2-4.5 y SSP5-8.5, incorporan la señal climática mediante el método delta mensual. Cuarto, el bootstrap remuestrea los residuos de la relación caudal-nivel, no los de AdaBoost, y genera aproximadamente 20.000 años simulados. Finalmente, los máximos anuales sintéticos proporcionan cambios de nivel por percentiles empíricos, que se suman a los niveles históricos ajustados con GEV. Para T100, GEV y Weibull sitúan el nivel histórico entre 771,55 y 771,76 m, mientras el bootstrap produce 770,19 m. El mayor incremento futuro supera 0,9 m en 2041-2060 para T5-T10; a finales de siglo queda por debajo de 0,6 m para T100-T500."
+},
+{
+  "id": 58,
+  "backup": true,
+  "type": "figure",
+  "block": "Casos de estudio",
+  "blockColor": "#f59e0b",
+  "title": "Anexo: forzamientos climáticos de Tanganica",
+  "estimatedMinutes": 1,
+  "figure": "fig_tanganika_proyecciones.png",
+  "figureCaption": "Proyecciones climáticas que alimentan la estimación de niveles futuros",
+  "script": "Estas proyecciones alimentan la estimación de niveles futuros. Se presentan como forzamientos del modelo, no como observaciones futuras."
+},
+{
+  "id": 59,
+  "block": "Casos de estudio",
+  "blockColor": "#f59e0b",
+  "title": "Anexo: red de túneles de Calle 30",
+  "type": "figure",
+  "figure": "fig_m30_localizacion.png",
+  "figureCaption": "Ámbito de la infraestructura urbana y red de túneles analizada",
+  "estimatedMinutes": 1,
+  "script": "Este mapa sitúa el dominio del caso Calle 30. La cadena mostrada en la presentación conecta lluvia multisitio, HEC-HMS y HEC-RAS 1D; el mapa delimita la infraestructura a la que se asigna la frecuencia del calado.",
+  "backup": true
+},
+{
+  "id": 60,
+  "block": "Casos de estudio",
+  "blockColor": "#f59e0b",
+  "title": "Anexo: curvas completas de Valencia",
+  "type": "figure",
+  "figure": "fig_valencia_curvas_retorno.png",
+  "figureCaption": "Turís y Carlet, antes y después de incorporar la DANA",
+  "estimatedMinutes": 1,
+  "script": "Aquí están las curvas completas que sustentan la síntesis del caso Valencia. Los dos paneles superiores corresponden a Turís, antes y después de la DANA; los inferiores corresponden a Carlet. La comparación muestra tanto el desplazamiento de los niveles de retorno como el cambio en la incertidumbre entre estimadores.",
+  "backup": true
+},
+{
+  "id": 61,
+  "block": "Casos de estudio",
+  "blockColor": "#f59e0b",
+  "title": "Anexo: entrenamiento de SIMPCCe",
+  "type": "figure",
+  "figure": "fig_simpcce_interfaz.png",
+  "figureCaption": "Interfaz de entrenamiento y validación de la red neuronal",
+  "estimatedMinutes": 1,
+  "script": "Esta interfaz documenta el entrenamiento y la validación de la red neuronal de SIMPCCe. La presentación principal muestra los resultados de aportaciones y caudales mínimos; aquí puedo explicar cómo se configura y valida el modelo que los produce.",
+  "backup": true
+}
 ];
 
 const presentationRank = (slide: Slide) => {
@@ -1362,19 +1426,17 @@ const presentationRank = (slide: Slide) => {
   return slide.id;
 };
 
+// One pacing estimate feeds the deck, presenter and rehearsal guide.
+function pacingMinutes(slide: Slide): number {
+  const speech = slide.script.trim().split(/\s+/).length / 115;
+  return Math.round((speech + 0.15 + (slide.figure ? 0.15 : 0) + (slide.webMode === 'demo' ? 1.5 : 0)) * 10) / 10;
+}
+
 export const slides = slideLibrary
   .filter(slide => !slide.backup)
-  .sort((a, b) => presentationRank(a) - presentationRank(b));
-export const backupSlides = slideLibrary.filter(slide => slide.backup);
+  .sort((a, b) => presentationRank(a) - presentationRank(b))
+  .map(slide => ({ ...slide, estimatedMinutes: pacingMinutes(slide) }));
+export const backupSlides = slideLibrary.filter(slide => slide.backup).map(slide => ({ ...slide, estimatedMinutes: pacingMinutes(slide) }));
 export const totalSlides = slides.length;
-// Estimate the oral run from the actual speaker script instead of summing the
-// conservative per-slide notes (which inflated the 50-slide deck to 97 min).
-// Allow 115 spoken words/min, 9 s to move between slides, 9 s to read a figure,
-// and 90 s for the one live demonstration. Rehearsal remains the final check.
-export const totalMinutes = Math.round(slides.reduce((minutes, slide) => {
-  const spokenMinutes = slide.script.trim().split(/\s+/).length / 115;
-  const transitionMinutes = 0.15;
-  const figureMinutes = slide.figure ? 0.15 : 0;
-  const demoMinutes = slide.webMode === 'demo' ? 1.5 : 0;
-  return minutes + spokenMinutes + transitionMinutes + figureMinutes + demoMinutes;
-}, 0));
+// Includes speech at 115 words/min, transitions, figures and a brief live demo.
+export const totalMinutes = Math.round(slides.reduce((minutes, slide) => minutes + slide.estimatedMinutes, 0));

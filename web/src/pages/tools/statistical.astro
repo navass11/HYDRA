@@ -78,6 +78,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
             </svg>
           </button>
           <div id="error-box" class="hidden bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700"></div>
+          <a href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/defensa-respaldo`} class="text-sm text-hydra-700 underline">Abrir respaldo local de la defensa</a>
         </div>
 
         <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-5 text-sm text-indigo-900 space-y-2">
@@ -103,11 +104,12 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
           <div class="grid lg:grid-cols-[1fr_360px] gap-8">
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
               <h3 class="font-semibold text-gray-800 mb-1">Niveles de retorno</h3>
-              <p class="text-sm text-gray-400 mb-4">Estimación MAP y banda aproximada 5-95 %.</p>
+              <p class="text-sm text-gray-400 mb-4">Estimación puntual MAP y banda P5–P95 mediante Fisher alrededor del ajuste MLE. La banda no es una posterior MCMC.</p>
               <div id="chart-return-levels" class="h-80"></div>
             </div>
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
               <h3 class="font-semibold text-gray-800 mb-4">Parámetros GEV</h3>
+              <p class="text-sm text-gray-400 mb-4">Valor puntual MAP; percentiles de la aproximación de Fisher.</p>
               <div id="params-box" class="space-y-3"></div>
             </div>
           </div>
@@ -231,7 +233,9 @@ runBtn.addEventListener('click', async () => {
     }
     renderResults(await res.json());
   } catch (err: any) {
-    showError(err.message ?? 'Error desconocido');
+    showError(err instanceof TypeError
+      ? 'No se puede conectar con el servicio de cálculo. Comprueba que está disponible y vuelve a ajustar; para la defensa puedes abrir el respaldo local.'
+      : err.message ?? 'No se ha podido completar el ajuste. Revisa los datos e inténtalo de nuevo.');
   } finally {
     setRunning(false);
   }
@@ -280,6 +284,9 @@ function renderResults(data: any) {
   const point = periods.map(t => data.return_levels[String(t)]);
   const q05 = periods.map(t => data.return_level_bands[String(t)]?.q05);
   const q95 = periods.map(t => data.return_level_bands[String(t)]?.q95);
+  const dark = document.documentElement.classList.contains('dark');
+  const chartFont = { ...layoutBase.font, color: dark ? '#cbd5e1' : '#475569' };
+  const chartGrid = dark ? '#334155' : '#e2e8f0';
 
   Plotly.newPlot('chart-return-levels', [
     { x: periods, y: q95, mode: 'lines', line: { width: 0 }, showlegend: false, hoverinfo: 'skip' },
@@ -287,8 +294,9 @@ function renderResults(data: any) {
     { x: periods, y: point, mode: 'lines+markers', line: { color: '#0d9488', width: 3 }, marker: { size: 7 }, name: 'MAP' },
   ], {
     ...layoutBase,
-    xaxis: { title: 'Periodo de retorno (años)', type: 'log', gridcolor: '#f3f4f6' },
-    yaxis: { title: s.variable === 'precipitation' ? 'mm/día' : 'caudal', gridcolor: '#f3f4f6' },
+    font: chartFont,
+    xaxis: { title: 'Periodo de retorno (años)', type: 'log', tickmode: 'array', tickvals: periods, ticktext: periods.map(String), gridcolor: chartGrid },
+    yaxis: { title: s.variable === 'precipitation' ? 'mm/día' : 'caudal', gridcolor: chartGrid },
     legend: { orientation: 'h', y: -0.22 },
   }, { responsive: true, displayModeBar: false });
 
@@ -300,8 +308,9 @@ function renderResults(data: any) {
     name: 'Máximo anual',
   }], {
     ...layoutBase,
-    xaxis: { title: 'Año', gridcolor: '#f3f4f6' },
-    yaxis: { title: s.variable === 'precipitation' ? 'mm/día' : 'valor', gridcolor: '#f3f4f6' },
+    font: chartFont,
+    xaxis: { title: 'Año', gridcolor: chartGrid },
+    yaxis: { title: s.variable === 'precipitation' ? 'mm/día' : 'valor', gridcolor: chartGrid },
   }, { responsive: true, displayModeBar: false });
 
   document.getElementById('events-table')!.innerHTML = data.events.slice(0, 20).map((evt: any) => `

@@ -1,7 +1,10 @@
 ---
 // defensa-offline.astro — Standalone offline thesis defense presentation (no internet needed)
 import Layout from '../layouts/Layout.astro';
-import { slides, totalSlides, totalMinutes } from '../data/slides';
+import { slides as mainSlides, backupSlides } from '../data/slides';
+const reserve = Astro.props.reserve === true;
+const slides = reserve ? backupSlides : mainSlides;
+const totalSlides = slides.length;
 const base = import.meta.env.BASE_URL;
 const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
 const routeStages = ['Introducción','Estado de la técnica','Arquitectura','Metodología','Casos y validación','Conclusiones'];
@@ -61,10 +64,10 @@ const visualSlides: Record<number, { kind: string; metric?: string; figure?: str
     {label:'Espacio',detail:'kriging e interpolación'}, {label:'Diseño',detail:'curvas IDF'},
     {label:'Modelos',detail:'sensibilidad hidráulica'} ] },
   19: { kind:'flow', figure:'shot_herramienta_gev.jpg', metric:'El método descrito se ejecuta desde la plataforma, con su incertidumbre', items:[
-    {label:'Datos',detail:'serie de Turís y selección de máximos anuales o POT'},
-    {label:'Ajuste clásico',detail:'máxima verosimilitud y L-momentos'},
-    {label:'Ajuste bayesiano',detail:'MCMC con priors documentados'},
-    {label:'Resultado',detail:'cuantil de diseño con banda de credibilidad'} ] },
+    {label:'Datos',detail:'serie demo sintética o CSV identificado'},
+    {label:'Máximos anuales',detail:'la GEV se ajusta a máximos por año'},
+    {label:'Ajuste MAP',detail:'máximo de la posterior, sin MCMC'},
+    {label:'Resultado',detail:'cuantil y bandas aproximadas mediante Fisher'} ] },
   39.5: { kind:'layers', figure:'esq_casos_escala.svg', metric:'Tres casos se reproducen hoy con notebooks; los nueve aportan resultados contrastables', items:[
     {label:'Principio común',detail:'frecuencia estimada sobre el impacto'},
     {label:'Contextos distintos',detail:'escalas, climas y modelos diferentes'},
@@ -88,11 +91,11 @@ const visualSlides: Record<number, { kind: string; metric?: string; figure?: str
     {label:'Escenarios',detail:'generar combinaciones plausibles'},
     {label:'Respuesta física',detail:'simular lluvia, caudal y calado'},
     {label:'Impacto',detail:'estimar frecuencia para decidir'} ] },
-  48: { kind:'evidence', figures:[{src:'fig_iahr2022_comparativa_es.svg',caption:'IAHR 2022: caudal estocástico frente a IDF'},{src:'fig_valencia_curvas_retorno.png',caption:'Valencia: curva de retorno en Turís'},{src:'besaya_fig04_intermodel_comparison.png',caption:'Besaya: HEC-RAS frente a SFINCS'},{src:'fig_panama_precipitacion.png',caption:'Panamá: precipitación por subcuencas'}], metric:'Cuatro resultados distintos sostenidos por una misma cadena reproducible', items:[
+  48: { kind:'evidence', figures:[{src:'fig_iahr2022_comparativa_es.svg',caption:'IAHR 2022: caudal estocástico frente a IDF'},{src:'fig_valencia_t100_auditorio.svg',caption:'Valencia: actualización de T100 en Turís'},{src:'besaya_fig04_intermodel_comparison.png',caption:'Besaya: HEC-RAS frente a SFINCS'},{src:'fig_panama_precipitacion.png',caption:'Panamá: precipitación por subcuencas'}], metric:'Cuatro resultados distintos sostenidos por una misma cadena reproducible', items:[
     {label:'+30–37 %',detail:'caudal de diseño estocástico frente al convencional (IAHR 2022)'},
     {label:'+266 %',detail:'actualización de T100 al incorporar la DANA (Valencia)'},
     {label:'1.990',detail:'simulaciones hidráulicas emparejadas (Besaya)'},
-    {label:'414',detail:'correcciones climáticas automáticas (Panamá)'} ] },
+    {label:'414',detail:'combinaciones de análisis climático (Panamá)'} ] },
   41: { kind:'layers', figure:'esq_niveles_contribucion.svg', metric:'Lo original es la integración; los métodos de base son conocimiento previo', items:[
     {label:'Base científica',detail:'metodologías preexistentes incorporadas'},
     {label:'Desarrollo',detail:'módulos, adaptadores y pipelines'},
@@ -112,7 +115,8 @@ const visualSlides: Record<number, { kind: string; metric?: string; figure?: str
 ---
 
 <Layout
-  title="Defensa Tesis — HYDRA (Offline)"
+  title={reserve ? 'Anexos de defensa — HYDRA' : 'Defensa Tesis — HYDRA (Offline)'}
+  loadWebFonts={false}
   description="Presentación standalone de la tesis doctoral HYDRA con figuras"
 >
 
@@ -1989,7 +1993,7 @@ const visualSlides: Record<number, { kind: string; metric?: string; figure?: str
   }
 </style>
 
-<div class="pres-shell" id="pres-shell">
+<div class="pres-shell" id="pres-shell" data-reserve={reserve ? 'true' : 'false'}>
 
   <!-- Top bar -->
   <div class="pres-topbar">
@@ -2403,7 +2407,11 @@ const visualSlides: Record<number, { kind: string; metric?: string; figure?: str
 </div>
 
 <script>
-  import { slides, totalSlides } from '../data/slides.ts';
+  import { slides as mainSlides, backupSlides } from '../data/slides.ts';
+  const reserve = document.getElementById('pres-shell')?.dataset.reserve === 'true';
+  const slides = reserve ? backupSlides : mainSlides;
+  const totalSlides = slides.length;
+  const storageKey = reserve ? 'defensa-anexos-slide' : 'defensa-offline-slide';
 
   // ── State ──
   let current = 0;
@@ -2415,6 +2423,21 @@ const visualSlides: Record<number, { kind: string; metric?: string; figure?: str
   // Its own chrome is hidden and it must not clobber the standalone offline-mode
   // progress saved under the same localStorage key.
   const isPreview = new URLSearchParams(window.location.search).get('preview') === '1';
+  if (!isPreview) {
+    const stage = document.querySelector<HTMLElement>('.pres-main')!;
+    const canvas = document.getElementById('slide-viewport')!;
+    const fitCanvas = () => {
+      const scale = Math.min(stage.clientWidth / 1920, stage.clientHeight / 1080);
+      Object.assign(canvas.style, {
+        position: 'absolute', width: '1920px', height: '1080px',
+        left: `${(stage.clientWidth - 1920 * scale) / 2}px`,
+        top: `${(stage.clientHeight - 1080 * scale) / 2}px`,
+        transformOrigin: 'top left', transform: `scale(${scale})`,
+      });
+    };
+    new ResizeObserver(fitCanvas).observe(stage);
+    fitCanvas();
+  }
   if (isPreview) {
     document.getElementById('pres-shell')?.classList.add('is-preview');
     document.querySelectorAll('.slide').forEach(slide => slide.classList.remove('active', 'exit-left'));
@@ -2516,7 +2539,7 @@ const visualSlides: Record<number, { kind: string; metric?: string; figure?: str
     }
 
     // Save state
-    if (!isPreview) localStorage.setItem('defensa-offline-slide', String(idx));
+    if (!isPreview) localStorage.setItem(storageKey, String(idx));
   }
 
   // ── Navigation ──
@@ -2574,7 +2597,7 @@ const visualSlides: Record<number, { kind: string; metric?: string; figure?: str
   btnFullscreenEl.addEventListener('click', toggleFullscreen);
 
   // ── Restore state ──
-  const stored = localStorage.getItem('defensa-offline-slide');
+  const stored = localStorage.getItem(storageKey);
   const urlParams = new URLSearchParams(window.location.search);
   const urlSlide = urlParams.get('slide');
   const initSlide = urlSlide ? parseInt(urlSlide) : (stored ? parseInt(stored) : 0);

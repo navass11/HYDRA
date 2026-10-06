@@ -5,10 +5,12 @@ import { phraseTranslations } from '../i18n/phrases';
 export interface Props {
   title?: string;
   description?: string;
+  loadWebFonts?: boolean;
 }
 const {
   title = 'HYDRA',
   description = 'Librería modular de Python para análisis hidrológico y climático',
+  loadWebFonts = true,
 } = Astro.props;
 
 const base = import.meta.env.BASE_URL;
@@ -22,12 +24,14 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <title>{title}</title>
+    {loadWebFonts && <>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
+    </>}
     <link rel="icon" type="image/png" href={asset('/favicon.png')} />
     <script is:inline>
       (() => {
