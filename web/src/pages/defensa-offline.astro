@@ -3,7 +3,7 @@
 import Layout from '../layouts/Layout.astro';
 import { slides as mainSlides, backupSlides } from '../data/slides';
 const reserve = Astro.props.reserve === true;
-const slides = reserve ? backupSlides : mainSlides;
+const slides = (reserve ? backupSlides : mainSlides).map(slide => ({ ...slide, script: slide.offlineScript ?? slide.script }));
 const totalSlides = slides.length;
 const base = import.meta.env.BASE_URL;
 const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
@@ -125,6 +125,22 @@ const visualSlides: Record<number, { kind: string; metric?: string; figure?: str
   body { overflow: hidden !important; background: #020617 !important; margin: 0; padding: 0; }
   header, footer { display: none !important; }
   main { padding: 0 !important; margin: 0 !important; }
+  .offline-capture-controls { display:flex; align-items:center; gap:14px; margin:0 0 16px; }
+  .offline-step { padding:10px 18px; border:1px solid #93b8b6; border-radius:6px; color:#254b53; background:transparent; font-size:22px; cursor:pointer; }
+  .offline-step.selected { background:#285b62; color:white; }
+  .offline-step:focus-visible { outline:4px solid #ba7551; outline-offset:3px; }
+  .offline-capture-controls span { margin-left:auto; color:#52696e; font-size:20px; }
+  .offline-captures { flex:1; min-height:0; }
+  .offline-capture { margin:0; height:100%; display:flex; flex-direction:column; align-items:center; gap:10px; }
+  .offline-capture[hidden] { display:none; }
+  .offline-capture img { flex:1; min-height:0; width:100%; object-fit:contain; }
+  .offline-capture figcaption { font-size:22px; color:#385860; text-align:center; }
+  .pres-shell .slide-id-55 .slide-subtitle { max-width:none !important; }
+  .pres-shell .slide-id-55 .authorship-matrix { font-size:24px !important; line-height:1.3; }
+  .pres-shell .slide-id-55 .authorship-matrix th, .pres-shell .slide-id-55 .authorship-matrix td { padding:8px 14px; }
+  .pres-shell .slide-id-55 .authorship-matrix th:first-child { width:26%; }
+  .pres-shell .slide-id-55 .authorship-matrix th:nth-child(2) { width:14%; }
+  .pres-shell .slide-id-55 .thesis-matrix-legend { font-size:20px; }
 </style>
 
 <style>
@@ -211,6 +227,7 @@ const visualSlides: Record<number, { kind: string; metric?: string; figure?: str
     transition: all 0.15s;
   }
   .pres-topbar-btn:hover { background: rgba(255,255,255,0.08); color: #e2e8f0; }
+  .pres-topbar-btn.pres-support-btn { width:auto; padding:0 12px; flex-shrink:0; color:#b8e2d9; }
   .pres-exit-btn:hover { background: rgba(239,68,68,0.15); color: #fca5a5; border-color: rgba(239,68,68,0.3); }
 
   /* ── Main slide area ── */
@@ -2006,6 +2023,7 @@ const visualSlides: Record<number, { kind: string; metric?: string; figure?: str
     </div>
     <span class="pres-counter" id="pres-counter" aria-live="polite">1 / {totalSlides}</span>
     <span class="pres-timer" id="pres-timer">⏱ 0:00</span>
+    <a href={asset(reserve ? '/defensa-offline' : '/defensa-anexos')} class="pres-topbar-btn pres-support-btn" target={reserve ? undefined : '_blank'} title={reserve ? 'Volver a la presentación' : 'Abrir diapositivas de apoyo'}>{reserve ? 'Presentación' : 'Anexos'}</a>
     <button class="pres-topbar-btn" id="btn-toggle-notes" title="Notas del presentador" aria-label="Mostrar u ocultar notas del presentador">📝</button>
     <button class="pres-topbar-btn" id="btn-fullscreen" title="Pantalla completa (F)" aria-label="Activar pantalla completa">⛶</button>
     <a href={asset('/defensa')} class="pres-topbar-btn pres-exit-btn" title="Volver" aria-label="Volver a la pantalla de inicio">✕</a>
@@ -2021,15 +2039,16 @@ const visualSlides: Record<number, { kind: string; metric?: string; figure?: str
       {slides.map((slide, idx) => {
         const figSrc = slide.figure ? asset(`/defensa/figures/${slide.figure}`) : null;
         const secondaryFigSrc = slide.secondaryFigure ? asset(`/defensa/figures/${slide.secondaryFigure}`) : null;
-        const isTitle = slide.type === 'title';
-        const isIndex = slide.type === 'index';
-        const isQuote = slide.type === 'quote';
-        const isFigure = slide.type === 'figure';
-        const isSplit = slide.type === 'split';
-        const isTimeline = slide.type === 'timeline';
-        const isMatrix = slide.type === 'matrix';
-        const isTable = slide.type === 'table';
-        const isNormal = !isTitle && !isIndex && !isQuote && !isFigure && !isSplit && !isTimeline && !isMatrix && !isTable;
+        const hasOfflineFrames = Boolean(slide.offlineFrames?.length);
+        const isTitle = !hasOfflineFrames && slide.type === 'title';
+        const isIndex = !hasOfflineFrames && slide.type === 'index';
+        const isQuote = !hasOfflineFrames && slide.type === 'quote';
+        const isFigure = !hasOfflineFrames && slide.type === 'figure';
+        const isSplit = !hasOfflineFrames && slide.type === 'split';
+        const isTimeline = !hasOfflineFrames && slide.type === 'timeline';
+        const isMatrix = !hasOfflineFrames && slide.type === 'matrix';
+        const isTable = !hasOfflineFrames && slide.type === 'table';
+        const isNormal = !hasOfflineFrames && !isTitle && !isIndex && !isQuote && !isFigure && !isSplit && !isTimeline && !isMatrix && !isTable;
         const visual = visualSlides[slide.id];
 
         return (
@@ -2271,6 +2290,19 @@ const visualSlides: Record<number, { kind: string; metric?: string; figure?: str
               </>
             )}
 
+            {hasOfflineFrames && (
+              <>
+                <div class="slide-heading-area"><div class="slide-title">{slide.title}</div>{slide.subtitle && <div class="slide-subtitle">{slide.subtitle}</div>}</div>
+                <div class="offline-capture-controls" aria-label="Pasos de la demostración sin conexión">
+                  {slide.offlineFrames!.map((frame, step) => <button class={`offline-step ${step === 0 ? 'selected' : ''}`} data-capture-step={step} aria-pressed={step === 0}>{step + 1}. {frame.label}</button>)}
+                  <span>Capturas locales · sin conexión</span>
+                </div>
+                <div class="offline-captures">
+                  {slide.offlineFrames!.map((frame, step) => <figure class="offline-capture" hidden={step !== 0}><img src={asset(`/defensa/figures/${frame.src}`)} alt={frame.caption} /><figcaption>{frame.caption}</figcaption></figure>)}
+                </div>
+              </>
+            )}
+
             {/* ── SPLIT ── */}
             {isSplit && (
               <>
@@ -2408,8 +2440,20 @@ const visualSlides: Record<number, { kind: string; metric?: string; figure?: str
 
 <script>
   import { slides as mainSlides, backupSlides } from '../data/slides.ts';
+  document.querySelectorAll<HTMLButtonElement>('[data-capture-step]').forEach(button => {
+    button.addEventListener('click', () => {
+      const slide = button.closest('.slide');
+      if (!slide) return;
+      const step = Number(button.dataset.captureStep);
+      slide.querySelectorAll<HTMLElement>('.offline-capture').forEach((frame, i) => { frame.hidden = i !== step; });
+      slide.querySelectorAll<HTMLButtonElement>('[data-capture-step]').forEach((control, i) => {
+        control.classList.toggle('selected', i === step);
+        control.setAttribute('aria-pressed', String(i === step));
+      });
+    });
+  });
   const reserve = document.getElementById('pres-shell')?.dataset.reserve === 'true';
-  const slides = reserve ? backupSlides : mainSlides;
+  const slides = (reserve ? backupSlides : mainSlides).map(slide => ({ ...slide, script: slide.offlineScript ?? slide.script }));
   const totalSlides = slides.length;
   const storageKey = reserve ? 'defensa-anexos-slide' : 'defensa-offline-slide';
 

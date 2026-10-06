@@ -13,6 +13,9 @@ export interface Slide {
   webLabel?: string;
   webPurpose?: string;
   webAction?: string;
+  // Local captures replace live navigation in the offline deck.
+  offlineScript?: string;
+  offlineFrames?: { src: string; label: string; caption: string }[];
   // Offline figure assets
   figure?: string;
   figureCaption?: string;
@@ -154,6 +157,7 @@ export const slideLibrary: Slide[] = [
 
   {
     id: 5,
+    offlineFrames: [{"src": "offline_hydra_home.png", "label": "Plataforma", "caption": "Portada local de HYDRA: acceso a módulos, herramientas y notebooks."}],
     block: 'Arquitectura', blockColor: '#0891b2',
     title: 'Un producto científico y operativo real',
     subtitle: 'Núcleo científico, plataforma web y entorno reproducible',
@@ -301,7 +305,7 @@ export const slideLibrary: Slide[] = [
   // ════════════════════════════════════════════════════
 
   {
-    backup: true,
+
     id: 9,
     block: 'Estado del arte', blockColor: '#6366f1',
     title: 'Evolución de la investigación (2017–2026)',
@@ -533,6 +537,9 @@ export const slideLibrary: Slide[] = [
 
   {
     id: 19,
+    offlineScript: 'Estas capturas conservan el recorrido de la herramienta sin necesitar conexión ni ejecutar la API durante la defensa. En el primer paso mostramos la entrada: una serie sintética de precipitación diaria entre 1980 y 2024. No son los datos observados de Turís. Pasamos ahora al resultado ya calculado. La herramienta identifica 124 eventos con un umbral de 39,322 milímetros y una separación de cinco días, pero la GEV se ajusta a los 45 máximos anuales. La curva verde representa la estimación puntual MAP, el máximo de la posterior. La banda P5–P95 se obtiene mediante Fisher alrededor del ajuste MLE: es una aproximación de incertidumbre, no una posterior obtenida mediante MCMC. Al aumentar el período de retorno, la banda se ensancha; esa incertidumbre debe acompañar cualquier cifra de diseño. Después veremos el caso observado de Valencia, cuya procedencia y metodología son diferentes.',
+
+    offlineFrames: [{"src": "offline_gev_entrada.png", "label": "Datos y ajuste", "caption": "Serie sintética de demostración: entrada y configuración del ajuste GEV."}, {"src": "offline_gev_resultado.png", "label": "Resultado e incertidumbre", "caption": "Ejecución real de la serie sintética: MAP y bandas aproximadas de Fisher; no son los datos de Turís."}],
     block: 'Demo en vivo', blockColor: '#10b981',
     title: "Demostración guiada: GEV MAP e incertidumbre aproximada",
     subtitle: "Máximos anuales, ajuste MAP y bandas mediante Fisher",
@@ -823,8 +830,9 @@ export const slideLibrary: Slide[] = [
   },
 
   {
-    backup: true,
+
     id: 32,
+    offlineFrames: [{"src": "offline_calle30_hallazgos.png", "label": "Hallazgos", "caption": "Ficha de Calle 30: resultados y cadena metodológica documentados."}],
     block: 'Casos de estudio', blockColor: '#f59e0b',
     title: 'Calle 30 en HYDRA: hallazgos clave en la web',
     subtitle: 'Del forzamiento meteorológico al período de retorno del calado',
@@ -885,8 +893,9 @@ export const slideLibrary: Slide[] = [
   },
 
   {
-    backup: true,
+
     id: 34,
+    offlineFrames: [{"src": "offline_valencia_web.png", "label": "Resultados", "caption": "Ficha de Valencia: cifras publicadas y acceso a los notebooks del caso."}],
     block: 'Casos de estudio', blockColor: '#f59e0b',
     title: 'Valencia en HYDRA: los números reales del caso',
     subtitle: 'La ficha del caso, trazable hasta el notebook que calculó cada cifra',
@@ -1110,9 +1119,9 @@ export const slideLibrary: Slide[] = [
     subtitle: "Métodos aplicados, trabajo colaborativo y software propio",
     estimatedMinutes: 2,
     type: 'normal',
-    script: "Mi contribución se organiza en tres responsabilidades. En los trabajos que lidero, desarrollé la metodología aplicada, la modelización y el análisis de resultados. En las colaboraciones, mi aportación está delimitada: calibración hidrológica, procesamiento climático, análisis de extremos y desarrollo de software. Finalmente, diseñé, desarrollé, documenté y publiqué pyhydra e HYDRA como software de autor único. La tabla completa de autoría queda disponible en los anexos para precisar cualquier trabajo concreto.",
-    notes: "Presentar tres responsabilidades y remitir a /defensa-anexos para la tabla completa de autoría.",
-    mathBlock: "<table class=\"thesis-matrix authorship-matrix\"><thead><tr><th>Responsabilidad</th><th>Aportación</th></tr></thead><tbody><tr><th>Trabajos liderados</th><td>Metodología, simulación, análisis y redacción</td></tr><tr><th>Colaboraciones</th><td>Calibración, clima, extremos y software, con rol delimitado</td></tr><tr><th>pyhydra e HYDRA</th><td>Diseño, desarrollo, documentación y publicación como autor único</td></tr></tbody></table><p class=\"thesis-matrix-legend\">La tabla completa por publicación está disponible en los anexos.</p>",
+    script: "Mi contribución se organiza en tres responsabilidades. En los trabajos que lidero, desarrollé la metodología aplicada, la modelización y el análisis de resultados. En las colaboraciones, mi aportación está delimitada: calibración hidrológica, procesamiento climático, análisis de extremos y desarrollo de software. Finalmente, diseñé, desarrollé, documenté y publiqué pyhydra e HYDRA como software de autor único. La diapositiva siguiente concreta esta autoría por publicación.",
+    notes: "Presentar tres responsabilidades y enlazar con la tabla completa de autoría de la diapositiva siguiente.",
+    mathBlock: "<table class=\"thesis-matrix authorship-matrix\"><thead><tr><th>Responsabilidad</th><th>Aportación</th></tr></thead><tbody><tr><th>Trabajos liderados</th><td>Metodología, simulación, análisis y redacción</td></tr><tr><th>Colaboraciones</th><td>Calibración, clima, extremos y software, con rol delimitado</td></tr><tr><th>pyhydra e HYDRA</th><td>Diseño, desarrollo, documentación y publicación como autor único</td></tr></tbody></table><p class=\"thesis-matrix-legend\">La diapositiva siguiente detalla la contribución en cada publicación.</p>",
     bullets: [
       'Siete trabajos como primer autor, cuatro con aportación delimitada y software de autor único.',
     ],
@@ -1248,7 +1257,7 @@ export const slideLibrary: Slide[] = [
     title: 'Del Trabajo Fin de Máster a la pregunta doctoral',
     subtitle: 'La primera cadena resolvió un caso y reveló un problema más general',
     estimatedMinutes: 1,
-    backup: true,
+    backup: false,
     type: 'split',
     figure: 'fig_besaya_cadena_fundacional.svg', figurePosition: 'right',
     figureCaption: 'La aplicación del Besaya lleva la frecuencia desde los aforos hasta el calado',
@@ -1267,7 +1276,7 @@ export const slideLibrary: Slide[] = [
   },
 
   {
-    backup: true,
+
     id: 46,
     block: 'Motivación', blockColor: '#3b82f6',
     title: 'Qué necesita una modelación estocástica de inundaciones',
@@ -1301,7 +1310,7 @@ export const slideLibrary: Slide[] = [
     subtitle: 'Los casos aportan evidencias distintas y complementarias',
     estimatedMinutes: 2,
     type: 'normal',
-    script: 'Antes de cerrar el bloque reúno cuatro resultados, cada uno con su figura. En IAHR 2022, los caudales de diseño de la cadena estocástica son entre un 30 y un 37 por ciento superiores a los del método convencional. En Valencia, incorporar la DANA eleva un 266 por ciento el cuantil T100 bayesiano de Turís. En el Besaya, 1.990 simulaciones emparejadas separan la sensibilidad a la rugosidad de las diferencias entre motores. Y en Panamá, más de cuatrocientas correcciones climáticas automáticas muestran que la arquitectura opera a escala nacional. Son resultados distintos, pero todos dependen de la misma cadena reproducible.',
+    script: 'Antes de cerrar el bloque reúno cuatro resultados, cada uno con su figura. En IAHR 2022, los caudales de diseño de la cadena estocástica son entre un 30 y un 37 por ciento superiores a los del método convencional. En Valencia, incorporar la DANA eleva un 266 por ciento el cuantil T100 bayesiano de Turís. En el Besaya, 1.990 simulaciones emparejadas separan la sensibilidad a la rugosidad de las diferencias entre motores. Y en Panamá, 414 combinaciones de análisis climático muestran que la arquitectura opera a escala nacional. Son resultados distintos, pero todos dependen de la misma cadena reproducible.',
     notes: 'Presentar las cifras como evidencia, no como competición entre casos. Aclarar el dominio de cada cifra si el tribunal pregunta. Esta diapositiva prepara la síntesis conceptual de la siguiente.',
     bullets: [
       'La evidencia combina contraste metodológico, actualización estadística, sensibilidad hidráulica y escalabilidad.',
@@ -1313,7 +1322,7 @@ export const slideLibrary: Slide[] = [
   "id": 55,
   "block": "Contribuciones científicas",
   "blockColor": "#0ea5e9",
-  "title": "Anexo: autoría completa de la línea de investigación",
+  "title": "Autoría completa de la línea de investigación",
   "subtitle": "Rol del doctorando en cada publicación, según la tabla de autoría del capítulo 9",
   "estimatedMinutes": 2,
   "type": "normal",
@@ -1323,7 +1332,7 @@ export const slideLibrary: Slide[] = [
   "bullets": [
     "Siete trabajos como primer autor, cuatro con aportación delimitada y software de autor único."
   ],
-  "backup": true
+  "backup": false
 },
 {
   "id": 56,
@@ -1413,7 +1422,9 @@ const presentationRank = (slide: Slide) => {
   if (slide.id === 39) return 36.5;
   if (slide.id === 38) return 37;
   if (slide.id === 37) return 37.5;
+  if (slide.id === 45) return 3.5;
   if (slide.id === 46) return 8.7;
+  if (slide.id === 55) return 39.75;
   if (slide.id === 47) return 10.5;
   if (slide.id === 48) return 39.4;
   // La aportación se anticipa después de la pregunta y los objetivos, no antes

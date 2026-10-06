@@ -2,7 +2,25 @@
 
 Revisión realizada el 5 de octubre de 2026 y cierre el 6 de octubre de 2026.
 
-## Resultado
+## Actualización del 6 de octubre: contenido principal y capturas
+
+A petición del usuario se incorporan los antiguos anexos 1, 9, 10, 11, 12 y 13 al recorrido principal. El total actual es **52 diapositivas principales y 13 anexos**, con una estimación de **61 minutos**. El guion se ha sincronizado y contiene una variante oral para explicar la demo offline.
+
+Se añade el botón «Anexos» a la barra superior del modo offline y «Presentación» para volver. Las capturas locales cubren la portada de HYDRA, los hallazgos de Calle 30, las cifras de Valencia y dos pasos de la herramienta estadística: entrada y resultado. Este último se obtuvo ejecutando realmente la API local el 6 de octubre: 45 máximos anuales y 124 eventos de la serie sintética. El esquema científico del Besaya sigue disponible en su diapositiva.
+
+Los resultados de la revisión anterior que aparecen a continuación corresponden a la versión de 46 diapositivas y 19 anexos.
+
+### Comprobación de la actualización
+
+- Compilación correcta de las 37 páginas.
+- Navegador integrado mediante MCP: 52 diapositivas principales en el tamaño habitual y en 1024 × 768 y 390 × 844; 156 comprobaciones sin desbordamientos. Lienzo dentro del área disponible en las dos dimensiones adicionales.
+- Revisados los 13 anexos sin desbordamientos ni imágenes rotas detectadas.
+- El botón «Anexos» abre el material de apoyo y «Presentación» recupera la posición del recorrido principal.
+- El selector «2. Resultado e incertidumbre» cambia a la captura real de la demo. Verificado también en Google Chrome mediante MCP, junto con la apertura de los anexos y su contador 1/13.
+- Autoría completa ampliada a 24 px en el lienzo; tabla completa sin desbordamientos.
+- Evidencias de esta actualización: `outputs/defensa-qa-2026-10-06/demo-offline.png` y `outputs/defensa-qa-2026-10-06/chrome-demo-offline.png`.
+
+## Resultado de la revisión anterior
 
 La presentación contiene 46 diapositivas principales y 19 anexos. El guion incluye el texto oral y las transiciones. La duración prevista es de 55 minutos: es una estimación, pendiente de ensayo oral cronometrado.
 
