@@ -220,6 +220,7 @@ import Layout from '../../layouts/Layout.astro';
 </Layout>
 
 <script>
+  const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
 declare const Plotly: any;
 
 const dsRadios = document.querySelectorAll<HTMLInputElement>('input[name="datasource"]');
@@ -372,7 +373,7 @@ async function runInterpolation() {
   runBtn.setAttribute('disabled', '');
 
   try {
-    const res = await fetch('/api/interpolation/compare', { method: 'POST', body: formData });
+    const res = await fetch(`${apiUrl}/api/interpolation/compare`, { method: 'POST', body: formData });
     const data = await res.json();
     if (!res.ok) throw new Error(data.detail ?? 'Error en la interpolación');
 

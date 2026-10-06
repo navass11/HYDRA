@@ -254,7 +254,7 @@ function renderResults(data: any) {
   ], {
     ...layoutBase,
     font: { ...layoutBase.font, color: fontColor() },
-    xaxis: { title: t('Periodo de retorno (años)', 'Return period (years)'), type: 'log', gridcolor: grid() },
+    xaxis: { title: t('Periodo de retorno (años)', 'Return period (years)'), type: 'log', tickmode: 'array', tickvals: Ts, ticktext: Ts.map(String), gridcolor: grid() },
     yaxis: { title: t('Factor de crecimiento q(T)', 'Growth factor q(T)'), gridcolor: grid() },
     showlegend: false,
   }, { responsive: true, displayModeBar: false });
@@ -276,7 +276,7 @@ function renderResults(data: any) {
   Plotly.newPlot('chart-atsite', atSiteTraces, {
     ...layoutBase,
     font: { ...layoutBase.font, color: fontColor() },
-    xaxis: { title: t('Periodo de retorno (años)', 'Return period (years)'), type: 'log', gridcolor: grid() },
+    xaxis: { title: t('Periodo de retorno (años)', 'Return period (years)'), type: 'log', tickmode: 'array', tickvals: Ts, ticktext: Ts.map(String), gridcolor: grid() },
     yaxis: { title: t('Nivel (unidades originales)', 'Level (original units)'), gridcolor: grid() },
     legend: { orientation: 'h', y: -0.3 },
   }, { responsive: true, displayModeBar: false });

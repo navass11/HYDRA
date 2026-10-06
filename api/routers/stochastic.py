@@ -40,8 +40,6 @@ def _fast_simulate(
     Seasonal AR(1) CoSMoS simulation, vectorised across n_sims.
     Always returns exactly 365 days (Feb 29 excluded for leap years).
     """
-    from cosmos_py.timeseries.analyze import _ppf
-
     dist = ts_stats["dist"]
     dfits = ts_stats["dfits"]
     afits = ts_stats["afits"]
@@ -79,14 +77,21 @@ def _fast_simulate(
     for m_idx in range(12):
         mask = months_arr == (m_idx + 1)
         p0 = float(p0_list[m_idx])
-        params = dfits[m_idx]["params_dict"]
+        fit = dfits[m_idx]
 
         u = _norm.cdf(G[:, mask])
         raw = (u - p0) / (1.0 - p0)
         nz = raw > 0.0
         u_clip = np.clip(raw, 1e-10, 1.0 - 1e-10)
 
-        vals = _ppf(dist, params, u_clip)
+        # CoSMoS versions exposing the fitted quantile callable do not have
+        # the newer private _ppf helper or params_dict representation.
+        quantile = fit.get("quantile")
+        if callable(quantile):
+            vals = np.asarray(quantile(u_clip), dtype=float)
+        else:
+            from cosmos_py.timeseries.analyze import _ppf
+            vals = _ppf(dist, fit["params_dict"], u_clip)
         vals[~nz] = 0.0
         sim_arr[:, mask] = np.maximum(vals, 0.1)
 

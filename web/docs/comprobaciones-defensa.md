@@ -2,6 +2,28 @@
 
 Revisión realizada el 5 de octubre de 2026 y cierre el 6 de octubre de 2026.
 
+## Actualización del 6 de octubre: figuras de los anexos
+
+Los siete anexos de herramientas incluyen ahora nueve capturas locales de ejecuciones reales. Los seis anexos de resultados conservan sus figuras; en total, los 13 anexos cargan 15 imágenes.
+
+| Anexo | Apoyo visual y procedencia |
+| --- | --- |
+| Generación estocástica | Diagnóstico mensual y ensemble: serie demo sintética 1990–2019, 30 realizaciones de 2025, semilla 42. Calibración CoSMoS y simulación rápida AR(1) estacional. |
+| Sensibilidad de Manning | Tres diagramas de dispersión del CSV demo de 1000 simulaciones HEC-RAS; análisis de resultados ya calculados. |
+| IDF | Curvas de la demo sintética de 40 años y 7 duraciones, con ajuste GEV MAP. |
+| Frecuencia regional | Curva normalizada, homogeneidad y parámetros: 5 estaciones sintéticas, L-momentos, H = 0,386. |
+| Interpolación | Mapa de kriging ordinario y comparación RMSE LOOCV de IDW, kriging y RBF sobre 8 estaciones demo. |
+| Corrección de sesgo | CDF y medias mensuales: demo sintética de precipitación, opción QDM multiplicativa. |
+| Eventos compuestos | Diagrama conjunto completo: 120 pares sintéticos, cópula Gumbel, isolíneas AND/OR y puntos MPDE. |
+
+Las capturas muestran los gráficos completos con ejes y leyendas. Los diálogos y las notas privadas del guion se han actualizado para distinguir demos, CSV de resultados y casos de la tesis.
+
+Durante la obtención de las capturas se corrigió la conexión de interpolación a la API local, la compatibilidad del generador con la función de cuantiles de la versión local de CoSMoS y las etiquetas completas de períodos de retorno en RFA. Las siete herramientas devolvieron resultados tras ejecutar sus demos.
+
+Verificación mediante MCP en el navegador integrado: los 13 anexos, sus botones de cambio de figura y las 15 imágenes funcionan con recursos externos bloqueados. Sin errores de consola ni desbordamientos; 26 comprobaciones adicionales en 1024 × 768 y 390 × 844, con el lienzo dentro de la pantalla. Evidencia: `outputs/defensa-qa-2026-10-06/anexos-con-figuras.png` y registro JSON en el mismo directorio.
+
+El recorrido principal continúa con 52 diapositivas y una estimación de 61 minutos.
+
 ## Actualización del 6 de octubre: contenido principal y capturas
 
 A petición del usuario se incorporan los antiguos anexos 1, 9, 10, 11, 12 y 13 al recorrido principal. El total actual es **52 diapositivas principales y 13 anexos**, con una estimación de **61 minutos**. El guion se ha sincronizado y contiene una variante oral para explicar la demo offline.

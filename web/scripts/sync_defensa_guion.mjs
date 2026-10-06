@@ -42,7 +42,11 @@ slides.forEach((s, i) => {
   if (i < slides.length - 1) rows.push(`**Transición:** ${bridges.get(s.id) || transitions.get(s.title) || `A continuación, presentaré ${slides[i + 1].title.toLowerCase()}.`}`, '');
 });
 rows.push('**[Pauta final: haz una pausa y cede la palabra al tribunal.]**', '', '## Guion de los anexos', '', 'Material disponible en **/defensa-anexos**, fuera del tiempo principal. Abrir solo el anexo que responda a la pregunta del tribunal.', '');
-backupSlides.forEach((s, i) => rows.push(`### Anexo ${i + 1}. ${s.title}`, '', `**Tiempo orientativo:** ${duration(s)}`, '', s.script.trim(), ''));
+backupSlides.forEach((s, i) => {
+  rows.push(`### Anexo ${i + 1}. ${s.title}`, '', `**Tiempo orientativo:** ${duration(s)}`, '', s.script.trim(), '');
+  if (s.offlineFrames) rows.push('**[Apoyo visual local: ' + s.offlineFrames.map((frame, step) => `${step + 1}. ${frame.label}`).join(' → ') + '. Utiliza los botones de la diapositiva para cambiar de figura.]**', '');
+  if (s.notes) rows.push('**Notas privadas:** ' + s.notes, '');
+});
 doc = doc.slice(0, start) + rows.join('\n') + doc.slice(end);
 doc = doc.replace(/estimación actual del guion: ~\d+ minutos/, `estimación actual del guion: ~${totalMinutes} minutos`)
   .replace(/\*\*Versión de trabajo:\*\* [^\n]+/, '**Versión de trabajo:** 6 de octubre de 2026<br>')

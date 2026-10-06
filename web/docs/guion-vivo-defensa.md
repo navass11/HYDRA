@@ -942,45 +942,73 @@ Material disponible en **/defensa-anexos**, fuera del tiempo principal. Abrir so
 
 ### Anexo 1. Demostración: generación de series sintéticas
 
-**Tiempo orientativo:** 0 min 30 s
+**Tiempo orientativo:** 1 min 06 s
 
-Demostración del generador CoSMoS. A partir de una serie temporal corta, CoSMoS calibra la autocorrelación mensual y la asimetría para generar 100 series sintéticas plausibles. Cada serie conserva los estadísticos del registro real pero introduce variabilidad climática natural.
+Estas dos capturas documentan la generación estocástica. Partimos de la serie demo sintética de caudal diario de 1990 a 2019. La primera figura compara, mes a mes, la media, la desviación estándar y la autocorrelación de primer retardo del registro de entrada y de las realizaciones. Después mostramos 30 realizaciones para 2025, obtenidas con semilla 42: la línea resume la mediana y las bandas muestran la dispersión entre trayectorias. No estamos prediciendo el caudal observado de 2025; estamos generando escenarios plausibles. La interfaz calibra con CoSMoS y utiliza una simulación rápida mediante AR(1) estacional y transformación a las marginales ajustadas. Debemos comprobar sus diagnósticos antes de utilizar el ensemble en un cálculo de diseño.
+
+**[Apoyo visual local: 1. Diagnóstico estacional → 2. Ensemble. Utiliza los botones de la diapositiva para cambiar de figura.]**
+
+**Notas privadas:** Capturas de la API ejecutada el 6 de octubre de 2026. Mostrar primero el diagnóstico estacional y después el ensemble. Datos demo sintéticos; 30 años de calibración y 30 realizaciones de un año. La simulación rápida conserva la marginal y aproxima la dependencia con AR(1), no toda la estructura temporal de una simulación CoSMoS completa.
 
 ### Anexo 2. Demostración: sensibilidad de la rugosidad
 
-**Tiempo orientativo:** 0 min 24 s
+**Tiempo orientativo:** 1 min 12 s
 
-Esta herramienta reproduce en vivo el experimento numérico del caso Besaya: variar los coeficientes de Manning por clase de uso de suelo y observar cómo se propaga esa incertidumbre a calado y área inundada.
+Esta captura procede del análisis del CSV demo de mil simulaciones HEC-RAS. Cada punto corresponde a una simulación del ensemble y relaciona una medida de Manning con el calado medio, el calado mediano o el área inundada. Las rectas resumen una asociación lineal simple: el R cuadrado del calado medio es 0,0069 y el del calado mediano, 0,0014. Una relación lineal tan débil no significa que la rugosidad carezca de efecto. Puede haber respuestas no lineales, umbrales topográficos y otros controles. Esta herramienta analiza salidas ya calculadas; no vuelve a ejecutar HEC-RAS ni reproduce aquí las 995 parejas HEC-RAS y SFINCS del contraste principal. La figura permite explicar por qué necesitamos mirar la distribución del impacto y sus regímenes, además de una única regresión.
+
+**[Apoyo visual local: 1. Manning e impacto. Utiliza los botones de la diapositiva para cambiar de figura.]**
+
+**Notas privadas:** La demo lee un CSV con 1000 simulaciones HEC-RAS y calcula estadísticos, correlaciones y regresiones. Distinguir este CSV del conjunto emparejado y depurado de 995 realizaciones por motor presentado en el caso principal. No afirmar que la interfaz elige distribuciones de Manning ni ejecuta los motores hidráulicos.
 
 ### Anexo 3. Demostración: curvas IDF
 
-**Tiempo orientativo:** 0 min 24 s
+**Tiempo orientativo:** 1 min 12 s
 
-Esta herramienta construye curvas Intensidad-Duración-Frecuencia con el método clásico de único pico de lluvia, el mismo enfoque que el estudio IAHR 2022 comparó contra la cadena estocástica completa.
+La captura muestra una curva IDF obtenida con la demo sintética: cuarenta años de máximos anuales y siete duraciones, desde diez minutos hasta veinticuatro horas. Para cada duración se ajusta una GEV mediante MAP y se calculan intensidades asociadas a varios períodos de retorno. Cada línea representa un período de retorno distinto; la intensidad disminuye al aumentar la duración. Este producto organiza los extremos de precipitación y puede ser una entrada de diseño. Por sí solo no describe la forma temporal completa de la tormenta, la humedad antecedente ni la respuesta hidráulica. Por eso sirve para explicar la diferencia entre caracterizar la lluvia y calcular la frecuencia del impacto. Las cifras de esta demo no son los resultados del estudio IAHR 2022.
+
+**[Apoyo visual local: 1. Curvas IDF. Utiliza los botones de la diapositiva para cambiar de figura.]**
+
+**Notas privadas:** Figura obtenida ejecutando /tools/idf con datos sintéticos. Ajuste MAP por duración. Usar como explicación de las curvas IDF, no como reproducción del experimento IAHR 2022 ni de sus caudales.
 
 ### Anexo 4. Demostración: análisis de frecuencia regional
 
-**Tiempo orientativo:** 0 min 30 s
+**Tiempo orientativo:** 1 min 12 s
 
-El Análisis Regional de Frecuencia agrupa estaciones para estabilizar la estimación de cuantiles extremos. Es la misma técnica que, con 224 estaciones, situaba el periodo de retorno del evento de Turís en 7,5 millones de años antes de incorporar la DANA de 2024.
+En esta captura usamos cinco estaciones sintéticas con cuarenta años de máximos anuales. El análisis regional divide los datos por el caudal índice de cada estación y ajusta una curva común mediante L-momentos. La figura central muestra el factor de crecimiento q de T. Para recuperar el nivel en una estación, multiplicamos ese factor por su caudal índice. A la derecha comprobamos la homogeneidad: en esta demo, H vale 0,386 y queda por debajo de uno. También se revisa la discordancia de las estaciones antes de agruparlas. Es una explicación del procedimiento index-flood; no son las 224 estaciones del caso Valencia ni sus períodos de retorno. La selección de la región debe justificarse físicamente, porque agrupar estaciones inadecuadas puede suavizar en exceso un extremo local.
+
+**[Apoyo visual local: 1. Curva y homogeneidad. Utiliza los botones de la diapositiva para cambiar de figura.]**
+
+**Notas privadas:** Captura real de /tools/rfa: 5 estaciones sintéticas, 40 años, L-momentos, H=0,386. No confundir con Valencia. Etiquetas completas de períodos 25, 50, 200 y 500 verificadas.
 
 ### Anexo 5. Demostración: interpolación espacial
 
-**Tiempo orientativo:** 0 min 24 s
+**Tiempo orientativo:** 1 min 12 s
 
-Esta herramienta interpola variables climáticas a malla regular por kriging universal, el mismo procedimiento que rellenó los vacíos instrumentales amazónicos en el caso andino y reconstruyó los campos de precipitación en Mallorca.
+La captura compara métodos sobre la misma demo de ocho estaciones: IDW, kriging ordinario y una función de base radial. En el mapa, los puntos sitúan las estaciones y el campo continuo representa la variable interpolada en los puntos objetivo. La validación cruzada deja fuera una estación, predice su valor con las restantes y repite el proceso para calcular el RMSE. Así podemos comparar métodos con los mismos datos y no solo por el aspecto del mapa. Esta interfaz muestra kriging ordinario; no incluye aquí la covariable de elevación de un kriging universal. Tampoco convierte una red escasa en observaciones nuevas: la calidad sigue limitada por la distribución de estaciones y la estructura espacial de la variable.
+
+**[Apoyo visual local: 1. Mapa kriging → 2. Validación LOOCV. Utiliza los botones de la diapositiva para cambiar de figura.]**
+
+**Notas privadas:** Captura de la ejecución local de /tools/interpolation. Demo de 8 estaciones; IDW, kriging ordinario y RBF. Señalar el mapa y el RMSE LOOCV. No presentar como reproducción de Andes o Mallorca ni como kriging universal con DEM.
 
 ### Anexo 6. Demostración: corrección de sesgo climático
 
-**Tiempo orientativo:** 0 min 36 s
+**Tiempo orientativo:** 1 min 18 s
 
-Esta herramienta corrige el sesgo sistemático de un modelo climático frente a la observación mediante Quantile Delta Mapping y Scaled Distribution Mapping. Es el mismo módulo, sin ninguna modificación, que se reutilizó en las 414 combinaciones de análisis del Atlas de Panamá, en SIMPCCe y en el caso andino.
+Esta captura usa treinta años de precipitación diaria sintética y la opción multiplicativa de Quantile Delta Mapping. A la izquierda se comparan las distribuciones acumuladas de la referencia, del modelo bruto y del modelo corregido. A la derecha, las medias mensuales permiten comprobar la estacionalidad y cómo cambia el sesgo. La corrección se calibra en un período histórico y se aplica al escenario: su objetivo es ajustar el sesgo sin borrar la señal de cambio, por lo que la distribución futura corregida no tiene por qué coincidir exactamente con la observación histórica. La interfaz permite también otras opciones, como Scaled Distribution Mapping. Esta es una demostración del módulo; las capturas no corresponden a datos de Panamá, Andes o SIMPCCe. En esos proyectos hay que documentar además el método, las variables y los períodos empleados.
+
+**[Apoyo visual local: 1. Antes y después. Utiliza los botones de la diapositiva para cambiar de figura.]**
+
+**Notas privadas:** Captura de /tools/bias con demo sintética y QDM multiplicativo. No afirmar que este resultado reproduce las 414 combinaciones de Panamá ni que todos los proyectos usaron idéntica configuración. Señalar CDF, medias mensuales y conservación de la señal del escenario.
 
 ### Anexo 7. Demostración: eventos compuestos
 
-**Tiempo orientativo:** 0 min 30 s
+**Tiempo orientativo:** 1 min 18 s
 
-Cerramos el bloque de demos con la herramienta de eventos compuestos: selección de familia de cópula, cálculo de los períodos de retorno conjuntos AND/OR y localización del MPDE sobre la isolínea de diseño, tal y como se explicó en el módulo de cópulas.
+La captura muestra el ajuste de una cópula Gumbel a ciento veinte pares de caudal máximo y nivel del mar de la demo sintética. Los puntos representan los pares de la muestra y las líneas describen períodos de retorno conjuntos. En azul, OR significa que al menos una de las dos variables supera su umbral; en rojo, AND exige que ambas lo superen simultáneamente. Las cruces localizan el evento de máxima densidad conjunta sobre cada isolínea, el MPDE. Hay múltiples combinaciones de caudal y nivel que comparten un mismo período de retorno conjunto: por eso el diseño compuesto no se reduce a sumar dos extremos univariantes. Podemos comparar familias de cópulas, pero la elección debe atender a la dependencia y a las colas. La figura está guardada localmente y puede explicarse sin ejecutar la herramienta.
+
+**[Apoyo visual local: 1. Retorno conjunto y MPDE. Utiliza los botones de la diapositiva para cambiar de figura.]**
+
+**Notas privadas:** Captura real de /tools/compound con familia Gumbel y 120 pares sintéticos. Distinguir OR y AND y explicar las cruces MPDE. Los puntos de demo no son observaciones de un caso piloto.
 
 ### Anexo 8. Anexo: bifurcación hidráulica del Besaya
 
