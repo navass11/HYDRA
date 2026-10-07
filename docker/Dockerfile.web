@@ -18,6 +18,7 @@ ENV PUBLIC_API_URL=${PUBLIC_API_URL}
 RUN python3 scripts/build_notebooks.py
 
 RUN npx astro build
+RUN npm run defensa:download
 
 # ── Production: nginx serves static files ────────────────────────────────────
 FROM nginx:alpine

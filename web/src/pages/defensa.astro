@@ -411,7 +411,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
         <a href={asset('/defensa-live')} class="mode-card mode-online" id="btn-online">
           <span class="mode-recommended">Recomendado</span>
           <span class="mode-icon">🌐</span>
-          <div class="mode-label">Modo Online</div>
+          <div class="mode-label">Presentación en vivo</div>
           <div class="mode-desc">
             La presentación navega por la web real de HYDRA. El tribunal ve el producto funcionando en vivo.
           </div>
@@ -421,15 +421,17 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
         <!-- Offline mode -->
         <a href={asset('/defensa-offline')} class="mode-card mode-offline" id="btn-offline">
           <span class="mode-icon">💾</span>
-          <div class="mode-label">Modo Offline</div>
+          <div class="mode-label">Demos preparadas</div>
           <div class="mode-desc">
-            Presentación autónoma con figuras de la tesis embebidas. Funciona sin internet ni servidor.
+            Presentación con figuras y capturas preparadas, sin ejecutar herramientas. Para abrirla sin Internet, descarga la copia completa.
           </div>
-          <span class="mode-tag tag-indigo">Standalone · Sin dependencias</span>
+          <span class="mode-tag tag-indigo">Sin depender de la API</span>
         </a>
       </div>
 
-      <div class="defensa-note"><p><a href={asset('/defensa-anexos')}>Anexos para preguntas</a> · <a href={asset('/defensa-respaldo')}>Resultado de respaldo local</a></p>
+      <div class="defensa-note"><p><a href={asset('/defensa/hydra-defensa-sin-conexion.zip')} download>Descargar para usar sin conexión</a></p>
+        <p>Incluye presentación, anexos y figuras. Descomprime el ZIP y abre <strong>INICIO.html</strong> en tu navegador. Guarda la carpeta completa antes de la defensa.</p>
+        <p><a href={asset('/defensa-anexos')}>Anexos para preguntas</a> · <a href={asset('/defensa-respaldo')}>Resultado de respaldo local</a></p>
         Atajos de teclado: <kbd>→</kbd> / <kbd>Space</kbd> siguiente &nbsp;·&nbsp;
         <kbd>←</kbd> anterior &nbsp;·&nbsp;
         <kbd>P</kbd> vista presentador &nbsp;·&nbsp;

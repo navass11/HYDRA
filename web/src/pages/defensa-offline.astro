@@ -1,5 +1,5 @@
 ---
-// defensa-offline.astro — Standalone offline thesis defense presentation (no internet needed)
+// Prepared demos; the build also packages a complete downloadable offline copy.
 import Layout from '../layouts/Layout.astro';
 import { slides as mainSlides, backupSlides } from '../data/slides';
 const reserve = Astro.props.reserve === true;
@@ -115,9 +115,9 @@ const visualSlides: Record<number, { kind: string; metric?: string; figure?: str
 ---
 
 <Layout
-  title={reserve ? 'Anexos de defensa — HYDRA' : 'Defensa Tesis — HYDRA (Offline)'}
+  title={reserve ? 'Anexos de defensa — HYDRA' : 'Defensa Tesis — HYDRA (Demos preparadas)'}
   loadWebFonts={false}
-  description="Presentación standalone de la tesis doctoral HYDRA con figuras"
+  description="Presentación de la tesis doctoral HYDRA con figuras y demos preparadas"
 >
 
 <style is:global>
@@ -2024,6 +2024,7 @@ const visualSlides: Record<number, { kind: string; metric?: string; figure?: str
     <span class="pres-counter" id="pres-counter" aria-live="polite">1 / {totalSlides}</span>
     <span class="pres-timer" id="pres-timer">⏱ 0:00</span>
     <a href={asset(reserve ? '/defensa-offline' : '/defensa-anexos')} class="pres-topbar-btn pres-support-btn" target={reserve ? undefined : '_blank'} title={reserve ? 'Volver a la presentación' : 'Abrir diapositivas de apoyo'}>{reserve ? 'Presentación' : 'Anexos'}</a>
+    <a href={asset('/defensa/hydra-defensa-sin-conexion.zip')} download class="pres-topbar-btn pres-support-btn" title="Descargar presentación y anexos para usarlos sin Internet">Descargar</a>
     <button class="pres-topbar-btn" id="btn-toggle-notes" title="Notas del presentador" aria-label="Mostrar u ocultar notas del presentador">📝</button>
     <button class="pres-topbar-btn" id="btn-fullscreen" title="Pantalla completa (F)" aria-label="Activar pantalla completa">⛶</button>
     <a href={asset('/defensa')} class="pres-topbar-btn pres-exit-btn" title="Volver" aria-label="Volver a la pantalla de inicio">✕</a>
@@ -2583,7 +2584,9 @@ const visualSlides: Record<number, { kind: string; metric?: string; figure?: str
     }
 
     // Save state
-    if (!isPreview) localStorage.setItem(storageKey, String(idx));
+    if (!isPreview) {
+      try { localStorage.setItem(storageKey, String(idx)); } catch { /* Some browsers restrict storage for local files. */ }
+    }
   }
 
   // ── Navigation ──
@@ -2641,7 +2644,8 @@ const visualSlides: Record<number, { kind: string; metric?: string; figure?: str
   btnFullscreenEl.addEventListener('click', toggleFullscreen);
 
   // ── Restore state ──
-  const stored = localStorage.getItem(storageKey);
+  let stored: string | null = null;
+  try { stored = localStorage.getItem(storageKey); } catch { /* The deck also works without saved progress. */ }
   const urlParams = new URLSearchParams(window.location.search);
   const urlSlide = urlParams.get('slide');
   const initSlide = urlSlide ? parseInt(urlSlide) : (stored ? parseInt(stored) : 0);
