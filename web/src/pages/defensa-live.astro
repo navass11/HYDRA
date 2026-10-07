@@ -668,7 +668,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     <span class="live-timer" id="live-timer">⏱ 0:00</span>
     <button class="live-topbar-btn live-topbar-btn-primary" id="btn-present" title="Abre la vista de presentador en otra ventana y pone esta pantalla en modo proyección" aria-label="Abrir vista de presentador">🎬 Presentar</button>
     <button class="live-topbar-btn" id="btn-panel-toggle" title="Mostrar u ocultar el panel lateral (N)" aria-label="Mostrar panel lateral" aria-expanded="false">Mostrar Panel</button>
-    <button class="live-topbar-btn active" id="btn-projection" title="Activar modo proyección (M)" aria-label="Activar modo proyección" aria-pressed="false">📺 Proyectar</button>
+    <button class="live-topbar-btn active" id="btn-projection" title="Activar o desactivar proyección (M)" aria-label="Activar modo proyección" aria-keyshortcuts="M" aria-pressed="false">📺 Proyectar (M)</button>
     <button class="live-topbar-btn" id="btn-notes" title="Abrir notas en otra pantalla (P)" aria-label="Abrir vista de presentador">📝 Presentador (P)</button>
     <button class="live-topbar-btn" id="btn-fullscreen" title="Pantalla completa (F)" aria-label="Activar pantalla completa" aria-pressed="false">⛶ Pantalla completa</button>
     <a href={asset('/defensa')} class="live-topbar-btn exit" title="Volver" aria-label="Volver a la pantalla de inicio">✕ Salir</a>
@@ -783,7 +783,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   <div class="live-bottombar" id="live-bottombar">
     <button class="live-nav-btn" id="live-prev" disabled>← Anterior</button>
     <div aria-hidden="true" style="flex:1"></div>
-    <span class="live-keys">← → Space · M=Proyección · P=Notas</span>
+    <span class="live-keys">← → Espacio · M: activar/salir de proyección · P: presentador · F: pantalla completa</span>
     <input class="live-go-input" id="live-go" type="number" min="1" max={totalSlides} value="1" title="Ir al slide" />
     <button class="live-nav-btn live-nav-next" id="live-next">Siguiente →</button>
   </div>
@@ -1111,13 +1111,13 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     if (val) {
       panel.classList.add('collapsed');
       const projectionButton = document.getElementById('btn-projection')!;
-      projectionButton.textContent = '📺 Normal';
+      projectionButton.textContent = '📺 Salir de proyección (M)';
       projectionButton.setAttribute('aria-label', 'Salir del modo proyección');
       projectionButton.setAttribute('aria-pressed', 'true');
     } else {
       if (panelOpen) panel.classList.remove('collapsed');
       const projectionButton = document.getElementById('btn-projection')!;
-      projectionButton.textContent = '📺 Proyectar';
+      projectionButton.textContent = '📺 Proyectar (M)';
       projectionButton.setAttribute('aria-label', 'Activar modo proyección');
       projectionButton.setAttribute('aria-pressed', 'false');
     }

@@ -46,7 +46,11 @@ try{
   await cp(local(asset),destination); // Missing assets fail the build.
  }
  await writeFile(join(bundle,'LEEME.txt'),'Descomprime toda la carpeta HYDRA-defensa y abre INICIO.html en el navegador. No necesitas Internet ni servidor. Conserva assets junto a los HTML. Las demos son capturas preparadas. Los enlaces externos requieren Internet. Las notas se abren con P.\n');
- await writeFile(join(bundle,'INICIO.html'),`<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HYDRA · Defensa sin conexión</title><style>body{margin:0;background:#123b4a;color:#eef5f2;font:18px/1.6 system-ui,sans-serif}main{max-width:760px;margin:8vh auto;padding:24px}h1{line-height:1.15}a{color:#b8e2d9}nav{display:flex;flex-wrap:wrap;gap:20px;margin:32px 0}a:focus-visible{outline:3px solid #e1a184;outline-offset:5px}</style><main><h1>Defensa de tesis · HYDRA</h1><p>Copia completa para usar sin conexión. Presentación, figuras, demos preparadas guardadas en tu ordenador.</p><nav><a href="presentacion.html">Abrir presentación</a><a href="anexos.html">Abrir anexos</a></nav><p>Usa las flechas para cambiar de diapositiva, P para ver las notas y F para activar pantalla completa.</p><p>Las herramientas en vivo y los enlaces externos requieren Internet.</p></main></html>`);
+ const countSlides=async name=>(await readFile(join(bundle,name),'utf8')).match(/data-idx="/g)?.length ?? 0;
+ const home=(await readFile(join(root,'scripts/templates/defensa-inicio.html'),'utf8'))
+  .replace('{{slides}}',String(await countSlides('presentacion.html')))
+  .replace('{{annexes}}',String(await countSlides('anexos.html')));
+ await writeFile(join(bundle,'INICIO.html'),home);
  const output=join(dist,'defensa/hydra-defensa-sin-conexion.zip');await mkdir(dirname(output),{recursive:true});
  execFileSync('python3',['-c','import pathlib,sys,zipfile\nroot=pathlib.Path(sys.argv[1])\nwith zipfile.ZipFile(sys.argv[2],"w",zipfile.ZIP_DEFLATED) as z:\n for p in sorted(root.rglob("*")):\n  if p.is_file(): z.write(p,p.relative_to(root.parent))',bundle,output]);
  console.log(`Offline defense: ${Math.round((await stat(output)).size/1024/1024)} MB`);

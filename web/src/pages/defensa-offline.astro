@@ -2011,6 +2011,7 @@ const visualSlides: Record<number, { kind: string; metric?: string; figure?: str
 </style>
 
 <div class="pres-shell" id="pres-shell" data-reserve={reserve ? 'true' : 'false'}>
+  <button class="projection-return" id="btn-exit-projection" type="button" aria-label="Salir del modo proyección" aria-keyshortcuts="M">Salir de proyección (M)</button>
 
   <!-- Top bar -->
   <div class="pres-topbar">
@@ -2026,6 +2027,7 @@ const visualSlides: Record<number, { kind: string; metric?: string; figure?: str
     <a href={asset(reserve ? '/defensa-offline' : '/defensa-anexos')} class="pres-topbar-btn pres-support-btn" target={reserve ? undefined : '_blank'} title={reserve ? 'Volver a la presentación' : 'Abrir diapositivas de apoyo'}>{reserve ? 'Presentación' : 'Anexos'}</a>
     <a href={asset('/defensa/hydra-defensa-sin-conexion.zip')} download class="pres-topbar-btn pres-support-btn" title="Descargar presentación y anexos para usarlos sin Internet">Descargar</a>
     <button class="pres-topbar-btn" id="btn-toggle-notes" title="Notas del presentador" aria-label="Mostrar u ocultar notas del presentador">📝</button>
+    <button class="pres-topbar-btn" id="btn-projection" type="button" title="Activar o desactivar proyección (M)" aria-label="Activar modo proyección" aria-pressed="false" aria-keyshortcuts="M">Proyectar (M)</button>
     <button class="pres-topbar-btn" id="btn-fullscreen" title="Pantalla completa (F)" aria-label="Activar pantalla completa">⛶</button>
     <a href={asset('/defensa')} class="pres-topbar-btn pres-exit-btn" title="Volver" aria-label="Volver a la pantalla de inicio">✕</a>
   </div>
@@ -2593,6 +2595,20 @@ const visualSlides: Record<number, { kind: string; metric?: string; figure?: str
   document.getElementById('pres-next')!.addEventListener('click', () => goTo(current + 1));
   document.getElementById('pres-prev')!.addEventListener('click', () => goTo(current - 1));
 
+  // Projection fills the viewport without entering browser fullscreen.
+  const shell = document.getElementById('pres-shell')!;
+  const projectionButton = document.getElementById('btn-projection')!;
+  let projectionMode = false;
+  function setProjectionMode(active: boolean) {
+    if (isPreview) return;
+    projectionMode = active;
+    shell.classList.toggle('is-projecting', active);
+    projectionButton.setAttribute('aria-pressed', String(active));
+    projectionButton.setAttribute('aria-label', active ? 'Salir del modo proyección' : 'Activar modo proyección');
+  }
+  projectionButton.addEventListener('click', () => setProjectionMode(!projectionMode));
+  document.getElementById('btn-exit-projection')!.addEventListener('click', () => setProjectionMode(false));
+
   // ── Fullscreen (cross-browser: Safari needs the webkit-prefixed API) ──
   function isFullscreen() {
     const d = document as any;
@@ -2625,6 +2641,8 @@ const visualSlides: Record<number, { kind: string; metric?: string; figure?: str
     if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
     if (e.key === 'ArrowLeft')  { e.preventDefault(); goTo(current - 1); }
     if (e.key === 'f' || e.key === 'F') toggleFullscreen();
+    if (e.key === 'm' || e.key === 'M') { e.preventDefault(); setProjectionMode(!projectionMode); }
+    if (e.key === 'Escape' && projectionMode) setProjectionMode(false);
     if (e.key === 'p' || e.key === 'P') {
       notesVisible = !notesVisible;
       notesPanel.style.display = notesVisible ? '' : 'none';
@@ -2654,3 +2672,21 @@ const visualSlides: Record<number, { kind: string; metric?: string; figure?: str
 </script>
 
 </Layout>
+
+<style>
+  .projection-return { display:none; }
+  .pres-shell.is-projecting .pres-topbar,
+  .pres-shell.is-projecting .pres-bottombar,
+  .pres-shell.is-projecting .pres-notes-panel { display:none !important; }
+  .pres-shell.is-projecting .projection-return {
+    display:block; position:absolute; right:12px; top:12px; z-index:100;
+    padding:8px 12px; border:1px solid #8dafab; border-radius:4px;
+    background:#173d46; color:#edf5f2; font:500 13px/1.4 system-ui,sans-serif;
+    cursor:pointer; opacity:.3; transition:opacity .15s;
+  }
+  .pres-shell.is-projecting .projection-return:hover,
+  .pres-shell.is-projecting .projection-return:focus-visible { opacity:1; }
+  .projection-return:focus-visible { outline:3px solid #e1a184; outline-offset:3px; }
+  .pres-shell.is-preview .projection-return { display:none !important; }
+  @media(prefers-reduced-motion:reduce) { .projection-return { transition:none !important; } }
+</style>

@@ -11,7 +11,7 @@
     <text x="14" y="36" font-size="19" font-weight="600" fill="#13323A">1 Serie observada</text>
     <polyline points="16,170 30,160 42,166 54,140 66,162 78,150 90,168 102,120 114,158 126,150 138,164 150,96 162,152 174,160 186,138 198,166 212,150" fill="none" stroke="#13323A" stroke-width="2"/>
     <line x1="16" y1="182" x2="214" y2="182" stroke="#4A6870"/>
-    <text x="14" y="202" font-size="15" fill="#4A6870">registros cortos y extremos raros</text>
+    <text x="14" y="202" font-size="15" fill="#4A6870">series cortas · extremos raros</text>
   </g>
 
   <line x1="246" y1="125" x2="276" y2="125" stroke="#3F8E93" stroke-width="3" marker-end="url(#a)"/>
@@ -30,7 +30,7 @@
       <polyline points="16,156 40,170 64,160 88,142 112,126 136,166 160,118 184,154 212,112"/>
     </g>
     <line x1="16" y1="182" x2="214" y2="182" stroke="#4A6870"/>
-    <text x="14" y="202" font-size="15" fill="#4A6870">clima y dependencia conservados</text>
+    <text x="14" y="202" font-size="15" fill="#4A6870">clima y dependencia</text>
   </g>
 
   <line x1="520" y1="125" x2="550" y2="125" stroke="#3F8E93" stroke-width="3" marker-end="url(#a)"/>
@@ -60,7 +60,7 @@
       <path d="M0 100 C60 92 90 118 140 108 C190 98 220 116 260 110 V124 C220 130 190 112 140 122 C90 132 60 106 0 114 Z" fill="#3F8E93"/>
       <path d="M0 114 C60 106 90 132 140 122 C190 112 220 130 260 124 V134 C220 140 190 124 140 134 C90 142 60 118 0 126 Z" fill="#A9D2CC"/>
     </g>
-    <text x="14" y="232" font-size="15" fill="#4A6870">un mapa de calado por escenario simulado</text>
+    <text x="14" y="232" font-size="15" fill="#4A6870">un mapa por escenario simulado</text>
   </g>
 
   <line x1="316" y1="420" x2="346" y2="420" stroke="#3F8E93" stroke-width="3" marker-end="url(#a)"/>

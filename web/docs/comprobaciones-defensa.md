@@ -82,3 +82,12 @@ Quedan dos comprobaciones humanas: ensayo oral cronometrado completo y prueba en
 ## Evidencia conservada
 
 La captura de cierre del presentador está en `outputs/defensa-qa-2026-10-06/presentador.png`. Las capturas temporales del 5 de octubre no se conservaron tras el reinicio del entorno; este informe registra su alcance sin ofrecer enlaces a archivos desaparecidos.
+
+## Revisión de desbordamientos — 7 de octubre de 2026
+
+- Medidas de texto SVG frente a sus recuadros en las 24 figuras vectoriales. Corregidas cuatro figuras: cadena convencional (mensaje en dos líneas y flechas ajustadas), cadena estocástica (leyendas), fuentes de datos (estaciones en dos líneas) y objetivos/evidencias (título dividido).
+- 156 comprobaciones de la presentación: 52 diapositivas a 1920×1080, 1024×768 y 390×844; sin texto fuera del lienzo ni desbordamiento horizontal en los elementos medidos.
+- 39 comprobaciones de anexos: 13 diapositivas en las mismas tres resoluciones, sin incidencias detectadas.
+- Las 52 diapositivas también medidas en modo proyección, sin desbordamientos detectados.
+- Compilación y regeneración del ZIP correctas. Copia de Descargas actualizada. Las comprobaciones se ejecutaron mediante el navegador MCP sobre la vista previa HTTP; el navegador automatizado no permite abrir `file://`.
+- Evidencia: `outputs/azure-deploy-2026-10-07/revision-desbordamientos.json` y `textos-corregidos.png`. Las medidas son geométricas y no analizan texto incrustado en imágenes rasterizadas ni garantizan idénticas métricas en otras fuentes o navegadores.
