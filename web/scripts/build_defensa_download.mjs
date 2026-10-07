@@ -17,7 +17,9 @@ function rewrite(url){
  if(path==='/defensa/hydra-defensa-sin-conexion.zip'||! /\.[a-z0-9]+$/i.test(path))return 'INICIO.html';
  assets.add(path);return `assets${path}${suffix}`;
 }
-const css=text=>text.replace(/url\(\s*(['"]?)([^)'"\s]+)\1\s*\)/g,(_,q,url)=>`url("${rewrite(url)}")`);
+// Keep URLs unquoted: this also processes CSS inside double-quoted HTML style
+// attributes, where inserting another double quote would break the markup.
+const css=text=>text.replace(/url\(\s*(['"]?)([^)'"\s]+)\1\s*\)/g,(_,q,url)=>`url(${rewrite(url)})`);
 try{
  await mkdir(bundle,{recursive:true});
  for(const [route,name] of routes){
@@ -25,10 +27,13 @@ try{
   let html=await readFile(join(dist,route,'index.html'),'utf8');
   for(const m of [...html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"[^>]*><\/script>/g)]){
    const result=await build({entryPoints:[local(m[1])],bundle:true,write:false,format:'iife',target:'es2020',minify:true});
-   html=html.replace(m[0],`<script type="module">${result.outputFiles[0].text.replace(/<\/script/gi,'<\\/script')}</script>`);
+   html=html.replace(m[0],()=>`<script type="module">${result.outputFiles[0].text.replace(/<\/script/gi,'<\\/script')}</script>`);
   }
   for(const m of [...html.matchAll(/<link\b[^>]*href="([^"]+)"[^>]*>/g)]){
-   if(/rel="stylesheet"/.test(m[0]))html=html.replace(m[0],`<style>${m[1].startsWith('/')?css(await readFile(local(m[1]),'utf8')):''}</style>`);
+   if(/rel="stylesheet"/.test(m[0])){
+    const stylesheet=m[1].startsWith('/')?css(await readFile(local(m[1]),'utf8')):'';
+    html=html.replace(m[0],()=>`<style>${stylesheet}</style>`);
+   }
    else if(/rel="(?:preconnect|modulepreload)"/.test(m[0]))html=html.replace(m[0],'');
   }
   html=html.replace(/\b(src|href)="([^"]+)"/g,(_,attr,url)=>`${attr}="${rewrite(url)}"`);

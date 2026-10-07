@@ -1,6 +1,9 @@
 server {
     listen 80;
     server_name _;
+    # TLS terminates at Azure's ingress. Directory redirects must remain relative
+    # so embedded slides never get redirected from HTTPS to HTTP.
+    absolute_redirect off;
 
     # JupyterLab: WebSocket + HTTP proxy. In Docker Compose this points to the
     # jupyter service; in Azure Container Apps it points to the local sidecar.
