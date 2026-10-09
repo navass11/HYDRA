@@ -2423,7 +2423,11 @@ const visualSlides: Record<number, { kind: string; metric?: string; figure?: str
 
     <!-- Notes panel -->
     <div class="pres-notes-panel" id="notes-panel" style="display: none;">
-      <span class="notes-label">🎙 Notas del presentador</span>
+      <span class="notes-label">🎙 Diálogo · demos preparadas</span>
+      <div class="notes-text" id="notes-speech">—</div>
+      <span class="notes-label">Transición a la siguiente diapositiva</span>
+      <div class="notes-text" id="notes-transition">—</div>
+      <span class="notes-label">Notas para preparar la exposición</span>
       <div class="notes-text" id="notes-text">—</div>
       <div class="notes-next">
         <div class="notes-next-label">→ Siguiente</div>
@@ -2569,6 +2573,8 @@ const visualSlides: Record<number, { kind: string; metric?: string; figure?: str
     });
 
     // Notes
+    document.getElementById('notes-speech')!.textContent = slide.script;
+    document.getElementById('notes-transition')!.textContent = slide.transition ?? '—';
     notesText.textContent = slide.notes ?? '—';
     const nextSlide = slides[idx + 1];
     notesNext.textContent = nextSlide ? `${idx + 2}. ${nextSlide.title}` : 'Fin de la presentación';

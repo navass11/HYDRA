@@ -1,4 +1,71 @@
-# HYDRA web en Azure
+# HYDRA en Azure: Jupyter independiente
+
+## Configuración de menor consumo (9 de octubre de 2026)
+
+- `hydra-web`: web (0,25 CPU / 0,5 GiB) y API (0,5 CPU / 1 GiB).
+- `hydra-jupyter`: Jupyter (1 CPU / 2 GiB), con ingreso **interno HTTPS**.
+- Ambas aplicaciones escalan entre 0 y 1 réplicas de forma independiente.
+- La web conserva `/jupyter/` y `/api/notebooks/session`; el proxy y la API
+  llaman al FQDN interno de Jupyter. Abrir una página o una diapositiva ya no
+  arranca el laboratorio. Abrir un notebook sí puede iniciar un arranque en frío.
+- Los montajes `hydra-data-readonly` y `hydra-sessions` se conservan; no se
+  mueven ni borran los datos ni las copias de trabajo.
+- Los kernels inactivos se cierran después de 30 minutos según la configuración
+  existente. Cerrar las pestañas de Jupyter permite que cese el tráfico y la
+  aplicación pueda escalar a cero. Guardar los notebooks antes de cerrar.
+- La reserva conjunta de la web/API baja de 1,75 CPU / 3,5 GiB a
+  0,75 CPU / 1,5 GiB (57 % menos). Esto no es una promesa de ahorro mensual:
+  Jupyter sigue facturando durante su uso; registro y almacenamiento continúan.
+
+Despliegue aplicado: web `20261009-jupyter-split-v2`; API y Jupyter mantienen
+`f3d42fdb`. La comprobación abrió el notebook de extremos GEV a través de
+`/api/notebooks/session`, con su sesión persistente y el kernel conectado.
+
+### Migración única desde los tres contenedores
+
+Construir y subir una imagen web con `docker/nginx.conf.template` actualizado.
+Usar una etiqueta inmutable y la sesión Azure CLI de la suscripción correspondiente.
+
+```bash
+python3 deploy/azure/separate_jupyter.py \
+  --web-image hydratoolsacr.azurecr.io/hydra-web:ETIQUETA
+# Revisar outputs/azure-jupyter-separation/plan.json; este comando no cambia Azure.
+python3 deploy/azure/separate_jupyter.py \
+  --web-image hydratoolsacr.azurecr.io/hydra-web:ETIQUETA --apply
+```
+
+El script lee la configuración real, conserva la imagen y las variables de
+Jupyter y sus volúmenes, reutiliza exclusivamente los secretos necesarios y
+crea el laboratorio interno antes de retirar el contenedor de `hydra-web`.
+Los secretos solo pasan por un fichero temporal de permisos 0600 que se elimina.
+La configuración previa sin valores de secretos queda en `before.json`.
+Verificar la revisión saludable, `/api/health` y un notebook existente.
+
+Para revertir la migración, aplicar el `properties.template` de `before.json`
+a `hydra-web` mediante PATCH de Resource Manager. Recupera la imagen web anterior,
+las rutas localhost y el contenedor Jupyter; las sesiones siguen en Azure Files.
+Después de comprobar la reversión, detener el Jupyter independiente para evitar
+mantener dos laboratorios sobre el mismo almacenamiento.
+
+### Actualizaciones posteriores
+
+```bash
+./deploy/azure/deploy.sh ETIQUETA
+```
+
+El helper actualiza web y API en `hydra-web`, y Jupyter en `hydra-jupyter`.
+Para cambios de un único componente, actualizar solo ese componente.
+GitHub Actions construye las imágenes y muestra el comando; **no actualiza
+Azure por sí solo**.
+
+---
+
+## Procedimiento anterior: despliegue con Jupyter como contenedor acompañante
+
+Los pasos siguientes documentan la configuración anterior. Para nuevas
+actualizaciones utilizar el helper anterior; los comandos que señalan el
+contenedor Jupyter dentro de `hydra-web` solo aplican antes de la migración.
+
 
 Este documento recoge los comandos usados para desplegar HYDRA en Azure y el
 flujo para volver a subir cambios de codigo.

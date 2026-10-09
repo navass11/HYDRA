@@ -25,6 +25,7 @@ export interface Slide {
   // Slide texts
   script: string;        // Presenter speech / guion
   quote?: string;        // Short on-screen statement for quote slides (the script stays in the notes)
+  transition?: string;   // Spoken bridge to the next slide in the current order
   notes?: string;        // Private presenter guide notes
   bullets?: string[];    // Bullet points shown on slide
   mathBlock?: string;    // Custom HTML/MathML for mathematical equations
@@ -89,7 +90,7 @@ export const slideLibrary: Slide[] = [
     figureCaption: 'Cuenca, observación y clima: el sistema físico que la arquitectura debe representar bajo incertidumbre',
     script: 'El título resume el alcance de la tesis y conviene interpretar cada término. “Modelo” no significa un nuevo solver hidráulico: significa una cadena completa de cálculo. “Automático” indica que los datos, los métodos estadísticos, los escenarios y los modelos físicos pueden encadenarse sin repetir manualmente tareas frágiles. “Inundación” señala que el resultado relevante no es únicamente la lluvia o el caudal, sino el impacto hidráulico: calado y extensión inundada. Y “estocástica” significa que no se estudia un único evento de diseño, sino una población de escenarios plausibles que representa la variabilidad y la incertidumbre. Esta definición exige además reproducibilidad operativa: conocer de dónde procede cada entrada, repetir las transformaciones, conservar las salidas en formatos estándar y registrar la configuración que produjo cada resultado. Por tanto, el modelo automático de inundación estocástica es una arquitectura reproducible que lleva la incertidumbre desde los datos hasta la variable sobre la que se toman decisiones.',
     processSteps:['Entradas trazables','Escenarios plausibles','Modelos físicos','Frecuencia del impacto'],
-    notes: 'Cita literal (cap. 1, primer párrafo, antes de la sección de antecedentes): "En esta memoria, el modelo automático de inundación estocástica que recoge el título se entiende en sentido amplio: no como un único motor hidráulico o algoritmo aislado, sino como una arquitectura reproducible de cálculo. Su núcleo central es pyhydra, la librería Python donde se implementan los módulos científicos y técnicos; HYDRA designa la plataforma que integra ese núcleo con web, notebooks, Docker y servicios de apoyo. [...] Es la automatización de esa cadena completa, y no de un componente particular, lo que constituye el objeto central de la investigación. [...] el término reproducible se emplea en un sentido operativo [...] que se concreta en cuatro contratos verificables: entradas trazables, transformaciones reproducibles, salidas en formatos estándar y registro suficiente para auditar cada resultado."\n\nDeliberadamente NO se explica aquí el nombre HYDRA en detalle — solo se menciona que existe una plataforma con nombre propio. La explicación completa del nombre (la metáfora de la hidra mitológica) se reserva para la siguiente diapositiva, junto con el origen y la mención industrial, para no saturar esta diapositiva y dar a cada idea el espacio que merece.',
+    notes: 'Cita literal (cap. 1, primer párrafo, antes de la sección de antecedentes): "En esta memoria, el modelo automático de inundación estocástica que recoge el título se entiende en sentido amplio: no como un único motor hidráulico o algoritmo aislado, sino como una arquitectura reproducible de cálculo. Su núcleo central es pyhydra, la librería Python donde se implementan los módulos científicos y técnicos; HYDRA designa la plataforma que integra ese núcleo con web, notebooks, Docker y servicios de apoyo. [...] Es la automatización de esa cadena completa, y no de un componente particular, lo que constituye el objeto central de la investigación. [...] el término reproducible se emplea en un sentido operativo [...] que se concreta en cuatro contratos verificables: entradas trazables, transformaciones reproducibles, salidas en formatos estándar y registro suficiente para auditar cada resultado."\n\nDeliberadamente NO se explica aquí el nombre HYDRA en detalle — solo se menciona que existe una plataforma con nombre propio. En la siguiente diapositiva se explica el origen del trabajo en el TFM. La metáfora del nombre HYDRA puede comentarse al presentar el producto, una vez explicada la arquitectura.',
     bullets: [
       'Modelo: arquitectura completa de cálculo, no un nuevo motor hidráulico.',
       'Automático: ejecución repetible de tareas que manualmente son lentas y frágiles.',
@@ -1060,7 +1061,7 @@ export const slideLibrary: Slide[] = [
     subtitle: 'La modelación estocástica es el hilo que conecta datos, clima, física e impacto',
     estimatedMinutes: 2,
     script: 'Este gráfico sitúa los nueve casos según su escala espacial, de una infraestructura a varios países, y según la dimensión que validan. Los puntos rellenos son los casos que hoy se reproducen con notebooks en HYDRA: Calle 30, Besaya y Valencia; los demás se documentan desde su publicación o su proyecto. El argumento común es que la modelación estocástica no es una herramienta aislada, sino el principio que obliga a representar muchos forzamientos, propagarlos por la hidrología y la hidráulica y estimar la frecuencia sobre la variable que decide: caudal, calado, extensión o nivel. pyhydra aporta el núcleo común y HYDRA hace visible, reproducible y transferible la cadena.',
-    notes: 'Esta es la diapositiva de síntesis del bloque. Hacer una pausa antes de pasar a las hipótesis. No enumerar otra vez los nueve casos: responder a “¿qué aprendemos de todos ellos juntos?”.',
+    notes: 'Esta es la diapositiva de síntesis del bloque. Hacer una pausa antes de presentar la producción científica; después se delimita la autoría y se cierran las hipótesis. No enumerar otra vez los nueve casos: responder a “¿qué aprendemos de todos ellos juntos?”.',
     bullets: [
       'La lluvia de diseño es una entrada; el riesgo se decide con la distribución del impacto.',
       'Cada caso activa herramientas diferentes porque la cadena física y los datos disponibles también son diferentes.',
@@ -1134,7 +1135,7 @@ export const slideLibrary: Slide[] = [
     estimatedMinutes: 3,
     type: 'normal',
     script: 'La memoria separa sus aportaciones en tres niveles, precisamente para responder a la pregunta de qué hay de nuevo. En la base, las metodologías incorporadas, que reconozco como conocimiento previo: extremos, L-momentos, inferencia bayesiana, cópulas, generadores, corrección de sesgo, MaxDiss y k-NN, y los motores externos. En medio, los desarrollos de la tesis: los catorce submódulos, los adaptadores para cuatro motores y los flujos reproducibles. Y arriba, la contribución original: la integración extremo a extremo, la reproducibilidad sistemática y la transferencia a proyectos reales. La mención industrial reside en que esos resultados pueden reproducirse por terceros con los mismos datos y la misma infraestructura, con la salvedad, que la propia memoria reconoce, de los motores sujetos a licencia.',
-    notes: 'Leer las aportaciones despacio. Destacar la transferencia industrial como valor principal.\n\n❓ "¿Qué hay de nuevo aquí si todos los métodos están tomados de otros trabajos?" → Esta es precisamente la pregunta que la memoria anticipa con esta taxonomía de tres niveles: la novedad es la integración de extremo a extremo con interfaces estandarizadas, y la transferencia demostrada en 9 casos heterogéneos sin tocar el núcleo — no un algoritmo nuevo.\n\nCierra el arco narrativo abierto en la diapositiva 2 (origen y mención industrial): allí se planteó la mención industrial como pregunta, aquí se cierra como conclusión verificada.',
+    notes: 'Leer las aportaciones despacio. Destacar la transferencia industrial como valor principal.\n\n❓ "¿Qué hay de nuevo aquí si todos los métodos están tomados de otros trabajos?" → Esta es precisamente la pregunta que la memoria anticipa con esta taxonomía de tres niveles: la novedad es la integración de extremo a extremo con interfaces estandarizadas, y la transferencia demostrada en 9 casos heterogéneos sin tocar el núcleo — no un algoritmo nuevo.\n\nRecuperar el origen presentado en «El TFM y el artículo que originan esta tesis» y la aportación anticipada después de los objetivos. Delimitar la contribución sin confundir transferencia industrial con los requisitos administrativos de la mención.',
     results: [
       { value:'Extremo a extremo', label:'integración funcional', implication:'datos, estadística, escenarios, modelos físicos e impacto' },
       { value:'Trazable', label:'reproducibilidad sistemática', implication:'cada resultado conserva fuente, método y configuración' },
@@ -1422,10 +1423,71 @@ function pacingMinutes(slide: Slide): number {
   return Math.round((speech + 0.15 + (slide.figure ? 0.15 : 0) + (slide.webMode === 'demo' ? 1.5 : 0)) * 10) / 10;
 }
 
+// Bridges belong to a pair of slides, rather than an old slide number.
+const spokenBridges = new Map<number, { nextId: number; text: string }>([
+  [1, { nextId: 4, text: "Para situar el recorrido, empezaré por la estructura académica que seguirá la exposición." }],
+  [4, { nextId: 44, text: "Con este recorrido en mente, fijemos primero por qué el problema merece esta investigación." }],
+  [44, { nextId: 2, text: "Con esa necesidad presente, voy a explicar qué significa cada parte del título." }],
+  [2, { nextId: 3, text: "El origen concreto de esta pregunta está en un trabajo anterior sobre el río Besaya." }],
+  [3, { nextId: 45, text: "Ese primer caso resolvió una aplicación, pero también dejó al descubierto una limitación más general." }],
+  [45, { nextId: 4.5, text: "A continuación, presentaré por qué es necesaria esta tesis." }],
+  [4.5, { nextId: 5.5, text: "Para entender la brecha, repasemos antes cómo se estima habitualmente una inundación." }],
+  [5.5, { nextId: 6, text: "La cadena convencional funciona físicamente; el problema aparece al asignar frecuencia al impacto." }],
+  [6, { nextId: 7, text: "A partir de ese problema se formula la hipótesis que voy a contrastar." }],
+  [7, { nextId: 8, text: "La hipótesis se concreta en una pregunta que guía el trabajo completo." }],
+  [8, { nextId: 8.5, text: "Para responderla, la investigación se organiza en un objetivo general y cuatro compromisos." }],
+  [8.5, { nextId: 4.6, text: "Con los objetivos fijados, anticipo qué aporta la tesis antes de explicar cómo se ha investigado." }],
+  [4.6, { nextId: 8.6, text: "Para llegar a esas aportaciones, la investigación siguió una estrategia verificable." }],
+  [8.6, { nextId: 46, text: "Para situar esta estrategia en el estado de la técnica, veamos qué exige una cadena estocástica completa." }],
+  [46, { nextId: 9, text: "Estas necesidades se incorporaron progresivamente durante la evolución de la investigación." }],
+  [9, { nextId: 10, text: "Con esa evolución como contexto, comparemos la propuesta con los marcos integrados más próximos." }],
+  [10, { nextId: 47, text: "La metodología de la tesis ordena esas responsabilidades antes de implementarlas." }],
+  [47, { nextId: 11, text: "Con el mapa metodológico claro, veamos cómo se organiza técnicamente la solución." }],
+  [11, { nextId: 12, text: "La arquitectura debe poder ejecutarse de manera estable en equipos distintos." }],
+  [12, { nextId: 5, text: "Ese despliegue convierte la arquitectura en un producto utilizable." }],
+  [5, { nextId: 12.6, text: "El producto se apoya en módulos especializados que siguen una misma cadena." }],
+  [12.6, { nextId: 13, text: "Comencemos la cadena por el elemento que condiciona todo análisis: los datos." }],
+  [13, { nextId: 14, text: "Una vez preparados los datos, estimamos la frecuencia de los extremos." }],
+  [14, { nextId: 15, text: "Los extremos marginales no bastan cuando varias variables dependen entre sí." }],
+  [15, { nextId: 16, text: "Esa dependencia permite generar escenarios conjuntos físicamente plausibles." }],
+  [16, { nextId: 17, text: "Los escenarios solo son útiles si se propagan por modelos de respuesta física." }],
+  [17, { nextId: 18, text: "La plataforma ofrece acceso a estas operaciones desde herramientas interactivas." }],
+  [18, { nextId: 19, text: "Voy a ilustrar esa operación con un único ejemplo de ajuste de extremos." }],
+  [19, { nextId: 27, text: "Tras esta demostración, volvamos a la evidencia acumulada en los casos." }],
+  [27, { nextId: 29, text: "Los casos se agrupan por lo que validan; empecemos por el origen conceptual." }],
+  [29, { nextId: 28, text: "El caso fundacional abrió también una pregunta sobre la sensibilidad hidráulica." }],
+  [28, { nextId: 30, text: "Después, la metodología se amplió a una cuenca torrencial con pocos aforos." }],
+  [30, { nextId: 31, text: "El siguiente paso fue aplicar la cadena completa a una infraestructura urbana crítica." }],
+  [31, { nextId: 32, text: "La ficha de Calle 30 permite comprobar cómo se documenta esta cadena." }],
+  [32, { nextId: 33, text: "El siguiente caso estudia cómo actualizar los extremos tras un evento sin precedente." }],
+  [33, { nextId: 34, text: "Estas cifras también están documentadas en la ficha reproducible de Valencia." }],
+  [34, { nextId: 35, text: "Pasamos ahora a niveles de diseño en un lago con registros limitados." }],
+  [35, { nextId: 36, text: "A continuación, la escala regional exige automatizar calibraciones hidrológicas." }],
+  [36, { nextId: 39, text: "El trabajo de IAHR 2022 permite cuantificar cómo cambia el diseño al cambiar la metodología." }],
+  [39, { nextId: 38, text: "La transferencia también importa para la gestión de embalses bajo cambio climático." }],
+  [38, { nextId: 37, text: "El caso de Panamá lleva la automatización a una escala territorial nacional." }],
+  [37, { nextId: 48, text: "Reunamos ahora las cifras que sostienen la contribución de los casos." }],
+  [48, { nextId: 39.5, text: "Las cifras cobran sentido al compararlas con el argumento común de la tesis." }],
+  [39.5, { nextId: 39.6, text: "Esa evidencia se traduce también en producción científica y software preservado." }],
+  [39.6, { nextId: 39.7, text: "Antes de cerrar, delimitaré mi contribución dentro de los trabajos compartidos." }],
+  [39.7, { nextId: 55, text: "La tabla siguiente concreta mi contribución en cada publicación." }],
+  [55, { nextId: 40, text: "Con mi contribución delimitada, revisemos las hipótesis una por una." }],
+  [40, { nextId: 41, text: "El cierre de las hipótesis permite responder con precisión qué es original." }],
+  [41, { nextId: 42, text: "Toda contribución debe presentarse junto con sus límites y el trabajo pendiente." }],
+  [42, { nextId: 42.5, text: "Después de exponer los límites, quiero agradecer a quienes hicieron posible este recorrido." }],
+  [42.5, { nextId: 43, text: "Termino reuniendo en una frase el resultado y el reto que queda abierto." }],
+]);
+
 export const slides = slideLibrary
   .filter(slide => !slide.backup)
   .sort((a, b) => presentationRank(a) - presentationRank(b))
-  .map(slide => ({ ...slide, estimatedMinutes: pacingMinutes(slide) }));
+  .map((slide, index, ordered) => {
+    const next = ordered[index + 1];
+    const bridge = spokenBridges.get(slide.id);
+    return { ...slide, estimatedMinutes: pacingMinutes(slide), transition: next
+      ? (bridge?.nextId === next.id ? bridge.text : `A continuación, presentaré ${next.title.toLowerCase()}.`)
+      : 'Muchas gracias. Cedo la palabra al tribunal.' };
+  });
 export const backupSlides = slideLibrary.filter(slide => slide.backup).map(slide => ({ ...slide, estimatedMinutes: pacingMinutes(slide) }));
 export const totalSlides = slides.length;
 // Includes speech at 115 words/min, transitions, figures and a brief live demo.

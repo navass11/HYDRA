@@ -16,6 +16,11 @@ TAG="$1"
 RG="VisualStudioOnline-3F607BE982BD4B06820771DA8F2FFB4B"
 APP="hydra-web"
 REG="hydratoolsacr.azurecr.io"
+JUPYTER_APP="hydra-jupyter"
+# Backward compatible until the one-time migration has been applied.
+if az containerapp show -n "$APP" -g "$RG" --query "properties.template.containers[?name=='jupyter'].name" -o tsv | grep -q jupyter; then
+  JUPYTER_APP="$APP"
+fi
 
 if [[ "$TAG" == "latest" ]]; then
   echo "Refusing to deploy 'latest'." >&2
@@ -27,6 +32,6 @@ echo "Deploying tag: $TAG"
 
 az containerapp update -n "$APP" -g "$RG" --container-name web     --image "$REG/hydra-web:$TAG"     --output none
 az containerapp update -n "$APP" -g "$RG" --container-name api     --image "$REG/hydra-api:$TAG"     --output none
-az containerapp update -n "$APP" -g "$RG" --container-name jupyter --image "$REG/hydra-jupyter:$TAG" --output none
+az containerapp update -n "$JUPYTER_APP" -g "$RG" --container-name jupyter --image "$REG/hydra-jupyter:$TAG" --output none
 
 echo "Done — https://hydra-web.yellowwave-5aaa93b0.spaincentral.azurecontainerapps.io"

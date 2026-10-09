@@ -742,6 +742,8 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
         <div>
           <div class="panel-section-label">🎙 Guion para leer</div>
           <div class="panel-script" id="panel-script"></div>
+          <div class="panel-section-label">Transición a la siguiente diapositiva</div>
+          <div class="panel-script" id="panel-transition"></div>
         </div>
 
         <!-- Bullets preview -->
@@ -784,7 +786,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     <button class="live-nav-btn" id="live-prev" disabled>← Anterior</button>
     <div aria-hidden="true" style="flex:1"></div>
     <span class="live-keys">← → Espacio · M: activar/salir de proyección · P: presentador · F: pantalla completa</span>
-    <input class="live-go-input" id="live-go" type="number" min="1" max={totalSlides} value="1" title="Ir al slide" />
+    <input class="live-go-input" id="live-go" type="number" min="1" max={totalSlides} value="1" title="Ir a la diapositiva (Intro)" aria-label="Número de diapositiva" />
     <button class="live-nav-btn live-nav-next" id="live-next">Siguiente →</button>
   </div>
 </div>
@@ -827,6 +829,11 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     <div>
       <span class="panel-section-label">🎙 Lo que debes decir (Guion)</span>
       <div id="pres-win-speech" style="font-size:16px; line-height:1.6; color:#e2e8f0; font-style:italic; border-left:4px solid #0d9488; padding-left:16px; margin-top:6px;">—</div>
+    </div>
+
+    <div>
+      <span class="panel-section-label">Transición a la siguiente diapositiva</span>
+      <div class="panel-script" id="pres-win-transition"></div>
     </div>
 
     <!-- Notes & expected tribunal questions -->
@@ -1082,7 +1089,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
         type: 'defensa-command',
         anchor: slide.anchor ?? null,
         highlight: slide.highlight ?? null,
-      }, '*');
+      }, window.location.origin);
     } catch (_) {}
   }
 
@@ -1093,7 +1100,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       try {
         iframeCurrentPath = new URL(iframe.src).pathname;
       } catch (_) {}
-      setTimeout(() => sendToIframe(slides[current]), 600);
+      if (slides[current]?.webMode) sendToIframe(slides[current]);
     });
   }
 
@@ -1414,6 +1421,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     if (current === idx) return;
     current = idx;
     const slide = slides[idx];
+    iframe.contentWindow?.postMessage({ type: 'defensa-command', anchor: null, highlight: null }, window.location.origin);
 
     // If we are in the presenter window, update notes-only presentation layout
     if (isPresenterWindow) {
@@ -1423,6 +1431,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       const nextSlide = slides[idx + 1];
       presWinNextBlock.textContent = nextSlide ? `${nextSlide.block} · ~${nextSlide.estimatedMinutes} min` : 'FIN';
       presWinSpeech.textContent = slide.script;
+      document.getElementById('pres-win-transition')!.textContent = slide.transition ?? '';
       presWinNotes.textContent = slide.notes ?? 'Sin anotaciones privadas para esta sección.';
       presWinNextTitle.textContent = nextSlide ? `${idx + 2}. ${nextSlide.title}` : 'Fin de la presentación / Ronda de preguntas';
 
@@ -1507,6 +1516,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     }
     if (panelScriptEl) {
       panelScriptEl.textContent = slide.script;
+      document.getElementById('panel-transition')!.textContent = slide.transition ?? '';
       panelScriptEl.style.borderColor = slide.blockColor;
     }
 
@@ -1682,12 +1692,16 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   }
 
   if (goInput) {
-    goInput.addEventListener('change', () => {
+    const jumpToSlide = () => {
       const n = parseInt(goInput.value) - 1;
       if (!isNaN(n)) {
         goTo(Math.min(Math.max(0, n), totalSlides - 1));
         broadcastChange(current);
       }
+    };
+    goInput.addEventListener('change', jumpToSlide);
+    goInput.addEventListener('keydown', event => {
+      if (event.key === 'Enter') { event.preventDefault(); jumpToSlide(); }
     });
   }
 

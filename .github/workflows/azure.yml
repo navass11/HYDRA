@@ -9,6 +9,8 @@ on:
       - 'pyhydra/**'
       - 'web/**'
       - 'notebooks/**'
+      - 'deploy/azure/**'
+      - '.github/workflows/azure.yml'
   workflow_dispatch:
 
 permissions:
@@ -93,14 +95,6 @@ jobs:
       # Run this from your local terminal after the workflow finishes:
       - name: Print container app update command
         run: |
-          TAG="${{ steps.meta.outputs.tag }}"
-          echo "============================================================"
-          echo "Images pushed. Run locally to deploy to Container Apps:"
-          echo ""
-          echo "  az containerapp update -n $CONTAINER_APP -g $RESOURCE_GROUP \\"
-          echo "    --container-name web    --image $REGISTRY/hydra-web:${TAG}"
-          echo "  az containerapp update -n $CONTAINER_APP -g $RESOURCE_GROUP \\"
-          echo "    --container-name api    --image $REGISTRY/hydra-api:${TAG}"
-          echo "  az containerapp update -n $CONTAINER_APP -g $RESOURCE_GROUP \\"
-          echo "    --container-name jupyter --image $REGISTRY/hydra-jupyter:${TAG}"
-          echo "============================================================"
+          echo "Images pushed. Deploy locally with the immutable tag:"
+          echo "  ./deploy/azure/deploy.sh ${{ steps.meta.outputs.tag }}"
+          echo "The helper detects whether Jupyter runs in hydra-jupyter or in the legacy sidecar."

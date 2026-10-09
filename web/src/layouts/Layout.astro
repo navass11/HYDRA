@@ -163,46 +163,62 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
                 50%{box-shadow:0 0 0 8px rgba(13,148,136,.07),0 0 44px rgba(13,148,136,.5)}
               }
               #__defensa_ring__[data-active]{animation:__defensa_pulse__ 2s ease-in-out infinite}
+              @media (prefers-reduced-motion: reduce) { #__defensa_ring__ {animation:none !important; transition:none !important;} }
             `;
             document.head.appendChild(style);
           }
           return ring;
         }
 
-        window.addEventListener('message', function (e) {
-          if (e.origin !== window.location.origin) return;
-          if (!e.data || e.data.type !== 'defensa-command') return;
-          const { anchor, highlight } = e.data;
-
-          // Scroll
-          if (anchor) {
-            try {
-              const el = document.querySelector(anchor);
-              if (el) el.scrollIntoView({ behavior: 'instant', block: 'center' });
-            } catch (_) {}
+        let showTimer;
+        let hideTimer;
+        let cueFrame;
+        function clearHighlight() {
+          cancelAnimationFrame(cueFrame);
+          clearTimeout(showTimer);
+          clearTimeout(hideTimer);
+          const ring = document.getElementById('__defensa_ring__');
+          if (ring) {
+            ring.removeAttribute('data-active');
+            ring.style.opacity = '0';
           }
-
-          // Highlight ring
-          const ring = getOrCreateRing();
-          ring.removeAttribute('data-active');
-          ring.style.opacity = '0';
-
-          if (highlight) {
-            setTimeout(function () {
+        }
+        // Manual interaction dismisses the temporary cue and cancels pending cues.
+        document.addEventListener('pointerdown', clearHighlight, true);
+        document.addEventListener('wheel', clearHighlight, { passive: true });
+        document.addEventListener('scroll', function () {
+          if (document.getElementById('__defensa_ring__')?.hasAttribute('data-active')) clearHighlight();
+        }, { passive: true, capture: true });
+        document.addEventListener('keydown', clearHighlight, true);
+        window.addEventListener('pagehide', clearHighlight);
+        window.addEventListener('resize', clearHighlight);
+        window.addEventListener('message', function (e) {
+          if (e.origin !== window.location.origin || e.source !== window.parent) return;
+          if (!e.data || e.data.type !== 'defensa-command') return;
+          clearHighlight();
+          const { anchor, highlight } = e.data;
+          if (anchor) {
+            try { document.querySelector(anchor)?.scrollIntoView({ behavior: 'instant', block: 'center' }); } catch (_) {}
+          }
+          if (!highlight) return;
+          cueFrame = requestAnimationFrame(function () {
+            showTimer = setTimeout(function () {
               try {
                 const target = document.querySelector(highlight);
                 if (!target) return;
+                const ring = getOrCreateRing();
                 const rect = target.getBoundingClientRect();
                 const pad = 8;
-                ring.style.top    = (rect.top - pad) + 'px';
-                ring.style.left   = (rect.left - pad) + 'px';
-                ring.style.width  = (rect.width + pad * 2) + 'px';
-                ring.style.height = (rect.height + pad * 2) + 'px';
+                ring.style.top = Math.max(4, rect.top - pad) + 'px';
+                ring.style.left = Math.max(4, rect.left - pad) + 'px';
+                ring.style.width = Math.max(0, Math.min(innerWidth - 4, rect.right + pad) - Math.max(4, rect.left - pad)) + 'px';
+                ring.style.height = Math.max(0, Math.min(innerHeight - 4, rect.bottom + pad) - Math.max(4, rect.top - pad)) + 'px';
                 ring.style.opacity = '1';
                 ring.setAttribute('data-active', '1');
+                hideTimer = setTimeout(clearHighlight, 3500);
               } catch (_) {}
-            }, 500);
-          }
+            }, 100);
+          });
         });
 
         // Forward navigation keys to the parent when embedded in the defensa-live iframe.

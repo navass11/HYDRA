@@ -72,3 +72,8 @@ data/swat/
 notebooks/**/soilgrids_raw
 notebooks/**/build
 notebooks/**/.ipynb_checkpoints
+
+# Internal preparation documents and local evidence never enter runtime images.
+outputs/
+.claude/
+web/docs/guion-vivo-defensa.md
