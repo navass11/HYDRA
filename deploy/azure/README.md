@@ -8,6 +8,9 @@
 - La web conserva `/jupyter/` y `/api/notebooks/session`; el proxy y la API
   llaman al FQDN interno de Jupyter. Abrir una página o una diapositiva ya no
   arranca el laboratorio. Abrir un notebook sí puede iniciar un arranque en frío.
+- La API declara sondas de arranque y disponibilidad en el puerto 8000.
+  Azure espera a que `/api/health` responda antes de dirigir tráfico a la réplica,
+  evitando un error 502 cuando nginx arranca antes que FastAPI.
 - Los montajes `hydra-data-readonly` y `hydra-sessions` se conservan; no se
   mueven ni borran los datos ni las copias de trabajo.
 - Los kernels inactivos se cierran después de 30 minutos según la configuración

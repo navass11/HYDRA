@@ -61,6 +61,16 @@ def main():
     web_template = copy.deepcopy(template)
     web_template.pop('revisionSuffix', None)
     web_template['containers'] = [c for c in web_template['containers'] if c['name'] != 'jupyter']
+    for container in web_template['containers']:
+        if container['name'] == 'api':
+            probes = [p for p in container.get('probes', []) if p.get('type') not in {'Startup', 'Readiness'}]
+            probes.extend([
+                {'type': 'Startup', 'tcpSocket': {'port': 8000}, 'periodSeconds': 3,
+                 'timeoutSeconds': 3, 'failureThreshold': 60},
+                {'type': 'Readiness', 'httpGet': {'path': '/api/health', 'port': 8000},
+                 'periodSeconds': 3, 'timeoutSeconds': 3, 'failureThreshold': 3},
+            ])
+            container['probes'] = probes
     web_template['scale']['minReplicas'] = 0
     web_template['scale']['maxReplicas'] = 1
     environment = props.get('environmentId') or props['managedEnvironmentId']
