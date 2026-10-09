@@ -11,6 +11,9 @@
 - La API declara sondas de arranque y disponibilidad en el puerto 8000.
   Azure espera a que `/api/health` responda antes de dirigir tráfico a la réplica,
   evitando un error 502 cuando nginx arranca antes que FastAPI.
+- Al abrir un notebook, la API espera hasta 180 segundos al laboratorio interno
+  y reintenta durante su arranque en frío. No lo consulta durante la navegación
+  normal. Una indisponibilidad prolongada devuelve 503 con `Retry-After`.
 - Los montajes `hydra-data-readonly` y `hydra-sessions` se conservan; no se
   mueven ni borran los datos ni las copias de trabajo.
 - Los kernels inactivos se cierran después de 30 minutos según la configuración
@@ -20,7 +23,7 @@
   0,75 CPU / 1,5 GiB (57 % menos). Esto no es una promesa de ahorro mensual:
   Jupyter sigue facturando durante su uso; registro y almacenamiento continúan.
 
-Despliegue aplicado: web `20261009-jupyter-split-v2`; API y Jupyter mantienen
+Despliegue aplicado: web `20261009-jupyter-split-v2`; API `20261009-jupyter-cold-start`; Jupyter mantiene
 `f3d42fdb`. La comprobación abrió el notebook de extremos GEV a través de
 `/api/notebooks/session`, con su sesión persistente y el kernel conectado.
 

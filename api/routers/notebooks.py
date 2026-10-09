@@ -20,10 +20,37 @@ JUPYTER_SESSIONS_PATH = os.environ.get("HYDRA_JUPYTER_SESSIONS_PATH", "data/jupy
 COOKIE_NAME = "hydra_jupyter_session"
 SESSION_RE = re.compile(r"^[a-zA-Z0-9_-]{12,80}$")
 
-# In Azure Container Apps all sidecars share the same network namespace, so
-# Jupyter is reachable on localhost.  Override with JUPYTER_INTERNAL_URL for
-# Docker Compose (http://jupyter:8888) or other environments.
+# Local sidecars use localhost; Azure uses the HTTPS FQDN of the separate
+# internal Jupyter app. Only opening a notebook wakes that application.
 JUPYTER_INTERNAL_URL = os.environ.get("JUPYTER_INTERNAL_URL", "http://127.0.0.1:8888").rstrip("/")
+
+JUPYTER_STARTUP_TIMEOUT_SECONDS = max(30.0, float(os.environ.get("JUPYTER_STARTUP_TIMEOUT_SECONDS", "180")))
+
+
+async def _wait_for_jupyter() -> None:
+    """Wake an independently scaled Jupyter app and wait through its cold start."""
+    loop = asyncio.get_running_loop()
+    deadline = loop.time() + JUPYTER_STARTUP_TIMEOUT_SECONDS
+    async with httpx.AsyncClient() as client:
+        while loop.time() < deadline:
+            try:
+                response = await client.get(
+                    f"{JUPYTER_INTERNAL_URL}/jupyter/api/status",
+                    timeout=min(10.0, max(0.1, deadline - loop.time())),
+                )
+                if response.status_code == 200:
+                    return
+                if response.status_code not in (502, 503, 504):
+                    raise HTTPException(status_code=502, detail="No se puede acceder al laboratorio de notebooks.")
+            except httpx.TransportError:
+                pass  # Azure may still be pulling the image or starting the replica.
+            await asyncio.sleep(min(2.0, max(0.0, deadline - loop.time())))
+    raise HTTPException(
+        status_code=503,
+        detail="El laboratorio sigue arrancando. Vuelve a abrir el notebook en unos segundos.",
+        headers={"Retry-After": "10"},
+    )
+
 
 _SKIP_NAMES = {".ipynb_checkpoints", "__pycache__", "build", "dist"}
 # Strips accidental session-prefixed paths such as:
@@ -377,6 +404,7 @@ async def open_notebook_session(
 ):
     relative = _safe_relative_notebook(path)
     session_id = _valid_or_new_session(hydra_jupyter_session, new)
+    await _wait_for_jupyter()
 
     async with httpx.AsyncClient(timeout=30.0) as client:
         if await _session_exists(client, session_id):

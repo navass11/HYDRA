@@ -1,0 +1,5 @@
+# Small operational update using the already deployed scientific environment.
+# Normal GitHub builds still use api/Dockerfile to build the complete image.
+ARG BASE_IMAGE=hydratoolsacr.azurecr.io/hydra-api:f3d42fdb
+FROM ${BASE_IMAGE}
+COPY api/routers/notebooks.py /app/api/routers/notebooks.py
