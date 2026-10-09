@@ -272,6 +272,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
   </div>
 
   <script>
+import { newPlot, reactPlot } from '../../lib/plot-theme';
     const API_URL = (document.getElementById('app')?.dataset.apiUrl ?? 'http://localhost:8000') + '/api/hydraulic/compute';
 
     // ── Sliders ──────────────────────────────────────────────────────────────
@@ -486,10 +487,10 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
       });
 
       if (!longInit) {
-        Plotly.newPlot('plot-long', traces, layout, {responsive:true, displayModeBar:false});
+        newPlot('plot-long', traces, layout, {responsive:true, displayModeBar:false});
         longInit = true;
       } else {
-        Plotly.react('plot-long', traces, layout, {responsive:true, displayModeBar:false});
+        reactPlot('plot-long', traces, layout, {responsive:true, displayModeBar:false});
       }
     }
 
@@ -550,10 +551,10 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
       });
 
       if (!mapInit) {
-        Plotly.newPlot('plot-map', [traceTerrain, traceWater], layout, {responsive:true, displayModeBar:false});
+        newPlot('plot-map', [traceTerrain, traceWater], layout, {responsive:true, displayModeBar:false});
         mapInit = true;
       } else {
-        Plotly.react('plot-map', [traceTerrain, traceWater], layout, {responsive:true, displayModeBar:false});
+        reactPlot('plot-map', [traceTerrain, traceWater], layout, {responsive:true, displayModeBar:false});
       }
     }
 
@@ -589,10 +590,10 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
       });
 
       if (!xsInit) {
-        Plotly.newPlot('plot-xs', traces, layout, {responsive:true, displayModeBar:false});
+        newPlot('plot-xs', traces, layout, {responsive:true, displayModeBar:false});
         xsInit = true;
       } else {
-        Plotly.react('plot-xs', traces, layout, {responsive:true, displayModeBar:false});
+        reactPlot('plot-xs', traces, layout, {responsive:true, displayModeBar:false});
       }
     }
 

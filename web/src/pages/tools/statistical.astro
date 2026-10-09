@@ -140,6 +140,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
 </Layout>
 
 <script>
+import { newPlot, reactPlot } from '../../lib/plot-theme';
 declare const Plotly: any;
 
 const t = (es: string, en: string) => document.documentElement.lang === 'en' ? en : es;
@@ -288,7 +289,7 @@ function renderResults(data: any) {
   const chartFont = { ...layoutBase.font, color: dark ? '#cbd5e1' : '#475569' };
   const chartGrid = dark ? '#334155' : '#e2e8f0';
 
-  Plotly.newPlot('chart-return-levels', [
+  newPlot('chart-return-levels', [
     { x: periods, y: q95, mode: 'lines', line: { width: 0 }, showlegend: false, hoverinfo: 'skip' },
     { x: periods, y: q05, fill: 'tonexty', mode: 'lines', line: { width: 0 }, fillcolor: 'rgba(79,70,229,0.18)', name: 'P5-P95' },
     { x: periods, y: point, mode: 'lines+markers', line: { color: '#0d9488', width: 3 }, marker: { size: 7 }, name: 'MAP' },
@@ -300,7 +301,7 @@ function renderResults(data: any) {
     legend: { orientation: 'h', y: -0.22 },
   }, { responsive: true, displayModeBar: false });
 
-  Plotly.newPlot('chart-maxima', [{
+  newPlot('chart-maxima', [{
     x: data.maxima.map((m: any) => m.year),
     y: data.maxima.map((m: any) => m.value),
     type: 'bar',

@@ -1,0 +1,151 @@
+/* HYDRA: cool paper, deep water and teal controls. Figures share these tokens. */
+:root {
+  color-scheme: light;
+  --hydra-page: #ffffff;
+  --hydra-surface: #ffffff;
+  --hydra-plot: #f8fafc;
+  --hydra-text: #23354b;
+  --hydra-muted: #526276;
+  --hydra-grid: #d6dfe8;
+  --hydra-border: #b8c6d4;
+  --hydra-control-border: #7a8ea3;
+  --hydra-accent: #0f766e;
+}
+html.dark {
+  color-scheme: dark;
+  --hydra-page: #0b1726;
+  --hydra-surface: #17283b;
+  --hydra-plot: #102033;
+  --hydra-text: #e8eff6;
+  --hydra-muted: #aabacc;
+  --hydra-grid: #334a62;
+  --hydra-border: #526b83;
+  --hydra-control-border: #718ca8;
+  --hydra-accent: #5eead4;
+}
+html body.bg-white.text-gray-900 { background-color: var(--hydra-page); color: var(--hydra-text); }
+/* These editorial sections and code blocks retain their intentional dark canvas. */
+body :is(.hydra-dark-surface, .bg-slate-950, .bg-slate-900, .bg-gray-950, .bg-gray-900, pre) {
+  --hydra-surface: #17283b; --hydra-plot: #102033;
+  --hydra-text: #e8eff6; --hydra-muted: #aabacc;
+  --hydra-grid: #334a62; --hydra-border: #526b83;
+  color-scheme: dark;
+}
+body :is(.text-gray-900, .text-gray-800, .text-gray-700, .text-slate-900, .text-slate-800, .text-slate-700) { color: var(--hydra-text); }
+body :is(.text-gray-600, .text-gray-500, .text-gray-400, .text-slate-600, .text-slate-500, .text-slate-400) { color: var(--hydra-muted); }
+body :is(.text-white\/60, .text-white\/65, .text-white\/70, .text-white\/75, .text-white\/80) { color: #e5edf4; }
+html.dark header { background: rgba(11, 23, 38, .96); border-color: var(--hydra-border); }
+html.dark :is(.bg-white, .bg-gray-50):not([class*="dark:bg-"]):not(body) { background-color: var(--hydra-surface); }
+html.dark :is(.dark\:bg-slate-800, .dark\:bg-gray-800) { background-color: var(--hydra-surface); }
+html.dark .bg-white\/75 { background-color: rgba(23, 40, 59, .9); }
+html.dark .bg-white\/90 { background-color: rgba(11, 23, 38, .96); }
+html.dark :is(.border-gray-100, .border-gray-200, .border-slate-200, .border-slate-200\/80) { border-color: var(--hydra-border); }
+html.dark :is(.shadow-sm, .shadow-lg, .shadow-xl, .shadow-2xl) { box-shadow: none; }
+body :is(input:not([type="range"]):not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), select, textarea) {
+  background-color: var(--hydra-surface); color: var(--hydra-text); border-color: var(--hydra-control-border);
+}
+body :is(input, textarea)::placeholder { color: var(--hydra-muted); opacity: 1; }
+body :is(input[type="checkbox"], input[type="radio"], input[type="range"]) { accent-color: #0f766e; }
+html.dark input[type="range"] { background-color: #526b83; }
+body :is(a, button, input, select, textarea, [tabindex="0"]):focus-visible { outline: 2px solid var(--hydra-accent); outline-offset: 3px; }
+body :is(button, a).bg-hydra-600, body :is(button, a).bg-teal-600 { background-color: #0f766e; color: #ffffff; }
+body :is(button, a).bg-cyan-600 { background-color: #0e7490; color: #ffffff; }
+body :is(button, a).bg-sky-600 { background-color: #0369a1; color: #ffffff; }
+body :is(button, a).bg-orange-600, body :is(button, a).bg-orange-500 { background-color: #c2410c; color: #ffffff; }
+body :is(button, a).bg-amber-600 { background-color: #b45309; color: #ffffff; }
+body :is(button, a).bg-emerald-600 { background-color: #047857; color: #ffffff; }
+body :is(button, a):disabled { opacity: .65; cursor: not-allowed; }
+/* Map tiles and popup content are a fixed light reading surface in either theme. */
+body .leaflet-container {
+  --hydra-surface: #ffffff; --hydra-text: #23354b; --hydra-muted: #526276;
+  --hydra-border: #b8c6d4; color-scheme: light; color: #23354b;
+}
+body .leaflet-popup-content-wrapper, body .leaflet-popup-tip { background: #ffffff; color: #23354b; }
+body .leaflet-popup-content { color: #23354b; line-height: 1.55; }
+body .leaflet-control { color: #23354b; }
+body .leaflet-bar a { background-color: #ffffff; color: #23354b; }
+body .js-plotly-plot .modebar { background-color: var(--hydra-surface); }
+body .js-plotly-plot .modebar-btn path { fill: var(--hydra-muted); }
+/* Readable figure captions; the original scientific SVG/PNG colors are preserved. */
+body [role="img"] { max-width: 100%; }
+/* Let figure panels scroll internally instead of widening their parent grid. */
+body .grid > * { min-width: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .fade-in { opacity: 1; transform: none; transition: none; }
+  html { scroll-behavior: auto; }
+}
+
+/* Semantic tints: adapt foreground and background together. */
+html.dark :is(.bg-hydra-50, .bg-hydra-100) { background-color: rgba(20,184,166, .16); }
+html.dark :is(.text-hydra-600, .text-hydra-700, .text-hydra-800, .text-hydra-900) { color: #5eead4; }
+html.dark :is(.border-hydra-100, .border-hydra-200) { border-color: rgba(20,184,166, .5); }
+html.dark :is(.bg-sky-50, .bg-sky-100) { background-color: rgba(14,165,233, .16); }
+html.dark :is(.text-sky-600, .text-sky-700, .text-sky-800, .text-sky-900) { color: #7dd3fc; }
+html.dark :is(.border-sky-100, .border-sky-200) { border-color: rgba(14,165,233, .5); }
+html.dark :is(.bg-orange-50, .bg-orange-100) { background-color: rgba(249,115,22, .16); }
+html.dark :is(.text-orange-600, .text-orange-700, .text-orange-800, .text-orange-900) { color: #fdba74; }
+html.dark :is(.border-orange-100, .border-orange-200) { border-color: rgba(249,115,22, .5); }
+html.dark :is(.bg-indigo-50, .bg-indigo-100) { background-color: rgba(99,102,241, .16); }
+html.dark :is(.text-indigo-600, .text-indigo-700, .text-indigo-800, .text-indigo-900) { color: #a5b4fc; }
+html.dark :is(.border-indigo-100, .border-indigo-200) { border-color: rgba(99,102,241, .5); }
+html.dark :is(.bg-violet-50, .bg-violet-100) { background-color: rgba(139,92,246, .16); }
+html.dark :is(.text-violet-600, .text-violet-700, .text-violet-800, .text-violet-900) { color: #c4b5fd; }
+html.dark :is(.border-violet-100, .border-violet-200) { border-color: rgba(139,92,246, .5); }
+html.dark :is(.bg-purple-50, .bg-purple-100) { background-color: rgba(168,85,247, .16); }
+html.dark :is(.text-purple-600, .text-purple-700, .text-purple-800, .text-purple-900) { color: #d8b4fe; }
+html.dark :is(.border-purple-100, .border-purple-200) { border-color: rgba(168,85,247, .5); }
+html.dark :is(.bg-teal-50, .bg-teal-100) { background-color: rgba(20,184,166, .16); }
+html.dark :is(.text-teal-600, .text-teal-700, .text-teal-800, .text-teal-900) { color: #5eead4; }
+html.dark :is(.border-teal-100, .border-teal-200) { border-color: rgba(20,184,166, .5); }
+html.dark :is(.bg-cyan-50, .bg-cyan-100) { background-color: rgba(6,182,212, .16); }
+html.dark :is(.text-cyan-600, .text-cyan-700, .text-cyan-800, .text-cyan-900) { color: #67e8f9; }
+html.dark :is(.border-cyan-100, .border-cyan-200) { border-color: rgba(6,182,212, .5); }
+html.dark :is(.bg-emerald-50, .bg-emerald-100) { background-color: rgba(16,185,129, .16); }
+html.dark :is(.text-emerald-600, .text-emerald-700, .text-emerald-800, .text-emerald-900) { color: #6ee7b7; }
+html.dark :is(.border-emerald-100, .border-emerald-200) { border-color: rgba(16,185,129, .5); }
+html.dark :is(.bg-green-50, .bg-green-100) { background-color: rgba(34,197,94, .16); }
+html.dark :is(.text-green-600, .text-green-700, .text-green-800, .text-green-900) { color: #86efac; }
+html.dark :is(.border-green-100, .border-green-200) { border-color: rgba(34,197,94, .5); }
+html.dark :is(.bg-rose-50, .bg-rose-100) { background-color: rgba(244,63,94, .16); }
+html.dark :is(.text-rose-600, .text-rose-700, .text-rose-800, .text-rose-900) { color: #fda4af; }
+html.dark :is(.border-rose-100, .border-rose-200) { border-color: rgba(244,63,94, .5); }
+html.dark :is(.bg-red-50, .bg-red-100) { background-color: rgba(239,68,68, .16); }
+html.dark :is(.text-red-600, .text-red-700, .text-red-800, .text-red-900) { color: #fca5a5; }
+html.dark :is(.border-red-100, .border-red-200) { border-color: rgba(239,68,68, .5); }
+html.dark :is(.bg-amber-50, .bg-amber-100) { background-color: rgba(245,158,11, .16); }
+html.dark :is(.text-amber-600, .text-amber-700, .text-amber-800, .text-amber-900) { color: #fcd34d; }
+html.dark :is(.border-amber-100, .border-amber-200) { border-color: rgba(245,158,11, .5); }
+html.dark :is(.bg-yellow-50, .bg-yellow-100) { background-color: rgba(234,179,8, .16); }
+html.dark :is(.text-yellow-600, .text-yellow-700, .text-yellow-800, .text-yellow-900) { color: #fde047; }
+html.dark :is(.border-yellow-100, .border-yellow-200) { border-color: rgba(234,179,8, .5); }
+html.dark :is(.bg-blue-50, .bg-blue-100) { background-color: rgba(59,130,246, .16); }
+html.dark :is(.text-blue-600, .text-blue-700, .text-blue-800, .text-blue-900) { color: #93c5fd; }
+html.dark :is(.border-blue-100, .border-blue-200) { border-color: rgba(59,130,246, .5); }
+html.dark :is(.bg-fuchsia-50, .bg-fuchsia-100) { background-color: rgba(217,70,239, .16); }
+html.dark :is(.text-fuchsia-600, .text-fuchsia-700, .text-fuchsia-800, .text-fuchsia-900) { color: #f0abfc; }
+html.dark :is(.border-fuchsia-100, .border-fuchsia-200) { border-color: rgba(217,70,239, .5); }
+/* Explicit Tailwind dark variants also need a readable secondary ink. */
+html.dark :is(.dark\:text-slate-500, .dark\:text-gray-500, .dark\:text-gray-400, .dark\:text-slate-400) { color: var(--hydra-muted); }
+html:not(.dark) :is(.text-hydra-600, .text-teal-600) { color: #0f766e; }
+html:not(.dark) .text-cyan-600 { color: #0e7490; }
+html:not(.dark) .text-sky-600 { color: #0369a1; }
+html:not(.dark) .text-orange-600 { color: #c2410c; }
+html:not(.dark) .text-amber-600 { color: #b45309; }
+html:not(.dark) .text-emerald-600 { color: #047857; }
+html.dark label[class*="bg-teal-50"]:has(input:checked) { background-color: rgba(20,184,166,.16); }
+html.dark label[class*="bg-violet-50"]:has(input:checked) { background-color: rgba(139,92,246,.16); }
+body .leaflet-container .leaflet-popup-close-button { color: #23354b; }
+body input[type="file"]::file-selector-button { background-color: var(--hydra-plot); color: var(--hydra-text); border: 1px solid var(--hydra-border); }
+
+.hydra-light-badge { --hydra-text: #0b1726; }
+body .notebook-card { background-color: var(--hydra-surface); color: var(--hydra-text); }
+body .notebook-card:hover { background-color: var(--hydra-plot); }
+html:not(.dark) :is(.text-red-500, .text-red-600) { color: #b91c1c; }
+html.dark :is(.text-red-500, .text-red-600) { color: #fca5a5; }
+html:not(.dark) .text-orange-500 { color: #c2410c; }
+html.dark .text-orange-500 { color: #fdba74; }
+
+body :is(button, select, input, label:has(input)).border-gray-200 { border-color: var(--hydra-control-border); }
+
+html body .leaflet-container a.leaflet-popup-close-button { color: #23354b; }
+html[data-theme-switching] *, html[data-theme-switching] *::before, html[data-theme-switching] *::after { transition: none !important; }

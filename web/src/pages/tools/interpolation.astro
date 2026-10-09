@@ -220,6 +220,7 @@ import Layout from '../../layouts/Layout.astro';
 </Layout>
 
 <script>
+import { newPlot, reactPlot } from '../../lib/plot-theme';
   const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
 declare const Plotly: any;
 
@@ -294,7 +295,7 @@ function renderMap(method: string) {
 
   const scatter = {
     type: 'scatter',
-    mode: 'markers+text',
+    mode: 'markers',
     x: _stationsData.map(s => s.lon),
     y: _stationsData.map(s => s.lat),
     text: _stationsData.map(s => String(s.observed)),
@@ -311,7 +312,16 @@ function renderMap(method: string) {
     hovertemplate: 'lon: %{x:.3f}<br>lat: %{y:.3f}<br>obs: %{text}<extra>Estación</extra>',
   };
 
-  Plotly.newPlot('chart-map', [heatmap, scatter], {
+  const stationHalo = {
+    type: 'scatter', mode: 'markers', x: scatter.x, y: scatter.y,
+    marker: { color: 'rgba(255,255,255,1)', size: 16 }, hoverinfo: 'skip', showlegend: false,
+  };
+  newPlot('chart-map', [heatmap, stationHalo, scatter], {
+    annotations: _stationsData.map(station => ({
+      x: station.lon, y: station.lat, text: String(station.observed), showarrow: false,
+      yshift: 12, yanchor: 'bottom', font: { size: 12, color: '#23354b' },
+      bgcolor: '#ffffff', bordercolor: '#526276', borderwidth: 1, borderpad: 2,
+    })),
     paper_bgcolor: 'transparent',
     plot_bgcolor: '#f8fafc',
     margin: { t: 10, r: 20, b: 50, l: 60 },

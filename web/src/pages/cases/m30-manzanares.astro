@@ -72,7 +72,7 @@ const chartData = JSON.stringify(m30Data);
     </div>
   </section>
 
-  <main class="bg-slate-950 text-white">
+  <main class="hydra-dark-surface bg-slate-950 text-white">
     <div class="max-w-7xl mx-auto px-6 py-14 space-y-16">
 
       <!-- ── RESUMEN + RETO ── -->
@@ -299,8 +299,10 @@ const chartData = JSON.stringify(m30Data);
 </Layout>
 
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" is:inline></script>
-<script define:vars={{ chartData }}>
-const DATA = JSON.parse(chartData);
+<script type="application/json" id="m30-chart-data" set:html={chartData.replace(/</g, '\\u003c')} />
+<script>
+import { newPlot } from '../../lib/plot-theme';
+const DATA = JSON.parse(document.getElementById('m30-chart-data')!.textContent!);
 
 function isDark() { return document.documentElement.classList.contains('dark'); }
 
@@ -356,7 +358,7 @@ function renderRP() {
     yaxis: { title: { text: 'Calado (m)' } },
     legend: { x: 0.04, y: 0.97 },
   });
-  Plotly.newPlot('plot-rp', traces, layout, cfg);
+  newPlot('plot-rp', traces, layout, cfg);
 }
 
 // ── Chart 2: Longitudinal profile ──────────────────────────────────────────
@@ -393,7 +395,7 @@ function renderProfile() {
     yaxis: { title: { text: 'Calado (m)' } },
     legend: { x: 0.04, y: 0.97 },
   });
-  Plotly.newPlot('plot-profile', traces, layout, cfg);
+  newPlot('plot-profile', traces, layout, cfg);
 }
 
 // ── Chart 3: Scatter events ─────────────────────────────────────────────────
@@ -417,7 +419,7 @@ function renderScatter() {
     xaxis: { title: { text: 'Duración media (h)' } },
     yaxis: { title: { text: 'Pmax acumulado (mm)' } },
   });
-  Plotly.newPlot('plot-scatter', [trace], layout, cfg);
+  newPlot('plot-scatter', [trace], layout, cfg);
 }
 
 function renderAll() {

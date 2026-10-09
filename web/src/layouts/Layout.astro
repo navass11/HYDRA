@@ -1,4 +1,5 @@
 ---
+import '../styles/theme.css';
 import { ui } from '../i18n/ui';
 import { phraseTranslations } from '../i18n/phrases';
 
@@ -281,9 +282,17 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       };
 
       const setTheme = (theme) => {
+        const changed = document.documentElement.dataset.theme !== theme;
+        if (changed) document.documentElement.dataset.themeSwitching = 'true';
         document.documentElement.classList.toggle('dark', theme === 'dark');
         document.documentElement.dataset.theme = theme;
+        window.dispatchEvent(new CustomEvent('hydra-theme-change', { detail: { theme } }));
         localStorage.setItem('hydra-theme', theme);
+        if (changed) {
+          // Apply the paired foreground/background before restoring hover transitions.
+          void document.documentElement.offsetWidth;
+          requestAnimationFrame(() => delete document.documentElement.dataset.themeSwitching);
+        }
         document.querySelectorAll('.theme-icon-light').forEach((icon) => icon.classList.toggle('hidden', theme === 'dark'));
         document.querySelectorAll('.theme-icon-dark').forEach((icon) => icon.classList.toggle('hidden', theme !== 'dark'));
       };
@@ -351,108 +360,9 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
         transform: translateY(0);
       }
       .hydra-lang-btn.is-active {
-        background: #0d9488;
+        background: #0f766e;
         color: #ffffff;
       }
-      html.dark body {
-        background: #020617;
-        color: #e5edf6;
-      }
-      html.dark header {
-        background: rgba(2, 6, 23, 0.88);
-        border-color: rgba(51, 65, 85, 0.8);
-      }
-      html.dark footer,
-      html.dark .bg-gray-950,
-      html.dark .bg-slate-950 {
-        background-color: #020617;
-      }
-      html.dark .bg-white,
-      html.dark .bg-gray-50 {
-        background-color: #0f172a;
-      }
-      html.dark .bg-white\/75 {
-        background-color: rgba(15, 23, 42, 0.82);
-      }
-      html.dark .bg-white\/90 {
-        background-color: rgba(2, 6, 23, 0.88);
-      }
-      html.dark .border-gray-100,
-      html.dark .border-gray-200,
-      html.dark .border-slate-200\/80,
-      html.dark .border-slate-200 {
-        border-color: rgba(71, 85, 105, 0.8);
-      }
-      html.dark .text-gray-900,
-      html.dark .text-gray-800,
-      html.dark .text-slate-700,
-      html.dark .text-slate-600 {
-        color: #e2e8f0;
-      }
-      html.dark .text-gray-700,
-      html.dark .text-gray-600,
-      html.dark .text-gray-500,
-      html.dark .text-gray-400,
-      html.dark .text-slate-500 {
-        color: #94a3b8;
-      }
-      html.dark input,
-      html.dark select,
-      html.dark textarea {
-        background-color: #020617;
-        border-color: #334155;
-        color: #e2e8f0;
-      }
-      html.dark .shadow-sm,
-      html.dark .shadow-lg,
-      html.dark .shadow-xl,
-      html.dark .shadow-2xl {
-        box-shadow: none;
-      }
-      /* Light-tinted *-50 backgrounds don't auto-adapt — convert to subtle dark tints */
-      html.dark .bg-hydra-50   { background-color: rgba(20, 184, 166, 0.10); }
-      html.dark .bg-sky-50     { background-color: rgba(14, 165, 233, 0.10); }
-      html.dark .bg-orange-50  { background-color: rgba(249, 115,  22, 0.10); }
-      html.dark .bg-indigo-50  { background-color: rgba(99,  102, 241, 0.10); }
-      html.dark .bg-violet-50  { background-color: rgba(139,  92, 246, 0.10); }
-      html.dark .bg-purple-50  { background-color: rgba(168,  85, 247, 0.10); }
-      html.dark .bg-teal-50    { background-color: rgba(20,  184, 166, 0.10); }
-      html.dark .bg-cyan-50    { background-color: rgba(6,   182, 212, 0.10); }
-      html.dark .bg-emerald-50 { background-color: rgba(52,  211, 153, 0.10); }
-      html.dark .bg-rose-50    { background-color: rgba(251, 113, 133, 0.10); }
-      html.dark .bg-red-50     { background-color: rgba(239,  68,  68, 0.10); }
-      html.dark .bg-amber-50   { background-color: rgba(251, 191,  36, 0.10); }
-      html.dark .bg-yellow-50  { background-color: rgba(253, 224,  71, 0.10); }
-      html.dark .bg-blue-50    { background-color: rgba(59,  130, 246, 0.10); }
-      html.dark .bg-fuchsia-50 { background-color: rgba(232,  121, 249, 0.10); }
-      /* Border counterparts */
-      html.dark .border-hydra-100  { border-color: rgba(20,  184, 166, 0.25); }
-      html.dark .border-sky-100    { border-color: rgba(14,  165, 233, 0.25); }
-      html.dark .border-orange-100 { border-color: rgba(249, 115,  22, 0.25); }
-      html.dark .border-indigo-100 { border-color: rgba(99,  102, 241, 0.25); }
-      html.dark .border-violet-100 { border-color: rgba(139,  92, 246, 0.25); }
-      html.dark .border-purple-100 { border-color: rgba(168,  85, 247, 0.25); }
-      html.dark .border-teal-100   { border-color: rgba(20,  184, 166, 0.25); }
-      html.dark .border-red-100,
-      html.dark .border-red-200    { border-color: rgba(239,  68,  68, 0.30); }
-      /* Coloured text inside these panels needs to lighten in dark mode */
-      html.dark .text-sky-900,
-      html.dark .text-sky-800    { color: #7dd3fc; }
-      html.dark .text-sky-700    { color: #38bdf8; }
-      html.dark .text-orange-900,
-      html.dark .text-orange-800 { color: #fdba74; }
-      html.dark .text-orange-700 { color: #fb923c; }
-      html.dark .text-indigo-800 { color: #a5b4fc; }
-      html.dark .text-violet-800 { color: #c4b5fd; }
-      html.dark .text-purple-800 { color: #d8b4fe; }
-      html.dark .text-teal-800   { color: #5eead4; }
-      html.dark .text-cyan-800   { color: #67e8f9; }
-      html.dark .text-emerald-700 { color: #6ee7b7; }
-      html.dark .text-rose-800   { color: #fda4af; }
-      html.dark .text-amber-800  { color: #fcd34d; }
-      html.dark .text-blue-800   { color: #93c5fd; }
-      html.dark .text-fuchsia-800 { color: #f0abfc; }
-      html.dark .text-red-700    { color: #fca5a5; }
     </style>
   </body>
 </html>

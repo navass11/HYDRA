@@ -90,7 +90,9 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
               <h3 class="font-semibold text-gray-800 mb-1">Matriz de correlación</h3>
               <p class="text-sm text-gray-400 mb-4">Correlaciones de Pearson entre métricas del ensemble.</p>
-              <div id="chart-corr" class="h-80"></div>
+              <div class="overflow-x-auto" tabindex="0" aria-label="Matriz de correlación; desplazamiento horizontal en pantallas pequeñas">
+                <div id="chart-corr" class="h-80 min-w-[420px]"></div>
+              </div>
             </div>
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
               <h3 class="font-semibold text-gray-800 mb-4">Regresiones</h3>
@@ -104,6 +106,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
 </Layout>
 
 <script>
+import { newPlot, reactPlot } from '../../lib/plot-theme';
 declare const Plotly: any;
 
 const t = (es: string, en: string) => document.documentElement.lang === 'en' ? en : es;
@@ -218,7 +221,7 @@ function fitLine(records: any[], xKey: string, yKey: string, fit: any) {
 }
 
 function scatterChart(id: string, records: any[], xKey: string, yKey: string, fit: any, title: string, color: string, yTitle: string) {
-  Plotly.newPlot(id, [
+  newPlot(id, [
     {
       x: records.map(r => r[xKey]),
       y: records.map(r => r[yKey]),
@@ -257,7 +260,7 @@ function renderResults(data: any) {
   const labels = ['manning_mean', 'manning_median', 'depth_mean', 'depth_median', 'flooded_area_km2'];
   const pretty = ['n medio', 'n mediano', 'calado medio', 'calado mediano', 'área'];
   const z = labels.map(row => labels.map(col => data.correlations[row][col]));
-  Plotly.newPlot('chart-corr', [{
+  newPlot('chart-corr', [{
     z,
     x: pretty,
     y: pretty,

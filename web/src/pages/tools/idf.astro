@@ -107,6 +107,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
 </Layout>
 
 <script>
+import { newPlot, reactPlot } from '../../lib/plot-theme';
 declare const Plotly: any;
 
 const t = (es: string, en: string) => document.documentElement.lang === 'en' ? en : es;
@@ -222,7 +223,7 @@ function renderResults(data: any) {
     marker: { size: 6 },
   }));
 
-  Plotly.newPlot('chart-idf', traces, {
+  newPlot('chart-idf', traces, {
     ...layoutBase,
     font: { ...layoutBase.font, color: fontColor() },
     xaxis: { title: t('Duración', 'Duration'), gridcolor: grid(), tickangle: -30 },

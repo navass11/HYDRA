@@ -141,6 +141,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
 </Layout>
 
 <script>
+import { newPlot, reactPlot } from '../../lib/plot-theme';
 declare const Plotly: any;
 
 const t = (es: string, en: string) => document.documentElement.lang === 'en' ? en : es;
@@ -291,7 +292,7 @@ function renderResults(data: any) {
   const varLabel = (document.getElementById('variable-select') as HTMLSelectElement).value === 'temperature'
     ? t('Temperatura (°C)', 'Temperature (°C)') : t('Precipitación (mm)', 'Precipitation (mm)');
 
-  Plotly.newPlot('chart-cdf', [
+  newPlot('chart-cdf', [
     { x: obsVals,  y: probs, mode: 'lines', name: t('Observado', 'Observed'),
       line: { color: DARK_SLATE, width: 2.5 } },
     { x: rawVals,  y: probs, mode: 'lines', name: t('Modelo (antes)', 'Model (before)'),
@@ -309,7 +310,7 @@ function renderResults(data: any) {
   // Monthly means (backend returns numeric month 1-12, translate with MONTHS array)
   const mm = data.monthly_means as {month: number, obs: number, mod_raw: number, mod_corrected: number}[];
   const monthLabels = mm.map(m => months()[m.month - 1]);
-  Plotly.newPlot('chart-monthly', [
+  newPlot('chart-monthly', [
     { x: monthLabels, y: mm.map(m => m.obs),           type: 'bar', name: t('Observado', 'Observed'),
       marker: { color: DARK_SLATE, opacity: 0.85 } },
     { x: monthLabels, y: mm.map(m => m.mod_raw),       type: 'bar', name: t('Modelo (antes)', 'Model (before)'),
