@@ -483,7 +483,7 @@ Case & Path & Open data & External engine & Reproduction \\
 \midrule
 Besaya &
 \texttt{los\_\allowbreak corrales\_\allowbreak buelna/} (9 nb.$^{\ast}$) &
-Partial & HEC-HMS, HEC-RAS & Conditioned on engine + project data \\[4pt]
+Yes (via \texttt{pyhydra-\allowbreak get-\allowbreak data}) & HEC-HMS, HEC-RAS & Conditioned on the engines \\[4pt]
 M-30 Manzanares &
 \texttt{m30\_\allowbreak manzanares/} (6 nb.) &
 Partial (synthetic-catalogue sample, archived results) & None (engine results archived) &
@@ -495,8 +495,8 @@ Open and reproducible for the single-station and pooled-regional
 analyses \\[4pt]
 {\fontsize{9}{10}\selectfont SFINCS--HEC-RAS} &
 \texttt{manning\_\allowbreak rugosidades/} (7 nb.) &
-Partial (Manning distributions open; terrain/mesh project-specific) &
-SFINCS, HEC-RAS & Conditioned on engine + project data \\
+Yes (Zenodo dataset \citep{navas2026besayadata}) &
+SFINCS, HEC-RAS & Ensemble aggregation re-runs from the archived 2$\times$1{,}000 outputs; re-simulation needs the engines \\
 \bottomrule
 \end{tabular}
 
@@ -592,6 +592,9 @@ statistics (\cref{fig:besaya-ensemble}). This section presents only the
 pyhydra ensemble-generation and aggregation workflow, on one engine, as a
 software demonstration; the resulting two-engine scientific comparison
 between SFINCS and HEC-RAS is out of scope here and reported separately.
+Model configurations (including terrain and mesh), the 1{,}000 SFINCS and
+1{,}000 HEC-RAS outputs and the derived tables are archived openly on
+Zenodo \citep{navas2026besayadata}.
 \end{sloppypar}
 
 \begin{figure}[h]
@@ -736,11 +739,16 @@ The pyhydra version described in this article is available through the
 versioned GitHub and Zenodo records in Table~\ref{tab:metadata}. The
 companion HYDRA deployment platform used to run the browser-accessible
 workflows in \cref{sec:examples} is likewise open source and MIT-licensed,
-and is archived separately \citep{navas2026hydrarepo}. The pilot workflows
-additionally consume public third-party data services cited in the text.
-Proprietary hydraulic-engine projects and restricted project datasets
-cannot be redistributed; their absence does not prevent inspection or reuse
-of the open statistical components, interfaces and example workflows.
+and is archived separately \citep{navas2026hydrarepo}. Input data for the
+Besaya, Valencia and SFINCS--HEC-RAS pilot cases, and the synthetic-event
+sample and archived results of the M-30 case, are downloadable with
+\texttt{pyhydra-get-data}. The SFINCS--HEC-RAS model configurations,
+simulation outputs, tables and scripts are additionally archived on Zenodo
+under CC-BY-4.0 \citep{navas2026besayadata}. The 1{,}761 historical M-30
+gauge events are third-party data and are not redistributed, and the
+hydrological and hydraulic engines (HEC-HMS, HEC-RAS, SFINCS, SWAT+) must be
+obtained from their developers. The pilot workflows also consume the public
+data services cited in the text.
 
 \section*{Declaration of generative AI and AI-assisted technologies in the
 manuscript preparation process}
