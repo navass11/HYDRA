@@ -86,10 +86,10 @@ the core package is installed via \texttt{pip} from its GitHub repository
 (not yet on PyPI); a companion platform, HYDRA, optionally exposes the same
 notebooks through a browser-based Docker deployment. pyhydra is illustrated
 through four flood-risk workflows at three Spanish pilot sites -- Besaya,
-M-30 Manzanares and Valencia -- spanning fluvial, urban and compound-event
-settings; at Madrid's M-30, the multivariate copula-based methodology it
-implements yields a 500-year design depth 0.83~m higher than the classical
-univariate estimate. pyhydra is released under the MIT license, archived on
+M-30 Manzanares and Valencia -- spanning fluvial, urban and extreme-rainfall
+settings; at Madrid's M-30, it re-runs the multivariate copula generation and
+MaxDiss selection of a published study whose 500-year design depth exceeded
+the classical univariate estimate by 0.83~m. pyhydra is released under the MIT license, archived on
 Zenodo, and its methodology already underpins six peer-reviewed journal
 articles from the authors' group.
 \end{abstract}
@@ -113,10 +113,10 @@ stochastic rainfall generation \sep extreme value statistics \sep uncertainty qu
 \toprule
 Nr. & Code metadata description & Metadata \\
 \midrule
-C1 & Current code version & v0.2.0 \\[3pt]
+C1 & Current code version & v0.2.1 \\[3pt]
 C2 & Permanent link to code/repository used for this code version &
-\url{https://github.com/navass11/pyhydra/tree/v0.2.0}; archived at
-\url{https://doi.org/10.5281/zenodo.21790226} \\[3pt]
+\url{https://github.com/navass11/pyhydra/tree/v0.2.1}; archived at
+\url{https://doi.org/10.5281/zenodo.TODO-DOI} \\[3pt]
 C3 & Legal code license & MIT License \\[3pt]
 C4 & Code versioning system used & git \\[3pt]
 C5 & Software code languages, tools and services used &
@@ -131,7 +131,7 @@ the \texttt{statistics}, \texttt{geospatial}, \texttt{models} and
 HEC-RAS, SFINCS, SWAT+) are not bundled and must be installed on the
 host \\[3pt]
 C7 & Link to developer documentation/manual &
-\url{https://github.com/navass11/pyhydra/tree/v0.2.0} (README,
+\url{https://github.com/navass11/pyhydra/tree/v0.2.1} (README,
 \texttt{docs/} package/installation guide, and
 \texttt{notebooks/pilot\_cases/}, which include the four illustrative
 examples of \cref{sec:examples}, inspectable and executable from this
@@ -270,8 +270,8 @@ edited the source and rendered the final figure.}
 Each pyhydra sub-module exposes its public API through its
 \texttt{\_\_init\_\_.py}, so the import pattern is always
 \texttt{from pyhydra.\allowbreak<block>.\allowbreak<module> import
-<name>}. OpenTURNS is a core dependency, installed by default with
-\texttt{pip install pyhydra}, and provides the Gaussian-copula fitting used
+<name>}. OpenTURNS is a core dependency, installed by default with the
+core package, and provides the Gaussian-copula fitting used
 by \texttt{climate.spatial\_analysis} (\cref{tab:modules}) and illustrated
 in the M-30 example of \cref{sec:examples}; it is imported lazily inside
 the specific functions that need it, following the same lazy-import
@@ -286,9 +286,9 @@ extras -- \texttt{statistics} (PyMC, pyvinecopulib, lmoments3),
 \texttt{geospatial} (GeoPandas, rasterio, pykrige, earthaccess,
 hydromt\_sfincs) and \texttt{models} (hecdss, pySWATPlus, spotpy,
 NEOPRENE), plus a legacy \texttt{geo} extra for bare GDAL bindings and an
-\texttt{all} extra covering all four -- so
-\texttt{pip install "pyhydra[statistics]"} installs exactly what a given
-workflow needs. One extended dependency, CoSMoS\_py (spatial random
+\texttt{all} extra covering all four -- so installing, for example,
+\texttt{pyhydra[statistics]} from the GitHub repository installs exactly
+what a given workflow needs. One extended dependency, CoSMoS\_py (spatial random
 fields), is not yet published on PyPI and must be installed separately
 from its own repository. HYDRA's Docker Compose stack adds the extended
 scientific dependencies and orchestrates a JupyterLab container, a FastAPI
@@ -358,7 +358,7 @@ and GeoJSON/\texttt{geopandas} as the common data currency between blocks
 and with external tools such as QGIS); and \emph{operational transfer}
 (documentation, example notebooks and a reproducible Docker environment are
 treated as first-class deliverables, not optional accessories). A
-\texttt{pytest} suite of 291 tests across seventeen modules exercises the
+\texttt{pytest} suite of 297 tests in eighteen test files exercises the
 statistical, modelling and UQ utilities most exposed to regression. A GitHub
 Actions workflow (Ubuntu, core plus lightweight extended dependencies
 including PyMC) runs this suite on every push across a Python 3.9--3.12
@@ -366,15 +366,14 @@ matrix; the one test that depends on PyMC/pytensor is still marked
 \texttt{optional\_dependency} and guarded to skip rather than fail if that
 stack is unavailable or, as happens with the older PyMC resolved on Python
 3.9, incompatible with the installed NumPy. For the code version in
-Table~\ref{tab:metadata} (commit \texttt{5552aa9}, 4 August 2026), this
-workflow reports 291/291 passed on Python 3.10--3.12 and 290 passed
-plus 1 skipped on 3.9, with 30--31\% line coverage -- concentrated in the
+Table~\ref{tab:metadata} (commit \texttt{TODO-COMMIT}, TODO-DATE), this
+workflow reports TODO-CI-RESULTS, with TODO-COV\% line coverage -- concentrated in the
 statistical and modelling-adapter code exercised directly by unit tests,
 lower in the data-connector and engine-automation modules whose
 behaviour is instead exercised, not formally verified, by the pilot-case
 notebooks of \cref{sec:examples} against real services and engines. Runs
 archived at
-\url{https://github.com/navass11/pyhydra/actions/runs/30904958268}.
+\url{https://github.com/navass11/pyhydra/actions/runs/TODO-RUN}.
 
 \paragraph{Reproducibility boundary} Reproducibility is reported at the
 level supported by each workflow. Extreme-value fitting, copula analysis
@@ -442,7 +441,7 @@ corrected = BiasCorrection.fit_transform(
     obs, hist, future, var='pr', method='qdm')
 
 # 2. Calibrate and simulate a Neyman-Scott rectangular-pulse
-#    stochastic rainfall generator (NEOPRENE)
+#    stochastic rainfall generator (NEOPRENE; 'models' extra)
 model = NSRPModel(seasonality='monthly')
 model.fit(observed_series)
 synthetic = model.simulate(year_ini=2000, year_fin=2100)
@@ -470,7 +469,7 @@ reproducibility boundary defined above, what is required to re-run it.
 \centering
 \caption{Traceability of the four illustrative workflows. Notebook paths
 are relative to
-\url{https://github.com/navass11/pyhydra/tree/v0.2.0/notebooks/pilot_cases/}.
+\url{https://github.com/navass11/pyhydra/tree/v0.2.1/notebooks/pilot_cases/}.
 ``Open data'' marks inputs redistributable in full; ``Partial'' marks
 cases where only some inputs (e.g.\ literature-based parameter
 distributions or published aggregates) are open and the remainder is
@@ -486,9 +485,10 @@ Besaya &
 Partial & HEC-HMS, HEC-RAS & Conditioned on engine + project data \\[4pt]
 M-30 Manzanares &
 \texttt{m30\_\allowbreak manzanares/} (6 nb.) &
-Partial & HEC-HMS, HEC-RAS & Conditioned on engine + project data \\[4pt]
+Partial (synthetic-catalogue sample, archived results) & None (engine results archived) &
+Copula generation and MaxDiss re-run with pyhydra; design depths read from archived engine results \\[4pt]
 Valencia DANA &
-\texttt{valencia\_\allowbreak dana/} (2 nb.) &
+\texttt{valencia\_\allowbreak dana/} (3 nb.$^{\dagger}$) &
 Yes (AEMET, via \texttt{pyhydra-\allowbreak get-\allowbreak data}) & None &
 Open and reproducible for the single-station and pooled-regional
 analyses \\[4pt]
@@ -500,10 +500,11 @@ SFINCS, HEC-RAS & Conditioned on engine + project data \\
 \end{tabular}
 
 \vspace{2pt}
-{\footnotesize $^{\ast}$Eight sequential steps (01--06, 08); step 07 has two
-notebook variants (\texttt{07\_hec\_ras\_hydraulics.ipynb}, the one
-referenced by step 06 and used for the results reported here, and an
-auxiliary \texttt{07\_hec\_ras\_hydraulics\_run.ipynb}).}
+{\footnotesize $^{\ast}$Steps 01--08 form the impact-frequency workflow;
+step 09 applies the \texttt{uq} decision layer to its MaxDiss design.
+$^{\dagger}$Steps 01--02 produce the results reported here; step 03 extends the
+regional analysis with a hierarchical Bayesian GEV (PyMC) on project data not
+distributed through \texttt{pyhydra-get-data}.}
 \end{table}
 
 \textbf{Los Corrales de Buelna (Besaya River, Cantabria).} The founding
@@ -514,27 +515,35 @@ with geostatistical event generation and k-NN probabilistic regression
 design-storm discharge, in a valley-bottom town where more than 13\% of the
 population lies within the mapped floodplain.
 
-\textbf{M-30 Manzanares (Madrid).} Reproduces the multivariate flood
-frequency methodology published by Navas et al. \citep{navas2024calle30}
-(\cref{fig:m30}): 1{,}761 historical events from 17 rain gauges are
-classified by PCA + k-means, an OpenTURNS Gaussian copula generates
-approximately one million synthetic events over the resulting parameter space, MaxDiss
-selects 1{,}000 representative events, which are simulated in HEC-HMS and
-steady-state HEC-RAS 1D (303 cross-sections), and a k-NN regressor
-reconstructs depths across the full synthetic ensemble under a compound
-Poisson frequency model. The resulting $T{=}500$-year design depth at
-Puente de Toledo exceeds the classical univariate-GEV estimate by 0.83~m
-(7.61~m vs.\ 6.78~m), illustrating how neglecting inter-gauge dependence
-can materially underestimate design hazard in a densely instrumented urban
-catchment.
+\textbf{M-30 Manzanares (Madrid).} Re-runs the statistical core of the
+multivariate flood-frequency study of Navas et al. \citep{navas2024calle30}
+(\cref{fig:m30}). In that study, 1{,}761 historical events from 17 rain
+gauges were classified by PCA + k-means. A Gaussian copula then generated
+approximately one million synthetic events, from which MaxDiss selected 625
+representative events for HEC-HMS and steady-state HEC-RAS 1D (303
+cross-sections). A k-NN regressor reconstructed depths across the synthetic
+ensemble under a compound Poisson frequency model. The resulting
+$T{=}500$-year design depth at Puente de Toledo exceeded the classical
+univariate-GEV estimate by 0.83~m (7.61~m vs.\ 6.78~m). The historical gauge
+events and the engine runs cannot be redistributed. The notebook sequence
+therefore fits pyhydra's \texttt{FloodEventCopula} to an archived
+10{,}000-event sample of the original synthetic catalogue. The fit uses an
+OpenTURNS Normal copula over 84 variables, with zero-inflated marginals for
+dry gauges. It regenerates 100{,}000 events that reproduce the sample's
+dry-gauge shares and its full rank-dependence structure (mean
+$|\Delta\rho| = 0.011$ over 3{,}486 variable pairs). It then selects 625
+events with pyhydra's MaxDiss in the full 84-dimensional space. The published
+design depths are read from the archived study outputs, not recomputed.
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{figures/fig04_m30_pipeline.pdf}
-\caption{End-to-end pipeline reproduced in the M-30 Manzanares pilot case:
-from 17 rain-gauge series (step 1) to return-period depths at two control
-cross-sections, Puente de Toledo and Represa n\textordmasculine 9 (step 8),
-following Navas et al. \citep{navas2024calle30}. Blue denotes observations and event
+\caption{End-to-end pipeline of the M-30 Manzanares study
+\citep{navas2024calle30}: from 17 rain-gauge series (step 1) to
+return-period depths at two control cross-sections, Puente de Toledo and
+Represa n\textordmasculine 9 (step 8). The pilot notebooks re-run copula
+generation and MaxDiss selection with pyhydra; simulation, emulation and
+frequency outputs are taken from the archived study results. Blue denotes observations and event
 classification, green statistical generation and selection, orange physical
 simulation and emulation, and purple frequency outputs. ChatGPT and Codex (OpenAI) assisted in writing the TikZ/Python code for
 this diagram; the authors independently verified the scientific content,
@@ -641,10 +650,12 @@ As a software product, pyhydra's impact so far is internal to the authors'
 group, reported as such rather than overstated. A new case study is now
 assembled from existing, unit-tested building blocks rather than
 rewritten -- what let the four workflows of \cref{sec:examples} share one
-code base instead of four disconnected scripts, and what made the M-30
-comparison against the classical univariate method (0.83~m higher
-$T{=}500$-year depth) straightforward rather than a bespoke
-re-implementation. Archiving pyhydra under the MIT license on Zenodo
+code base instead of four disconnected scripts. Applying the generic copula
+fitter to the real M-30 catalogue also exposed and fixed a defect that
+study-specific scripts would have hidden: with the default all-family
+search, heavy-tailed marginals were selected for zero-inflated gauge
+rainfall. Restricted families and zero-inflated marginals are now part of
+the tested API. Archiving pyhydra under the MIT license on Zenodo
 \citep{navas2026pyhydra} gives each downstream publication a citable,
 versioned code reference, closing a gap that affected the earlier,
 unpublished study scripts. The companion HYDRA platform
@@ -676,7 +687,7 @@ companion HYDRA platform separately provides an optional operational web,
 API, Jupyter and Docker environment on top of this core, without changing
 how pyhydra itself is installed or used. Four workflows at three
 Spanish pilot sites -- Besaya, M-30 Manzanares and Valencia -- span fluvial,
-urban and compound-event flood risk. Together they
+urban and extreme-rainfall flood risk. Together they
 show that the same modular components support markedly different study
 designs, from continuous stochastic simulation to multivariate copula-based
 frequency analysis and cross-engine Monte Carlo comparison. Ongoing work
@@ -741,7 +752,13 @@ these revisions (30 July -- 4 August 2026), Claude Sonnet 5 (model ID
 text, diagnosing and fixing software defects surfaced by the
 continuous-integration workflow added in \cref{sec:functionalities}, and
 re-executing the Valencia notebooks to regenerate \cref{fig:valencia}
-from their output. In all cases, assistance was limited to code and
+from their output. During later revisions (14 September -- 13 October 2026),
+Claude Sonnet 5 and Claude Opus 5.5 (model IDs \texttt{claude-sonnet-5},
+\texttt{claude-opus-5-5}, Anthropic) assisted with auditing the manuscript
+against the repositories and pilot notebooks, editing manuscript text,
+fixing LaTeX defects, implementing the restricted-family and zero-inflated
+marginal options of \texttt{FloodEventCopula} with their unit tests, and
+rewriting and re-executing M-30 notebooks 03--06. In all cases, assistance was limited to code and
 text; it did not extend to designing the underlying methodology or
 validating its scientific content. After using these tools, the authors
 reviewed and edited the content and code as needed, checked the cited
@@ -764,7 +781,7 @@ its Microsoft Azure academic subscription.
 \bibliography{references}
 
 \section*{Current executable software version}
-pyhydra v0.2.0 (commit \texttt{5552aa9}) is the executable software version
+pyhydra v0.2.1 (commit \texttt{TODO-COMMIT}) is the executable software version
 described in this publication; its archived record and immutable GitHub
 tag link are provided in Table~\ref{tab:metadata} and should be cited
 independently using the corresponding Zenodo record
