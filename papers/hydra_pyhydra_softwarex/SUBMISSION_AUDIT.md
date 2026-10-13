@@ -37,6 +37,9 @@ maximum flows were available. A mixed fix was applied:
     historical events are not redistributable. The regenerated catalogue
     reproduces dry shares and rank dependence (mean |Δρ| = 0.011).
   - Notebook 04 runs pyhydra MaxDiss for 625 events in the full space.
+    The authors confirmed (13 October 2026) that the published study
+    simulated 625 events. The archived selection and the FORESEE HEC-HMS
+    project contain 1,000.
   - Notebooks 05-06 state that their design depths are archived results.
 - **Manuscript.**
   - M-30 is now described as re-running copula generation and MaxDiss with
@@ -49,8 +52,6 @@ maximum flows were available. A mixed fix was applied:
   - All metadata (C1/C2/C7, test paragraph, CI run, executable version,
     `navas2026pyhydra` DOI) moved to v0.2.1.
 - **Still open before submission.**
-  - Confirm that the published M-30 study simulated 625 events. The
-    archived selection and the FORESEE HEC-HMS project contain 1,000.
   - The public read-and-list SAS token in `pyhydra.data.download` covers
     the whole `dockerdata` share, and it expires 2027-12-31. Restrict it,
     and deposit the Valencia data on Zenodo.
