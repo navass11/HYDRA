@@ -13,6 +13,104 @@ Official sources:
 - [SoftwareX Guide for Authors](https://www.sciencedirect.com/journal/softwarex/publish/guide-for-authors)
 - [Official Original Software Publication LaTeX template](https://legacyfileshare.elsevier.com/promis_misc/softwarex-osp-template.tex)
 
+## Coherence review against SoftwareX (13 October 2026, later pass)
+
+Whole-manuscript re-read against the official OSP template and the
+guide for authors, with each number re-checked at the `v0.2.1` tag.
+Verified, no change needed: preamble/class identical to the official
+template (`elsarticle`, `preprint,12pt,a4paper`); C1-C8 metadata rows;
+mandatory sections and order; 15 sub-modules = 15 rows of the module
+table; 18 test files; notebook counts 9/6/3/7 per pilot case; CI figures
+(296+1 skipped on 3.9, 297 on 3.10-3.12; 31-32% coverage; run
+`38400271759`); Zenodo titles, versions and creators of
+`10.5281/zenodo.23342206` (pyhydra v0.2.1) and `10.5281/zenodo.21705293`
+(HYDRA v0.1.2); 25 cited keys = 25 defined (+ `navas2026besayadata`);
+five figures; highlights 71-78 characters; abstract about 236 words.
+
+Changes made:
+
+- **Urrea et al. (2026) is published** (J. Hydrol. 677, 135762, September
+  2026, via Crossref). Bibliography entry updated and Impact now says
+  "six published journal articles" instead of "five published and one in
+  press".
+- **Impact overclaims removed.** The text said the two-engine comparison
+  was "exercised" in Sect. 3, but Sect. 3 scopes it out, and that the M-30
+  comparison "begins to quantify" a shift in design estimates, which is a
+  published result rather than a pyhydra output. Both sentences now say so.
+- **Conclusions**: "cross-engine Monte Carlo comparison" became "Monte
+  Carlo ensembles run through two hydraulic engines"; "decade-long"
+  became "multi-year" (earliest cited work is 2018).
+- **Closing paragraph of Sect. 3** listed three execution paths for four
+  workflows; the SFINCS--HEC-RAS path was added.
+- **Figure 2 was never cited in the text** (`fig:reproducibility` had no
+  `\cref`); now cited in the Reproducibility-boundary paragraph.
+- **Code snippet** checked against the `v0.2.1` API (imports, signatures,
+  `fit` returning `self`): correct. Its comment called the return value a
+  "joint return period", but `joint_return_period` returns the
+  iso-return-period contour; comment fixed.
+- **References** checked against Crossref (all DOIs resolve; years, authors
+  and journals match). The three Spanish-language journal articles carried
+  English titles; they now use the original titles with "In Spanish" notes,
+  and "Pena" became "Peña".
+- **Case figures re-checked against the `v0.2.1` notebooks**: M-30 (1,761
+  events, 17 gauges, 303 sections, 7.61/6.78 m, 10,000 / 100,000 / 625
+  events, 3,486 pairs, mean |Δρ| 0.011), Valencia (710.8 mm, nine stations,
+  218-271 -> 756-1,241 mm, factor 3.47-4.58), Besaya (13 stations, 1970-2012,
+  k = 6) and Manning (1,000 combinations, 9 classes, all cited functions
+  exist). Not verifiable from the repositories: "more than 13% of the
+  population within the mapped floodplain" (Besaya paragraph), which comes
+  from the 2018 article; check it against that source.
+- **Compiled with Tectonic 0.17** (bibtex included) on 13 October 2026:
+  0 errors, 0 undefined references or citations, 22 A4 pages, no overfull
+  box above 3 pt. Remaining warnings are harmless: underfull boxes in the
+  tables, `h` float specifiers promoted to `ht`, hyperref
+  "token not allowed in a PDF string" for the corresponding-author mark,
+  and PDF-1.7 figures included in a 1.5 output.
+- **Bibliography rendering**: `elsarticle-num` lower-cased proper nouns in
+  titles ("río besaya", "calle 30 (madrid)", "neyman-scott", "Climada",
+  "Hydromt"); protected with braces in `references.bib`.
+- **Table 3** was set in very narrow columns with broken
+  `pyhydra-get-data` tokens and sat four pages after its first citation;
+  columns widened and left-aligned, placement `[!htbp]` (now one page
+  after the citation).
+- **Paper `README.md`** still pointed to `v0.2.0` and its DOI; now v0.2.1.
+- **Word count measured, not estimated.** Abstract + text + captions
+  + footnotes, excluding tables and code: about 3,770 words (about 4,300
+  if the end declarations, CRediT, funding, data availability, AI
+  statement and acknowledgements are also counted). The earlier
+  "~3,000-3,500" figure was too low. Under the 4,000-word limit if the
+  declarations are excluded, as the guide indicates; margin is thin.
+- `wiki` gitlink removed from pyhydra `main` (commit `dd5d0ed`); the
+  `git exit code 128` annotation no longer appears in CI (run
+  `38406048016`, success on 3.9-3.12). The `v0.2.1` tag still contains
+  the gitlink, which does not affect the archived code.
+
+Still open, needs the authors:
+
+1. **Data availability vs. the Azure share (listed, names only).**
+   `pilot_cases/los_corrales_buelna` holds the authors' HEC-HMS and HEC-RAS
+   projects and processed outputs, but also raw third-party records: 13
+   rain-gauge files (AEMET station codes) and two flow-gauge spreadsheets
+   (Torrelavega, Las Caldas), plus about 3.7 GB of CORDEX pickles.
+   `valencia_dana` holds daily series for nine stations of the AEMET, SIAR
+   and AVAMET networks. The text now says these records are served from the
+   authors' file share and keep their providers' terms of use (Table 3
+   caption and Data availability). Still open: confirm that those terms
+   allow redistribution, and deposit the data on Zenodo, because the share
+   is private infrastructure behind a share-wide token that expires
+   2027-12-31.
+2. **Corresponding-author email** `@alumnos.unican.es` is a student
+   address; the thesis defence is on 27 October 2026 and it may be
+   deactivated. Consider an institutional address.
+3. **Generative-AI declaration.** It names `claude-sonnet-5` and
+   `claude-opus-5-5`. Confirm the model versions actually used in the later
+   revisions (the 13 October session used Claude Sonnet 5.5,
+   `claude-sonnet-5-5`).
+4. `fig05_valencia_return_levels.png` is a 200 dpi raster; Elsevier asks
+   for at least 300 dpi for line art/graphs, so re-export at 300 dpi.
+5. HYDRA demo URL access date (30 July 2026) not re-checked.
+6. `main.pdf` rebuilt with these edits (Tectonic, 22 pages).
+
 ## Release 0.2.1 and M-30 rewrite (13 October 2026)
 
 A second independent review opened every pilot notebook to check that each
@@ -237,7 +335,7 @@ the following changes were made to `main.tex` and this audit:
 | Requirement | Status | Evidence or action |
 |---|---|---|
 | Original Software Publication template | Pass | `main.tex` uses the official `preprint,12pt,a4paper` class settings, zero paragraph indentation and the five mandatory main sections. |
-| Maximum 4,000 words (abstract + running text + captions + footnotes; excludes title/authors/affiliations/references/metadata table) | Pass, comfortable margin | ~3,000-3,500 words depending on whether end declarations are counted; verified 14 Sept 2026 against the guide fetched directly as a PDF (corrects an earlier, wrong "3,000 words" figure in this audit). No page limit exists. |
+| Maximum 4,000 words (abstract + running text + captions + footnotes; excludes title/authors/affiliations/references/metadata table) | Pass, thin margin | Measured 13 Oct 2026: about 3,770 words excluding end declarations, about 4,300 including them (see the coherence review above). Limit checked 14 Sept 2026 against the guide fetched directly as a PDF. The template also states a 6-page main-text guideline, secondary to the word limit. |
 | Maximum six figures | Pass | Five figures are cited and embedded. |
 | Abstract no more than 250 words | Pass | 231 words as of 14 Sept 2026 (was 255, over the limit, before that session's trim; this audit's earlier "~227" figure did not match the file and has been corrected). No citations; abbreviations are defined or established. |
 | One to seven English keywords | Pass | Six keywords. |

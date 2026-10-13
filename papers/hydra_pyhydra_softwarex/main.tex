@@ -383,9 +383,9 @@ in the container. Public-data downloads are repeatable after the user
 supplies the corresponding service credentials and records the query
 metadata. HEC-HMS, HEC-RAS, SFINCS and SWAT+ workflows additionally require
 the relevant engine and a model project; large pilot cases may also contain
-third-party data that cannot be redistributed. HYDRA preserves notebooks,
-parameters, adapters and standard outputs for these conditioned workflows,
-but does not claim that containerising the Python layer redistributes
+third-party data that cannot be redistributed. \cref{fig:reproducibility} summarises the contract. HYDRA preserves
+notebooks, parameters, adapters and standard outputs for these conditioned
+workflows, but does not claim that containerising the Python layer redistributes
 proprietary executables or restricted datasets.
 
 \begin{figure}[h]
@@ -447,7 +447,8 @@ model = NSRPModel(seasonality='monthly')
 model.fit(observed_series)
 synthetic = model.simulate(year_ini=2000, year_fin=2100)
 
-# 3. Joint return period of a compound rainfall-discharge event
+# 3. OR-scenario 100-year iso-return-period contour of a compound
+#    rainfall-discharge event
 copula = BivariateCopula(family='gumbel').fit(rain_max, discharge_max)
 x_or, y_or = copula.joint_return_period(t=100, kind='or')
 \end{lstlisting}
@@ -465,19 +466,21 @@ underlying pyhydra sequence to change. \cref{tab:reproducibility} traces
 each workflow to its permanent notebook sequence and states, per the
 reproducibility boundary defined above, what is required to re-run it.
 
-\begin{table}[h]
+\begin{table}[!htbp]
 \small
 \centering
 \caption{Traceability of the four illustrative workflows. Notebook paths
 are relative to
 \url{https://github.com/navass11/pyhydra/tree/v0.2.1/notebooks/pilot_cases/}.
-``Open data'' marks inputs redistributable in full; ``Partial'' marks
+``Yes'' marks inputs distributed with the software or archived on Zenodo;
+third-party gauge records among them keep their providers' terms of use.
+``Partial'' marks
 cases where only some inputs (e.g.\ literature-based parameter
 distributions or published aggregates) are open and the remainder is
 project-specific and not redistributed here.}
 \label{tab:reproducibility}
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}p{0.11\textwidth}p{0.18\textwidth}p{0.14\textwidth}p{0.12\textwidth}p{0.28\textwidth}@{}}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.11\textwidth}>{\raggedright\arraybackslash}p{0.20\textwidth}>{\raggedright\arraybackslash}p{0.19\textwidth}>{\raggedright\arraybackslash}p{0.13\textwidth}>{\raggedright\arraybackslash}p{0.28\textwidth}@{}}
 \toprule
 Case & Path & Open data & External engine & Reproduction \\
 \midrule
@@ -490,7 +493,7 @@ Partial (synthetic-catalogue sample, archived results) & None (engine results ar
 Copula generation and MaxDiss re-run with pyhydra; design depths read from archived engine results \\[4pt]
 Valencia DANA &
 \texttt{valencia\_\allowbreak dana/} (3 nb.$^{\dagger}$) &
-Yes (AEMET, via \texttt{pyhydra-\allowbreak get-\allowbreak data}) & None &
+Yes (AEMET, SIAR, AVAMET, via \texttt{pyhydra-\allowbreak get-\allowbreak data}) & None &
 Open and reproducible for the single-station and pooled-regional
 analyses \\[4pt]
 {\fontsize{9}{10}\selectfont SFINCS--HEC-RAS} &
@@ -617,8 +620,9 @@ here and reported separately.}
 \begin{sloppypar}
 The four workflows follow complementary execution paths -- continuous
 impact-frequency analysis with hydraulic ensembles (Besaya), rainfall,
-runoff and hydraulic modelling (M-30), and statistical inference without an
-external solver (Valencia) -- and are not the only published applications
+runoff and hydraulic modelling (M-30), statistical inference without an
+external solver (Valencia), and Monte Carlo roughness ensembles on two
+hydraulic engines (SFINCS--HEC-RAS) -- and are not the only published applications
 of the underlying methodology: the same building blocks also support
 published work on Andean hydropower systems \citep{deljesus2020andinos}
 and reservoir inflows under climate change \citep{navas2025simpce}.
@@ -630,8 +634,8 @@ and reservoir inflows under climate change \citep{navas2025simpce}.
 
 pyhydra formalises, as versioned and tested software, a line of flood-risk
 research that previously existed as independent, non-interoperable study
-codebases. Five published journal articles and one journal article in
-press, produced by the authors' group, already rely on methods now
+codebases. Six published journal articles, produced by the authors' group,
+already rely on methods now
 consolidated in pyhydra
 \citep{navas2018besaya,diezsierra2023neoprene,navas2024calle30,navas2025simpce,deljesus2020andinos,urrea2026vine}.
 Conference proceedings and manuscripts still under review are not counted
@@ -644,11 +648,13 @@ Beyond consolidating methods that already existed as separate scripts,
 having them share a common ensemble and impact-statistics layer
 (\cref{sec:functionalities}) also opens questions that were impractical to
 pose across four disconnected codebases: how differently two hydraulic
-engines propagate the same roughness ensemble into inundation extent, as
-exercised in \cref{sec:examples}; and how directly conditioning
-frequency analysis on spatial impacts, rather than on discharge or rainfall
-alone, shifts design estimates relative to the classical univariate route,
-as the M-30 comparison in \cref{sec:examples} begins to quantify.
+engines propagate the same roughness ensemble into inundation extent, for
+which \cref{sec:examples} demonstrates the ensemble-generation and
+aggregation workflow and the comparison itself is reported separately; and
+how directly conditioning frequency analysis on spatial impacts, rather
+than on discharge or rainfall alone, shifts design estimates relative to
+the classical univariate route, as the published M-30 study quantifies
+(\cref{sec:examples}).
 
 As a software product, pyhydra's impact so far is internal to the authors'
 group, reported as such rather than overstated. A new case study is now
@@ -682,7 +688,7 @@ future work (\cref{sec:conclusions}).
 \section{Conclusions}
 \label{sec:conclusions}
 
-pyhydra turns a decade-long line of impact-based flood-risk research into
+pyhydra turns a multi-year line of impact-based flood-risk research into
 modular, tested, MIT-licensed software: an installable scientific core with
 a modular, reproducible architecture; harmonised access to hydro-climatic
 and hydrological data; automation of hydrological and hydraulic models; and
@@ -694,7 +700,8 @@ Spanish pilot sites -- Besaya, M-30 Manzanares and Valencia -- span fluvial,
 urban and extreme-rainfall flood risk. Together they
 show that the same modular components support markedly different study
 designs, from continuous stochastic simulation to multivariate copula-based
-frequency analysis and cross-engine Monte Carlo comparison. Ongoing work
+frequency analysis and Monte Carlo ensembles run through two hydraulic
+engines. Ongoing work
 focuses on widening automated test coverage as new modules are added,
 adding adapters for further hydraulic/hydrological engines, and documenting
 a stable public API to lower the barrier for external contributions beyond
@@ -747,8 +754,12 @@ simulation outputs, tables and scripts are additionally archived on Zenodo
 under CC-BY-4.0 \citep{navas2026besayadata}. The 1{,}761 historical M-30
 gauge events are third-party data and are not redistributed, and the
 hydrological and hydraulic engines (HEC-HMS, HEC-RAS, SFINCS, SWAT+) must be
-obtained from their developers. The pilot workflows also consume the public
-data services cited in the text.
+obtained from their developers. The inputs distributed through
+\texttt{pyhydra-get-data} are served from the authors' file share and
+include gauge records from AEMET and the Confederaci{\'o}n Hidrogr{\'a}fica
+del Cant{\'a}brico (Besaya) and from AEMET, SIAR and AVAMET (Valencia),
+which remain subject to the providers' terms of use. The pilot workflows
+also consume the public data services cited in the text.
 
 \section*{Declaration of generative AI and AI-assisted technologies in the
 manuscript preparation process}
