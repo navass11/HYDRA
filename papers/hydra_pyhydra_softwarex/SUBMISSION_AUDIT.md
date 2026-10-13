@@ -2,7 +2,8 @@
 
 Audit date: 30 July 2026. Major-revision pass: 30 July 2026. Minor-revision
 passes: 30-31 July 2026 (four rounds, summarised below). Content update:
-4 August 2026 (pyhydra v0.2.0, summarised below). Session update:
+4 August 2026 (pyhydra v0.2.0, summarised below). Release 0.2.1 and M-30
+rewrite: 13 October 2026 (summarised first). Session update:
 14 September 2026 (summarised first, below -- corrects two stale figures
 left over from the 4 August pass and fixes a real compilation defect this
 audit had not caught).
@@ -11,6 +12,52 @@ Official sources:
 
 - [SoftwareX Guide for Authors](https://www.sciencedirect.com/journal/softwarex/publish/guide-for-authors)
 - [Official Original Software Publication LaTeX template](https://legacyfileshare.elsevier.com/promis_misc/softwarex-osp-template.tex)
+
+## Release 0.2.1 and M-30 rewrite (13 October 2026)
+
+A second independent review opened every pilot notebook to check that each
+illustrative example actually executes with pyhydra. The M-30 case did not.
+At `v0.2.0`, only notebook 04 (MaxDiss) imported pyhydra. Notebook 03 drew
+no copula samples, not even with OpenTURNS, and notebooks 05-06 read the
+final 2024 design-depth tables plus hard-coded design flows. The "+0.83 m"
+headline was therefore a published result, not a pyhydra output. The
+engine outputs needed to recompute it were not found: the HEC-HMS runs of
+the FORESEE project were saved outside the backup disk, and no annual
+maximum flows were available. A mixed fix was applied:
+
+- **pyhydra v0.2.1** (commit `4a50962`, tag `v0.2.1`, Zenodo
+  `10.5281/zenodo.23342206`; CI run `38400271759`): 297/297 tests pass on
+  Python 3.10-3.12, 296 + 1 skipped on 3.9; coverage 32% (31% on 3.9).
+  - `FloodEventCopula` gained restricted marginal families, zero-inflated
+    marginals and vectorised sampling. On the real M-30 data the previous
+    all-family BIC search picked Fréchet marginals for dry-gauge rainfall
+    and sampled values of order 1e70 mm. Six unit tests were added.
+  - M-30 notebook 03 now fits the 84-variable copula with pyhydra to the
+    archived 10,000-event synthetic sample, used as a proxy because the
+    historical events are not redistributable. The regenerated catalogue
+    reproduces dry shares and rank dependence (mean |Δρ| = 0.011).
+  - Notebook 04 runs pyhydra MaxDiss for 625 events in the full space.
+  - Notebooks 05-06 state that their design depths are archived results.
+- **Manuscript.**
+  - M-30 is now described as re-running copula generation and MaxDiss with
+    pyhydra, with the 0.83 m attributed to the published study and read
+    from its archived outputs. The abstract, Fig. 4 caption, Table 3 and
+    Impact were updated to match.
+  - "compound-event" became "extreme-rainfall".
+  - `pip` commands no longer imply PyPI.
+  - The generative-AI declaration was extended to 13 October 2026.
+  - All metadata (C1/C2/C7, test paragraph, CI run, executable version,
+    `navas2026pyhydra` DOI) moved to v0.2.1.
+- **Still open before submission.**
+  - Confirm that the published M-30 study simulated 625 events. The
+    archived selection and the FORESEE HEC-HMS project contain 1,000.
+  - The public read-and-list SAS token in `pyhydra.data.download` covers
+    the whole `dockerdata` share, and it expires 2027-12-31. Restrict it,
+    and deposit the Valencia data on Zenodo.
+  - Re-check the HYDRA demo URL access date, which is still 30 July 2026.
+  - Check whether Urrea et al. (2026) is still "in press".
+  - Remove the untracked `wiki` gitlink (no `.gitmodules`) that causes the
+    harmless `git exit code 128` annotation in CI.
 
 ## Session update (14 September 2026)
 
@@ -202,7 +249,7 @@ the following changes were made to `main.tex` and this audit:
 | Generative-AI declaration | Present | Identifies ChatGPT, Codex (OpenAI, versions not recorded) and Claude Sonnet 5 (`claude-sonnet-5`, Anthropic), what each assisted with and when, and states assistance did not extend to designing methodology or validating scientific content. AI-assisted figures are identified in their captions. |
 | Data-availability statement | Present | Confirms open software/notebooks and explains why restricted model projects or project datasets are not redistributed. |
 | Software citation | Pass | pyhydra (metadata subject) and the companion HYDRA platform are cited separately through their own Zenodo records (specific-version DOI in the manuscript; concept DOI in each repository's own README/CITATION.cff). |
-| Test suite / software quality evidence | Pass, with honest gaps disclosed | 291 tests across 17 modules; 291/291 passing on Python 3.10-3.12, 290 passing + 1 skipped on 3.9 (an older-PyMC/NumPy-2.0 incompatibility, guarded to skip rather than fail); 30-31% line coverage, concentrated in statistical/modelling-adapter code. Verified in a public GitHub Actions run tied to the cited commit. |
+| Test suite / software quality evidence | Pass, with honest gaps disclosed | v0.2.1: 297 tests in 18 files; 297/297 passing on Python 3.10-3.12, 296 passing + 1 skipped on 3.9 (an older-PyMC/NumPy-2.0 incompatibility, guarded to skip rather than fail); 32% line coverage (31% on 3.9), concentrated in statistical/modelling-adapter code. Verified in a public GitHub Actions run tied to the cited commit. |
 | Highlights | Pass | `highlights.txt`, five bullets, 71-78 characters each (limit 85), no unexplained acronyms. |
 | Graphical abstract | Optional, absent | Recommended but not required. |
 
@@ -217,7 +264,7 @@ blocker. It is listed below for completeness only.
 | Requirement | pyhydra (C2, binding) | HYDRA (cited, not binding) | Status |
 |---|---:|---:|---|
 | Public GitHub repository | Public | Public | Verified. |
-| Permanent version link | `v0.2.0` tag, matches Zenodo `10.5281/zenodo.21790226` | `v0.1.2` tag, matches Zenodo `10.5281/zenodo.21705293` | Verified via the Zenodo API against each tag's commit. |
+| Permanent version link | `v0.2.1` tag (commit `4a50962`), matches Zenodo `10.5281/zenodo.23342206` | `v0.1.2` tag, matches Zenodo `10.5281/zenodo.21705293` | Verified via the Zenodo API against each tag's commit. |
 | Well-documented `README.md` | Present, current | Present, current | Updated this round; installation, purpose, extras and citation all reflect the current release. |
 | License file | `LICENSE` (MIT) | `LICENSE` (MIT) | The claim in an earlier draft of this audit that SoftwareX requires the exact filename `LICENSE.txt` could not be verified against the current Guide for Authors; GitHub itself recognises `LICENSE` as the canonical license file. Left as-is; revisit only if Editorial Manager flags it. Copyright line updated 14 Sept 2026 in both repos to remove "hidralab.com" (now reads "Copyright (c) ... Salvador Navas"); pyhydra's change is committed, HYDRA's is committed locally on `main` but not yet pushed. |
 | Source code under `repo/src` | Resolved -- `src/pyhydra/` | Not compliant (`api/`, `web/`, `notebooks/`, `docker/` at repo root) | None required for submission, since HYDRA is not the C2 repository. |

@@ -116,7 +116,7 @@ Nr. & Code metadata description & Metadata \\
 C1 & Current code version & v0.2.1 \\[3pt]
 C2 & Permanent link to code/repository used for this code version &
 \url{https://github.com/navass11/pyhydra/tree/v0.2.1}; archived at
-\url{https://doi.org/10.5281/zenodo.TODO-DOI} \\[3pt]
+\url{https://doi.org/10.5281/zenodo.23342206} \\[3pt]
 C3 & Legal code license & MIT License \\[3pt]
 C4 & Code versioning system used & git \\[3pt]
 C5 & Software code languages, tools and services used &
@@ -366,14 +366,15 @@ matrix; the one test that depends on PyMC/pytensor is still marked
 \texttt{optional\_dependency} and guarded to skip rather than fail if that
 stack is unavailable or, as happens with the older PyMC resolved on Python
 3.9, incompatible with the installed NumPy. For the code version in
-Table~\ref{tab:metadata} (commit \texttt{TODO-COMMIT}, TODO-DATE), this
-workflow reports TODO-CI-RESULTS, with TODO-COV\% line coverage -- concentrated in the
+Table~\ref{tab:metadata} (commit \texttt{4a50962}, 13 October 2026), this
+workflow reports 297/297 passed on Python 3.10--3.12 and 296 passed
+plus 1 skipped on 3.9, with 32\% line coverage (31\% on 3.9) -- concentrated in the
 statistical and modelling-adapter code exercised directly by unit tests,
 lower in the data-connector and engine-automation modules whose
 behaviour is instead exercised, not formally verified, by the pilot-case
 notebooks of \cref{sec:examples} against real services and engines. Runs
 archived at
-\url{https://github.com/navass11/pyhydra/actions/runs/TODO-RUN}.
+\url{https://github.com/navass11/pyhydra/actions/runs/38400271759}.
 
 \paragraph{Reproducibility boundary} Reproducibility is reported at the
 level supported by each workflow. Extreme-value fitting, copula analysis
@@ -781,7 +782,7 @@ its Microsoft Azure academic subscription.
 \bibliography{references}
 
 \section*{Current executable software version}
-pyhydra v0.2.1 (commit \texttt{TODO-COMMIT}) is the executable software version
+pyhydra v0.2.1 (commit \texttt{4a50962}) is the executable software version
 described in this publication; its archived record and immutable GitHub
 tag link are provided in Table~\ref{tab:metadata} and should be cited
 independently using the corresponding Zenodo record
