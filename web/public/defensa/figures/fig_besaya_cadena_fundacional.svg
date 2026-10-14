@@ -3,7 +3,7 @@
   <desc id="d">Proceso desde los aforos hasta el periodo de retorno estimado sobre el calado.</desc>
   <defs><marker id="a" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto"><path d="M0 0L11 5.5 0 11z" fill="#5eead4"/></marker><linearGradient id="bg"><stop stop-color="#07111f"/><stop offset="1" stop-color="#0b2030"/></linearGradient></defs>
   <rect width="1200" height="680" rx="28" fill="url(#bg)"/>
-  <text x="56" y="70" font-family="Inter,Arial,sans-serif" font-size="32" font-weight="800" fill="#f8fafc">Besaya 2018: la frecuencia se traslada al impacto</text>
+  <text x="56" y="70" font-family="Inter,Arial,sans-serif" font-size="32" font-weight="800" fill="#f8fafc">Besaya 2018: frecuencia de la inundación</text>
   <text x="56" y="110" font-family="Inter,Arial,sans-serif" font-size="20" fill="#94a3b8">Cadena documentada en la aplicación fundacional</text>
   <g font-family="Inter,Arial,sans-serif">
     <g transform="translate(55 190)"><rect width="195" height="165" rx="18" fill="#102a43" stroke="#38bdf8" stroke-width="2"/><text x="98" y="48" text-anchor="middle" fill="#7dd3fc" font-size="19" font-weight="800">1 · AFOROS</text><text x="98" y="91" text-anchor="middle" fill="#f8fafc" font-size="25" font-weight="750">Caudal</text><text x="98" y="125" text-anchor="middle" fill="#cbd5e1" font-size="18">serie observada</text></g>
@@ -17,5 +17,5 @@
   <text x="600" y="486" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="20" font-weight="800" fill="#6ee7b7">RESULTADO DE DISEÑO</text>
   <text x="600" y="528" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="30" font-weight="850" fill="#f8fafc">Periodo de retorno del calado: T(h)</text>
   <path d="M1065 366v45H600v20" stroke="#5eead4" stroke-width="5" marker-end="url(#a)" fill="none"/>
-  <text x="600" y="624" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="20" fill="#ccfbf1">El retorno del caudal pico no se hereda directamente: se calcula sobre la respuesta hidráulica.</text>
+  <text x="600" y="624" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="20" fill="#ccfbf1"><tspan x="600" dy="-14">El período de retorno del caudal pico no se asigna directamente al calado.</tspan><tspan x="600" dy="30">El período de retorno del calado se estima a partir de las simulaciones hidráulicas.</tspan></text>
 </svg>

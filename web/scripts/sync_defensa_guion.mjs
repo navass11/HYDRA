@@ -9,6 +9,9 @@ new Function('exports', 'require', 'module', ts.transpile(source, {
   module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022,
 }))(module.exports, require, module);
 const { slides, backupSlides, totalMinutes } = module.exports;
+const revisionDate = process.env.GUION_REVISION_DATE || new Intl.DateTimeFormat('es-ES', {
+  day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Madrid',
+}).format(new Date());
 const path = new URL('../docs/guion-vivo-defensa.md', import.meta.url);
 let doc = fs.readFileSync(path, 'utf8');
 const heading = '## Guion oral completo por diapositiva';
@@ -38,7 +41,7 @@ backupSlides.forEach((s, i) => {
 });
 doc = doc.slice(0, start) + rows.join('\n') + doc.slice(end);
 doc = doc.replace(/estimación actual del guion: ~\d+ minutos/, `estimación actual del guion: ~${totalMinutes} minutos`)
-  .replace(/\*\*Versión de trabajo:\*\* [^\n]+/, '**Versión de trabajo:** 9 de octubre de 2026<br>')
+  .replace(/\*\*Versión de trabajo:\*\* [^\n]+/, `**Versión de trabajo:** ${revisionDate}<br>`)
   .replace(/La estimación de ~\d+ minutos/, `La estimación de ~${totalMinutes} minutos`);
 doc = doc.replace(/\(23 modelos CMIP6 × 2 escenarios SSP × 6 variables × 3 horizontes\)/g, 'para distintos modelos, variables, escenarios y horizontes');
 const route = s => ['Apertura', 'Motivación'].includes(s.block) ? 0 : s.block === 'Estado del arte' ? 1 : s.block === 'Arquitectura' ? 2 : ['Bloque de datos', 'Bloque climático-estadístico', 'Bloque de modelización', 'Demo en vivo'].includes(s.block) ? 3 : s.block === 'Casos de estudio' ? 4 : 5;
@@ -49,7 +52,7 @@ doc = doc.replace(/\| Bloque \|[^\n]*\n\|---[\s\S]*?(?=\n\n)/, table);
 const dialogueWords = slides.reduce((n, slide) => n + slide.script.trim().split(/\s+/).length, 0);
 const transitionWords = [...rows.join('\n').split('## Guion de los anexos')[0].matchAll(/\*\*Transición:\*\* (.*)/g)].reduce((n, match) => n + match[1].trim().split(/\s+/).length, 0);
 const decimal = number => number.toFixed(1).replace('.', ',');
-doc = doc.replace(/### Comprobación del libreto ·[^\n]+/, '### Comprobación del libreto · 9 de octubre de 2026');
+doc = doc.replace(/### Comprobación del libreto ·[^\n]+/, `### Comprobación del libreto · ${revisionDate}`);
 doc = doc.replace(/El recorrido (?:contiene|principal en vivo contiene)[^\n]+/, `El recorrido principal en vivo contiene **${dialogueWords} palabras de diálogo y ${transitionWords} de transiciones**. A 115 palabras por minuto, son unos **${decimal((dialogueWords + transitionWords) / 115)} minutos de voz**; la estimación completa es de **${totalMinutes} minutos**, incluyendo pausas, figuras y demostración. A 100 palabras por minuto, el texto solo requiere **${decimal((dialogueWords + transitionWords) / 100)} minutos**. La variante con demos preparadas sustituye el diálogo de la demo por la explicación de las capturas, sin ejecutar la API.`);
 doc = doc.replace(/Se ha comprobado la correspondencia del diálogo con[^\n]+/, `El diálogo está sincronizado con las ${slides.length} diapositivas principales y los ${backupSlides.length} anexos. Esta revisión del texto y los tiempos no sustituye un ensayo oral cronometrado del doctorando.`);
 fs.writeFileSync(path, doc);

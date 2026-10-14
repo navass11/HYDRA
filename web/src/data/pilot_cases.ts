@@ -337,9 +337,9 @@ const danaSvg = `
   <text x="122" y="232" font-family="Inter, system-ui" font-size="24" font-weight="800" fill="#fb923c" text-anchor="middle">710,8 mm</text>
   <text x="122" y="250" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle" data-t-es="máximo de la serie en 24 h" data-t-en="series maximum in 24 h">máximo de la serie en 24 h</text>
   <text x="322" y="232" font-family="Inter, system-ui" font-size="24" font-weight="800" fill="#c084fc" text-anchor="middle" data-t-es="31.345 años" data-t-en="31,345 years">31.345 años</text>
-  <text x="322" y="250" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle" data-t-es="T retorno sin DANA (L-mom)" data-t-en="Return period w/o DANA (L-mom)">T retorno sin DANA (L-mom)</text>
+  <text x="322" y="250" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle" data-t-es="Período de retorno sin DANA (L-mom)" data-t-en="Return period w/o DANA (L-mom)">Período de retorno sin DANA (L-mom)</text>
   <text x="522" y="232" font-family="Inter, system-ui" font-size="24" font-weight="800" fill="#60a5fa" text-anchor="middle" data-t-es="66–91 años" data-t-en="66–91 years">66–91 años</text>
-  <text x="522" y="250" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle" data-t-es="T retorno con DANA" data-t-en="Return period with DANA">T retorno con DANA</text>
+  <text x="522" y="250" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle" data-t-es="Período de retorno con DANA" data-t-en="Return period with DANA">Período de retorno con DANA</text>
   <text x="682" y="232" font-family="Inter, system-ui" font-size="24" font-weight="800" fill="#34d399" text-anchor="middle">Bayes</text>
   <text x="682" y="250" font-family="Inter, system-ui" font-size="10" fill="#64748b" text-anchor="middle" data-t-es="incertidumbre como banda" data-t-en="uncertainty as a band">incertidumbre como banda</text>
 </svg>`;
@@ -826,8 +826,8 @@ export const pilotCases: PilotCase[] = [
     ],
     stats: [
       { value: '710,8 mm/día', label: { es: 'Récord en Turís 8337X (29/10/2024)', en: 'Record at Turís 8337X (29/10/2024)' } },
-      { value: '66–91 años', label: { es: 'T retorno con evento (análisis indiv.)', en: 'Return period with event (indiv. analysis)' } },
-      { value: '>31.000 años', label: { es: 'T retorno sin evento (L-mom, Turís)', en: 'Return period without event (L-mom, Turís)' } },
+      { value: '66–91 años', label: { es: 'Período de retorno con evento (análisis indiv.)', en: 'Return period with event (indiv. analysis)' } },
+      { value: '>31.000 años', label: { es: 'Período de retorno sin evento (L-mom, Turís)', en: 'Return period without event (L-mom, Turís)' } },
       { value: '3 métodos × 2', label: { es: 'MLE · L-mom · Bayes — SD vs CD', en: 'MLE · L-mom · Bayes — SD vs CD' } },
     ],
     keyFindings: [
@@ -844,7 +844,7 @@ export const pilotCases: PilotCase[] = [
         en: 'Bayesian inference reduces the jump between scenarios but does not remove it: at Turís it goes from 3,069 to 66 years (individual analysis), against 11,453 → 80 years with MLE and 31,345 → 91 with L-moments. Its advantage is communicating parameter uncertainty as a credible band, especially at high return periods; prior sensitivity must be checked.',
       },
       {
-        es: 'El RFA local (9 estaciones próximas) mejora la robustez respecto al análisis individual: T retorno con evento = 34–41 años en Turís, con menor dispersión entre métodos. Ofrece el mejor equilibrio entre sensibilidad al evento extremo y estabilidad estadística.',
+        es: 'El RFA local (9 estaciones próximas) mejora la robustez respecto al análisis individual: Período de retorno con evento = 34–41 años en Turís, con menor dispersión entre métodos. Ofrece el mejor equilibrio entre sensibilidad al evento extremo y estabilidad estadística.',
         en: 'Local RFA (9 nearby stations) improves robustness over individual analysis: return period with event = 34–41 years at Turís, with lower dispersion between methods. It offers the best balance between sensitivity to the extreme event and statistical stability.',
       },
       {
