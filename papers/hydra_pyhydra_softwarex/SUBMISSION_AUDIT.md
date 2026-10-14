@@ -13,6 +13,18 @@ Official sources:
 - [SoftwareX Guide for Authors](https://www.sciencedirect.com/journal/softwarex/publish/guide-for-authors)
 - [Official Original Software Publication LaTeX template](https://legacyfileshare.elsevier.com/promis_misc/softwarex-osp-template.tex)
 
+## Zenodo deposit of the pilot-case data (14 October 2026)
+
+The guide asks for research data to be deposited in a repository (Option C).
+The Zenodo deposit `10.5281/zenodo.23366599` (draft id 23366599; four files:
+README plus three zips; version 1.0.0; CC-BY-4.0) holds the Besaya
+HEC-HMS/HEC-RAS projects and processed data, the M-30 sample and results and
+the Valencia series. The optional 746 MB terrain zip is not uploaded. The
+manuscript cites it as `navas2026pilotdata` (Data availability, Table 3,
+bibliography). **The record must be published on Zenodo before submission**:
+until then the DOI does not resolve. The repository README of pyhydra and
+`pyhydra-get-data` still point to the private file share.
+
 ## Check against the Guide for authors (14 October 2026)
 
 The authors saved the current Guide for authors as a PDF (ScienceDirect,

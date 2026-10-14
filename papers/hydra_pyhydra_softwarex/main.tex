@@ -473,14 +473,14 @@ Case & Path & Open data & External engine & Reproduction \\
 \midrule
 Besaya &
 \texttt{los\_\allowbreak corrales\_\allowbreak buelna/} (9 nb.$^{\ast}$) &
-Partial (authors' projects and outputs via \texttt{pyhydra-\allowbreak get-\allowbreak data}; gauge records under provider terms) & HEC-HMS, HEC-RAS & Conditioned on the engines and on the gauge records \\[4pt]
+Partial (projects and results on Zenodo \citep{navas2026pilotdata}; gauge-derived series under provider terms) & HEC-HMS, HEC-RAS & Conditioned on the engines and on the gauge records \\[4pt]
 M-30 Manzanares &
 \texttt{m30\_\allowbreak manzanares/} (6 nb.) &
-Partial (synthetic-catalogue sample, archived results) & None (engine results archived) &
+Partial (synthetic-catalogue sample and archived results on Zenodo \citep{navas2026pilotdata}) & None (engine results archived) &
 Copula generation and MaxDiss re-run with pyhydra; design depths read from archived engine results \\[4pt]
 Valencia DANA &
 \texttt{valencia\_\allowbreak dana/} (3 nb.$^{\dagger}$) &
-Partial (AEMET, SIAR and AVAMET records under provider terms, via \texttt{pyhydra-\allowbreak get-\allowbreak data}) & None &
+Partial (AEMET, SIAR and AVAMET series under provider terms; Zenodo \citep{navas2026pilotdata}) & None &
 Reproducible for the single-station and pooled-regional analyses with those
 records \\[4pt]
 {\fontsize{9}{10}\selectfont SFINCS--HEC-RAS} &
@@ -747,18 +747,19 @@ The pyhydra version described in this article is available through the
 versioned GitHub and Zenodo records in Table~\ref{tab:metadata}. The
 companion HYDRA deployment platform used to run the browser-accessible
 workflows in \cref{sec:examples} is likewise open source and MIT-licensed,
-and is archived separately \citep{navas2026hydrarepo}. The authors' own
-models and inputs for the Besaya, Valencia and SFINCS--HEC-RAS pilot cases,
-and the synthetic-event sample and archived results of the M-30 case, are
-downloadable with \texttt{pyhydra-get-data}. The SFINCS--HEC-RAS model configurations,
-simulation outputs, tables and scripts are additionally archived on Zenodo
-under CC-BY-4.0 \citep{navas2026besayadata}. The 1{,}761 historical M-30
+and is archived separately \citep{navas2026hydrarepo}. The HEC-HMS and
+HEC-RAS projects and the processed data of the Besaya case, the
+synthetic-event sample and archived results of the M-30 case, and the series
+and results of the Valencia case are archived on Zenodo under CC-BY-4.0
+\citep{navas2026pilotdata}. The SFINCS--HEC-RAS model configurations,
+simulation outputs, tables and scripts are archived separately
+\citep{navas2026besayadata}. The 1{,}761 historical M-30
 gauge events are third-party data and are not redistributed, and the
 hydrological and hydraulic engines (HEC-HMS, HEC-RAS, SFINCS, SWAT+) must be
-obtained from their developers. The Besaya and Valencia inputs include gauge
-records from AEMET and the Confederaci{\'o}n Hidrogr{\'a}fica del
-Cant{\'a}brico (Besaya) and from AEMET, SIAR and AVAMET (Valencia). These
-third-party records are not offered here as open data: their reuse and
+obtained from their developers. The Besaya and Valencia deposits include
+series derived from records of AEMET and the Confederaci{\'o}n
+Hidrogr{\'a}fica del Cant{\'a}brico (Besaya) and of AEMET, SIAR and AVAMET
+(Valencia). These third-party records are not offered here as open data: their reuse and
 redistribution remain governed by the providers' terms of use. The pilot
 workflows also consume the public data services cited in the text.
 
