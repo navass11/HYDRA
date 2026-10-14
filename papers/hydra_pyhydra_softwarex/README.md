@@ -65,27 +65,24 @@ latexmk -pdf -interaction=nonstopmode main.tex
 
 ## Figure preparation
 
-The manuscript embeds five figures. Three (`fig01_architecture`,
+The manuscript embeds six figures. Three (`fig01_architecture`,
 `fig02_reproducibility`, `fig04_m30_pipeline`) are self-contained TikZ
 standalone sources compiled to vector PDF, kept alongside their `.tex`
 source in this directory.
 
-The remaining two are matplotlib figures generated directly from pyhydra's
+The remaining three are matplotlib figures generated directly from pyhydra's
 own APIs against real pilot-case data (not hand-drawn approximations), with
 their generation scripts kept alongside them for reproducibility:
 
-- `fig03_besaya_ensemble.pdf` / `make_fig03_besaya_ensemble.py`: input
-  Manning-roughness ensemble (`generate_manning_combinations`, seed 42) and
-  output flooded-area distribution (`load_flood_ensemble` +
-  `flooded_area`) for the SFINCS run archived in the `manning_rugosidades`
-  pilot-case dataset (`pyhydra-get-data manning_rugosidades`). Colour groups
-  land-use classes by land-cover type (water/built/vegetated) using the
-  validated categorical palette in `references/palette.md` of this
-  repository's `dataviz` skill, deliberately distinct in encoding and
-  orientation from the similar Manning-ensemble figure in the companion
-  `papers/besaya_manning_sensitivity` manuscript, since both draw on the
-  same underlying ensemble.
-- `fig05_valencia_return_levels.png` / `make_fig05_valencia.py`: T=100yr
+- `fig03a_besaya_manning_input.pdf` / `make_fig03a_besaya_manning_input.py`
+  and `fig03b_besaya_flooded_area.pdf` / `make_fig03b_besaya_flooded_area.py`:
+  input Manning-roughness ensemble and output flooded-area distribution of
+  the SFINCS--HEC-RAS demonstration case, as two separate figures. Both are
+  drawn from the open Zenodo dataset 10.5281/zenodo.23104366
+  (`data/monte_carlo_combinations.csv`, `data/comparison_clean_995.csv`;
+  set `ZENODO_DIR` to the unzipped dataset). Colour groups land-use classes by
+  land-cover type (water/built/vegetated).
+- `fig05_valencia_return_levels.pdf` / `make_fig05_valencia.py`: T=100yr
   return-level comparison at station 8337X (Turís), computed by re-executing
   `pyhydra/notebooks/pilot_cases/valencia_dana/01_data_exploration.ipynb`
   and `02_extreme_value_analysis.ipynb` end to end (`pyhydra-get-data

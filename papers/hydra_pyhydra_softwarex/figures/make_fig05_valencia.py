@@ -18,6 +18,8 @@ underlying data or fitting code changes; this script only re-plots values
 already extracted, it does not re-run pyhydra itself.
 """
 
+import matplotlib
+matplotlib.rcParams["pdf.fonttype"] = 42
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
@@ -44,7 +46,6 @@ for i, (cat, lo, hi, color) in enumerate(zip(categories, without_dana, with_dana
 ax.set_xticks(range(len(categories)))
 ax.set_xticklabels(categories, rotation=30, ha="right", fontsize=11)
 ax.set_ylabel("Return Level (mm) - T=100 years", fontsize=12)
-ax.set_title("Return Level Comparison\nStation: 8337X", fontsize=14)
 ax.grid(axis="y", linestyle="--", alpha=0.5)
 ax.set_ylim(150, 1300)
 
@@ -57,5 +58,5 @@ legend_elems = [
 ax.legend(handles=legend_elems, loc="upper left", frameon=True)
 
 fig.tight_layout()
-fig.savefig("fig05_valencia_return_levels.png", dpi=300)
-print("saved fig05_valencia_return_levels.png")
+fig.savefig("fig05_valencia_return_levels.pdf")
+print("saved fig05_valencia_return_levels.pdf")

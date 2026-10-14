@@ -13,6 +13,52 @@ Official sources:
 - [SoftwareX Guide for Authors](https://www.sciencedirect.com/journal/softwarex/publish/guide-for-authors)
 - [Official Original Software Publication LaTeX template](https://legacyfileshare.elsevier.com/promis_misc/softwarex-osp-template.tex)
 
+## Check against the Guide for authors (14 October 2026)
+
+The authors saved the current Guide for authors as a PDF (ScienceDirect,
+14 October 2026) and it was read in full. Confirmed as compliant: GitHub
+repository with `README.md`, `LICENSE.txt` (added in v0.2.2) and code under
+`src/`; at most six figures; abstract at most 250 words (140); one to seven
+keywords; highlights (five bullets, 71-78 characters, file name contains
+"highlights"); numbered sections and cross-references; Acknowledgements
+directly before the references; CRediT roles; standard funding sentence;
+generative-AI statement in its own section before the references, with the
+AI-assisted figures identified in their captions; numbered square-bracket
+references in order of appearance with DOIs; software and dataset
+references; tables without vertical rules; no maps; LaTeX upload as PDF plus
+a zip of sources.
+
+Changed after the check:
+
+- References with more than 6 authors (ERA5, GPM/IMERG, GloFAS, SoilGrids)
+  now list the first 6 plus "et al."; the two Spanish-language journals use
+  LTWA-style abbreviations (`Ing. Agua`, `Rev. Obras Públicas`).
+- Valencia figure re-exported as vector PDF with embedded fonts (bitmapped
+  line drawings would need 1000 dpi); the two data figures whose plotting
+  scripts were written with AI assistance now say so in their captions.
+
+Open after the check (decisions for the authors):
+
+1. **Word count**: the limit counts abstract, running text, captions and
+   footnotes. The text before the CRediT statement is about 3,760 words; if
+   the end sections (CRediT, funding, declarations, data availability, AI
+   statement, acknowledgements) are also counted it is about 4,490.
+2. **Research data (Option C)**: the journal requires depositing research
+   data in a repository, citing and linking it, or stating why it cannot be
+   shared. The SFINCS--HEC-RAS data are on Zenodo; the other pilot-case data
+   are served from a private file share, which is not a repository.
+3. **Multi-panel figure**: resolved. The Besaya figure was split into two
+   figures (now six, the maximum), regenerated from the open Zenodo dataset
+   `10.5281/zenodo.23104366` (`make_fig03a_besaya_manning_input.py`,
+   `make_fig03b_besaya_flooded_area.py`). The old panel (a) was generated
+   live with seed 42, and that dataset's README states that the matrix
+   originally deposited did not match the production matrix (0 of 1000 rows);
+   the new panel (a) plots the corrected production matrix. Panel (b) now
+   shows 995 valid SFINCS runs (five non-converged runs removed) instead of
+   1,000; the median is unchanged (0.539 km2). Figure titles were removed
+   from inside the artwork (the guide wants the title in the caption only).
+4. Figure 1 text is about 7 pt before scaling to the text width.
+
 ## Release 0.2.2 (14 October 2026)
 
 The official OSP template says a `Licence.txt` file is mandatory and that
@@ -49,7 +95,7 @@ rules:
 - GitHub-only repository in the metadata table: pass (C2).
 - 4,000-word limit: pass (about 3,850; the template also mentions a 6-page
   guideline for the main text, subordinate to the word limit).
-- At most six figures: pass (five).
+- At most six figures: pass (six).
 - Five mandatory sections, "Current executable software version": pass.
 - **Metadata table left column** must be left "as it is": C2, C3, C5, C6, C7
   and the caption did not match the template wording; restored.
@@ -144,7 +190,7 @@ Still open, needs the authors:
    27 October 2026 and the account may be deactivated.
 3. **Generative-AI declaration**: extended on 14 October 2026 with the
    final review session (Claude Sonnet 5.5, `claude-sonnet-5-5`).
-4. `fig05_valencia_return_levels.png` re-exported at 300 dpi (2700x2100 px).
+4. `fig05_valencia_return_levels` is now a vector PDF with embedded fonts (the guide asks 1000 dpi for bitmapped line drawings).
 5. HYDRA demo URL access date (30 July 2026) not re-checked.
 6. `main.pdf` rebuilt with these edits (Tectonic, 22 pages).
 
@@ -365,7 +411,7 @@ the following changes were made to `main.tex` and this audit:
   million"; resolved a ~44pt overfull hbox in the architecture
   description; added the public demonstration deployment URL with an
   access date and an explicit non-permanence caveat.
-- The manuscript has five figures, well within the six-figure limit.
+- The manuscript has six figures (the maximum).
 
 ## Manuscript requirements
 
@@ -373,7 +419,7 @@ the following changes were made to `main.tex` and this audit:
 |---|---|---|
 | Original Software Publication template | Pass | `main.tex` uses the official `preprint,12pt,a4paper` class settings, zero paragraph indentation and the five mandatory main sections. |
 | Maximum 4,000 words (abstract + running text + captions + footnotes; excludes title/authors/affiliations/references/metadata table) | Pass, thin margin | Measured 13 Oct 2026: about 3,770 words excluding end declarations, about 4,300 including them (see the coherence review above). Limit checked 14 Sept 2026 against the guide fetched directly as a PDF. The template also states a 6-page main-text guideline, secondary to the word limit. |
-| Maximum six figures | Pass | Five figures are cited and embedded. |
+| Maximum six figures | Pass (at the limit) | Six figures are cited and embedded; the former two-panel Besaya figure was split in two to follow the guide's rule against combining images in one file. |
 | Abstract no more than 250 words (template: "Ca. 100 words") | Pass | 140 words as of 14 Oct 2026 (condensed from 236 to follow the template). No citations; abbreviations are defined or established. |
 | One to seven English keywords | Pass | Six keywords. |
 | Required metadata and current code version | Pass | Mandatory C1--C8 table lists a single metadata repository (pyhydra, C2), per the guide's requirement of one GitHub link; the companion HYDRA repository is cited separately in the text, not in the table. Fits on one page (no oversized-float warning). |
@@ -410,7 +456,7 @@ blocker. It is listed below for completeness only.
 ## Files for Editorial Manager
 
 - Upload `main.pdf` as "Manuscript (Word or PDF file)".
-- Upload a ZIP containing `main.tex`, `references.bib`, all five figure
+- Upload a ZIP containing `main.tex`, `references.bib`, all six figure
   files (and the TikZ `.tex` sources / `make_fig*.py` scripts, for the
   authors' own records -- not required by Elsevier) as "Zip file
   containing LaTeX source files".
