@@ -472,12 +472,10 @@ reproducibility boundary defined above, what is required to re-run it.
 \caption{Traceability of the four illustrative workflows. Notebook paths
 are relative to
 \url{https://github.com/navass11/pyhydra/tree/v0.2.1/notebooks/pilot_cases/}.
-``Yes'' marks inputs distributed with the software or archived on Zenodo;
-third-party gauge records among them keep their providers' terms of use.
-``Partial'' marks
-cases where only some inputs (e.g.\ literature-based parameter
-distributions or published aggregates) are open and the remainder is
-project-specific and not redistributed here.}
+``Yes'' marks inputs that are the authors' own or openly licensed.
+``Partial'' marks cases where some inputs are third-party records (AEMET,
+SIAR, AVAMET, CHC), whose reuse and redistribution follow their providers'
+terms of use, or are project-specific and not redistributed here.}
 \label{tab:reproducibility}
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.11\textwidth}>{\raggedright\arraybackslash}p{0.20\textwidth}>{\raggedright\arraybackslash}p{0.19\textwidth}>{\raggedright\arraybackslash}p{0.13\textwidth}>{\raggedright\arraybackslash}p{0.28\textwidth}@{}}
@@ -486,16 +484,16 @@ Case & Path & Open data & External engine & Reproduction \\
 \midrule
 Besaya &
 \texttt{los\_\allowbreak corrales\_\allowbreak buelna/} (9 nb.$^{\ast}$) &
-Yes (via \texttt{pyhydra-\allowbreak get-\allowbreak data}) & HEC-HMS, HEC-RAS & Conditioned on the engines \\[4pt]
+Partial (authors' projects and outputs via \texttt{pyhydra-\allowbreak get-\allowbreak data}; gauge records under provider terms) & HEC-HMS, HEC-RAS & Conditioned on the engines and on the gauge records \\[4pt]
 M-30 Manzanares &
 \texttt{m30\_\allowbreak manzanares/} (6 nb.) &
 Partial (synthetic-catalogue sample, archived results) & None (engine results archived) &
 Copula generation and MaxDiss re-run with pyhydra; design depths read from archived engine results \\[4pt]
 Valencia DANA &
 \texttt{valencia\_\allowbreak dana/} (3 nb.$^{\dagger}$) &
-Yes (AEMET, SIAR, AVAMET, via \texttt{pyhydra-\allowbreak get-\allowbreak data}) & None &
-Open and reproducible for the single-station and pooled-regional
-analyses \\[4pt]
+Partial (AEMET, SIAR and AVAMET records under provider terms, via \texttt{pyhydra-\allowbreak get-\allowbreak data}) & None &
+Reproducible for the single-station and pooled-regional analyses with those
+records \\[4pt]
 {\fontsize{9}{10}\selectfont SFINCS--HEC-RAS} &
 \texttt{manning\_\allowbreak rugosidades/} (7 nb.) &
 Yes (Zenodo dataset \citep{navas2026besayadata}) &
@@ -512,12 +510,15 @@ distributed through \texttt{pyhydra-get-data}.}
 \end{table}
 
 \textbf{Los Corrales de Buelna (Besaya River, Cantabria).} The founding
-case of the methodology \citep{navas2018besaya}: 42 years of continuous
-hydrological simulation (1970--2012) driven by 13 rain gauges, combined
-with geostatistical event generation and k-NN probabilistic regression
-($k=6$) to estimate return periods directly on flood impacts rather than on
-design-storm discharge, in a valley-bottom town where more than 13\% of the
-population lies within the mapped floodplain.
+case of the methodology \citep{navas2018besaya,navas2018tfm}: 42 years of
+continuous hydrological simulation (1970--2012) driven by 13 rain gauges,
+combined with geostatistical reconstruction of the rainfall series,
+copula-based generation of synthetic events and $k$-nearest-neighbour
+reconstruction of flood maps ($k=6$, chosen by cross-validation) to
+estimate return periods directly on flood impacts rather than on
+design-storm discharge, in a valley-bottom town where the simulated floods
+may affect more than 13\% of the population and 20\% of the town's
+surface \citep{navas2018tfm}.
 
 \textbf{M-30 Manzanares (Madrid).} Re-runs the statistical core of the
 multivariate flood-frequency study of Navas et al. \citep{navas2024calle30}
@@ -746,20 +747,20 @@ The pyhydra version described in this article is available through the
 versioned GitHub and Zenodo records in Table~\ref{tab:metadata}. The
 companion HYDRA deployment platform used to run the browser-accessible
 workflows in \cref{sec:examples} is likewise open source and MIT-licensed,
-and is archived separately \citep{navas2026hydrarepo}. Input data for the
-Besaya, Valencia and SFINCS--HEC-RAS pilot cases, and the synthetic-event
-sample and archived results of the M-30 case, are downloadable with
-\texttt{pyhydra-get-data}. The SFINCS--HEC-RAS model configurations,
+and is archived separately \citep{navas2026hydrarepo}. The authors' own
+models and inputs for the Besaya, Valencia and SFINCS--HEC-RAS pilot cases,
+and the synthetic-event sample and archived results of the M-30 case, are
+downloadable with \texttt{pyhydra-get-data}. The SFINCS--HEC-RAS model configurations,
 simulation outputs, tables and scripts are additionally archived on Zenodo
 under CC-BY-4.0 \citep{navas2026besayadata}. The 1{,}761 historical M-30
 gauge events are third-party data and are not redistributed, and the
 hydrological and hydraulic engines (HEC-HMS, HEC-RAS, SFINCS, SWAT+) must be
-obtained from their developers. The inputs distributed through
-\texttt{pyhydra-get-data} are served from the authors' file share and
-include gauge records from AEMET and the Confederaci{\'o}n Hidrogr{\'a}fica
-del Cant{\'a}brico (Besaya) and from AEMET, SIAR and AVAMET (Valencia),
-which remain subject to the providers' terms of use. The pilot workflows
-also consume the public data services cited in the text.
+obtained from their developers. The Besaya and Valencia inputs include gauge
+records from AEMET and the Confederaci{\'o}n Hidrogr{\'a}fica del
+Cant{\'a}brico (Besaya) and from AEMET, SIAR and AVAMET (Valencia). These
+third-party records are not offered here as open data: their reuse and
+redistribution remain governed by the providers' terms of use. The pilot
+workflows also consume the public data services cited in the text.
 
 \section*{Declaration of generative AI and AI-assisted technologies in the
 manuscript preparation process}
@@ -779,7 +780,13 @@ Claude Sonnet 5 (\texttt{claude-sonnet-5}) and Claude Opus 5.5
 against the repositories and pilot notebooks, editing manuscript text,
 fixing LaTeX defects, implementing the restricted-family and zero-inflated
 marginal options of \texttt{FloodEventCopula} with their unit tests, and
-rewriting and re-executing M-30 notebooks 03--06. In all cases, assistance was limited to code and
+rewriting and re-executing M-30 notebooks 03--06. In a final pre-submission
+review (13--14 October 2026), Claude Sonnet 5.5 (\texttt{claude-sonnet-5-5},
+Anthropic) assisted with checking the manuscript's figures and citations
+against the notebooks, the cited sources and Crossref, correcting text,
+bibliography and figure-export defects, compiling the manuscript, carrying
+out the v0.2.1 release steps and removing a stray submodule entry from the
+pyhydra repository. In all cases, assistance was limited to code and
 text; it did not extend to designing the underlying methodology or
 validating its scientific content. After using these tools, the authors
 reviewed and edited the content and code as needed, checked the cited

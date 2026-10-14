@@ -57,9 +57,14 @@ Changes made:
   events, 3,486 pairs, mean |Δρ| 0.011), Valencia (710.8 mm, nine stations,
   218-271 -> 756-1,241 mm, factor 3.47-4.58), Besaya (13 stations, 1970-2012,
   k = 6) and Manning (1,000 combinations, 9 classes, all cited functions
-  exist). Not verifiable from the repositories: "more than 13% of the
-  population within the mapped floodplain" (Besaya paragraph), which comes
-  from the 2018 article; check it against that source.
+  exist). Besaya claims checked against the primary sources
+  (2018 master's thesis, UC repository handle 10902/10636, and the ROP 3598
+  article): 42 years of daily data (Oct 1970-Oct 2012), 13 rain gauges and
+  k = 6 (cross-validated) are in the thesis. The "13% of the population and
+  20% of the surface" figure is also in the thesis only ("pudiendo llegar a
+  afectar", over the return periods analysed), not in the ROP article, and
+  it is not "population within the mapped floodplain". Text corrected and
+  the thesis added as `navas2018tfm`.
 - **Compiled with Tectonic 0.17** (bibtex included) on 13 October 2026:
   0 errors, 0 undefined references or citations, 22 A4 pages, no overfull
   box above 3 pt. Remaining warnings are harmless: underfull boxes in the
@@ -93,21 +98,20 @@ Still open, needs the authors:
    rain-gauge files (AEMET station codes) and two flow-gauge spreadsheets
    (Torrelavega, Las Caldas), plus about 3.7 GB of CORDEX pickles.
    `valencia_dana` holds daily series for nine stations of the AEMET, SIAR
-   and AVAMET networks. The text now says these records are served from the
-   authors' file share and keep their providers' terms of use (Table 3
-   caption and Data availability). Still open: confirm that those terms
+   and AVAMET networks. Decision (13 October 2026): Table 3 no longer says "Yes" for Besaya and
+   Valencia (now "Partial") and Data availability states that the
+   third-party records are not offered as open data and follow their
+   providers' terms. Files were not removed from the share and permissions
+   were not requested. Still open: confirm that those terms
    allow redistribution, and deposit the data on Zenodo, because the share
    is private infrastructure behind a share-wide token that expires
    2027-12-31.
-2. **Corresponding-author email** `@alumnos.unican.es` is a student
-   address; the thesis defence is on 27 October 2026 and it may be
-   deactivated. Consider an institutional address.
-3. **Generative-AI declaration.** It names `claude-sonnet-5` and
-   `claude-opus-5-5`. Confirm the model versions actually used in the later
-   revisions (the 13 October session used Claude Sonnet 5.5,
-   `claude-sonnet-5-5`).
-4. `fig05_valencia_return_levels.png` is a 200 dpi raster; Elsevier asks
-   for at least 300 dpi for line art/graphs, so re-export at 300 dpi.
+2. **Corresponding-author email** `@alumnos.unican.es`: kept by the authors
+   (decision 14 October 2026), although the thesis defence is on
+   27 October 2026 and the account may be deactivated.
+3. **Generative-AI declaration**: extended on 14 October 2026 with the
+   final review session (Claude Sonnet 5.5, `claude-sonnet-5-5`).
+4. `fig05_valencia_return_levels.png` re-exported at 300 dpi (2700x2100 px).
 5. HYDRA demo URL access date (30 July 2026) not re-checked.
 6. `main.pdf` rebuilt with these edits (Tectonic, 22 pages).
 

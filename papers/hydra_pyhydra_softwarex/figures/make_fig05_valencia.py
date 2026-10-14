@@ -57,5 +57,5 @@ legend_elems = [
 ax.legend(handles=legend_elems, loc="upper left", frameon=True)
 
 fig.tight_layout()
-fig.savefig("fig05_valencia_return_levels.png", dpi=200)
+fig.savefig("fig05_valencia_return_levels.png", dpi=300)
 print("saved fig05_valencia_return_levels.png")
