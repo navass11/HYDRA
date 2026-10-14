@@ -67,31 +67,20 @@
                 country={Spain}}
 
 \begin{abstract}
-Flood-risk studies typically chain data acquisition, extreme-value and
-dependence statistics, stochastic scenario generation, climate bias
-correction and hydrological/hydraulic simulation through ad-hoc,
-difficult-to-reuse scripts, which hampers reproducibility and transfer
-between catchments, teams and regulatory contexts. \textbf{pyhydra} is an
-open, modular Python library that consolidates this chain into a single
-installable scientific core, organised in fifteen sub-modules: harmonised
-access to hydro-climatic and hydrological data from public services,
-extreme-value and copula-based statistics, stochastic rainfall generation,
-climate bias correction, hybrid statistical--dynamical downscaling,
-automation of HEC-HMS, HEC-RAS, SFINCS and SWAT+, and propagation of
-uncertainty through Monte Carlo ensembles, bootstrap and Bayesian
-inference, including a pilot-based rule that decides, within a fixed
-simulation budget, whether an expensive solver's response can be emulated
-or should instead be sampled by direct Monte Carlo. Individual modules can be used independently once
-the core package is installed via \texttt{pip} from its GitHub repository
-(not yet on PyPI); a companion platform, HYDRA, optionally exposes the same
-notebooks through a browser-based Docker deployment. pyhydra is illustrated
-through four flood-risk workflows at three Spanish pilot sites -- Besaya,
-M-30 Manzanares and Valencia -- spanning fluvial, urban and extreme-rainfall
-settings; at Madrid's M-30, it re-runs the multivariate copula generation and
-MaxDiss selection of a published study whose 500-year design depth exceeded
-the classical univariate estimate by 0.83~m. pyhydra is released under the MIT license, archived on
-Zenodo, and its methodology already underpins six peer-reviewed journal
-articles from the authors' group.
+Flood-risk studies chain data acquisition, extreme-value and copula
+statistics, stochastic rainfall generation, climate bias correction and
+hydrological and hydraulic simulation, usually through ad-hoc scripts that
+are hard to reuse and reproduce. \textbf{pyhydra} is an open, modular Python
+library that consolidates this chain into fifteen sub-modules: harmonised
+access to public hydro-climatic data, statistical and copula tools,
+stochastic generators, bias correction and downscaling, automation of
+HEC-HMS, HEC-RAS, SFINCS and SWAT+, and uncertainty propagation, including
+a pilot-based rule that decides whether an expensive solver can be emulated
+within a fixed simulation budget. It is illustrated through four workflows
+at three Spanish sites, including a re-run of the copula generation and
+MaxDiss selection of a published study of Madrid's M-30. pyhydra is
+MIT-licensed, installable from GitHub (not yet on PyPI) and archived on
+Zenodo; the companion HYDRA platform exposes its notebooks in a browser.
 \end{abstract}
 
 \begin{keyword}
@@ -113,15 +102,15 @@ stochastic rainfall generation \sep extreme value statistics \sep uncertainty qu
 \toprule
 Nr. & Code metadata description & Metadata \\
 \midrule
-C1 & Current code version & v0.2.1 \\[3pt]
-C2 & Permanent link to code/repository used for this code version &
-\url{https://github.com/navass11/pyhydra/tree/v0.2.1}; archived at
-\url{https://doi.org/10.5281/zenodo.23342206} \\[3pt]
-C3 & Legal code license & MIT License \\[3pt]
+C1 & Current code version & v0.2.2 \\[3pt]
+C2 & Permanent GitHub link to code/repository used for this code version &
+\url{https://github.com/navass11/pyhydra/tree/v0.2.2}; archived at
+\url{https://doi.org/10.5281/zenodo.23365448} \\[3pt]
+C3 & Legal Code License & MIT License \\[3pt]
 C4 & Code versioning system used & git \\[3pt]
-C5 & Software code languages, tools and services used &
+C5 & Software code languages, tools, and services used &
 Python $\geq$3.9; continuously tested on Python 3.9--3.12 (\cref{sec:functionalities}) \\[3pt]
-C6 & Compilation requirements, operating environments and dependencies &
+C6 & Compilation requirements, operating environments \& dependencies &
 Not yet published on PyPI; install with \texttt{pip} directly from the
 GitHub repository in C2, optionally pinned to the tag in C1
 (\cref{sec:architecture}). Core dependencies are declared in
@@ -130,8 +119,8 @@ the \texttt{statistics}, \texttt{geospatial}, \texttt{models} and
 \texttt{all} extras (\cref{sec:architecture}). External engines (HEC-HMS,
 HEC-RAS, SFINCS, SWAT+) are not bundled and must be installed on the
 host \\[3pt]
-C7 & Link to developer documentation/manual &
-\url{https://github.com/navass11/pyhydra/tree/v0.2.1} (README,
+C7 & If available Link to developer documentation/manual &
+\url{https://github.com/navass11/pyhydra/tree/v0.2.2} (README,
 \texttt{docs/} package/installation guide, and
 \texttt{notebooks/pilot\_cases/}, which include the four illustrative
 examples of \cref{sec:examples}, inspectable and executable from this
@@ -142,7 +131,7 @@ at \url{https://github.com/navass11/HYDRA/tree/v0.1.2} \\[3pt]
 C8 & Support email for questions & salvador.navas@alumnos.unican.es \\
 \bottomrule
 \end{tabular}
-\caption{Code metadata (mandatory).}
+\caption{Code metadata (mandatory)}
 \label{tab:metadata}
 \end{table}
 \FloatBarrier
@@ -366,7 +355,7 @@ matrix; the one test that depends on PyMC/pytensor is still marked
 \texttt{optional\_dependency} and guarded to skip rather than fail if that
 stack is unavailable or, as happens with the older PyMC resolved on Python
 3.9, incompatible with the installed NumPy. For the code version in
-Table~\ref{tab:metadata} (commit \texttt{4a50962}, 13 October 2026), this
+Table~\ref{tab:metadata} (commit \texttt{cbbb6bb}, 14 October 2026), this
 workflow reports 297/297 passed on Python 3.10--3.12 and 296 passed
 plus 1 skipped on 3.9, with 32\% line coverage (31\% on 3.9) -- concentrated in the
 statistical and modelling-adapter code exercised directly by unit tests,
@@ -374,7 +363,7 @@ lower in the data-connector and engine-automation modules whose
 behaviour is instead exercised, not formally verified, by the pilot-case
 notebooks of \cref{sec:examples} against real services and engines. Runs
 archived at
-\url{https://github.com/navass11/pyhydra/actions/runs/38400271759}.
+\url{https://github.com/navass11/pyhydra/actions/runs/38554754081}.
 
 \paragraph{Reproducibility boundary} Reproducibility is reported at the
 level supported by each workflow. Extreme-value fitting, copula analysis
@@ -471,7 +460,7 @@ reproducibility boundary defined above, what is required to re-run it.
 \centering
 \caption{Traceability of the four illustrative workflows. Notebook paths
 are relative to
-\url{https://github.com/navass11/pyhydra/tree/v0.2.1/notebooks/pilot_cases/}.
+\url{https://github.com/navass11/pyhydra/tree/v0.2.2/notebooks/pilot_cases/}.
 ``Yes'' marks inputs that are the authors' own or openly licensed.
 ``Partial'' marks cases where some inputs are third-party records (AEMET,
 SIAR, AVAMET, CHC), whose reuse and redistribution follow their providers'
@@ -785,7 +774,7 @@ review (13--14 October 2026), Claude Sonnet 5.5 (\texttt{claude-sonnet-5-5},
 Anthropic) assisted with checking the manuscript's figures and citations
 against the notebooks, the cited sources and Crossref, correcting text,
 bibliography and figure-export defects, compiling the manuscript, carrying
-out the v0.2.1 release steps and removing a stray submodule entry from the
+out the v0.2.1 and v0.2.2 release steps and removing a stray submodule entry from the
 pyhydra repository. In all cases, assistance was limited to code and
 text; it did not extend to designing the underlying methodology or
 validating its scientific content. After using these tools, the authors
@@ -810,7 +799,7 @@ its Microsoft Azure academic subscription.
 \bibliography{references}
 
 \section*{Current executable software version}
-pyhydra v0.2.1 (commit \texttt{4a50962}) is the executable software version
+pyhydra v0.2.2 (commit \texttt{cbbb6bb}) is the executable software version
 described in this publication; its archived record and immutable GitHub
 tag link are provided in Table~\ref{tab:metadata} and should be cited
 independently using the corresponding Zenodo record

@@ -13,6 +13,21 @@ Official sources:
 - [SoftwareX Guide for Authors](https://www.sciencedirect.com/journal/softwarex/publish/guide-for-authors)
 - [Official Original Software Publication LaTeX template](https://legacyfileshare.elsevier.com/promis_misc/softwarex-osp-template.tex)
 
+## Release 0.2.2 (14 October 2026)
+
+The official OSP template says a `Licence.txt` file is mandatory and that
+a paper without it "will be returned". pyhydra `v0.2.1` only had `LICENSE`,
+and the tag cannot change, so `v0.2.2` was cut:
+
+- pyhydra `v0.2.2` (commit `cbbb6bb`, tag `v0.2.2`, Zenodo
+  `10.5281/zenodo.23365448`; CI run `38554754081`): adds `LICENSE.txt`
+  (identical to `LICENSE`) and the CI clean-up fix (`wiki` gitlink removed).
+  Same test results as v0.2.1: 297/297 on Python 3.10-3.12, 296 + 1 skipped
+  on 3.9; coverage 32% (31% on 3.9); no `exit code 128` annotation.
+- Manuscript: C1, C2, C7, the test paragraph, Table 3 URL, the executable
+  software version, `navas2026pyhydra` (DOI and version) and the paper
+  README moved to v0.2.2. The `v0.2.1` release and DOI remain archived.
+
 ## Coherence review against SoftwareX (13 October 2026, later pass)
 
 Whole-manuscript re-read against the official OSP template and the
@@ -26,6 +41,24 @@ table; 18 test files; notebook counts 9/6/3/7 per pilot case; CI figures
 `10.5281/zenodo.23342206` (pyhydra v0.2.1) and `10.5281/zenodo.21705293`
 (HYDRA v0.1.2); 25 cited keys = 25 defined (+ `navas2026besayadata`);
 five figures; highlights 71-78 characters; abstract about 236 words.
+
+Check against the official OSP template (`softwarex-osp-template.tex`,
+downloaded 13 October 2026), whose "Before you begin" box lists the hard
+rules:
+
+- GitHub-only repository in the metadata table: pass (C2).
+- 4,000-word limit: pass (about 3,850; the template also mentions a 6-page
+  guideline for the main text, subordinate to the word limit).
+- At most six figures: pass (five).
+- Five mandatory sections, "Current executable software version": pass.
+- **Metadata table left column** must be left "as it is": C2, C3, C5, C6, C7
+  and the caption did not match the template wording; restored.
+- **Abstract**: the template says "Ca. 100 words"; ours had 236. Condensed to
+  140 words (facts unchanged; the 0.83 m and "six articles" claims remain in
+  the body).
+- **`Licence.txt`**: the template says a `Licence.txt` file is mandatory and
+  the paper "will be returned if these are missing". pyhydra has `LICENSE`
+  only. Not changed here; see the open items below.
 
 Changes made:
 
@@ -341,7 +374,7 @@ the following changes were made to `main.tex` and this audit:
 | Original Software Publication template | Pass | `main.tex` uses the official `preprint,12pt,a4paper` class settings, zero paragraph indentation and the five mandatory main sections. |
 | Maximum 4,000 words (abstract + running text + captions + footnotes; excludes title/authors/affiliations/references/metadata table) | Pass, thin margin | Measured 13 Oct 2026: about 3,770 words excluding end declarations, about 4,300 including them (see the coherence review above). Limit checked 14 Sept 2026 against the guide fetched directly as a PDF. The template also states a 6-page main-text guideline, secondary to the word limit. |
 | Maximum six figures | Pass | Five figures are cited and embedded. |
-| Abstract no more than 250 words | Pass | 231 words as of 14 Sept 2026 (was 255, over the limit, before that session's trim; this audit's earlier "~227" figure did not match the file and has been corrected). No citations; abbreviations are defined or established. |
+| Abstract no more than 250 words (template: "Ca. 100 words") | Pass | 140 words as of 14 Oct 2026 (condensed from 236 to follow the template). No citations; abbreviations are defined or established. |
 | One to seven English keywords | Pass | Six keywords. |
 | Required metadata and current code version | Pass | Mandatory C1--C8 table lists a single metadata repository (pyhydra, C2), per the guide's requirement of one GitHub link; the companion HYDRA repository is cited separately in the text, not in the table. Fits on one page (no oversized-float warning). |
 | Five mandatory sections | Pass | Motivation and significance; Software description; Illustrative examples; Impact; Conclusions. |
@@ -352,7 +385,7 @@ the following changes were made to `main.tex` and this audit:
 | Generative-AI declaration | Present | Identifies ChatGPT, Codex (OpenAI, versions not recorded) and Claude Sonnet 5 (`claude-sonnet-5`, Anthropic), what each assisted with and when, and states assistance did not extend to designing methodology or validating scientific content. AI-assisted figures are identified in their captions. |
 | Data-availability statement | Present | Confirms open software/notebooks and explains why restricted model projects or project datasets are not redistributed. |
 | Software citation | Pass | pyhydra (metadata subject) and the companion HYDRA platform are cited separately through their own Zenodo records (specific-version DOI in the manuscript; concept DOI in each repository's own README/CITATION.cff). |
-| Test suite / software quality evidence | Pass, with honest gaps disclosed | v0.2.1: 297 tests in 18 files; 297/297 passing on Python 3.10-3.12, 296 passing + 1 skipped on 3.9 (an older-PyMC/NumPy-2.0 incompatibility, guarded to skip rather than fail); 32% line coverage (31% on 3.9), concentrated in statistical/modelling-adapter code. Verified in a public GitHub Actions run tied to the cited commit. |
+| Test suite / software quality evidence | Pass, with honest gaps disclosed | v0.2.2: 297 tests in 18 files; 297/297 passing on Python 3.10-3.12, 296 passing + 1 skipped on 3.9 (an older-PyMC/NumPy-2.0 incompatibility, guarded to skip rather than fail); 32% line coverage (31% on 3.9), concentrated in statistical/modelling-adapter code. Verified in a public GitHub Actions run tied to the cited commit. |
 | Highlights | Pass | `highlights.txt`, five bullets, 71-78 characters each (limit 85), no unexplained acronyms. |
 | Graphical abstract | Optional, absent | Recommended but not required. |
 
@@ -367,9 +400,9 @@ blocker. It is listed below for completeness only.
 | Requirement | pyhydra (C2, binding) | HYDRA (cited, not binding) | Status |
 |---|---:|---:|---|
 | Public GitHub repository | Public | Public | Verified. |
-| Permanent version link | `v0.2.1` tag (commit `4a50962`), matches Zenodo `10.5281/zenodo.23342206` | `v0.1.2` tag, matches Zenodo `10.5281/zenodo.21705293` | Verified via the Zenodo API against each tag's commit. |
+| Permanent version link | `v0.2.2` tag (commit `cbbb6bb`), matches Zenodo `10.5281/zenodo.23365448` | `v0.1.2` tag, matches Zenodo `10.5281/zenodo.21705293` | Verified via the Zenodo API against each tag's commit. |
 | Well-documented `README.md` | Present, current | Present, current | Updated this round; installation, purpose, extras and citation all reflect the current release. |
-| License file | `LICENSE` (MIT) | `LICENSE` (MIT) | The claim in an earlier draft of this audit that SoftwareX requires the exact filename `LICENSE.txt` could not be verified against the current Guide for Authors; GitHub itself recognises `LICENSE` as the canonical license file. Left as-is; revisit only if Editorial Manager flags it. Copyright line updated 14 Sept 2026 in both repos to remove "hidralab.com" (now reads "Copyright (c) ... Salvador Navas"); pyhydra's change is committed, HYDRA's is committed locally on `main` but not yet pushed. |
+| License file | `LICENSE` and `LICENSE.txt` (MIT, identical; `LICENSE.txt` added in v0.2.2 because the official OSP template requires a `Licence.txt`) | `LICENSE` (MIT) | Resolved for pyhydra, the C2 repository. HYDRA is not the C2 repository. |
 | Source code under `repo/src` | Resolved -- `src/pyhydra/` | Not compliant (`api/`, `web/`, `notebooks/`, `docker/` at repo root) | None required for submission, since HYDRA is not the C2 repository. |
 | Recognized open-source license | MIT | MIT | Confirmed. |
 | Accepted-version archival by SoftwareX | Future action | N/A (not the metadata repository) | Be prepared for Elsevier to copy the accepted pyhydra code to its GitHub organization. |
