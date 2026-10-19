@@ -3,7 +3,7 @@
   <defs><g id="col" fill="#0E4A57"><circle cx="0" cy="31" r="6"/><circle cx="0" cy="48" r="6"/><circle cx="0" cy="65" r="6"/><circle cx="0" cy="82" r="6"/><circle cx="0" cy="99" r="6"/><circle cx="0" cy="116" r="6"/><circle cx="0" cy="133" r="6"/><circle cx="0" cy="150" r="6"/><circle cx="0" cy="167" r="6"/></g></defs>
 
   <!-- H1 -->
-  <text x="10" y="26" font-size="19" font-weight="600" fill="#13323A">H1 Automatización: campañas sin intervención manual</text>
+  <text x="10" y="26" font-size="19" font-weight="600" fill="#13323A">H1 Automatización: campañas de cálculo a gran escala</text>
   <g transform="translate(10 42)" fill="#13323A">
     <rect width="250" height="112" fill="#F8FBFA" stroke="#C6D8D4"/><rect width="250" height="5" fill="#3F8E93"/>
     <text x="16" y="52" font-size="38" font-weight="600" fill="#0E4A57">1.990</text>

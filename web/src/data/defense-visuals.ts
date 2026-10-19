@@ -48,7 +48,7 @@ export const visualSlides: Record<number, { kind: string; metric?: string; figur
     {label:'Selección',detail:'subconjunto representativo MaxDiss'}, {label:'Hidráulica',detail:'HEC-RAS 1D'},
     {label:'Reconstrucción',detail:'miles de impactos con k-NN'} ] },
   40: { kind:'evidence', figure:'esq_hipotesis_evidencia.svg', metric:'Cada hipótesis se contrasta con evidencia y con un límite', items:[
-    {label:'H1 Automatización',detail:'miles de ejecuciones encadenadas sin intervención manual: viabilidad demostrada'},
+    {label:'H1 Automatización',detail:'campañas de cálculo: capacidad operativa; ahorro por medir'},
     {label:'H2 Modularidad',detail:'los mismos bloques resuelven problemas y escalas diferentes'},
     {label:'H3 Incertidumbre',detail:'sensibilidad del diseño a métodos y datos; bandas en lugar de cifras únicas'} ] },
   47: { kind:'method-map', figure:'esq_responsabilidades.svg', metric:'La procedencia se conserva en cada transformación', items:[
