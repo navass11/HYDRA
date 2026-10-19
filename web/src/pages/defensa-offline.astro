@@ -690,6 +690,9 @@ const chapterIcons = [
   .notes-mode {display:flex;flex-direction:column;gap:6px;color:#c5d9d5;font-size:13px;margin-bottom:8px;}
   .notes-mode select {max-width:100%;width:100%;padding:8px;background:#123b45;color:#e2eeeb;border:1px solid #9ac7c1;font-size:14px;}
   .notes-mode-notice {color:#c5d9d5;font-size:12px;line-height:1.5;margin:8px 0 14px;}
+  #notes-speech :global(strong), #notes-transition :global(strong) {
+    font-weight:800; font-style:normal; color:#ffffff;
+  }
   .notes-text {
     font-size: 11.5px;
     color: #cbd5e1;
@@ -2376,6 +2379,7 @@ const chapterIcons = [
   import { keepPresentationAwake } from '../lib/presentation-awake';
   import { slides as mainSlides, backupSlides } from '../data/slides.ts';
   import { dialogueFor, deliveryCue, narrationNotice, type NarrationMode } from '../lib/defense-narration';
+  import { emphasizePresenterText, presenterKeywords } from '../lib/presenter-emphasis';
   document.querySelectorAll<HTMLButtonElement>('[data-capture-step]').forEach(button => {
     button.addEventListener('click', () => {
       const slide = button.closest('.slide');
@@ -2506,7 +2510,6 @@ const chapterIcons = [
 
     // Notes
     renderNarration(idx);
-    document.getElementById('notes-transition')!.textContent = slide.transition ?? '—';
 
     const nextSlide = slides[idx + 1];
     notesNext.textContent = nextSlide ? `${idx + 2}. ${nextSlide.title}` : 'Fin de la presentación';
@@ -2601,7 +2604,8 @@ const chapterIcons = [
 
   function renderNarration(idx: number) {
     const source = (reserve ? backupSlides : mainSlides)[idx];
-    document.getElementById('notes-speech')!.textContent = dialogueFor(source, narrationMode);
+    emphasizePresenterText(document.getElementById('notes-speech')!, dialogueFor(source, narrationMode), presenterKeywords(source.id, narrationMode));
+    emphasizePresenterText(document.getElementById('notes-transition')!, source.transition ?? '—', presenterKeywords(source.id, narrationMode, true));
     document.getElementById('notes-narration-notice')!.textContent = narrationNotice(source, narrationMode);
     notesText.textContent = [source.notes, source.webAction && `Acción en la web: ${source.webAction}`, deliveryCue(source, reserve)].filter(Boolean).join('\n\n') || '—';
     narrationPicker.value = narrationMode;

@@ -344,6 +344,10 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   .narration-choice select {width:100%;max-width:100%;padding:8px;background:#0f2535;color:#e2e8f0;border:1px solid #64748b;border-radius:6px;font-size:14px;}
   .narration-notice {font-size:12px;line-height:1.5;color:#a8bacb;margin:8px 0 14px;}
   #pres-win-speech {white-space:pre-wrap;}
+  #pres-win-speech :global(strong), #panel-script :global(strong),
+  #pres-win-transition :global(strong), #panel-transition :global(strong) {
+    font-weight:800; font-style:normal; color:#ffffff;
+  }
   .panel-script {
     white-space: pre-wrap;
     font-size: 14px;
@@ -845,7 +849,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       <label class="narration-choice">Texto del guion<select data-narration-mode><option value="live">Guion principal · en vivo</option><option value="prepared">Guion con capturas preparadas</option></select></label>
       <p class="narration-notice" data-narration-notice></p>
       <span class="panel-section-label">🎙 Diálogo completo · qué decir</span>
-      <div id="pres-win-speech" style="font-size:16px; line-height:1.6; color:#e2e8f0; font-style:italic; border-left:4px solid #0d9488; padding-left:16px; margin-top:6px;">—</div>
+      <div id="pres-win-speech" style="font-size:16px; line-height:1.6; color:#cbd5e1; border-left:4px solid #0d9488; padding-left:16px; margin-top:6px;">—</div>
     </div>
 
     <div>
@@ -887,6 +891,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   import { enableStudyEntry } from '../lib/defense-study-entry';
   import { keepPresentationAwake } from '../lib/presentation-awake';
   import { dialogueFor, deliveryCue, narrationNotice, type NarrationMode } from '../lib/defense-narration';
+  import { emphasizePresenterText, presenterKeywords } from '../lib/presenter-emphasis';
   import { slides, totalSlides } from '../data/slides.ts';
 
   // ── Mode detection ──
@@ -1453,8 +1458,12 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     const slide = slides[current];
     if (!slide) return;
     const dialogue = dialogueFor(slide, narrationMode);
-    panelScriptEl.textContent = dialogue;
-    presWinSpeech.textContent = dialogue;
+    const cues = presenterKeywords(slide.id, narrationMode);
+    emphasizePresenterText(panelScriptEl, dialogue, cues);
+    emphasizePresenterText(presWinSpeech, dialogue, cues);
+    const bridgeCues = presenterKeywords(slide.id, narrationMode, true);
+    emphasizePresenterText(document.getElementById('panel-transition')!, slide.transition ?? '', bridgeCues);
+    emphasizePresenterText(document.getElementById('pres-win-transition')!, slide.transition ?? '', bridgeCues);
     const notes = [slide.notes, slide.webAction && `Acción en la web: ${slide.webAction}`, deliveryCue(slide)].filter(Boolean).join('\n\n');
     panelNotes.textContent = notes || 'Sin anotaciones para esta sección.';
     presWinNotes.textContent = notes || 'Sin anotaciones para esta sección.';
@@ -1485,7 +1494,6 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       const nextSlide = slides[idx + 1];
       presWinNextBlock.textContent = nextSlide ? `${nextSlide.block} · ~${nextSlide.estimatedMinutes} min` : 'FIN';
       renderNarration();
-      document.getElementById('pres-win-transition')!.textContent = slide.transition ?? '';
 
       presWinNextTitle.textContent = nextSlide ? `${idx + 2}. ${nextSlide.title}` : 'Fin de la presentación / Ronda de preguntas';
 
@@ -1570,7 +1578,6 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     }
     if (panelScriptEl) {
       renderNarration();
-      document.getElementById('panel-transition')!.textContent = slide.transition ?? '';
       panelScriptEl.style.borderColor = slide.blockColor;
     }
 
