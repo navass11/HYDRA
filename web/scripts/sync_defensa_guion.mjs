@@ -8,7 +8,7 @@ const source = fs.readFileSync(new URL('../src/data/slides.ts', import.meta.url)
 new Function('exports', 'require', 'module', ts.transpile(source, {
   module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022,
 }))(module.exports, require, module);
-const { slides, backupSlides, totalMinutes } = module.exports;
+const { slides, backupSlides, totalMinutes, chapterLabelFor } = module.exports;
 const narrationModule = { exports: {} };
 new Function('exports', 'require', 'module', ts.transpile(fs.readFileSync(new URL('../src/lib/defense-narration.ts', import.meta.url), 'utf8'), {
   module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022,
@@ -38,7 +38,7 @@ const duration = s => {
 };
 const rows = [heading, '', `Libreto del recorrido principal: **${slides.length} diapositivas**, unos **${totalMinutes} minutos**. El texto bajo **Diálogo** coincide con la vista de presentador en vivo y se pronuncia; la **Transición** acompaña el cambio de diapositiva. Las pautas entre corchetes son acciones privadas. Los tiempos incluyen el habla a 115 palabras/min, la transición, la lectura de figuras y la demostración. Son los mismos que utiliza la vista de presentador.`, ''];
 slides.forEach((s, i) => {
-  rows.push(`### ${i + 1}. ${s.title}`, '', `**Bloque:** ${s.block} · **Tiempo orientativo:** ${duration(s)}`, '');
+  rows.push(`### ${i + 1}. ${s.title}`, '', `**Bloque:** ${chapterLabelFor(s)}${s.sectionLabel ? ` · **Apartado:** ${s.sectionLabel}` : ''} · **Tiempo orientativo:** ${duration(s)}`, '');
   if (s.webMode) rows.push('**Formato:** visita web en vivo; figura o capturas preparadas en la copia sin conexión. Al avanzar se regresa al siguiente paso del recorrido.', '');
   if (s.speakerGoal) rows.push('**Idea que debe quedar:** ' + s.speakerGoal, '');
   if (s.visualGuide?.length) rows.push('**Recorrido visual:**', '', ...s.visualGuide.map((cue, step) => `${step + 1}. ${cue}`), '');

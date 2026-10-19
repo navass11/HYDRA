@@ -1,5 +1,5 @@
 ---
-import { slides, backupSlides, type Slide } from '../data/slides';
+import { slides, backupSlides, chapterLabelFor, type Slide } from '../data/slides';
 import { dialogueFor, deliveryCue } from '../lib/defense-narration';
 import { presenterKeywords, presenterTextParts } from '../lib/presenter-emphasis';
 const scriptParts = (slide: Slide, mode: 'live' | 'prepared') => presenterTextParts(dialogueFor(slide,mode),presenterKeywords(slide,mode));
@@ -46,7 +46,7 @@ const groups = [{key:'principal', label:'Presentación', slides}, {key:'anexos',
         ...(quoteFigures[slide.id]?[{src:quoteFigures[slide.id],caption:slide.title}]:[]),
       ].filter((figure,index,all)=>all.findIndex(other=>other.src===figure.src)===index);
       return <article id={`${group.key}-${index}`} data-group={group.key} data-index={index}>
-        <p class="position">{group.key==='anexos'?'Anexo':'Paso'} {index+1} de {group.slides.length} · {slide.block}{group.key==='principal'&&slide.webMode?' · Visita web (capturas en estudio)':''}</p>
+        <p class="position">{group.key==='anexos'?'Anexo':'Paso'} {index+1} de {group.slides.length} · {chapterLabelFor(slide)}{slide.sectionLabel ? ` · ${slide.sectionLabel}` : ''}{group.key==='principal'&&slide.webMode?' · Visita web (capturas en estudio)':''}</p>
         <h1 tabindex="-1">{slide.title}</h1>
         {slide.subtitle&&<p class="subtitle">{slide.subtitle}</p>}
         <section class="dialogue" aria-label="Guion para decir">

@@ -3,6 +3,7 @@ export interface Slide {
   title: string;
   subtitle?: string;
   block: string;
+  sectionLabel?: string; // Specific visible label; block retains chapter/navigation grouping.
   blockColor: string;
   estimatedMinutes: number; // Manual pacing note for the individual slide
   // Online (iframe) mode URL
@@ -42,6 +43,16 @@ export interface Slide {
   caseReference?: string; // Visible provenance for case-study evidence
   type?: 'title' | 'index' | 'quote' | 'timeline' | 'matrix' | 'figure' | 'split' | 'table' | 'normal';
   backup?: boolean;      // Material preparado para preguntas, fuera del relato principal
+}
+
+/** Chapter names match the six headings shown in the presentation route. */
+export function chapterLabelFor(slide: Pick<Slide, 'block'>): string {
+  if (['Apertura', 'Motivación'].includes(slide.block)) return 'Introducción';
+  if (slide.block === 'Estado del arte') return 'Estado de la técnica';
+  if (slide.block === 'Arquitectura') return 'Arquitectura';
+  if (['Bloque de datos', 'Bloque climático-estadístico', 'Bloque de modelización', 'Demo en vivo'].includes(slide.block)) return 'Metodología';
+  if (slide.block === 'Casos de estudio') return 'Casos y validación';
+  return 'Conclusiones';
 }
 
 export const slideLibrary: Slide[] = [
@@ -117,7 +128,8 @@ export const slideLibrary: Slide[] = [
     speakerGoal: "Delimitar qué significa el título y evitar que se interprete como un nuevo solver hidráulico.",
     visualGuide: ["Modelo y automatización","Inundación y escenarios estocásticos","Contratos de reproducibilidad"],
     speechCues: ["cadena completa de cálculo","Automático","impacto hidráulico","población de escenarios plausibles","reproducibilidad operativa","variable sobre la que se toman decisiones"],
-    transitionCue: "trabajo del Besaya"
+    transitionCue: "trabajo del Besaya",
+    sectionLabel: "Alcance de la tesis"
   },
 
   {
@@ -142,7 +154,8 @@ export const slideLibrary: Slide[] = [
     speakerGoal: "Explicar los cambios que motivan el trabajo, después de situar sus consecuencias.",
     visualGuide: ["Exposición","Urbanización","Condiciones climáticas cambiantes"],
     speechCues: ["graves daños humanos, económicos y territoriales","exposición","cambio climático","impermeabilización urbana","interacciones","escenarios plausibles","incertidumbre asociada"],
-    transitionCue: "alcance de la investigación"
+    transitionCue: "alcance de la investigación",
+    sectionLabel: "Motivación"
   },
 
   {
@@ -163,7 +176,8 @@ export const slideLibrary: Slide[] = [
     speakerGoal: "Anticipar los tres compromisos de la propuesta; su balance con evidencia se reserva para el cierre.",
     visualGuide: ["Integración de extremo a extremo","Registro para repetir el cálculo","Transferencia a otros problemas"],
     speechCues: ["tres partes","Integración","Reproducibilidad","Transferencia","originaron la arquitectura","pueden reproducirse hoy"],
-    transitionCue: "recorrido investigador"
+    transitionCue: "recorrido investigador",
+    sectionLabel: "Aportaciones"
   },
 
   {
@@ -180,7 +194,8 @@ export const slideLibrary: Slide[] = [
     visualGuide: ["2017: primera cadena del TFM","2018: publicación del principio","Limitación manual y pregunta doctoral"],
     speechCues: ["Trabajo Fin de Máster","2017","Los Corrales de Buelna","primera cadena completa","Iber","2018","período de retorno del forzamiento","repetir, conectar y auditar"],
     transition: "La pregunta dejó de ser cómo resolver una cuenca y pasó a ser cómo hacer reutilizable la cadena completa.",
-    transitionCue: "estima habitualmente"
+    transitionCue: "estima habitualmente",
+    sectionLabel: "Origen de la investigación"
   },
 
   {
@@ -235,7 +250,8 @@ export const slideLibrary: Slide[] = [
     visualGuide: ["Fila superior, de registros a impacto","Tres supuestos en los recuadros inferiores"],
     speechCues: ["procedimiento de referencia","evento de diseño","mapa de inundación","tres simplificaciones","estacionariedad","múltiples escenarios","frecuencia del calado"],
     transition: "El siguiente ejemplo muestra por qué esa frecuencia puede cambiar incluso con la misma lluvia.",
-    transitionCue: "misma lluvia"
+    transitionCue: "misma lluvia",
+    sectionLabel: "Procedimiento de referencia"
   },
 
   {
@@ -262,7 +278,8 @@ export const slideLibrary: Slide[] = [
     visualGuide: ["Comparar las dos filas del esquema","Suelo seco frente a suelo saturado y afluente en crecida","Resultado hidráulico de cada fila"],
     speechCues: ["misma lluvia","cien años","suelo está seco","suelo está saturado","impactos distintos","cada cuánto se supera un calado","no puede asignarse directamente"],
     transition: "Esta dificultad apareció de forma concreta en el trabajo con el que comenzó la investigación: el Besaya.",
-    transitionCue: "pregunta doctoral"
+    transitionCue: "pregunta doctoral",
+    sectionLabel: "Problema científico"
   },
 
   {
@@ -280,7 +297,8 @@ export const slideLibrary: Slide[] = [
     speechCues: ["integración","arriba","abajo","tres hipótesis","H1","H2","H3","comprobaciones pendientes"],
     transition: "Para contrastar esas hipótesis necesitamos concretar qué se va a desarrollar y qué resultado verificará cada objetivo.",
     transitionCue: "objetivos",
-    subtitle: "¿Puede una cadena reproducible transferirse a problemas reales bajo incertidumbre?"
+    subtitle: "¿Puede una cadena reproducible transferirse a problemas reales bajo incertidumbre?",
+    sectionLabel: "Hipótesis"
   },
 
   {
@@ -302,7 +320,8 @@ export const slideLibrary: Slide[] = [
     speakerGoal: "Formular la pregunta doctoral completa, con una pausa para que se comprenda su alcance.",
     visualGuide: ["Pregunta de investigación","Datos, cadena reproducible y modelos físicos","Transferencia a una aplicación real"],
     speechCues: ["pregunta de investigación","automatizar de forma reproducible","incertidumbre hidrológica y climática","semillas aleatorias","aplicación real","propagarse a través de la cadena"],
-    transitionCue: "tres hipótesis"
+    transitionCue: "tres hipótesis",
+    sectionLabel: "Pregunta de investigación"
   },
 
   {
@@ -321,7 +340,8 @@ export const slideLibrary: Slide[] = [
     visualGuide: ["Leer una fila completa: objetivo, desarrollo y evidencia","Recorrer los cuatro objetivos"],
     speechCues: ["objetivo general","pyhydra","HYDRA","cuatro compromisos","primero","segundo","tercero","cuarto","evidencia"],
     transition: "El primer paso para cumplirlos es entender qué exige una cadena estocástica completa y qué ofrecen los métodos existentes.",
-    transitionCue: "tres aportaciones"
+    transitionCue: "tres aportaciones",
+    sectionLabel: "Objetivos"
   },
 
   {
@@ -352,7 +372,8 @@ export const slideLibrary: Slide[] = [
     bullets: [
       'La solución será válida si representa la incertidumbre, puede repetirse y funciona en contextos diferentes.',
     ],
-    backup: true
+    backup: true,
+    sectionLabel: "Origen de la investigación"
   },
 
   // ════════════════════════════════════════════════════
@@ -374,7 +395,8 @@ export const slideLibrary: Slide[] = [
     speakerGoal: "Mostrar la evolución del problema científico sin volver a explicar cada caso.",
     visualGuide: ["Besaya como origen","Nuevas exigencias de datos y escenarios","Síntesis en la arquitectura"],
     speechCues: ["cronología","Besaya","frecuencia sobre el impacto","exigencias de ejecución","arquitectura","componentes reutilizables"],
-    transitionCue: "cadena estocástica completa"
+    transitionCue: "cadena estocástica completa",
+    sectionLabel: "Antecedentes"
   },
 
   {
@@ -410,7 +432,8 @@ export const slideLibrary: Slide[] = [
     visualGuide: ["Columnas: capacidades; filas: marcos","Diferenciar capacidad completa y parcial","Combinación de capacidades de HYDRA"],
     speechCues: ["matriz","CLIMADA","RainyDay","wflow y HydroMT","cobertura conjunta","frecuencia del impacto"],
     transition: "Para cubrir esa combinación, separé el cálculo científico de su ejecución y de su acceso desde la web.",
-    transitionCue: "arquitectura de HYDRA"
+    transitionCue: "arquitectura de HYDRA",
+    sectionLabel: "Estado de la técnica"
   },
 
   // ════════════════════════════════════════════════════
@@ -629,7 +652,8 @@ export const slideLibrary: Slide[] = [
     visualGuide: ["Seis herramientas de la parte superior","API común","Núcleo pyhydra"],
     speechCues: ["seis accesos","API","pyhydra","entrada","método","ajuste de extremos","configuración","curva con su banda"],
     transition: "En esa demostración distinguiremos la serie que entra al cálculo, el estimador puntual y el origen de la incertidumbre mostrada.",
-    transitionCue: "herramienta de extremos"
+    transitionCue: "herramienta de extremos",
+    sectionLabel: "Herramientas interactivas"
   },
 
   {
@@ -655,7 +679,8 @@ export const slideLibrary: Slide[] = [
     speechCues: ["columna de entrada","Demo","serie sintética","máximos anuales","Ajustar modelo","Cuando aparece el resultado","MAP","Fisher","curva y la banda"],
     transition: "La demo muestra que el método puede ejecutarse. Los casos permiten valorar qué conocimiento y qué capacidad operativa aporta.",
     transitionCue: "evidencias de los casos",
-    offlineSpeechCues: ["primera captura","antes de ejecutar","Demo","todavía no hay un resultado","segunda captura","MAP","Fisher","curva y banda"]
+    offlineSpeechCues: ["primera captura","antes de ejecutar","Demo","todavía no hay un resultado","segunda captura","MAP","Fisher","curva y banda"],
+    sectionLabel: "Demostración GEV"
   },
 
   {
@@ -670,6 +695,7 @@ export const slideLibrary: Slide[] = [
     backup: true,
     script: "Estas dos capturas documentan la generación estocástica. Partimos de la serie demo sintética de caudal diario de 1990 a 2019. La primera figura compara, mes a mes, la media, la desviación estándar y la autocorrelación de primer retardo del registro de entrada y de las realizaciones. Después mostramos 30 realizaciones para 2025, obtenidas con semilla 42: la línea resume la mediana y las bandas muestran la dispersión entre trayectorias. No estamos prediciendo el caudal observado de 2025; estamos generando escenarios plausibles. La interfaz calibra con CoSMoS y utiliza una simulación rápida mediante AR(1) estacional y transformación a las marginales ajustadas. Debemos comprobar sus diagnósticos antes de utilizar el ensemble en un cálculo de diseño.",
     notes: "Capturas de la API ejecutada el 6 de octubre de 2026. Mostrar primero el diagnóstico estacional y después el ensemble. Datos demo sintéticos; 30 años de calibración y 30 realizaciones de un año. La simulación rápida conserva la marginal y aproxima la dependencia con AR(1), no toda la estructura temporal de una simulación CoSMoS completa.",
+    sectionLabel: "Demostración documentada"
 
   },
 
@@ -685,6 +711,7 @@ export const slideLibrary: Slide[] = [
     backup: true,
     script: "Esta captura procede del análisis del CSV demo de mil simulaciones HEC-RAS. Cada punto corresponde a una simulación del ensemble y relaciona una medida de Manning con el calado medio, el calado mediano o el área inundada. Las rectas resumen una asociación lineal simple: el R cuadrado del calado medio es 0,0069 y el del calado mediano, 0,0014. Una relación lineal tan débil no significa que la rugosidad carezca de efecto. Puede haber respuestas no lineales, umbrales topográficos y otros controles. Esta herramienta analiza salidas ya calculadas; no vuelve a ejecutar HEC-RAS ni reproduce aquí las 995 parejas HEC-RAS y SFINCS del contraste principal. La figura permite explicar por qué necesitamos mirar la distribución del impacto y sus regímenes, además de una única regresión.",
     notes: "La demo lee un CSV con 1000 simulaciones HEC-RAS y calcula estadísticos, correlaciones y regresiones. Distinguir este CSV del conjunto emparejado y depurado de 995 realizaciones por motor presentado en el caso principal. No afirmar que la interfaz elige distribuciones de Manning ni ejecuta los motores hidráulicos.",
+    sectionLabel: "Demostración documentada"
 
   },
 
@@ -700,6 +727,7 @@ export const slideLibrary: Slide[] = [
     backup: true,
     script: "La captura muestra una curva IDF obtenida con la demo sintética: cuarenta años de máximos anuales y siete duraciones, desde diez minutos hasta veinticuatro horas. Para cada duración se ajusta una GEV mediante MAP y se calculan intensidades asociadas a varios períodos de retorno. Cada línea representa un período de retorno distinto; la intensidad disminuye al aumentar la duración. Este producto organiza los extremos de precipitación y puede ser una entrada de diseño. Por sí solo no describe la forma temporal completa de la tormenta, la humedad antecedente ni la respuesta hidráulica. Por eso sirve para explicar la diferencia entre caracterizar la lluvia y calcular la frecuencia del impacto. Las cifras de esta demo no son los resultados del estudio IAHR 2022.",
     notes: "Figura obtenida ejecutando /tools/idf con datos sintéticos. Ajuste MAP por duración. Usar como explicación de las curvas IDF, no como reproducción del experimento IAHR 2022 ni de sus caudales.",
+    sectionLabel: "Demostración documentada"
 
   },
 
@@ -715,6 +743,7 @@ export const slideLibrary: Slide[] = [
     backup: true,
     script: "En esta captura usamos cinco estaciones sintéticas con cuarenta años de máximos anuales. El análisis regional divide los datos por el caudal índice de cada estación y ajusta una curva común mediante L-momentos. La figura central muestra el factor de crecimiento q de T. Para recuperar el nivel en una estación, multiplicamos ese factor por su caudal índice. A la derecha comprobamos la homogeneidad: en esta demo, H vale 0,386 y queda por debajo de uno. También se revisa la discordancia de las estaciones antes de agruparlas. Es una explicación del procedimiento index-flood; no son las 224 estaciones del caso Valencia ni sus períodos de retorno. La selección de la región debe justificarse físicamente, porque agrupar estaciones inadecuadas puede suavizar en exceso un extremo local.",
     notes: "Captura real de /tools/rfa: 5 estaciones sintéticas, 40 años, L-momentos, H=0,386. No confundir con Valencia. Etiquetas completas de períodos 25, 50, 200 y 500 verificadas.",
+    sectionLabel: "Demostración documentada"
 
   },
 
@@ -730,6 +759,7 @@ export const slideLibrary: Slide[] = [
     backup: true,
     script: "La captura compara métodos sobre la misma demo de ocho estaciones: IDW, kriging ordinario y una función de base radial. En el mapa, los puntos sitúan las estaciones y el campo continuo representa la variable interpolada en los puntos objetivo. La validación cruzada deja fuera una estación, predice su valor con las restantes y repite el proceso para calcular el RMSE. Así podemos comparar métodos con los mismos datos y no solo por el aspecto del mapa. Esta interfaz muestra kriging ordinario; no incluye aquí la covariable de elevación de un kriging universal. Tampoco convierte una red escasa en observaciones nuevas: la calidad sigue limitada por la distribución de estaciones y la estructura espacial de la variable.",
     notes: "Captura de la ejecución local de /tools/interpolation. Demo de 8 estaciones; IDW, kriging ordinario y RBF. Señalar el mapa y el RMSE LOOCV. No presentar como reproducción de Andes o Mallorca ni como kriging universal con DEM.",
+    sectionLabel: "Demostración documentada"
 
   },
 
@@ -745,6 +775,7 @@ export const slideLibrary: Slide[] = [
     backup: true,
     script: "Esta captura usa treinta años de precipitación diaria sintética y la opción multiplicativa de Quantile Delta Mapping. A la izquierda se comparan las distribuciones acumuladas de la referencia, del modelo bruto y del modelo corregido. A la derecha, las medias mensuales permiten comprobar la estacionalidad y cómo cambia el sesgo. La corrección se calibra en un período histórico y se aplica al escenario: su objetivo es ajustar el sesgo sin borrar la señal de cambio, por lo que la distribución futura corregida no tiene por qué coincidir exactamente con la observación histórica. La interfaz permite también otras opciones, como Scaled Distribution Mapping. Esta es una demostración del módulo; las capturas no corresponden a datos de Panamá, Andes o SIMPCCe. En esos proyectos hay que documentar además el método, las variables y los períodos empleados.",
     notes: "Captura de /tools/bias con demo sintética y QDM multiplicativo. No afirmar que este resultado reproduce las 414 combinaciones de Panamá ni que todos los proyectos usaron idéntica configuración. Señalar CDF, medias mensuales y conservación de la señal del escenario.",
+    sectionLabel: "Demostración documentada"
 
   },
 
@@ -760,6 +791,7 @@ export const slideLibrary: Slide[] = [
     backup: true,
     script: "La captura muestra el ajuste de una cópula Gumbel a ciento veinte pares de caudal máximo y nivel del mar de la demo sintética. Los puntos representan los pares de la muestra y las líneas describen períodos de retorno conjuntos. En azul, OR significa que al menos una de las dos variables supera su umbral; en rojo, AND exige que ambas lo superen simultáneamente. Las cruces localizan el evento de máxima densidad conjunta sobre cada isolínea, el MPDE. Hay múltiples combinaciones de caudal y nivel que comparten un mismo período de retorno conjunto: por eso el diseño compuesto no se reduce a sumar dos extremos univariantes. Podemos comparar familias de cópulas, pero la elección debe atender a la dependencia y a las colas. La figura está guardada localmente y puede explicarse sin ejecutar la herramienta.",
     notes: "Captura real de /tools/compound con familia Gumbel y 120 pares sintéticos. Distinguir OR y AND y explicar las cruces MPDE. Los puntos de demo no son observaciones de un caso piloto.",
+    sectionLabel: "Demostración documentada"
 
   },
 
@@ -1428,7 +1460,8 @@ export const slideLibrary: Slide[] = [
     visualGuide: ["Ilustración conceptual: río, ciudad y costa","Edificios, movilidad e infraestructuras expuestas"],
     speechCues: ["personas","profundidad y la velocidad","vulnerabilidad","estado previo de la cuenca","frecuencia","incertidumbre"],
     transition: "Veamos cómo recorre esa distancia el procedimiento de cálculo habitual.",
-    transitionCue: "condiciones"
+    transitionCue: "condiciones",
+    sectionLabel: "Contexto del problema"
   },
 
   {
@@ -1453,6 +1486,7 @@ export const slideLibrary: Slide[] = [
       'La dificultad de repetir la cadena define el problema doctoral.',
       'La tesis busca generalización, trazabilidad y transferencia.',
     ],
+    sectionLabel: "Marco conceptual"
   },
 
   {
@@ -1474,7 +1508,8 @@ export const slideLibrary: Slide[] = [
     visualGuide: ["Serie corta de partida","Población de escenarios","Mapa por escenario y curva final"],
     speechCues: ["escenarios plausibles","respuestas hidráulicas","curva de frecuencia","probabilidad de superar un calado","incertidumbre","no añaden nuevas observaciones"],
     transition: "La cuestión es qué parte de esta cadena cubren conjuntamente los marcos disponibles.",
-    transitionCue: "otros marcos"
+    transitionCue: "otros marcos",
+    sectionLabel: "Modelación estocástica"
   },
 
   {
@@ -1486,7 +1521,8 @@ export const slideLibrary: Slide[] = [
     type: 'normal',
     script: 'Antes de la arquitectura técnica, este es el mapa metodológico: cinco responsabilidades y los submódulos de pyhydra que las materializan. Los datos: lluvia, caudal, cambio climático y suelos. Los extremos y el clima: series, análisis regional y corrección de sesgo. Los escenarios: generación estocástica y downscaling híbrido. La respuesta física: HEC-HMS, SWAT+, SFINCS y HEC-RAS. Y el impacto: reconstrucción de escenarios no simulados, sensibilidad y período de retorno sobre el calado. Son catorce submódulos en tres bloques, y cada caso activa solo la combinación que necesita.',
     notes: 'Utilizar esta diapositiva como orientación. No enumerar aún clases ni submódulos. En la diapositiva siguiente se explica que la arquitectura asigna una capa técnica a estas responsabilidades.',
-    backup: true
+    backup: true,
+    sectionLabel: "Mapa metodológico"
   },
 
   {

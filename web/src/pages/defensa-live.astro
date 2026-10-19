@@ -1300,7 +1300,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       html += `
         <div style="display:flex; flex-direction:column; align-items:${isFirst ? 'flex-start' : 'center'}; justify-content:center; text-align:${isFirst ? 'left' : 'center'}; min-height:82vh; padding:${isFirst ? '44px 64px' : '20px'}; ${isFirst ? `background:linear-gradient(90deg,rgba(2,6,23,.98) 0%,rgba(2,6,23,.86) 44%,rgba(2,6,23,.14) 78%),url('${base.replace(/\/$/, '')}/defensa/cover-stochastic-flood.png') center/cover no-repeat;` : ''}">
           <span class="slide-block" style="background:${slide.blockColor}22; color:${slide.blockColor}; border:1px solid ${slide.blockColor}44; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; padding:4px 12px; border-radius:99px; margin-bottom:24px; animation:fadeInDown 0.5s ease both;">
-            ${slide.block}
+            ${slide.sectionLabel ?? slide.block}
           </span>
           <div class="slide-main-title" style="font-size:clamp(34px, 4.2vw, 58px); font-weight:900; color:#fff; letter-spacing:-0.03em; line-height:1.15; margin-bottom:16px; max-width:${isFirst ? '760px' : 'none'}; animation:fadeInUp 0.6s ease both;">${slide.title}</div>
           ${slide.subtitle ? `<div class="slide-main-subtitle" style="font-size:clamp(16px, 1.9vw, 21px); color:${isFirst ? '#cbd5e1' : '#94a3b8'}; max-width:760px; line-height:1.5; margin-bottom:22px; animation:fadeInUp 0.6s ease 0.1s both;">${slide.subtitle}</div>` : ''}
@@ -1607,7 +1607,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       if (presWinTimer) startTimer();
       presWinCounter.textContent = `${idx + 1} / ${totalSlides}`;
       document.getElementById('pres-win-title')!.textContent = `${idx + 1}. ${slide.title}`;
-      document.getElementById('pres-win-step-kind')!.textContent = buildUrl(slide) ? 'Navegación web · al avanzar volvemos a las diapositivas' : `Diapositiva · ${slide.block}`;
+      document.getElementById('pres-win-step-kind')!.textContent = buildUrl(slide) ? 'Navegación web · al avanzar volvemos a las diapositivas' : `Diapositiva · ${slide.sectionLabel ?? slide.block}`;
       const previousSlide = slides[idx - 1];
       presWinPrevBtn.textContent = previousSlide && buildUrl(previousSlide) ? '← Volver a la navegación' : '← Diapositiva anterior';
       
@@ -1639,7 +1639,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     if (progress) progress.style.width = `${pct}%`;
     if (counter) counter.textContent = `${idx + 1} / ${totalSlides}`;
     if (topBlock) {
-      topBlock.textContent = slide.block;
+      topBlock.textContent = slide.sectionLabel ?? slide.block;
       topBlock.style.background = `${slide.blockColor}22`;
       topBlock.style.color = slide.blockColor;
       topBlock.style.borderColor = `${slide.blockColor}44`;

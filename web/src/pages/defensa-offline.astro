@@ -2008,7 +2008,7 @@ const chapterIcons = [
             {/* Block badge (all types except title and index) */}
             {!isTitle && !isIndex && (
               <span class="slide-block" style={`background:${slide.blockColor}22; color:${slide.blockColor}; border:1px solid ${slide.blockColor}44`}>
-                {slide.block}
+                {slide.sectionLabel ?? slide.block}
               </span>
             )}
 
