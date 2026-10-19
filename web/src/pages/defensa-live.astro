@@ -1571,6 +1571,8 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       const nextSlide = slides[idx + 1];
       presWinNextBlock.textContent = nextSlide ? `${nextSlide.block} · ~${nextSlide.estimatedMinutes} min` : 'FIN';
       renderNarration();
+      // Each new script starts at its opening, even after reading the previous one to the end.
+      document.querySelector<HTMLElement>('.presenter-window-right')?.scrollTo({ top: 0, behavior: 'instant' });
 
       presWinNextTitle.textContent = nextSlide ? `${idx + 2}. ${nextSlide.title}` : 'Fin de la presentación / Ronda de preguntas';
 
