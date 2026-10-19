@@ -3,8 +3,9 @@
 import Layout from '../layouts/Layout.astro';
 import { quoteFigures, visualSlides } from '../data/defense-visuals';
 import { slides as mainSlides, backupSlides } from '../data/slides';
+import { dialogueFor, deliveryCue, narrationNotice, type NarrationMode } from '../lib/defense-narration';
 const reserve = Astro.props.reserve === true;
-const slides = (reserve ? backupSlides : mainSlides).map(slide => ({ ...slide, script: slide.offlineScript ?? slide.script }));
+const slides = (reserve ? backupSlides : mainSlides).map(slide => ({ ...slide, script: dialogueFor(slide, 'prepared') }));
 const totalSlides = slides.length;
 const base = import.meta.env.BASE_URL;
 const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
@@ -686,6 +687,9 @@ const chapterIcons = [
     color: #475569;
     text-transform: uppercase;
   }
+  .notes-mode {display:flex;flex-direction:column;gap:6px;color:#c5d9d5;font-size:13px;margin-bottom:8px;}
+  .notes-mode select {max-width:100%;width:100%;padding:8px;background:#123b45;color:#e2eeeb;border:1px solid #9ac7c1;font-size:14px;}
+  .notes-mode-notice {color:#c5d9d5;font-size:12px;line-height:1.5;margin:8px 0 14px;}
   .notes-text {
     font-size: 11.5px;
     color: #cbd5e1;
@@ -2343,7 +2347,9 @@ const chapterIcons = [
 
     <!-- Notes panel -->
     <div class="pres-notes-panel" id="notes-panel" style="display: none;">
-      <span class="notes-label">🎙 Diálogo · demos preparadas</span>
+      <label class="notes-mode">Texto del guion <select id="notes-narration-mode"><option value="live">Guion principal · en vivo</option><option value="prepared" selected>Guion con capturas preparadas</option></select></label>
+      <p class="notes-mode-notice" id="notes-narration-notice"></p>
+      <span class="notes-label">🎙 Diálogo completo · qué decir</span>
       <div class="notes-text" id="notes-speech">—</div>
       <span class="notes-label">Transición a la siguiente diapositiva</span>
       <div class="notes-text" id="notes-transition">—</div>
@@ -2369,6 +2375,7 @@ const chapterIcons = [
   import { enableStudyEntry } from '../lib/defense-study-entry';
   import { keepPresentationAwake } from '../lib/presentation-awake';
   import { slides as mainSlides, backupSlides } from '../data/slides.ts';
+  import { dialogueFor, deliveryCue, narrationNotice, type NarrationMode } from '../lib/defense-narration';
   document.querySelectorAll<HTMLButtonElement>('[data-capture-step]').forEach(button => {
     button.addEventListener('click', () => {
       const slide = button.closest('.slide');
@@ -2382,7 +2389,9 @@ const chapterIcons = [
     });
   });
   const reserve = document.getElementById('pres-shell')?.dataset.reserve === 'true';
-  const slides = (reserve ? backupSlides : mainSlides).map(slide => ({ ...slide, script: slide.offlineScript ?? slide.script }));
+  let narrationMode: NarrationMode = new URLSearchParams(location.search).get('modo') === 'live' ? 'live' : 'prepared';
+  const narrationPicker = document.getElementById('notes-narration-mode') as HTMLSelectElement;
+  const slides = (reserve ? backupSlides : mainSlides).map(slide => ({ ...slide, script: dialogueFor(slide, 'prepared') }));
   const totalSlides = slides.length;
   const storageKey = reserve ? 'defensa-anexos-slide' : 'defensa-offline-slide';
 
@@ -2496,9 +2505,9 @@ const chapterIcons = [
     });
 
     // Notes
-    document.getElementById('notes-speech')!.textContent = slide.script;
+    renderNarration(idx);
     document.getElementById('notes-transition')!.textContent = slide.transition ?? '—';
-    notesText.textContent = slide.notes ?? '—';
+
     const nextSlide = slides[idx + 1];
     notesNext.textContent = nextSlide ? `${idx + 2}. ${nextSlide.title}` : 'Fin de la presentación';
 
@@ -2573,7 +2582,7 @@ const chapterIcons = [
   });
 
   document.addEventListener('keydown', (e) => {
-    if (e.target instanceof HTMLInputElement) return;
+    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement || e.target instanceof HTMLTextAreaElement) return;
     if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
     if (e.key === 'ArrowLeft')  { e.preventDefault(); goTo(current - 1); }
     if (e.key === 'f' || e.key === 'F') toggleFullscreen();
@@ -2588,6 +2597,19 @@ const chapterIcons = [
   goInput.addEventListener('change', () => {
     const n = parseInt(goInput.value) - 1;
     if (!isNaN(n)) goTo(Math.min(Math.max(0, n), totalSlides - 1));
+  });
+
+  function renderNarration(idx: number) {
+    const source = (reserve ? backupSlides : mainSlides)[idx];
+    document.getElementById('notes-speech')!.textContent = dialogueFor(source, narrationMode);
+    document.getElementById('notes-narration-notice')!.textContent = narrationNotice(source, narrationMode);
+    notesText.textContent = [source.notes, source.webAction && `Acción en la web: ${source.webAction}`, deliveryCue(source, reserve)].filter(Boolean).join('\n\n') || '—';
+    narrationPicker.value = narrationMode;
+  }
+  narrationPicker.addEventListener('change', () => {
+    narrationMode = narrationPicker.value === 'live' ? 'live' : 'prepared';
+    renderNarration(current);
+    const url = new URL(location.href);url.searchParams.set('modo', narrationMode);try { history.replaceState(null, '', url); } catch {}
   });
 
   document.getElementById('btn-toggle-notes')!.addEventListener('click', () => {
@@ -2606,7 +2628,7 @@ const chapterIcons = [
   goTo(Math.min(Math.max(0, initSlide), totalSlides - 1));
   startTimer();
   if (!isPreview) keepPresentationAwake();
-  enableStudyEntry({ getCurrent: () => current, group: reserve ? 'anexos' : 'principal', disabled: isPreview });
+  enableStudyEntry({ getCurrent: () => current, group: reserve ? 'anexos' : 'principal', mode: () => narrationMode, disabled: isPreview });
 </script>
 
 </Layout>

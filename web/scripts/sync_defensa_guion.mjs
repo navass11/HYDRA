@@ -9,6 +9,11 @@ new Function('exports', 'require', 'module', ts.transpile(source, {
   module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022,
 }))(module.exports, require, module);
 const { slides, backupSlides, totalMinutes } = module.exports;
+const narrationModule = { exports: {} };
+new Function('exports', 'require', 'module', ts.transpile(fs.readFileSync(new URL('../src/lib/defense-narration.ts', import.meta.url), 'utf8'), {
+  module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022,
+}))(narrationModule.exports, require, narrationModule);
+const { dialogueFor, deliveryCue } = narrationModule.exports;
 const revisionDate = process.env.GUION_REVISION_DATE || new Intl.DateTimeFormat('es-ES', {
   day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Madrid',
 }).format(new Date());
@@ -24,19 +29,19 @@ const duration = s => {
 };
 const rows = [heading, '', `Libreto del recorrido principal: **${slides.length} diapositivas**, unos **${totalMinutes} minutos**. El texto bajo **Diálogo** coincide con la vista de presentador en vivo y se pronuncia; la **Transición** acompaña el cambio de diapositiva. Las pautas entre corchetes son acciones privadas. Los tiempos incluyen el habla a 115 palabras/min, la transición, la lectura de figuras y la demostración. Son los mismos que utiliza la vista de presentador.`, ''];
 slides.forEach((s, i) => {
-  rows.push(`### ${i + 1}. ${s.title}`, '', `**Bloque:** ${s.block} · **Tiempo orientativo:** ${duration(s)}`, '', '**Diálogo**', '', s.script.trim(), '');
+  rows.push(`### ${i + 1}. ${s.title}`, '', `**Bloque:** ${s.block} · **Tiempo orientativo:** ${duration(s)}`, '', '**Diálogo**', '', dialogueFor(s, 'live').trim(), '');
   if (s.notes) rows.push('**Notas privadas:** ' + s.notes, '');
   if (s.webAction) rows.push('**Acción en la web:** ' + s.webAction, '');
-  if (s.offlineScript) rows.push('**Diálogo en demos preparadas (sustituye al diálogo anterior)**', '', s.offlineScript, '');
-  if (s.offlineFrames) rows.push('**[Demos preparadas: muestra las capturas locales en orden: ' + s.offlineFrames.map(frame => frame.label).join(' → ') + '. Utiliza los botones de la diapositiva para cambiar de captura.]**', '');
-  if (s.id === 19) rows.push('**[Respaldo: abrir /defensa-respaldo si la API no responde. La figura procede del notebook de Valencia; no presentarla como resultado de la serie demo sintética.]**', '');
-  else if (s.figure) rows.push('**[Pauta: señala la figura principal al explicar el resultado. Las figuras adicionales están en /defensa-anexos.]**', '');
+  if (s.offlineScript) rows.push('**Diálogo en demos preparadas (sustituye al diálogo anterior)**', '', dialogueFor(s, 'prepared'), '');
+  const cues = deliveryCue(s);
+  if (cues) rows.push(...cues.split('\n\n').flatMap(cue => [`**[${cue}]**`, '']));
   if (s.transition) rows.push(`**Transición:** ${s.transition}`, '');
 });
 rows.push('**[Pauta final: haz una pausa y cede la palabra al tribunal.]**', '', '## Guion de los anexos', '', 'Material disponible en **/defensa-anexos**, fuera del tiempo principal. Abrir solo el anexo que responda a la pregunta del tribunal.', '');
 backupSlides.forEach((s, i) => {
-  rows.push(`### Anexo ${i + 1}. ${s.title}`, '', `**Tiempo orientativo:** ${duration(s)}`, '', s.script.trim(), '');
-  if (s.offlineFrames) rows.push('**[Apoyo visual local: ' + s.offlineFrames.map((frame, step) => `${step + 1}. ${frame.label}`).join(' → ') + '. Utiliza los botones de la diapositiva para cambiar de figura.]**', '');
+  rows.push(`### Anexo ${i + 1}. ${s.title}`, '', `**Tiempo orientativo:** ${duration(s)}`, '', dialogueFor(s, 'live').trim(), '');
+  const cue = deliveryCue(s, true);
+  if (cue) rows.push(`**[${cue}]**`, '');
   if (s.notes) rows.push('**Notas privadas:** ' + s.notes, '');
 });
 doc = doc.slice(0, start) + rows.join('\n') + doc.slice(end);

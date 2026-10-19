@@ -1,5 +1,6 @@
 ---
 import { slides, backupSlides } from '../data/slides';
+import { dialogueFor, deliveryCue } from '../lib/defense-narration';
 import { quoteFigures, visualSlides } from '../data/defense-visuals';
 const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}${path}`;
 const groups = [{key:'principal', label:'Presentación', slides}, {key:'anexos', label:'Anexos', slides:backupSlides}];
@@ -14,18 +15,24 @@ const groups = [{key:'principal', label:'Presentación', slides}, {key:'anexos',
 </head>
 <body>
   <header class="study-header">
-    <div class="study-heading"><a href={asset('/defensa')}>HYDRA · Defensa</a><span>Modo de estudio</span></div>
-    <div class="study-controls">
-      <label class="slide-picker">Diapositiva
-        <select id="study-index">
-          {groups.map(group=><optgroup label={group.label}>{group.slides.map((slide,index)=><option value={`${group.key}-${index}`}>{group.key==='anexos'?'Anexo ':''}{index+1}. {slide.title}</option>)}</optgroup>)}
-        </select>
-      </label>
-      <div class="reading-tools"><button id="font-less" aria-label="Reducir tamaño de letra">A−</button><button id="font-more" aria-label="Aumentar tamaño de letra">A+</button><a id="projection-link" href={asset('/defensa-offline?vista=presentacion')}>Ver diapositivas</a></div>
-    </div>
-    <div class="session-tools"><button id="restart-presentation">Reiniciar presentación</button><button data-screen-awake aria-pressed="false">Activar pantalla</button></div>
+    <a class="study-brand" href={asset('/defensa')}>HYDRA <span>Estudiar la defensa</span></a>
+    <button id="settings-open" aria-haspopup="dialog">Ajustes</button>
   </header>
-  <main id="study-content">
+  <dialog id="study-settings" aria-labelledby="settings-title">
+    <div class="settings-heading"><h2 id="settings-title">Ajustes de estudio</h2><button id="settings-close" autofocus>Cerrar</button></div>
+    <label class="slide-picker">Ir a una diapositiva
+      <select id="study-index">
+        {groups.map(group=><optgroup label={group.label}>{group.slides.map((slide,index)=><option value={`${group.key}-${index}`}>{group.key==='anexos'?'Anexo ':''}{index+1}. {slide.title}</option>)}</optgroup>)}
+      </select>
+    </label>
+    <label class="script-choice">Texto que vas a estudiar <select id="speech-mode"><option value="live">Guion principal · en vivo</option><option value="prepared">Guion con capturas preparadas</option></select></label>
+    <p class="settings-help">El diálogo corresponde al guion oral por diapositiva del EPUB. Las demos con capturas tienen una explicación adaptada.</p>
+    <div class="font-settings"><span>Tamaño de letra</span><div><button id="font-less" aria-label="Reducir tamaño de letra">A−</button><output id="font-size" aria-live="polite">19 px</output><button id="font-more" aria-label="Aumentar tamaño de letra">A+</button></div></div>
+    <div class="session-tools"><button data-screen-awake aria-pressed="false">Activar pantalla</button><button id="restart-presentation">Reiniciar presentación</button></div>
+    <p class="settings-help">Se guarda tu última diapositiva en este dispositivo. «Pantalla activa» evita el bloqueo automático mientras esta página esté visible y el navegador lo permita.</p>
+    <a id="projection-link" href={asset('/defensa-offline?vista=presentacion')}>Abrir vista de diapositivas</a>
+  </dialog>
+  <main id="study-content" tabindex="-1" aria-label="Lectura del guion">
     {groups.map(group=>group.slides.map((slide,index)=>{
       const visual=visualSlides[slide.id];
       const figures=[
@@ -40,6 +47,16 @@ const groups = [{key:'principal', label:'Presentación', slides}, {key:'anexos',
         <p class="position">{group.key==='anexos'?'Anexo':'Diapositiva'} {index+1} de {group.slides.length} · {slide.block}</p>
         <h1 tabindex="-1">{slide.title}</h1>
         {slide.subtitle&&<p class="subtitle">{slide.subtitle}</p>}
+        <section class="dialogue" aria-label="Guion para decir">
+          <h2>Qué decir</h2>
+          <p class="script-notice notice-live">Guion principal</p>
+          {slide.offlineScript&&<p class="script-notice notice-prepared" hidden>Variante para capturas preparadas</p>}
+          <p class="speech speech-live">{dialogueFor(slide,'live')}</p>
+          {slide.offlineScript&&<p class="speech speech-prepared" hidden>{dialogueFor(slide,'prepared')}</p>}
+        </section>
+        {slide.transition&&<section class="transition"><h2>Transición</h2><p>{slide.transition}</p></section>}
+        {(slide.notes||slide.webAction||deliveryCue(slide,group.key==='anexos'))&&<details><summary>Notas y pautas del guion</summary>{slide.notes&&<p class="preparation">{slide.notes}</p>}{slide.webAction&&<p><strong>Acción en la web.</strong> {slide.webAction}</p>}{deliveryCue(slide,group.key==='anexos')&&<p class="preparation">{deliveryCue(slide,group.key==='anexos')}</p>}</details>}
+        <details class="slide-material"><summary>Ver diapositiva y figuras</summary>
         <section class="slide-content" aria-label="Contenido de la diapositiva">
           {slide.quote&&<blockquote>{slide.quote}</blockquote>}
           {slide.results&&<dl class="results">{slide.results.map(result=><div><dt>{result.label}</dt><dd><strong>{result.value}</strong>{result.implication&&<span>{result.implication}</span>}</dd></div>)}</dl>}
@@ -51,18 +68,11 @@ const groups = [{key:'principal', label:'Presentación', slides}, {key:'anexos',
           {slide.processSteps&&<ol>{slide.processSteps.map(step=><li>{step}</li>)}</ol>}
           {slide.caseReference&&<p class="reference">{slide.caseReference}</p>}
         </section>
-        <section class="dialogue" aria-label="Guion para decir">
-          <h2>Qué decir</h2>
-          <p class="speech speech-live">{slide.script}</p>
-          {slide.offlineScript&&<p class="speech speech-prepared" hidden>{slide.offlineScript}</p>}
-        </section>
-        {slide.transition&&<section class="transition"><h2>Transición</h2><p>{slide.transition}</p></section>}
-        {(slide.notes||slide.webAction)&&<details><summary>Notas para preparar la exposición</summary>{slide.webAction&&<p><strong>Acción en la web.</strong> {slide.webAction}</p>}{slide.notes&&<p class="preparation">{slide.notes}</p>}</details>}
+        </details>
       </article>;
     }))}
   </main>
   <footer class="study-nav"><button id="study-prev">← Anterior</button><span id="study-progress" role="status" aria-live="polite"></span><button id="study-next">Siguiente →</button></footer>
-  <aside class="study-preferences"><label>Guion para <select id="speech-mode"><option value="prepared">demos preparadas</option><option value="live">demostración en vivo</option></select></label><p>Se guarda tu última diapositiva en este dispositivo. «Pantalla activa» evita el bloqueo automático mientras esta página esté visible y el navegador lo permita.</p></aside>
   <dialog id="figure-dialog" aria-label="Figura ampliada"><div class="figure-toolbar"><p id="figure-caption"></p><button id="figure-close" autofocus>Cerrar figura</button></div><p class="zoom-help">Desplázate por la figura o usa los botones para ajustar el tamaño.</p><div class="zoom-controls"><button id="zoom-out" aria-label="Reducir figura">−</button><button id="zoom-in" aria-label="Ampliar figura">+</button></div><div class="figure-scroll" tabindex="0" aria-label="Figura ampliada, con desplazamiento"><img id="figure-large" alt="" /></div></dialog>
   <script>
     import { keepPresentationAwake } from '../lib/presentation-awake';
@@ -72,6 +82,10 @@ const groups = [{key:'principal', label:'Presentación', slides}, {key:'anexos',
     const next=document.getElementById('study-next') as HTMLButtonElement;
     const projection=document.getElementById('projection-link') as HTMLAnchorElement;
     const params=new URLSearchParams(location.search);
+    const reading=document.getElementById('study-content')!;
+    const settings=document.getElementById('study-settings') as HTMLDialogElement;
+    document.getElementById('settings-open')!.addEventListener('click',()=>settings.showModal());
+    document.getElementById('settings-close')!.addEventListener('click',()=>settings.close());
     const read=(key:string,fallback:string)=>{try{return localStorage.getItem(key)??fallback;}catch{return fallback;}};
     const save=(key:string,value:string)=>{try{localStorage.setItem(key,value);}catch{}};
     let current=0;
@@ -90,20 +104,29 @@ const groups = [{key:'principal', label:'Presentación', slides}, {key:'anexos',
       save('hydra-study-position',article.id);
       const url=new URL(location.href);url.searchParams.set('grupo',article.dataset.group!);url.searchParams.set('slide',article.dataset.index!);try{history.replaceState(null,'',url);}catch{}
       document.title=`${Number(article.dataset.index)+1}. ${article.querySelector('h1')!.textContent} · Estudiar HYDRA`;
-      if(scroll){window.scrollTo({top:0,behavior:'instant'});article.querySelector('h1')!.focus({preventScroll:true});}
+      if(scroll){reading.scrollTo({top:0,behavior:'instant'});article.querySelector('h1')!.focus({preventScroll:true});}
     }
-    picker.addEventListener('change',()=>show(articles.findIndex(article=>article.id===picker.value)));
+    picker.addEventListener('change',()=>{show(articles.findIndex(article=>article.id===picker.value));settings.close();articles[current].querySelector('h1')!.focus({preventScroll:true});});
     previous.addEventListener('click',()=>show(current-1));next.addEventListener('click',()=>show(current+1));
     let font=Number(read('hydra-study-font','19'));
-    function changeFont(delta=0){font=Math.min(28,Math.max(16,(Number.isFinite(font)?font:19)+delta));document.documentElement.style.setProperty('--study-size',`${font}px`);save('hydra-study-font',String(font));}
+    function changeFont(delta=0){font=Math.min(28,Math.max(16,(Number.isFinite(font)?font:19)+delta));document.documentElement.style.setProperty('--study-size',`${font}px`);save('hydra-study-font',String(font));document.getElementById('font-size')!.textContent=`${font} px`;}
     document.getElementById('font-less')!.addEventListener('click',()=>changeFont(-1));document.getElementById('font-more')!.addEventListener('click',()=>changeFont(1));changeFont();
     const speechMode=document.getElementById('speech-mode') as HTMLSelectElement;
-    speechMode.value=['live','prepared'].includes(params.get('modo')??'')?params.get('modo')!:read('hydra-study-speech','prepared');
-    function changeSpeech(){save('hydra-study-speech',speechMode.value);articles.forEach(article=>{const live=article.querySelector<HTMLElement>('.speech-live')!;const prepared=article.querySelector<HTMLElement>('.speech-prepared');live.hidden=Boolean(prepared)&&speechMode.value==='prepared';if(prepared)prepared.hidden=speechMode.value!=='prepared';});}
+    speechMode.value=['live','prepared'].includes(params.get('modo')??'')?params.get('modo')!:'live';
+    function changeSpeech(){
+      const mode=speechMode.value==='prepared'?'prepared':'live';
+      const url=new URL(location.href);url.searchParams.set('modo',mode);try{history.replaceState(null,'',url);}catch{}
+      const target=new URL(projection.href);target.searchParams.set('modo',mode);projection.href=target.href;
+      articles.forEach(article=>{
+        const prepared=article.querySelector<HTMLElement>('.speech-prepared');
+        article.querySelectorAll<HTMLElement>('.speech-live,.notice-live').forEach(el=>el.hidden=Boolean(prepared)&&mode==='prepared');
+        article.querySelectorAll<HTMLElement>('.speech-prepared,.notice-prepared').forEach(el=>el.hidden=mode!=='prepared');
+      });
+    }
     speechMode.addEventListener('change',changeSpeech);changeSpeech();
     const requested=params.has('slide')?`${params.get('grupo')==='anexos'?'anexos':'principal'}-${params.get('slide')}`:read('hydra-study-position','principal-0');
     show(Math.max(0,articles.findIndex(article=>article.id===requested)),false);
-    document.getElementById('restart-presentation')!.addEventListener('click',()=>show(0));
+    document.getElementById('restart-presentation')!.addEventListener('click',()=>{show(0);settings.close();articles[0].querySelector('h1')!.focus({preventScroll:true});});
     keepPresentationAwake();
     const dialog=document.getElementById('figure-dialog') as HTMLDialogElement;
     const large=document.getElementById('figure-large') as HTMLImageElement;
@@ -113,19 +136,25 @@ const groups = [{key:'principal', label:'Presentación', slides}, {key:'anexos',
     document.getElementById('figure-close')!.addEventListener('click',()=>dialog.close());
     document.getElementById('zoom-in')!.addEventListener('click',()=>{zoom=Math.min(500,zoom+50);resize();});
     document.getElementById('zoom-out')!.addEventListener('click',()=>{zoom=Math.max(100,zoom-50);resize();});
-    document.addEventListener('keydown',event=>{if(dialog.open||event.target instanceof HTMLSelectElement||event.target instanceof HTMLInputElement)return;if(event.key==='ArrowRight'){event.preventDefault();show(current+1);}if(event.key==='ArrowLeft'){event.preventDefault();show(current-1);}});
+    document.addEventListener('keydown',event=>{if(dialog.open||settings.open||event.target instanceof HTMLSelectElement||event.target instanceof HTMLInputElement)return;if(event.key==='ArrowRight'){event.preventDefault();show(current+1);}if(event.key==='ArrowLeft'){event.preventDefault();show(current-1);}});
   </script>
 </body>
 </html>
 
 <style is:global>
-  :root{--study-size:19px;color-scheme:light;background:#eef3f1;color:#13323a;font-family:"Avenir Next",Avenir,"Segoe UI",sans-serif;}
-  *{box-sizing:border-box}body{margin:0}button,select,a{touch-action:manipulation}button,select{font:inherit}button,a{ -webkit-tap-highlight-color:transparent}button{cursor:pointer}button:disabled{opacity:.45;cursor:default}a{color:#0e6269}button,select{border:1px solid #729499;border-radius:6px;background:#fff;color:#13323a;min-height:44px;padding:8px 12px}a:focus-visible,button:focus-visible,select:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #0f766e;outline-offset:3px}h1:focus{outline:none}[hidden]{display:none!important}
-  .study-header{background:#0e303a;color:#fff;padding:14px max(16px,env(safe-area-inset-left));} .study-heading,.study-controls{max-width:1000px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px}.study-heading{margin-bottom:14px;font-size:14px}.study-heading a{font-weight:750;color:#c5eee7;text-decoration:none}.study-controls{align-items:flex-end}.slide-picker{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1;font-size:14px}.slide-picker select{width:100%;max-width:100%;font-size:16px}.reading-tools{display:flex;align-items:center;gap:8px;flex-shrink:0}.reading-tools a{color:#d5f0ec;font-size:14px;padding:10px 4px;white-space:nowrap}
-  main{max-width:1000px;margin:auto;padding:28px 20px 40px;font-size:var(--study-size);line-height:1.65;overflow-wrap:anywhere}article{max-width:76ch;margin:auto}h1{font-size:1.8em;line-height:1.16;margin:.35em 0 .6em;letter-spacing:-.02em}h2{font-size:1.1em;line-height:1.3;margin:0 0 .8em}p{margin:.8em 0}.position{font-size:.78em;color:#46656d;margin:0}.subtitle{color:#46656d;line-height:1.4}li{margin:.5em 0}ul,ol{padding-left:1.3em}.results,.concepts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px;margin:1.5em 0}.results div,.concepts div{border-top:3px solid #3f8e93;padding:12px 0}.results dt{font-size:.85em}.results dd,.concepts dd{margin:0}.results strong{font-size:1.6em;line-height:1.3;display:block}.results span{font-size:.85em;display:block;color:#46656d}.concepts dt{font-weight:700}.concepts dd{color:#46656d}.dialogue{border-top:4px solid #23697a;margin-top:2em;padding:1.4em 0}.dialogue h2{color:#0e6269}.speech{white-space:pre-line;font-family:Charter,Georgia,serif;line-height:1.8}.transition{padding:18px 22px;border-left:4px solid #3f8e93;background:#dcebe7;margin:1em 0 1.5em}.transition p{margin:0}details{border-top:1px solid #a8bfbb;padding:1em 0}summary{cursor:pointer;font-weight:650;min-height:44px}.preparation{white-space:pre-wrap;font-size:.9em}.reference,figcaption{font-size:.8em;color:#46656d;line-height:1.5}figure{margin:1.5em 0}.figure-open{border:1px solid #b8ccc8;padding:0;width:100%;background:white;display:block;overflow:hidden}.figure-open img{width:100%;height:auto;display:block}.figure-open span{display:block;background:#e1eeea;padding:8px;font-size:14px;color:#164b56}figcaption{margin-top:8px}.scientific-content{max-width:100%;overflow-x:auto;padding:12px 0;font-size:.85em}.scientific-content table{border-collapse:collapse;min-width:600px;width:100%;color:#13323a}.scientific-content td,.scientific-content th{border-bottom:1px solid #a8bfbb;padding:10px;text-align:left}.scientific-content thead{background:#dcebe7}.scientific-content svg{max-width:100%;height:auto}.scientific-content .tm-yes{color:#0b6553}.scientific-content .tm-part{color:#874500}.scientific-content .tm-no{color:#526276}
-  .study-nav{position:sticky;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px max(16px,env(safe-area-inset-left)) max(12px,env(safe-area-inset-bottom));background:#0e303a;color:#d5f0ec;z-index:5}.study-nav button{background:#184c58;color:#fff;border-color:#729499}.study-nav span{font-size:14px;text-align:center}.study-preferences{max-width:1000px;margin:auto;padding:24px 20px;color:#46656d;font-size:14px}.study-preferences select{max-width:100%;font-size:16px}.study-preferences label{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-  dialog{width:calc(100% - 24px);max-width:1200px;max-height:calc(100dvh - 24px);padding:16px;border:1px solid #729499;border-radius:8px;background:#eef3f1;color:#13323a}dialog::backdrop{background:rgba(3,20,28,.85)}.figure-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px}.figure-toolbar p{font-size:15px;line-height:1.4}.figure-toolbar button{flex-shrink:0}.zoom-help{font-size:14px;color:#46656d}.zoom-controls{display:flex;gap:8px;margin-bottom:10px}.figure-scroll{overflow:auto;max-height:65dvh;background:white;border:1px solid #b8ccc8}.figure-scroll img{display:block;max-width:none;height:auto}.zoom-controls button{min-width:48px}
-  .session-tools{max-width:1000px;margin:12px auto 0;display:flex;flex-wrap:wrap;gap:10px}.session-tools button{font-size:14px}
-  @media(max-width:600px){.study-controls{flex-wrap:wrap}.slide-picker{flex-basis:100%}.reading-tools{width:100%}.reading-tools a{margin-left:auto}main{padding:24px 18px}h1{font-size:1.5em}.study-nav button{font-size:14px;padding:8px}.study-nav span{font-size:12px}.figure-toolbar{align-items:flex-start}}
+  :root{--study-size:19px;--paper:#eef3f1;--ink:#13323a;--muted:#46656d;--navy:#0e303a;--teal:#23697a;color-scheme:light;background:var(--paper);color:var(--ink);font-family:"Avenir Next",Avenir,"Segoe UI",sans-serif;}
+  *{box-sizing:border-box}body{margin:0;height:100vh;height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr) auto;overflow:hidden}button,select,a,summary{touch-action:manipulation}button,select{font:inherit}button,a{-webkit-tap-highlight-color:transparent}button{cursor:pointer}button:disabled{opacity:.45;cursor:default}a{color:#0e6269}button,select{border:1px solid #729499;border-radius:6px;background:#fff;color:var(--ink);min-height:44px;padding:8px 12px}a:focus-visible,button:focus-visible,select:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #0f766e;outline-offset:3px}h1:focus,main:focus{outline:none}[hidden]{display:none!important}
+  .study-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px max(18px,env(safe-area-inset-right)) 10px max(18px,env(safe-area-inset-left));background:var(--navy);color:white}
+  .study-brand{display:flex;align-items:center;gap:16px;color:#c5eee7;text-decoration:none;font-size:16px;font-weight:800}.study-brand span{color:#eef3f1;font-size:14px;font-weight:500}.study-header button{background:transparent;color:#eef3f1;border-color:#729499;font-size:14px;flex-shrink:0}
+  main{min-height:0;overflow-y:auto;overscroll-behavior-y:contain;scrollbar-gutter:stable;border-bottom:16px solid var(--paper);padding:32px max(22px,env(safe-area-inset-right)) 48px max(22px,env(safe-area-inset-left));font-size:var(--study-size);line-height:1.65;overflow-wrap:anywhere}
+  article{max-width:62ch;margin:0 auto}h1{font-size:1.55em;line-height:1.22;margin:.4em 0 .55em;letter-spacing:-.02em}h2{font-size:1.05em;line-height:1.4;margin:0 0 .8em}p{margin:.8em 0}.position{font-size:.74em;color:var(--muted);margin:0}.subtitle{color:var(--muted);font-size:.9em;line-height:1.5}li{margin:.5em 0}ul,ol{padding-left:1.3em}
+  .results,.concepts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px;margin:1.5em 0}.results div,.concepts div{border-top:3px solid #3f8e93;padding:12px 0}.results dt{font-size:.85em}.results dd,.concepts dd{margin:0}.results strong{font-size:1.6em;line-height:1.3;display:block}.results span{font-size:.85em;display:block;color:#46656d}.concepts dt{font-weight:700}.concepts dd{color:#46656d}.reference,figcaption{font-size:.8em;color:#46656d;line-height:1.5}figure{margin:1.5em 0}.figure-open{border:1px solid #b8ccc8;padding:0;width:100%;background:white;display:block;overflow:hidden}.figure-open img{width:100%;height:auto;display:block}.figure-open span{display:block;background:#e1eeea;padding:8px;font-size:14px;color:#164b56}figcaption{margin-top:8px}.scientific-content{max-width:100%;overflow-x:auto;padding:12px 0;font-size:.85em}.scientific-content table{border-collapse:collapse;min-width:600px;width:100%;color:#13323a}.scientific-content td,.scientific-content th{border-bottom:1px solid #a8bfbb;padding:10px;text-align:left}.scientific-content thead{background:#dcebe7}.scientific-content svg{max-width:100%;height:auto}.scientific-content .tm-yes{color:#0b6553}.scientific-content .tm-part{color:#874500}.scientific-content .tm-no{color:#526276}
+
+  .dialogue{border-top:1px solid #a8bfbb;margin-top:1.5em;padding:1.2em 0 0}.dialogue h2{margin:0;color:var(--ink)}.script-notice{font-size:.72em;color:var(--muted);margin:.25em 0 1.1em}.speech{white-space:pre-line;font-family:Charter,Georgia,serif;font-size:1.08em;line-height:1.85;margin:0 0 1.2em}.transition{padding:18px 20px;border-left:3px solid var(--teal);background:#dcebe7;margin:1.5em 0}.transition h2{font-size:.8em;margin-bottom:.4em}.transition p{margin:0}details{border-top:1px solid #a8bfbb;padding:1em 0}summary{cursor:pointer;font-size:.85em;font-weight:650;min-height:44px;line-height:1.5}.preparation{white-space:pre-wrap;font-size:.9em}
+  .study-nav{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:12px;padding:10px max(18px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));background:var(--navy);color:#d5f0ec;border-top:1px solid #729499;position:static;isolation:isolate}.study-nav button{background:#184c58;color:#fff;border-color:#729499;font-size:14px;white-space:nowrap;padding:8px 12px}.study-nav span{font-size:12px;text-align:center;max-width:90px;line-height:1.4}
+    dialog{width:calc(100% - 24px);max-width:1200px;max-height:calc(100dvh - 24px);padding:16px;border:1px solid #729499;border-radius:8px;background:#eef3f1;color:#13323a}dialog::backdrop{background:rgba(3,20,28,.85)}.figure-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px}.figure-toolbar p{font-size:15px;line-height:1.4}.figure-toolbar button{flex-shrink:0}.zoom-help{font-size:14px;color:#46656d}.zoom-controls{display:flex;gap:8px;margin-bottom:10px}.figure-scroll{overflow:auto;max-height:65dvh;background:white;border:1px solid #b8ccc8}.figure-scroll img{display:block;max-width:none;height:auto}.zoom-controls button{min-width:48px}
+
+  #study-settings{padding:24px;max-width:560px;overflow-y:auto;font-size:16px}#study-settings::backdrop{background:rgba(3,20,28,.7)}.settings-heading{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:24px}.settings-heading h2{margin:0;font-size:21px}.settings-heading button{flex-shrink:0}.slide-picker,.script-choice{display:flex;flex-direction:column;gap:8px;margin:18px 0 0;font-size:14px;font-weight:650}.slide-picker select,.script-choice select{width:100%;min-width:0;max-width:100%;font-size:16px}.settings-help{font-size:13px;line-height:1.6;color:var(--muted);margin:12px 0 24px}.font-settings{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:24px 0;font-size:14px}.font-settings>div{display:flex;align-items:center;gap:12px}.font-settings output{font-size:14px;min-width:40px;text-align:center}.session-tools{display:grid;gap:12px;padding-top:20px;border-top:1px solid #a8bfbb}.session-tools button{font-size:14px}#projection-link{display:block;padding:12px 0;font-size:14px}
+  @media(max-width:600px){main{padding-top:24px}h1{font-size:1.4em}.study-brand{gap:10px;font-size:15px}.study-brand span{font-size:12px}.study-nav{gap:8px;padding-left:12px;padding-right:12px}.study-nav button{font-size:13px;padding:8px}.study-nav span{font-size:11px;max-width:78px}.figure-toolbar{align-items:flex-start}#study-settings{padding:20px}.font-settings{flex-wrap:wrap}}
   @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 </style>

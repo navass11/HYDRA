@@ -1,6 +1,6 @@
 /** Enter the reading layout on small screens, preserving the current slide. */
 export function enableStudyEntry(options: {
-  getCurrent: () => number; group?: string; mode?: string; disabled?: boolean;
+  getCurrent: () => number; group?: string; mode?: string | (() => string); disabled?: boolean;
 }) {
   const link=document.getElementById('study-entry') as HTMLAnchorElement | null;
   if(!link)return;
@@ -8,7 +8,7 @@ export function enableStudyEntry(options: {
     const url=new URL(link.href);
     url.searchParams.set('slide',String(options.getCurrent()));
     url.searchParams.set('grupo',options.group??'principal');
-    url.searchParams.set('modo',options.mode??'prepared');
+    url.searchParams.set('modo',typeof options.mode === 'function' ? options.mode() : options.mode??'prepared');
     return url.href;
   };
   link.addEventListener('click',()=>link.href=destination());

@@ -340,7 +340,12 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     font-style: italic;
     margin-top: 3px;
   }
+  .narration-choice {display:flex;flex-direction:column;gap:6px;font-size:13px;color:#cbd5e1;margin-bottom:8px;}
+  .narration-choice select {width:100%;max-width:100%;padding:8px;background:#0f2535;color:#e2e8f0;border:1px solid #64748b;border-radius:6px;font-size:14px;}
+  .narration-notice {font-size:12px;line-height:1.5;color:#a8bacb;margin:8px 0 14px;}
+  #pres-win-speech {white-space:pre-wrap;}
   .panel-script {
+    white-space: pre-wrap;
     font-size: 14px;
     line-height: 1.65;
     color: #cbd5e1;
@@ -748,7 +753,9 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
 
         <!-- Script speech -->
         <div>
-          <div class="panel-section-label">🎙 Guion para leer</div>
+          <label class="narration-choice">Texto del guion<select data-narration-mode><option value="live">Guion principal · en vivo</option><option value="prepared">Guion con capturas preparadas</option></select></label>
+          <p class="narration-notice" data-narration-notice></p>
+          <div class="panel-section-label">🎙 Diálogo completo · qué decir</div>
           <div class="panel-script" id="panel-script"></div>
           <div class="panel-section-label">Transición a la siguiente diapositiva</div>
           <div class="panel-script" id="panel-transition"></div>
@@ -835,7 +842,9 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
 
     <!-- Speech text -->
     <div>
-      <span class="panel-section-label">🎙 Lo que debes decir (Guion)</span>
+      <label class="narration-choice">Texto del guion<select data-narration-mode><option value="live">Guion principal · en vivo</option><option value="prepared">Guion con capturas preparadas</option></select></label>
+      <p class="narration-notice" data-narration-notice></p>
+      <span class="panel-section-label">🎙 Diálogo completo · qué decir</span>
       <div id="pres-win-speech" style="font-size:16px; line-height:1.6; color:#e2e8f0; font-style:italic; border-left:4px solid #0d9488; padding-left:16px; margin-top:6px;">—</div>
     </div>
 
@@ -877,6 +886,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
 <script>
   import { enableStudyEntry } from '../lib/defense-study-entry';
   import { keepPresentationAwake } from '../lib/presentation-awake';
+  import { dialogueFor, deliveryCue, narrationNotice, type NarrationMode } from '../lib/defense-narration';
   import { slides, totalSlides } from '../data/slides.ts';
 
   // ── Mode detection ──
@@ -894,6 +904,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   }
 
   // ── State ──
+  let narrationMode: NarrationMode = params.get('modo') === 'prepared' ? 'prepared' : 'live';
   let current = -1;
   let elapsed = 0;
   let timerStartedAt = isPresenterWindow
@@ -1049,6 +1060,9 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   }
 
   syncChannel.onmessage = (e) => {
+    if (e.data?.type === 'narration-mode' && ['live', 'prepared'].includes(e.data.mode)) {
+      setNarrationMode(e.data.mode, false); return;
+    }
     if (e.data?.type === 'presentation-restart' && Number.isFinite(e.data.startedAt)) {
       restartPresentation(e.data.startedAt, false);
     }
@@ -1434,6 +1448,27 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     }, 50);
   }
 
+  const narrationPickers = document.querySelectorAll<HTMLSelectElement>('[data-narration-mode]');
+  function renderNarration() {
+    const slide = slides[current];
+    if (!slide) return;
+    const dialogue = dialogueFor(slide, narrationMode);
+    panelScriptEl.textContent = dialogue;
+    presWinSpeech.textContent = dialogue;
+    const notes = [slide.notes, slide.webAction && `Acción en la web: ${slide.webAction}`, deliveryCue(slide)].filter(Boolean).join('\n\n');
+    panelNotes.textContent = notes || 'Sin anotaciones para esta sección.';
+    presWinNotes.textContent = notes || 'Sin anotaciones para esta sección.';
+    document.querySelectorAll<HTMLElement>('[data-narration-notice]').forEach(el => el.textContent = narrationNotice(slide, narrationMode));
+    narrationPickers.forEach(picker => picker.value = narrationMode);
+  }
+  function setNarrationMode(mode: NarrationMode, announce = true) {
+    narrationMode = mode;
+    const url = new URL(location.href);url.searchParams.set('modo', mode);history.replaceState(null, '', url);
+    renderNarration();
+    if (announce) syncChannel.postMessage({type: 'narration-mode', mode});
+  }
+  narrationPickers.forEach(picker => picker.addEventListener('change', () => setNarrationMode(picker.value === 'prepared' ? 'prepared' : 'live')));
+
   // ── Main Slide Navigation ──
   function goTo(idx: number) {
     if (idx < 0 || idx >= totalSlides) return;
@@ -1449,9 +1484,9 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       
       const nextSlide = slides[idx + 1];
       presWinNextBlock.textContent = nextSlide ? `${nextSlide.block} · ~${nextSlide.estimatedMinutes} min` : 'FIN';
-      presWinSpeech.textContent = slide.script;
+      renderNarration();
       document.getElementById('pres-win-transition')!.textContent = slide.transition ?? '';
-      presWinNotes.textContent = slide.notes ?? 'Sin anotaciones privadas para esta sección.';
+
       presWinNextTitle.textContent = nextSlide ? `${idx + 2}. ${nextSlide.title}` : 'Fin de la presentación / Ronda de preguntas';
 
       presWinPrevBtn.disabled = idx === 0;
@@ -1534,7 +1569,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       });
     }
     if (panelScriptEl) {
-      panelScriptEl.textContent = slide.script;
+      renderNarration();
       document.getElementById('panel-transition')!.textContent = slide.transition ?? '';
       panelScriptEl.style.borderColor = slide.blockColor;
     }
@@ -1553,7 +1588,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       }
     }
 
-    if (panelNotes) panelNotes.textContent = slide.notes ?? '—';
+
 
     if (panelLinks && panelLinksWrap) {
       panelLinks.innerHTML = '';
@@ -1610,6 +1645,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   function openPresenterNotesWindow() {
     const url = new URL(window.location.href);
     url.searchParams.set('presenter', '1');
+    url.searchParams.set('modo', narrationMode);
     url.searchParams.set('slide', String(current));
     const win = window.open(url.toString(), 'defensa_notes', 'width=1100,height=750,menubar=no,toolbar=no,location=no,status=no');
     if (!win || win.closed || typeof win.closed === 'undefined') {
@@ -1750,7 +1786,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   }
 
   document.addEventListener('keydown', (e) => {
-    if (e.target instanceof HTMLInputElement) return;
+    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement || e.target instanceof HTMLTextAreaElement) return;
     if (['ArrowRight', ' ', 'ArrowLeft'].includes(e.key)) e.preventDefault();
     handleNavKey(e.key);
   });
@@ -1814,7 +1850,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   document.getElementById('restart-presentation')!.addEventListener('click', () => restartPresentation());
   document.getElementById('pres-win-restart')!.addEventListener('click', () => restartPresentation());
   keepPresentationAwake();
-  enableStudyEntry({ getCurrent: () => current, mode: 'live', disabled: isPresenterWindow });
+  enableStudyEntry({ getCurrent: () => current, mode: () => narrationMode, disabled: isPresenterWindow });
 </script>
 
 </Layout>
