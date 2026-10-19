@@ -819,13 +819,11 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   <!-- Left Side: Preview of current slide -->
   <div class="presenter-window-left">
     <div style="padding:16px 24px; border-bottom:1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between; align-items:center;">
-      <span style="font-weight:800; color:#5eead4;">📺 VISTA DEL PROYECTOR (PREVIEW)</span>
+      <span id="pres-win-preview-label" style="font-weight:800; color:#5eead4;">Diapositiva actual</span>
       <span id="pres-win-counter" style="font-weight:700; color:#64748b;">1 / {totalSlides}</span>
     </div>
     <div class="presenter-preview-frame">
-      <!-- Read-only mirror of what the audience sees: pointer-events disabled so its own
-           nav controls can't be clicked by mistake — this pane never drives shared state,
-           only the buttons below do. -->
+      <!-- Read-only slide or live-page reference. Website navigation follows the audience window. -->
       <iframe id="pres-win-preview-iframe" style="width:100%; height:100%; border:none; background:#020617; pointer-events:none;" src={asset('/defensa-offline/?slide=0&preview=1')} tabindex="-1"></iframe>
     </div>
   </div>
@@ -973,15 +971,18 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     const fitFrame = () => {
       const { width, height } = container.getBoundingClientRect();
       if (!width || !height) return;
-      const scale = Math.min(container.clientWidth / 1920, container.clientHeight / 1080);
+      const canvasWidth = Number(frame.dataset.canvasWidth) || 1920;
+      const canvasHeight = Number(frame.dataset.canvasHeight) || 1080;
+      const scale = Math.min(container.clientWidth / canvasWidth, container.clientHeight / canvasHeight);
       Object.assign(frame.style, {
-        position: 'absolute', width: '1920px', height: '1080px',
-        left: `${(container.clientWidth - 1920 * scale) / 2}px`,
-        top: `${(container.clientHeight - 1080 * scale) / 2}px`,
+        position: 'absolute', width: `${canvasWidth}px`, height: `${canvasHeight}px`,
+        left: `${(container.clientWidth - canvasWidth * scale) / 2}px`,
+        top: `${(container.clientHeight - canvasHeight * scale) / 2}px`,
         transformOrigin: 'top left', transform: `scale(${scale})`,
       });
     };
     new ResizeObserver(fitFrame).observe(container);
+    frame.addEventListener('defensa-preview-resize', fitFrame);
     fitFrame();
   }
 
@@ -1073,6 +1074,8 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     if (e.data?.type === 'presentation-restart' && Number.isFinite(e.data.startedAt)) {
       restartPresentation(e.data.startedAt, false);
     }
+    if (e.data?.type === 'web-preview-request' && !isPresenterWindow) publishWebPreview();
+    if (e.data?.type === 'web-preview-state' && isPresenterWindow) receiveWebPreview(e.data);
     if (e.data && e.data.type === 'slide-change') {
       goTo(e.data.index);
     }
@@ -1097,6 +1100,65 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     return base.replace(/\/$/, '') + slide.url;
   }
 
+  type WebPreviewState = { index: number; url: string; x: number; y: number; width: number; height: number };
+  let latestWebPreview: WebPreviewState | null = null;
+  let previewAnimationFrame = 0;
+  let audienceWebLoading = false;
+
+  function publishWebPreview() {
+    if (isPresenterWindow || audienceWebLoading || !slides[current]?.webMode || !iframeWrap.classList.contains('active-mode')) return;
+    try {
+      const page = iframe.contentWindow!;
+      const url = page.location.href;
+      if (new URL(url).origin !== location.origin) return;
+      syncChannel.postMessage({ type: 'web-preview-state', index: current, url, x: page.scrollX, y: page.scrollY, width: page.innerWidth, height: page.innerHeight });
+    } catch { /* Only same-origin HYDRA pages can be previewed. */ }
+  }
+
+  function updatePresenterPreview() {
+    if (!isPresenterWindow || !slides[current]) return;
+    const slide = slides[current];
+    const liveUrl = buildUrl(slide);
+    const label = document.getElementById('pres-win-preview-label')!;
+    label.textContent = liveUrl ? 'Página web actual · vista de referencia' : 'Diapositiva actual';
+    presPreviewIframe.title = liveUrl ? `Página de HYDRA: ${slide.title}` : `Diapositiva ${current + 1}: ${slide.title}`;
+    const synced = latestWebPreview?.index === current ? latestWebPreview : null;
+    const canvasWidth = String(liveUrl && synced ? synced.width : 1920);
+    const canvasHeight = String(liveUrl && synced ? synced.height : 1080);
+    if (presPreviewIframe.dataset.canvasWidth !== canvasWidth || presPreviewIframe.dataset.canvasHeight !== canvasHeight) {
+      presPreviewIframe.dataset.canvasWidth = canvasWidth;
+      presPreviewIframe.dataset.canvasHeight = canvasHeight;
+      presPreviewIframe.dispatchEvent(new Event('defensa-preview-resize'));
+    }
+    const target = new URL(liveUrl ? synced?.url ?? liveUrl : `${base.replace(/\/$/, '')}/defensa-offline/?slide=${current}&preview=1`, location.origin).href;
+    if (presPreviewIframe.src !== target) presPreviewIframe.src = target;
+    else if (liveUrl && synced) {
+      try { presPreviewIframe.contentWindow?.scrollTo(synced.x, synced.y); } catch { /* Wait for page load. */ }
+    }
+  }
+
+  function receiveWebPreview(state: WebPreviewState) {
+    if (state.index !== current || !Number.isInteger(state.index) || !Number.isFinite(state.x) || !Number.isFinite(state.y) || !Number.isFinite(state.width) || !Number.isFinite(state.height) || state.width <= 0 || state.height <= 0) return;
+    try {
+      if (new URL(state.url).origin !== location.origin || !buildUrl(slides[current])) return;
+      latestWebPreview = state;
+      updatePresenterPreview();
+    } catch { /* Ignore malformed sync messages. */ }
+  }
+
+  presPreviewIframe.addEventListener('load', () => {
+    const slide = slides[current];
+    if (!isPresenterWindow || !slide) return;
+    if (buildUrl(slide)) {
+      const state = latestWebPreview;
+      if (state?.index === current) presPreviewIframe.contentWindow?.scrollTo(state.x, state.y);
+      else presPreviewIframe.contentWindow?.postMessage({ type: 'defensa-command', anchor: slide.anchor ?? null, anchorPosition: slide.anchorPosition ?? 'center', highlight: null }, location.origin);
+    } else {
+      // The load callback uses the current index, never an index from a previous navigation.
+      presPreviewIframe.contentWindow?.postMessage({ type: 'defensa-preview-slide', index: current }, location.origin);
+    }
+  });
+
   // ── Navigate Iframe ──
   let iframeCurrentPath = '';
   let loadingSlowTimer: ReturnType<typeof setTimeout> | null = null;
@@ -1114,6 +1176,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       loadingSlowTimer = setTimeout(() => {
         if (loadingText) loadingText.textContent = 'Sigue cargando… la conexión va más lenta de lo normal';
       }, 4000);
+      audienceWebLoading = true;
       iframe.src = url;
       iframeCurrentPath = targetPath;
     } else {
@@ -1135,12 +1198,23 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
 
   if (iframe) {
     iframe.addEventListener('load', () => {
+      audienceWebLoading = false;
       if (loading) loading.classList.remove('visible');
       if (loadingSlowTimer) { clearTimeout(loadingSlowTimer); loadingSlowTimer = null; }
       try {
         iframeCurrentPath = new URL(iframe.src).pathname;
       } catch (_) {}
       if (slides[current]?.webMode) sendToIframe(slides[current]);
+      if (!isPresenterWindow) {
+        publishWebPreview();
+        try {
+          iframe.contentWindow?.addEventListener('resize', publishWebPreview);
+          iframe.contentWindow?.addEventListener('scroll', () => {
+            cancelAnimationFrame(previewAnimationFrame);
+            previewAnimationFrame = requestAnimationFrame(publishWebPreview);
+          }, { passive: true });
+        } catch { /* A non-HYDRA destination cannot share its scroll position. */ }
+      }
     });
   }
 
@@ -1476,6 +1550,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     narrationMode = mode;
     const url = new URL(location.href);url.searchParams.set('modo', mode);history.replaceState(null, '', url);
     renderNarration();
+    updatePresenterPreview();
     if (announce) syncChannel.postMessage({type: 'narration-mode', mode});
   }
   narrationPickers.forEach(picker => picker.addEventListener('change', () => setNarrationMode(picker.value === 'prepared' ? 'prepared' : 'live')));
@@ -1503,9 +1578,8 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       presWinNextBtn.disabled = idx === totalSlides - 1;
 
       // Sync the audience-view preview iframe inside the presenter popup window
-      if (presPreviewIframe) {
-        presPreviewIframe.src = `${base.replace(/\/$/, '')}/defensa-offline?slide=${idx}&preview=1`;
-      }
+      updatePresenterPreview();
+      if (buildUrl(slide)) syncChannel.postMessage({ type: 'web-preview-request' });
 
       // Persist state
       localStorage.setItem('defensa-live-slide', String(idx));
@@ -1618,7 +1692,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     if (panelNextTitle) panelNextTitle.textContent = nextSlide ? `${idx + 2}. ${nextSlide.title}` : 'Fin de la presentación';
     if (panelNextBlock) panelNextBlock.textContent = nextSlide ? `${nextSlide.block} · ~${nextSlide.estimatedMinutes} min` : '';
 
-    // The web is used only for three deliberate pieces of evidence. A URL may
+    // The web is used only at explicitly scripted navigation and demo moments. A URL may
     // still exist as presenter backup without interrupting the main narrative.
     if (isWebEvidence) {
       slideWrap.classList.remove('active-mode');

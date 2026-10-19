@@ -57,7 +57,7 @@ export const slideLibrary: Slide[] = [
     subtitle: 'Tesis Doctoral con Mención Industrial, presentada para la obtención del título de Doctor por la Universidad de Cantabria',
     estimatedMinutes: 3,
     type: 'title',
-    script: "Buenos días y muchas gracias por acompañarme. Soy Salvador Navas Fernández y presento mi tesis, «Desarrollo de un modelo automático de inundación estocástica», realizada en IHCantabria, dentro del programa IH2O y con Mención Industrial. La ha dirigido Manuel del Jesus Peñil y la ha tutorizado César Álvarez Díaz.\n\nEl problema es cómo transformar datos y escenarios inciertos en información útil para decidir ante una inundación. Explicaré la necesidad científica, la arquitectura desarrollada y las evidencias y límites de sus aplicaciones.",
+    script: "Buenos días, señor presidente y miembros del tribunal. Buenos días a mi director, a mi tutor, a los compañeros, familiares y amigos que nos acompañan. Muchas gracias a todos por su presencia.\n\nMi nombre es Salvador Navas Fernández y presento ante este tribunal la tesis doctoral titulada «Desarrollo de un modelo automático de inundación estocástica», realizada en IHCantabria, en el Programa de Doctorado en Ingeniería de Costas, Hidrobiología y Gestión de Sistemas Acuáticos de la Universidad de Cantabria, y presentada con Mención Industrial. El trabajo ha sido dirigido por el doctor Manuel del Jesus Peñil y tutorizado por el doctor César Álvarez Díaz.\n\nEsta investigación parte de una necesidad de ingeniería: estimar las consecuencias de una inundación cuando tanto los datos de partida como las condiciones futuras son inciertos. Para tomar una decisión no basta con conocer cuánto puede llover; necesitamos relacionar esa lluvia con la respuesta de la cuenca y con los calados o la extensión que puede alcanzar el agua.\n\nA lo largo de la exposición explicaré cómo se ha abordado esa conexión mediante una cadena de cálculo reproducible, qué desarrollos aporta la tesis y qué evidencias ofrecen sus aplicaciones. También señalaré las limitaciones que deben acompañar la interpretación de los resultados.",
     notes: "Saludar y hacer una pausa antes de plantear el problema. Los nombres completos y la Mención Industrial permanecen en portada.",
     bullets: [
       'Salvador Navas Fernández',
@@ -66,9 +66,9 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Plantear la defensa como respuesta a un problema de ingeniería.",
     visualGuide: ["Título de la tesis","Autor, director y tutor"],
-    speechCues: ["Salvador Navas Fernández","modelo automático de inundación estocástica","Manuel del Jesus Peñil","César Álvarez Díaz","información útil para decidir"],
+    speechCues: ["señor presidente y miembros del tribunal","Salvador Navas Fernández","Desarrollo de un modelo automático de inundación estocástica","Mención Industrial","Manuel del Jesus Peñil","César Álvarez Díaz","necesidad de ingeniería","cadena de cálculo reproducible","evidencias","limitaciones"],
     transition: "La estructura de la exposición sigue los pasos necesarios para responder a ese problema.",
-    transitionCue: "evidencias y los límites"
+    transitionCue: "esta estructura"
   },
 
   {
@@ -78,7 +78,7 @@ export const slideLibrary: Slide[] = [
     subtitle: 'Correspondencia directa con los capítulos de la memoria doctoral',
     estimatedMinutes: 1,
     type: 'index',
-    script: "La defensa sigue seis bloques: introducción, estado de la técnica, arquitectura, metodología, casos y conclusiones.\n\nPrimero formularé el problema y los objetivos; después explicaré la solución y sus métodos. Los casos permitirán contrastar sus aportaciones y cerrar las hipótesis con sus límites.",
+    script: "He organizado la defensa en los seis bloques que aparecen en esta diapositiva. Comenzaré con la introducción: la motivación del trabajo, la pregunta de investigación y las hipótesis y objetivos que lo han orientado.\n\nA continuación situaré la propuesta frente al estado de la técnica. Esto permitirá explicar por qué resulta necesario conectar métodos que ya existen y qué responsabilidad asume la arquitectura desarrollada. Después presentaré esa arquitectura y recorreré los principales componentes metodológicos, desde la preparación de los datos hasta la obtención de resultados hidráulicos.\n\nLa segunda parte de la exposición estará dedicada a los casos de estudio. Los utilizaré para responder a preguntas concretas sobre la frecuencia del impacto, la sensibilidad a los datos y modelos y la transferencia a distintos problemas de ingeniería. Finalmente, volveré a las hipótesis para presentar las conclusiones, delimitar mi contribución y exponer las principales líneas de continuidad.",
     notes: "Situar los seis bloques. La diapositiva de índice se utiliza una sola vez en el recorrido principal.",
     bullets: [
       '1. Introducción — Origen, motivación, problema, hipótesis y objetivos',
@@ -90,9 +90,9 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Dar al tribunal un mapa de la argumentación.",
     visualGuide: ["Seis bloques del índice","Ruta superior de cada diapositiva"],
-    speechCues: ["seis bloques","problema y los objetivos","solución y sus métodos","contrastar sus aportaciones","hipótesis con sus límites"],
+    speechCues: ["seis bloques","pregunta de investigación","hipótesis y objetivos","estado de la técnica","arquitectura","componentes metodológicos","casos de estudio","conclusiones"],
     transition: "Comencemos por la decisión que necesitamos tomar cuando estudiamos una inundación.",
-    transitionCue: "decisión de ingeniería"
+    transitionCue: "consecuencias"
   },
 
   {
@@ -104,7 +104,7 @@ export const slideLibrary: Slide[] = [
     type: 'split',
     figure: 'foto_cuenca_incertidumbre_climatica.png', figurePosition: 'right',
     figureCaption: 'Cuenca, observación y clima: el sistema físico que la arquitectura debe representar bajo incertidumbre',
-    script: "El título delimita el trabajo. Modelo significa aquí una arquitectura de cálculo: la tesis no presenta un nuevo motor hidráulico. Automático se refiere a conectar la preparación de datos, los métodos y la ejecución de modelos mediante operaciones repetibles. Inundación sitúa el resultado en la respuesta física, como el calado y la extensión. Estocástica indica que se estudian múltiples realizaciones plausibles, en lugar de un solo evento.\n\nLa reproducibilidad exige conservar entradas, configuración, versiones y salidas. Ese es el alcance con el que deben interpretarse la propuesta y los casos.",
+    script: "Las cuatro palabras del título delimitan el alcance de la investigación. Con «modelo» me refiero a una arquitectura de cálculo que conecta métodos y motores físicos existentes. «Automático» significa que la preparación, la ejecución y el tratamiento de resultados pueden organizarse mediante operaciones repetibles.\n\n«Inundación» sitúa el resultado en la respuesta física: por ejemplo, el calado o la extensión alcanzada. Finalmente, «estocástica» indica que consideramos múltiples realizaciones plausibles para estudiar su frecuencia y su variabilidad.\n\nPara reproducir ese análisis hay que conservar los datos, la configuración, las versiones y las salidas. La automatización facilita ese trabajo, mientras que la justificación de las hipótesis continúa siendo responsabilidad del investigador.",
     processSteps:['Entradas trazables','Escenarios plausibles','Modelos físicos','Frecuencia del impacto'],
     notes: 'Cita literal (cap. 1, primer párrafo, antes de la sección de antecedentes): "En esta memoria, el modelo automático de inundación estocástica que recoge el título se entiende en sentido amplio: no como un único motor hidráulico o algoritmo aislado, sino como una arquitectura reproducible de cálculo. Su núcleo central es pyhydra, la librería Python donde se implementan los módulos científicos y técnicos; HYDRA designa la plataforma que integra ese núcleo con web, notebooks, Docker y servicios de apoyo. [...] Es la automatización de esa cadena completa, y no de un componente particular, lo que constituye el objeto central de la investigación. [...] el término reproducible se emplea en un sentido operativo [...] que se concreta en cuatro contratos verificables: entradas trazables, transformaciones reproducibles, salidas en formatos estándar y registro suficiente para auditar cada resultado."\n\nDeliberadamente NO se explica aquí el nombre HYDRA en detalle — solo se menciona que existe una plataforma con nombre propio. En la siguiente diapositiva se explica el origen del trabajo en el TFM. La metáfora del nombre HYDRA puede comentarse al presentar el producto, una vez explicada la arquitectura.',
     bullets: [
@@ -116,7 +116,7 @@ export const slideLibrary: Slide[] = [
     backup: false,
     speakerGoal: "Delimitar qué significa el título y evitar que se interprete como un nuevo solver hidráulico.",
     visualGuide: ["Modelo y automatización","Inundación y escenarios estocásticos","Contratos de reproducibilidad"],
-    speechCues: ["arquitectura de cálculo","no presenta un nuevo motor hidráulico","operaciones repetibles","respuesta física","múltiples realizaciones plausibles","entradas, configuración, versiones y salidas"],
+    speechCues: ["arquitectura de cálculo","operaciones repetibles","respuesta física","múltiples realizaciones plausibles","reproducir","justificación de las hipótesis"],
     transitionCue: "trabajo del Besaya"
   },
 
@@ -135,14 +135,14 @@ export const slideLibrary: Slide[] = [
       { value:'Ciudad', label:'impermeabilización creciente', implication:'respuestas más rápidas y concentradas ante lluvias intensas' },
     ],
     processSteps:['Riesgo creciente','Múltiples forzamientos','Impactos no lineales','Decisiones bajo incertidumbre'],
-    script: "La figura reúne tres condiciones que pueden modificar el riesgo. La exposición aumenta cuando más personas e infraestructuras ocupan zonas inundables. La urbanización altera la infiltración y la respuesta de la cuenca. El cambio climático obliga a examinar condiciones diferentes de las históricas.\n\nEstos factores no actúan de forma aislada. Por eso necesitamos comparar escenarios y conservar la incertidumbre hasta la variable de diseño. La finalidad no es producir más simulaciones, sino disponer de una base más completa para valorar una decisión.",
+    script: "Las tres condiciones de esta diapositiva explican por qué esa estimación debe considerar situaciones cambiantes. Cuando aumenta la ocupación de las zonas inundables, crece la exposición de personas e infraestructuras. La urbanización modifica la infiltración y la rapidez con la que responde la cuenca. A su vez, el cambio climático obliga a examinar condiciones que pueden diferir de las históricas.\n\nLa combinación de estos factores hace necesario comparar escenarios y expresar qué incertidumbre acompaña a sus resultados. Para una decisión de diseño interesa conocer tanto la magnitud del impacto como su sensibilidad a esas condiciones. Este es el contexto en el que se plantea el trabajo.",
     notes: 'Abrir el problema a escala social antes de hablar de software. La imagen es conceptual y no corresponde a un evento concreto; las evidencias cuantitativas y geográficas aparecerán después en los casos de estudio. Conectar con la siguiente idea: si el riesgo exige múltiples escenarios, el flujo manual deja de ser viable.',
     bullets: ["Exposición: personas e infraestructuras situadas en zonas inundables.","Urbanización: cambios en infiltración y respuesta hidrológica.","Cambio climático: escenarios distintos de las condiciones históricas."],
     backup: false,
     speakerGoal: "Explicar los cambios que motivan el trabajo, después de situar sus consecuencias.",
     visualGuide: ["Exposición","Urbanización","Condiciones climáticas cambiantes"],
-    speechCues: ["exposición","urbanización","cambio climático","no actúan de forma aislada","variable de diseño","valorar una decisión"],
-    transitionCue: "alcance del trabajo"
+    speechCues: ["situaciones cambiantes","exposición","urbanización","cambio climático","comparar escenarios","sensibilidad"],
+    transitionCue: "alcance de la investigación"
   },
 
   {
@@ -152,7 +152,7 @@ export const slideLibrary: Slide[] = [
     subtitle: 'De metodologías avanzadas pero fragmentadas a una capacidad de ingeniería reproducible',
     estimatedMinutes: 2,
     type: 'normal',
-    script: "La propuesta tiene tres aportaciones que aparecen en la figura. Integración: conectar los métodos desde los datos hasta el impacto. Reproducibilidad: conservar lo necesario para repetir y auditar el cálculo. Transferencia: reutilizar los componentes en problemas y equipos diferentes.\n\nAquí las presento como compromisos del trabajo. Los casos permitirán comprobar su alcance; al final podré explicar qué evidencia respalda cada una.",
+    script: "La figura resume el valor que persiguen esos objetivos. La integración conecta las etapas desde los datos hasta el impacto, de manera que sus resultados puedan utilizarse en la siguiente operación. La reproducibilidad exige conservar la información necesaria para repetir y revisar el cálculo. La transferencia permite reutilizar los componentes cuando cambian el dominio, los datos o la finalidad del estudio.\n\nEstas tres ideas sirven como criterios para evaluar el trabajo. A continuación presentaré cómo surgieron los desarrollos y cómo se organizan. Más adelante, los casos permitirán identificar qué se ha conseguido y cuáles son las condiciones y los límites de esa reutilización.",
     notes: 'Esta diapositiva anticipa la respuesta a “¿qué aporta realmente la tesis?” y se recupera al final. No enumerar librerías. Explicar los tres pilares con una frase y un ejemplo: integración — Calle 30; reproducibilidad — Besaya/Valencia; transferencia — Panamá y SIMPCCe.\n\nOrden: esta diapositiva se presenta después de la pregunta y los objetivos, como anticipo de la respuesta; así la aportación no aparece antes de haber planteado el problema.',
     bullets: [
       'Integración: una sola cadena desde el dato hasta el impacto.',
@@ -162,8 +162,8 @@ export const slideLibrary: Slide[] = [
     backup: false,
     speakerGoal: "Anticipar los tres compromisos de la propuesta; su balance con evidencia se reserva para el cierre.",
     visualGuide: ["Integración de extremo a extremo","Registro para repetir el cálculo","Transferencia a otros problemas"],
-    speechCues: ["Integración","Reproducibilidad","Transferencia","compromisos del trabajo","qué evidencia respalda"],
-    transitionCue: "ampliando el problema inicial"
+    speechCues: ["integración","reproducibilidad","transferencia","criterios para evaluar","condiciones y los límites"],
+    transitionCue: "recorrido investigador"
   },
 
   {
@@ -173,14 +173,14 @@ export const slideLibrary: Slide[] = [
     subtitle: 'Besaya 2017–2018: del primer desarrollo metodológico a una línea de investigación',
     estimatedMinutes: 2,
     type: 'timeline',
-    script: "En 2017, mi Trabajo Fin de Máster sobre el Besaya construyó una primera cadena: describir avenidas, generar escenarios, simularlos con Iber y analizar sus impactos. Recibió el premio nacional del Colegio de Caminos en la categoría de Mejor Calidad y Contenido.\n\nLa publicación de 2018 en la Revista de Obras Públicas consolidó el principio de calcular la frecuencia sobre el impacto. Pero repetir la cadena exigía muchos intercambios manuales. La tesis nace de esa dificultad: conservar el método y transferirlo sin reconstruir cada enlace.",
+    script: "El origen de esta investigación está en mi Trabajo Fin de Máster sobre el Besaya, realizado en 2017. Allí conecté la descripción de las avenidas, la generación de escenarios y la simulación con Iber para estudiar sus impactos. El trabajo recibió el premio nacional del Colegio de Caminos en la categoría de Mejor Calidad y Contenido.\n\nLa publicación de 2018 consolidó una idea que recorre esta defensa: calcular la frecuencia a partir de la respuesta hidráulica. Sin embargo, preparar y repetir la cadena requería numerosos intercambios manuales. Esa dificultad dio lugar al problema doctoral: cómo conservar el procedimiento científico y trasladarlo a otros estudios sin reconstruir sus conexiones en cada ocasión.",
     notes: "Origen: TFM de 2017, publicación ROP 3598 de mayo de 2018. La cadena y los resultados del caso se desarrollan después en validación.",
     bullets: ["2017 — Primera cadena estocástica completa en el TFM del Besaya.","2018 — Publicación del principio T(forzamiento) ≠ T(impacto).","Límite — Conexiones manuales y configuración específica para una cuenca.","Tesis — Repetir y transferir la cadena conservando su trazabilidad."],
     speakerGoal: "Explicar el origen del problema doctoral sin repetir todavía los resultados del caso.",
     visualGuide: ["2017: primera cadena del TFM","2018: publicación del principio","Limitación manual y pregunta doctoral"],
-    speechCues: ["2017","Trabajo Fin de Máster","Iber","2018","frecuencia sobre el impacto","sin reconstruir cada enlace"],
+    speechCues: ["Trabajo Fin de Máster","2017","Iber","2018","respuesta hidráulica","problema doctoral","otros estudios"],
     transition: "La pregunta dejó de ser cómo resolver una cuenca y pasó a ser cómo hacer reutilizable la cadena completa.",
-    transitionCue: "inundación de diseño"
+    transitionCue: "estima habitualmente"
   },
 
   {
@@ -198,7 +198,7 @@ export const slideLibrary: Slide[] = [
     figure: 'fig_hydra_web_home.png', figurePosition: 'right',
     figureCaption: 'HYDRA integra documentación, herramientas y casos reproducibles',
     type: 'split',
-    script: "Entramos ahora por primera vez en HYDRA. Esta es la portada de la plataforma que utilizaré durante la defensa. Aquí se ofrecen los accesos a los módulos científicos, las herramientas interactivas y los casos de estudio con sus notebooks.\n\nLa distinción entre los dos nombres es importante: pyhydra es la librería que realiza el cálculo, e HYDRA reúne los accesos para utilizarlo y documentarlo. La web es una de esas formas de acceso; el análisis también puede ejecutarse desde Python o desde un notebook.\n\nEsta primera visita sirve para situarnos. Explicaré ahora cómo se organiza el núcleo y volveremos a la web cuando una operación o un resultado aporten una evidencia concreta.",
+    script: "Entramos ahora por primera vez en HYDRA. Esta portada será nuestro punto de referencia para las visitas a la web durante la defensa. Desde aquí podemos localizar la documentación de los módulos, las herramientas interactivas y los casos de estudio con sus notebooks.\n\nConviene distinguir los dos nombres: pyhydra es la librería que realiza el cálculo; HYDRA reúne las formas de acceder a ese trabajo y documentarlo. También podemos ejecutar el análisis directamente desde Python o desde un notebook.\n\nEn esta primera visita quiero situar esos accesos. Volveremos a ellos para realizar una operación e interpretar resultados concretos, después de explicar cómo se organiza el núcleo científico.",
     notes: "Primera visita necesaria. Navegación de orientación, distinta de la demostración GEV y de las páginas de resultados. No saltarla. Evitar recorrer menús o ejecutar cálculos todavía. No dejar recuadros de resaltado sobre la portada.",
     bullets: [
       'Núcleo científico: concentra los métodos de datos, clima y modelización.',
@@ -208,11 +208,11 @@ export const slideLibrary: Slide[] = [
     ],
     backup: false,
     anchorPosition: "start",
-    offlineScript: "La captura muestra la portada de HYDRA, que en el recorrido con conexión constituye nuestra primera entrada en la plataforma. Desde ella se accede a los módulos científicos, las herramientas interactivas y los casos con sus notebooks.\n\npyhydra es la librería que realiza el cálculo; HYDRA reúne los accesos para utilizarlo y documentarlo. La web es una forma de acceso, y los análisis también pueden ejecutarse desde Python o desde notebooks.\n\nEn esta versión utilizo capturas preparadas. La función de esta primera vista es la misma: situar al tribunal en la plataforma antes de explicar cómo se organiza el núcleo.",
+    offlineScript: "La captura muestra la portada de HYDRA, que constituye nuestra primera entrada en la plataforma. En ella se localizan la documentación de los módulos, las herramientas interactivas y los casos de estudio con sus notebooks.\n\nConviene distinguir los dos nombres: pyhydra es la librería que realiza el cálculo; HYDRA reúne las formas de acceder a ese trabajo y documentarlo. El análisis también puede ejecutarse desde Python o desde un notebook.\n\nEn este recorrido utilizo capturas preparadas para conservar la explicación sin conexión. Esta primera vista nos sitúa en la plataforma. Las siguientes permitirán explicar una operación y los resultados de los casos, después de recorrer el núcleo científico.",
     speakerGoal: "Conservar una primera entrada explícita en HYDRA y orientar al tribunal antes de mostrar operaciones concretas.",
     visualGuide: ["Portada y navegación principal","Módulos, herramientas y casos/notebooks","Diferencia entre pyhydra y HYDRA"],
-    speechCues: ["primera vez en HYDRA","módulos científicos","herramientas interactivas","casos de estudio","pyhydra","HYDRA","primera visita"],
-    offlineSpeechCues: ["captura","primera entrada","módulos científicos","pyhydra","HYDRA","capturas preparadas"],
+    speechCues: ["primera vez en HYDRA","documentación de los módulos","herramientas interactivas","casos de estudio","pyhydra","núcleo científico"],
+    offlineSpeechCues: ["portada de HYDRA","primera entrada","pyhydra","HYDRA","capturas preparadas","núcleo científico"],
     transitionCue: "tres bloques"
   },
 
@@ -229,11 +229,11 @@ export const slideLibrary: Slide[] = [
     figure: 'fig_cadena_convencional.svg', figurePosition: 'full',
     figureCaption: 'Cadena clásica y tres supuestos que HYDRA permite sustituir por una propagación explícita de escenarios',
     type: 'figure',
-    script: "El esquema va de izquierda a derecha: registros, ajuste de extremos, evento de diseño y modelos físicos que producen caudal, calado y extensión.\n\nAbajo aparecen tres decisiones: estacionariedad, elección de un evento y posible traslado de su período de retorno al impacto. La cadena física es necesaria; debemos justificar si ese evento representa las situaciones relevantes y si conserva su frecuencia al atravesar el sistema.\n\nUn período de retorno de cien años equivale a una probabilidad anual de superación del uno por ciento, para una variable y unas condiciones dadas.",
+    script: "Sigamos el esquema de izquierda a derecha. Partimos de los registros, ajustamos una distribución de extremos y elegimos un evento de diseño. Los modelos hidrológicos e hidráulicos transforman después esa entrada en caudal, calado y extensión.\n\nLas decisiones señaladas debajo afectan a la interpretación: suponer estacionariedad, seleccionar un evento y atribuir su período de retorno al impacto. Cada una necesita una justificación. Un período de retorno de cien años expresa una probabilidad anual de superación del uno por ciento para una variable y unas condiciones determinadas. Por tanto, debemos comprobar qué ocurre con esa frecuencia cuando el evento atraviesa un sistema cuya respuesta depende también de otras condiciones.",
     notes: "El período de retorno se refiere a una variable y a hipótesis especificadas. En condiciones estacionarias, T100 corresponde a una probabilidad anual de superación de 0,01.",
     speakerGoal: "Separar la cadena física válida de los supuestos de asignación de frecuencia.",
     visualGuide: ["Fila superior, de registros a impacto","Tres supuestos en los recuadros inferiores"],
-    speechCues: ["de izquierda a derecha","estacionariedad","período de retorno al impacto","conserva su frecuencia","uno por ciento"],
+    speechCues: ["izquierda a derecha","evento de diseño","estacionariedad","período de retorno","uno por ciento","respuesta"],
     transition: "El siguiente ejemplo muestra por qué esa frecuencia puede cambiar incluso con la misma lluvia.",
     transitionCue: "misma lluvia"
   },
@@ -245,7 +245,7 @@ export const slideLibrary: Slide[] = [
     subtitle: 'Cuando la frecuencia del forzamiento se toma por la frecuencia del impacto',
     estimatedMinutes: 2,
     type: 'normal',
-    script: "La lluvia es la misma en las dos filas y tiene un período de retorno de cien años. Arriba, el suelo seco permite que el agua quede dentro del cauce. Abajo, el suelo saturado y el afluente en crecida producen el desbordamiento.\n\nEl dibujo no asigna otra frecuencia a cada respuesta. Demuestra que una misma lluvia admite impactos distintos. Para estimar la frecuencia de un calado debemos considerar esas combinaciones. Por eso el período de retorno del forzamiento no equivale necesariamente al del impacto.",
+    script: "En las dos filas de esta figura se aplica la misma lluvia, con un período de retorno de cien años. En la situación superior, el suelo seco permite que el agua permanezca dentro del cauce. En la inferior, el suelo saturado y la crecida del afluente favorecen el desbordamiento.\n\nLo que cambia es la respuesta del sistema, aunque hayamos mantenido la lluvia. El dibujo no permite asignar por sí solo una frecuencia al segundo impacto. Para estimarla necesitamos considerar la frecuencia de las distintas combinaciones y simular sus consecuencias. Esa es la razón de distinguir el período de retorno del forzamiento del período de retorno del calado que finalmente interesa para el diseño.",
     notes: "Las dos filas son un ejemplo conceptual. La figura muestra respuestas posibles, no calcula el período de retorno de cada impacto dibujado.",
     mathBlock: `
       <div class="impact-equation">
@@ -260,7 +260,7 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Hacer comprensible la diferencia entre frecuencia del forzamiento y del impacto.",
     visualGuide: ["Comparar las dos filas del esquema","Suelo seco frente a suelo saturado y afluente en crecida","Resultado hidráulico de cada fila"],
-    speechCues: ["misma","suelo seco","suelo saturado","impactos distintos","frecuencia de un calado","no equivale necesariamente"],
+    speechCues: ["misma lluvia","suelo seco","suelo saturado","respuesta del sistema","distintas combinaciones","período de retorno del calado"],
     transition: "Esta dificultad apareció de forma concreta en el trabajo con el que comenzó la investigación: el Besaya.",
     transitionCue: "pregunta doctoral"
   },
@@ -272,14 +272,14 @@ export const slideLibrary: Slide[] = [
     type: 'quote',
     quote: "Una arquitectura modular y reproducible permite integrar las metodologías disponibles y transferir el análisis a proyectos reales.",
     estimatedMinutes: 2,
-    script: "La hipótesis central es que la dificultad operativa está en conectar métodos disponibles dentro de un flujo reproducible. El esquema muestra esa diferencia: arriba, componentes con enlaces reconstruidos para cada proyecto; abajo, una cadena integrada desde los datos hasta el impacto.\n\nLa memoria plantea tres hipótesis. H1: la automatización mejora la eficiencia, la reproducibilidad y la aplicación práctica. H2: la integración modular reduce barreras técnicas y facilita incorporar clima e incertidumbre. H3: el flujo integrado permite representar la incertidumbre de forma más consistente que un escenario único de diseño.\n\nEn el cierre distinguiré las evidencias que apoyan cada hipótesis y las comprobaciones que siguen pendientes.",
+    script: "El esquema compara dos formas de trabajar: arriba, componentes cuyas conexiones se reconstruyen para cada proyecto; abajo, una cadena integrada desde los datos hasta el impacto. Sobre esa diferencia se apoyan las tres hipótesis de la memoria.\n\nLa primera plantea que la automatización mejora la eficiencia, la reproducibilidad y la aplicación práctica. La segunda propone que una integración modular reduce las barreras técnicas y facilita incorporar clima e incertidumbre. La tercera plantea que un flujo coordinado y reproducible permite representar la incertidumbre de forma más consistente que un único escenario de diseño.\n\nLas aplicaciones aportarán evidencias para valorar estas hipótesis. En las conclusiones distinguiré también las comprobaciones que siguen pendientes.",
     notes: "H1 incluye eficiencia y reproducibilidad: hay evidencia de ejecución viable, pero falta medir el ahorro sistemático frente al trabajo manual. H2 y H3 se cierran con alcance limitado por los casos.",
     bullets: ["H1 · Automatización: eficiencia, reproducibilidad y aplicación práctica.","H2 · Integración modular: reducir barreras técnicas e incorporar clima e incertidumbre.","H3 · Flujo reproducible: representar incertidumbre con mayor consistencia que un escenario único."],
     speakerGoal: "Formular una pregunta y tres hipótesis que luego se puedan cerrar con evidencia.",
     visualGuide: ["Fila superior: métodos fragmentados","Fila inferior: arquitectura conectada","H1, H2 y H3"],
-    speechCues: ["dificultad operativa","flujo reproducible","H1","H2","H3","comprobaciones que siguen pendientes"],
+    speechCues: ["tres hipótesis","primera","segunda","tercera","evidencias","comprobaciones que siguen pendientes"],
     transition: "Para contrastar esas hipótesis necesitamos concretar qué se va a desarrollar y qué resultado verificará cada objetivo.",
-    transitionCue: "cuatro objetivos específicos",
+    transitionCue: "objetivos",
     subtitle: "¿Puede una cadena reproducible transferirse a problemas reales bajo incertidumbre?"
   },
 
@@ -290,7 +290,7 @@ export const slideLibrary: Slide[] = [
     type: 'quote',
     quote: "¿Es posible automatizar de forma reproducible la cadena completa del análisis probabilístico del riesgo de inundación bajo incertidumbre hidrológica y climática, integrando metodologías avanzadas previamente desarrolladas en un marco operativo transferible a proyectos reales de ingeniería?",
     estimatedMinutes: 2,
-    script: "La pregunta de investigación es la siguiente: ¿Es posible automatizar de forma reproducible la cadena completa del análisis probabilístico del riesgo de inundación bajo incertidumbre hidrológica y climática, integrando metodologías avanzadas previamente desarrolladas en un marco operativo transferible a proyectos reales de ingeniería?\n\nEl esquema de la derecha reúne sus condiciones: datos con incertidumbre, una cadena de cálculo que pueda repetirse, modelos físicos y una aplicación real. No basta con que cada componente funcione por separado; necesitamos conservar la información cuando los conectamos y transferimos el flujo a otro problema.",
+    script: "La pregunta de investigación es la siguiente: ¿Es posible automatizar de forma reproducible la cadena completa del análisis probabilístico del riesgo de inundación bajo incertidumbre hidrológica y climática, integrando metodologías avanzadas previamente desarrolladas en un marco operativo transferible a proyectos reales de ingeniería?\n\nLa figura de la derecha permite descomponerla. Necesitamos tratar datos inciertos, conectar los métodos con los modelos físicos y conservar un procedimiento que pueda repetirse. Además, esa conexión tiene que resultar utilizable en aplicaciones reales. La dificultad científica y operativa está en mantener la coherencia del análisis entre etapas y al cambiar de problema.",
     notes: 'Pronunciar despacio: es la formulación literal de la memoria (cap. 1). El foco está en "automatizar de forma reproducible" e "integrando metodologías previamente desarrolladas" — de ahí que la tesis no reivindique algoritmos nuevos, sino su operacionalización conjunta.',
     bullets: [
       'Conectar datos, análisis estadístico, escenarios y modelos físicos.',
@@ -301,8 +301,8 @@ export const slideLibrary: Slide[] = [
     backup: false,
     speakerGoal: "Formular la pregunta doctoral completa, con una pausa para que se comprenda su alcance.",
     visualGuide: ["Pregunta de investigación","Datos, cadena reproducible y modelos físicos","Transferencia a una aplicación real"],
-    speechCues: ["automatizar de forma reproducible","cadena completa","metodologías avanzadas previamente desarrolladas","transferible a proyectos reales","funcione por separado","conservar la información"],
-    transitionCue: "qué esperamos conseguir"
+    speechCues: ["pregunta de investigación","automatizar de forma reproducible","incertidumbre hidrológica y climática","aplicaciones reales","coherencia del análisis"],
+    transitionCue: "tres hipótesis"
   },
 
   {
@@ -314,14 +314,14 @@ export const slideLibrary: Slide[] = [
     type: 'split',
     figure: 'fig_objetivos_evidencias.svg', figurePosition: 'right',
     figureCaption: 'Cada objetivo conduce a un desarrollo concreto y a una evidencia verificable',
-    script: "El objetivo general es desarrollar y validar pyhydra y demostrar su transferencia mediante HYDRA. La tabla se lee por filas: objetivo, desarrollo y evidencia.\n\nOE1 integra datos y modelos climáticos en el flujo estocástico. OE2 implementa y conecta la generación de precipitación y caudal. OE3 automatiza la configuración, ejecución y postprocesado de los modelos físicos. OE4 consolida y documenta el núcleo y su despliegue, y los valida con casos reproducibles.\n\nEstos son los compromisos con los que valoraremos la arquitectura y las aplicaciones.",
+    script: "El objetivo general consiste en desarrollar y validar pyhydra como núcleo modular del análisis probabilístico de inundaciones y demostrar su transferencia mediante HYDRA. La tabla relaciona cada objetivo específico con su desarrollo y su evidencia.\n\nEl primero integra datos y modelos climáticos en los flujos estocásticos. El segundo implementa y conecta la generación de eventos de precipitación y caudal. El tercero automatiza la configuración, la ejecución y el postprocesado de los modelos hidrológicos e hidráulicos. El cuarto consolida y documenta el núcleo y su despliegue, y los valida mediante casos reproducibles.\n\nEsta correspondencia permitirá valorar después qué parte del problema responde cada desarrollo y qué evidencia lo respalda.",
     notes: "Leer una fila objetivo–desarrollo–evidencia completa y recorrer las otras tres. Conservar estos cuatro criterios hasta el cierre.",
     bullets: ["Objetivo general: desarrollar y validar pyhydra y demostrar su transferencia mediante HYDRA.","OE1–OE2: integrar datos y modelos climáticos, y generar eventos de precipitación y caudal.","OE3–OE4: automatizar los modelos físicos; documentar y validar pyhydra e HYDRA mediante casos reproducibles."],
     speakerGoal: "Relacionar cada objetivo con una evidencia que aparecerá en la defensa.",
     visualGuide: ["Leer una fila completa: objetivo, desarrollo y evidencia","Recorrer los cuatro objetivos"],
-    speechCues: ["desarrollar y validar pyhydra","OE1","OE2","OE3","OE4","casos reproducibles"],
+    speechCues: ["objetivo general","pyhydra","HYDRA","primero","segundo","tercero","cuarto","qué evidencia lo respalda"],
     transition: "El primer paso para cumplirlos es entender qué exige una cadena estocástica completa y qué ofrecen los métodos existentes.",
-    transitionCue: "integración, reproducibilidad y transferencia"
+    transitionCue: "tres aportaciones"
   },
 
   {
@@ -367,13 +367,13 @@ export const slideLibrary: Slide[] = [
     subtitle: 'De una pregunta hidráulica concreta a un marco reproducible y transferible',
     estimatedMinutes: 2,
     type: 'timeline',
-    script: "La cronología explica cómo se amplió el problema. En 2017 y 2018 se formula y publica la frecuencia sobre el impacto en el Besaya. Los trabajos siguientes incorporan cuencas con pocos datos y la calibración de dominios regionales. La generación estocástica añade coherencia espacial y temporal a los eventos.\n\nLas aplicaciones industriales y los episodios extremos plantean nuevas exigencias de ejecución, contraste y documentación. En 2026, esas necesidades se reúnen en la arquitectura y en las versiones de software de la tesis. La plataforma responde así a dificultades encontradas en trabajos concretos.",
+    script: "La cronología muestra cómo fue ampliándose el problema inicial. En 2017 y 2018, el Besaya permitió formular y publicar la estimación de frecuencia sobre el impacto. Los trabajos posteriores incorporaron otras dificultades: cuencas con pocos datos, calibración en grandes dominios y generación de escenarios con coherencia espacial y temporal.\n\nLas aplicaciones industriales y los episodios extremos añadieron exigencias de ejecución, contraste y documentación. Esa experiencia converge en 2026 en la arquitectura y las versiones de software de la tesis. La secuencia ayuda a entender por qué conviven aquí métodos y escalas diferentes: cada desarrollo responde a una necesidad concreta que después se ha tratado de convertir en un componente reutilizable.",
     notes: 'Explicar una evolución científica, no una sucesión de congresos o lugares. El primer hito es el TFM del doctorando. La comunicación de las V JIA es una vía de difusión del trabajo, no el origen conceptual por sí sola.',
     bullets: ["2017–2018 — Besaya: cadena estocástica y frecuencia sobre el impacto.","2019–2020 — Pocos datos y grandes dominios: reconstrucción y calibración regional.","2021–2023 — Generación de escenarios con estructura espacial y temporal.","2024–2025 — Transferencia industrial, eventos extremos y contraste de modelos.","2026 — Integración, documentación y distribución versionada."],
     backup: false,
     speakerGoal: "Mostrar la evolución del problema científico sin volver a explicar cada caso.",
     visualGuide: ["Besaya como origen","Nuevas exigencias de datos y escenarios","Síntesis en la arquitectura"],
-    speechCues: ["2017 y 2018","pocos datos","coherencia espacial y temporal","nuevas exigencias","2026","dificultades encontradas"],
+    speechCues: ["cronología","frecuencia sobre el impacto","pocos datos","coherencia espacial y temporal","2026","componente reutilizable"],
     transitionCue: "cadena estocástica completa"
   },
 
@@ -384,7 +384,7 @@ export const slideLibrary: Slide[] = [
     subtitle: 'Cobertura funcional comparada en el capítulo 2 de la memoria',
     estimatedMinutes: 2,
     type: 'normal',
-    script: "La matriz compara capacidades: las filas son marcos y las columnas, responsabilidades de la cadena. Las marcas distinguen cobertura completa y parcial.\n\nCLIMADA trabaja el riesgo climático; RainyDay genera tormentas por transposición; wflow y HydroMT facilitan la preparación de modelos. Los marcos continuos pueden alcanzar el impacto, con implementaciones ligadas a determinados dominios.\n\nLa brecha es reunir datos heterogéneos, extremos, dependencia, escenarios y motores físicos en un flujo reutilizable que calcule la frecuencia del impacto. Esa combinación delimita la propuesta de HYDRA.",
+    script: "La matriz permite situar la propuesta frente a los marcos revisados en la memoria. Compara su cobertura de las capacidades indicadas mediante marcas completas o parciales. CLIMADA aborda riesgo climático; RainyDay genera tormentas por transposición; wflow y HydroMT facilitan la preparación de modelos. Los enfoques de simulación continua pueden alcanzar el impacto, con implementaciones vinculadas a determinados dominios.\n\nLa comparación identifica la combinación que aborda HYDRA: datos heterogéneos, extremos, dependencia, escenarios y motores físicos dentro de un flujo reutilizable que calcule la frecuencia del impacto. Esa cobertura conjunta delimita la propuesta. La elección de una herramienta para un estudio concreto depende también de sus requisitos y del ámbito de aplicación.",
     notes: "Comparación funcional documentada en la memoria. Las marcas de capacidad parcial requieren considerar el alcance de cada marco y su dominio. Evitar afirmar superioridad universal.",
     mathBlock: `
       <table class="thesis-matrix positioning-matrix">
@@ -408,9 +408,9 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Localizar la brecha mediante la matriz comparativa.",
     visualGuide: ["Columnas: capacidades; filas: marcos","Diferenciar capacidad completa y parcial","Combinación de capacidades de HYDRA"],
-    speechCues: ["capacidades","cobertura completa y parcial","CLIMADA","RainyDay","wflow y HydroMT","frecuencia del impacto"],
+    speechCues: ["matriz","CLIMADA","RainyDay","wflow y HydroMT","cobertura conjunta","frecuencia del impacto"],
     transition: "Para cubrir esa combinación, separé el cálculo científico de su ejecución y de su acceso desde la web.",
-    transitionCue: "una responsabilidad"
+    transitionCue: "arquitectura de HYDRA"
   },
 
   // ════════════════════════════════════════════════════
@@ -425,14 +425,14 @@ export const slideLibrary: Slide[] = [
     estimatedMinutes: 2,
     url: '/', anchor: '#modulos', highlight: '#modulos .grid',
     type: 'normal',
-    script: "La figura se lee desde abajo. pyhydra reúne los métodos científicos como librería de Python. En el nivel intermedio, la API atiende las herramientas y JupyterLab permite reproducir análisis mediante notebooks. Arriba están la web, la documentación y los casos.\n\nEl mismo cálculo puede utilizarse desde un programa, un notebook o una herramienta visual. La web no contiene una segunda implementación del método. El contorno exterior representa los contenedores que conservan las dependencias del entorno.",
+    script: "Voy a leer la arquitectura desde su base. En el nivel científico, pyhydra reúne los métodos como una librería de Python. El nivel de servicios permite ejecutarlos: la API atiende las peticiones de las herramientas y JupyterLab ofrece un entorno para repetir análisis mediante notebooks. Arriba encontramos la web, la documentación y los casos.\n\nLa separación de responsabilidades permite utilizar el mismo núcleo desde un programa, un notebook o una interfaz visual. Los contenedores representados en el contorno conservan las dependencias del entorno. Esta organización hace posible desarrollar y revisar el método sin que su implementación dependa de una única forma de acceso.",
     notes: "La figura representa responsabilidades funcionales. pyhydra calcula; API y notebooks lo ejecutan; la web facilita el acceso. Datos, configuración y licencias siguen siendo requisitos de reproducción.",
     bullets: ["pyhydra: métodos científicos reutilizables.","API y notebooks: dos accesos al mismo cálculo.","Web: documentación, herramientas y casos."],
     speakerGoal: "Explicar quién calcula, quién ejecuta y cómo accede el usuario.",
     visualGuide: ["Núcleo inferior pyhydra","Servicios intermedios API y JupyterLab","Interfaz superior y contenedor exterior"],
-    speechCues: ["desde abajo","pyhydra","API","JupyterLab","mismo cálculo","no contiene una segunda implementación"],
+    speechCues: ["desde su base","nivel científico","nivel de servicios","mismo núcleo","contenedores","separación de responsabilidades"],
     transition: "Dentro de ese núcleo, los métodos se ordenan según las tres responsabilidades de la cadena.",
-    transitionCue: "condiciones necesarias"
+    transitionCue: "entorno de cálculo"
   },
 
   {
@@ -444,13 +444,13 @@ export const slideLibrary: Slide[] = [
     figure: 'fig_hydra_azure_infraestructura.png', figurePosition: 'full',
     figureCaption: 'Esquema de la infraestructura de contenedores para despliegue local o en Azure ACA',
     type: 'figure',
-    script: "La figura muestra cómo se despliega el sistema. La web ofrece el acceso; la API ejecuta peticiones al núcleo; el entorno de notebooks permite desarrollar y repetir análisis. Los contenedores conservan las dependencias de esos servicios y permiten llevarlos a otro equipo.\n\nPara repetir un resultado también necesitamos los datos, la configuración y las versiones del motor. Un contenedor no conserva por sí solo todo ese contexto. La distinción es relevante en una tesis con transferencia industrial: entregar la plataforma incluye documentar sus requisitos y sus límites.",
+    script: "Este esquema muestra cómo se lleva la arquitectura a un entorno utilizable. La web proporciona el acceso, la API recibe las operaciones dirigidas al núcleo y el servicio de notebooks permite desarrollar y repetir los análisis. Los contenedores recogen las dependencias de cada servicio para facilitar su ejecución en otro equipo.\n\nLa reproducibilidad exige además conservar los datos, la configuración y las versiones de los motores utilizados. El contenedor resuelve una parte de ese requisito, pero el estudio necesita documentar todo su contexto. En la transferencia industrial, entregar una aplicación incluye explicar cómo ejecutarla, qué necesita y qué condiciones deben mantenerse para poder revisar sus resultados.",
     notes: 'Señalar las partes de la figura de infraestructura. Destacar el volumen compartido de datos `/data` (montado desde Azure Files en producción) que permite a Jupyter y a la API leer las mismas series sin duplicados. Cada usuario recibe una sesión de notebooks aislada mediante una cookie anónima (hydra_jupyter_session), copiando los notebooks a una carpeta de sesión propia — así nadie edita el catálogo compartido.',
     backup: false,
     speakerGoal: "Distinguir la arquitectura lógica de las condiciones reales para desplegarla y repetir un análisis.",
     visualGuide: ["Web, API y notebooks","Entorno de ejecución en contenedores","Datos, configuración y motores externos"],
-    speechCues: ["web","API","notebooks","dependencias","datos, la configuración y las versiones","transferencia industrial"],
-    transitionCue: "primera vez en HYDRA"
+    speechCues: ["web","API","notebooks","dependencias","reproducibilidad","documentar todo su contexto","transferencia industrial"],
+    transitionCue: "primera vez"
   },
 
   {
@@ -462,13 +462,13 @@ export const slideLibrary: Slide[] = [
     type: 'figure',
     figure: 'fig_pyhydra_modules.svg', figurePosition: 'full',
     figureCaption: 'Estructura de los submódulos descrita en el capítulo de arquitectura de la memoria',
-    script: "Las columnas reúnen los catorce submódulos. Datos contiene cuatro, para lluvia, caudal, cambio climático y suelos. Clima y estadística agrupa cinco: extremos, espacio, generación, sesgo y downscaling. Modelización reúne otros cinco para conectar los motores y analizar su sensibilidad.\n\nLas rutas permiten localizar el código. Cada aplicación selecciona los componentes que necesita: un análisis de extremos puede terminar en estadística; una inundación continúa hasta la respuesta física. Esta organización permite reutilizar bloques sin imponer un flujo idéntico a todos los casos.",
+    script: "Las tres columnas muestran la organización de los catorce submódulos. El bloque de datos contiene cuatro, dedicados a lluvia, caudal, cambio climático y suelos. El bloque climático y estadístico agrupa cinco responsabilidades: extremos, análisis espacial, generación, corrección de sesgo y downscaling. Los otros cinco se ocupan de la modelización y su sensibilidad.\n\nLas rutas de la figura permiten localizar esos componentes en el código. Cada estudio utiliza los que necesita: puede terminar en un análisis de extremos o continuar hasta la simulación hidráulica. Así se conserva una organización común y se puede adaptar el recorrido a la pregunta del caso, como veremos en las aplicaciones.",
     notes: "4 submódulos de datos, 5 de clima/estadística y 5 de modelización. Relacionar las columnas con las operaciones siguientes; las rutas pequeñas son localizadores de código.",
     speakerGoal: "Dar un mapa funcional del núcleo sin recitar rutas de código.",
     visualGuide: ["Columna de datos","Columna de clima y estadística","Columna de modelización"],
-    speechCues: ["catorce submódulos","cuatro","cinco","otros cinco","selecciona los componentes","reutilizar bloques"],
+    speechCues: ["catorce submódulos","bloque de datos","climático y estadístico","modelización","localizar","pregunta del caso"],
     transition: "La primera dificultad práctica es que las entradas proceden de fuentes muy distintas.",
-    transitionCue: "prepara las entradas"
+    transitionCue: "bloque de datos"
   },
 
   // ════════════════════════════════════════════════════
@@ -483,7 +483,7 @@ export const slideLibrary: Slide[] = [
     estimatedMinutes: 3,
     url: '/modules/fuentes-datos',
     type: 'normal',
-    script: "A la izquierda están las fuentes: estaciones, reanálisis, satélite, ríos y suelos, y proyecciones climáticas. Sus unidades, resoluciones y accesos son distintos.\n\nLos adaptadores del centro descargan, revisan y organizan las entradas. A la derecha queda una salida común de tiempo, espacio y variable, con UTC y WGS84 cuando corresponde.\n\nLos metadatos conservan fuente, fecha y consulta. Homogeneizar el formato facilita el cálculo, pero la calidad y representatividad de los datos siguen necesitando revisión experta.",
+    script: "El primer problema aparece en las fuentes de datos, situadas a la izquierda. Estaciones, reanálisis, satélites, información de ríos y suelos y proyecciones climáticas tienen accesos, unidades y resoluciones diferentes.\n\nLos adaptadores centrales permiten adquirir y organizar esas entradas para producir las estructuras comunes de tiempo, espacio y variable que aparecen a la derecha. Cuando corresponde, se unifican referencias como UTC y WGS84. Los metadatos permiten conservar la procedencia y las condiciones de la consulta.\n\nEsta homogeneización facilita conectar el cálculo y repetirlo. La revisión experta de la calidad, la cobertura y la representatividad sigue siendo necesaria para decidir si una fuente resulta adecuada para el problema.",
     notes: "La salida común no garantiza calidad física. Revisar unidades, ausencias, representatividad y metadatos antes del análisis.",
     bullets: [
       'Precipitación: ERA5 (0.25°, horaria, desde 1940), GPM-IMERG (0.1°, 30 min, desde 2000, hasta 60°N/S), PERSIANN-CCS (~0.04°, horaria, desde 2003).',
@@ -494,9 +494,9 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Mostrar qué transforma un adaptador de datos y qué conserva.",
     visualGuide: ["Cinco familias de fuentes a la izquierda","Adaptadores en el centro","Salida común y metadatos a la derecha"],
-    speechCues: ["fuentes","adaptadores","salida común","UTC y WGS84","fuente, fecha y consulta","revisión experta"],
+    speechCues: ["fuentes de datos","adaptadores","estructuras comunes","UTC y WGS84","procedencia","calidad"],
     transition: "Con las entradas identificadas y revisadas, podemos estimar la frecuencia de sus valores extremos.",
-    transitionCue: "frecuencia de sus valores extremos"
+    transitionCue: "frecuencia de sus extremos"
   },
 
   {
@@ -509,7 +509,7 @@ export const slideLibrary: Slide[] = [
     figure: 'fig_gev_comparacion.png', figurePosition: 'right',
     figureCaption: "Ejemplo ilustrativo de curvas GEV: estimadores, extrapolación y bandas; no constituye una validación comparativa.",
     type: 'split',
-    script: "Esta figura ilustra curvas GEV. El eje horizontal es el período de retorno logarítmico; el vertical, la precipitación máxima anual. Los puntos son la muestra; azul representa máxima verosimilitud, rojo L-momentos y verde una aproximación bayesiana. La referencia punteada solo es conocida porque se trata de un ejemplo ilustrativo.\n\nPara un mismo período, comparemos las alturas: los métodos divergen al extrapolar y las bandas muestran incertidumbre. La figura enseña a leer resultados, no valida un estimador como superior. La demo identificará por separado el ajuste puntual y el procedimiento que calcula sus bandas.",
+    script: "En esta figura, el eje horizontal representa el período de retorno, en escala logarítmica, y el vertical la precipitación máxima anual. Los puntos corresponden a la muestra. Las curvas ilustran máxima verosimilitud, L-momentos y una aproximación bayesiana; la referencia punteada se conoce porque el ejemplo es ilustrativo.\n\nPara leerla fijamos un período de retorno y comparamos las alturas y sus bandas. La separación aumenta al extrapolar, donde disponemos de menos información. Esa lectura debe acompañar cualquier valor de diseño.\n\nLa figura explica el papel del estimador y de la incertidumbre. En la demostración identificaré el ajuste puntual y el procedimiento de sus bandas, porque ambos necesitan interpretarse por separado.",
     notes: "Figura ilustrativa con distribución de referencia. No atribuir estos puntos a Turís ni interpretar la línea de referencia como una verdad conocida en casos reales. La demo MAP/Fisher y la inferencia bayesiana con MCMC son procedimientos distintos.",
     mathBlock: `
       <div class="gev-equation">
@@ -526,9 +526,9 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Enseñar a leer una curva de niveles de retorno y su incertidumbre.",
     visualGuide: ["Eje horizontal: período de retorno","Puntos y curvas azul, roja y verde","Separación de métodos y bandas hacia la derecha"],
-    speechCues: ["período de retorno","máxima verosimilitud","L-momentos","aproximación bayesiana","ejemplo ilustrativo","no valida un estimador como superior"],
+    speechCues: ["período de retorno","muestra","ejemplo es ilustrativo","alturas y sus bandas","extrapolar","ajuste puntual"],
     transition: "Pero ajustar cada variable por separado no describe cómo ocurren conjuntamente.",
-    transitionCue: "cómo coinciden varias variables"
+    transitionCue: "dependencia entre variables"
   },
 
   {
@@ -541,7 +541,7 @@ export const slideLibrary: Slide[] = [
     figure: 'fig_copula_joint_ret.png', figurePosition: 'right',
     figureCaption: 'Período de retorno conjunto (AND en rojo, OR en azul) para confluencias fluviales costeras',
     type: 'split',
-    script: "En el panel central, Q es el caudal horizontal y SL, el nivel del mar vertical. Los puntos negros son pares observados; los grises, generados. Los bordes muestran sus distribuciones individuales.\n\nLa cópula describe la dependencia entre ambas. Las curvas rojas son AND: se superan los dos umbrales. Las azules son OR: se supera al menos uno. No son intercambiables.\n\nLas cruces MPDE identifican combinaciones de máxima densidad sobre las curvas de diseño. Cada curva contiene muchas parejas posibles; elegir una exige justificar la respuesta física de interés y el comportamiento de las colas.",
+    script: "La figura representa el caudal en el eje horizontal y el nivel del mar en el vertical. Los puntos negros son pares observados y los grises son pares generados; los bordes muestran las distribuciones individuales. La cópula permite describir la dependencia que une esas dos variables.\n\nLas curvas rojas corresponden al criterio AND, que exige superar ambos umbrales. Las azules corresponden a OR, donde basta superar uno. Por eso expresan sucesos distintos. Las cruces MPDE identifican combinaciones de máxima densidad sobre las curvas de diseño.\n\nUna misma curva contiene muchas parejas posibles. Para seleccionar las relevantes debemos justificar la dependencia, las colas y la respuesta física que queremos estudiar.",
     notes: "Q está en m³/s y SL en metros. AND: ambos umbrales; OR: al menos uno. Las cruces MPDE localizan máxima densidad sobre una isolínea: no equivalen automáticamente a máxima respuesta hidráulica.",
     bullets: [
       'Familias: gaussiana para pico, duración y volumen; Gumbel, Clayton y Frank para eventos compuestos.',
@@ -551,9 +551,9 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Relacionar dependencia, AND/OR y evento de diseño con la figura.",
     visualGuide: ["Ejes Q y SL y puntos observados","Distribuciones marginales en los bordes","Curvas AND/OR y cruces de máxima densidad"],
-    speechCues: ["Q","SL","AND","OR","No son intercambiables","MPDE","respuesta física"],
+    speechCues: ["dependencia","AND","ambos umbrales","OR","sucesos distintos","muchas parejas posibles","respuesta física"],
     transition: "Una vez descritas las distribuciones y la dependencia, podemos generar escenarios que conserven las propiedades seleccionadas.",
-    transitionCue: "generar realizaciones"
+    transitionCue: "generar las realizaciones"
   },
 
   {
@@ -566,7 +566,7 @@ export const slideLibrary: Slide[] = [
     figure: "anexo_stochastic_modelo.png", figurePosition: 'right',
     figureCaption: "Diagnóstico estacional de una demo sintética: media, desviación estándar y autocorrelación; «observado» designa la entrada de demostración.",
     type: 'split',
-    script: "La captura compara media, desviación estándar y autocorrelación de primer retardo entre la entrada y el modelo simulado. La entrada es sintética: la etiqueta «observado» pertenece a la interfaz de demostración.\n\nReproducir la media no basta; hay que revisar dispersión y persistencia, como recuerda el tercer gráfico. La captura es una demo rápida. En la librería, CoSMoS combina distribución marginal y autocorrelación; NSRP y STNSRP representan precipitación espacial.\n\nSe generan trayectorias plausibles bajo esas hipótesis, no predicciones exactas del episodio futuro. Las propiedades deben contrastarse antes de utilizar el ensemble.",
+    script: "La generación estocástica produce realizaciones plausibles que después podemos introducir en los modelos. Para utilizarlas debemos comprobar qué propiedades conservan. La captura compara la media, la desviación estándar y la autocorrelación de primer retardo entre la entrada y la simulación.\n\nAquí la entrada es sintética: «observado» es la etiqueta de esta demostración. El tercer gráfico recuerda que reproducir la media resulta insuficiente si cambia la persistencia. Esta demo rápida debe distinguirse de las capacidades de la librería: CoSMoS combina distribución marginal y autocorrelación, mientras NSRP y STNSRP representan precipitación espacial.\n\nLos diagnósticos justifican el uso de las realizaciones bajo sus hipótesis; no convierten las series en predicciones exactas.",
     notes: "Captura de una demo sintética: la entrada etiquetada «observado» también es sintética. La herramienta calibra con CoSMoS y utiliza una simulación rápida AR(1) estacional con transformación marginal. Los diagnósticos deben revisarse antes de usar el ensemble.",
     bullets: [
       'NSRP / STNSRP: lluvia puntual y multisitio calibrada con media, varianza, probabilidad de día seco y autocorrelación.',
@@ -576,7 +576,7 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Explicar generación y diagnóstico usando la captura correcta.",
     visualGuide: ["Tres gráficos: media, dispersión y autocorrelación","Barras de la serie de entrada y línea simulada","Condición previa a usar las realizaciones"],
-    speechCues: ["media","desviación estándar","autocorrelación","entrada es sintética","CoSMoS","NSRP y STNSRP","no predicciones exactas"],
+    speechCues: ["realizaciones plausibles","media","desviación estándar","autocorrelación","entrada es sintética","CoSMoS","NSRP y STNSRP","diagnósticos"],
     transition: "Esas trayectorias deben convertirse ahora en una respuesta hidrológica e hidráulica.",
     transitionCue: "modelos físicos"
   },
@@ -589,7 +589,7 @@ export const slideLibrary: Slide[] = [
     estimatedMinutes: 2,
     url: '/modules/modelizacion',
     type: 'normal',
-    script: "El adaptador recibe escenarios, prepara archivos del motor, ejecuta el programa registrando versión y resultado, y homogeneiza y comprueba las salidas.\n\nA la derecha aparecen motores hidrológicos, como HEC-HMS y SWAT, e hidráulicos, como SFINCS y HEC-RAS. Ese contrato permite cambiar el motor sin reconstruir los métodos estadísticos.\n\nIber figura como ejecución manual en los trabajos iniciales: no toda la cadena histórica estaba automatizada. La arquitectura organiza el cálculo; elegir geometría, condiciones de contorno y modelo sigue siendo una responsabilidad científica y de ingeniería.",
+    script: "El esquema muestra el trabajo de un adaptador. Primero recibe los escenarios y prepara los archivos que necesita el motor. Después ejecuta el programa, registra su versión y el resultado del proceso, y convierte las salidas a estructuras comunes para revisarlas.\n\nA la derecha aparecen modelos hidrológicos, como HEC-HMS y SWAT, e hidráulicos, como HEC-RAS y SFINCS. Este contrato permite conectar motores diferentes conservando los componentes estadísticos.\n\nEn los trabajos iniciales Iber se utilizó manualmente, por lo que la automatización tiene distinto alcance según el caso. La elección del motor, la geometría y las condiciones de contorno exige una justificación física que acompaña a la organización del cálculo.",
     notes: "El esquema del adaptador distingue preparación, ejecución, homogeneización y validación. Iber se usó manualmente en los trabajos fundacionales; no atribuirle integración automática.",
     bullets: [
       'HEC-HMS: calibración automática de parámetros frente a NSE, PBIAS o RMSE.',
@@ -600,7 +600,7 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Explicar el contrato común que conecta escenarios y motores.",
     visualGuide: ["Escenarios de entrada","Cuatro operaciones del adaptador","Motores conectados e Iber manual"],
-    speechCues: ["prepara archivos","homogeneiza y comprueba","HEC-HMS y SWAT","SFINCS y HEC-RAS","ejecución manual","responsabilidad científica"],
+    speechCues: ["adaptador","prepara","ejecuta","estructuras comunes","HEC-HMS","HEC-RAS y SFINCS","Iber","justificación física"],
     transition: "Con los métodos y los adaptadores conectados, podemos ofrecer la misma operación a través de una herramienta web.",
     transitionCue: "herramientas web"
   },
@@ -617,7 +617,7 @@ export const slideLibrary: Slide[] = [
     estimatedMinutes: 1,
     url: '/', anchor: '#herramientas', highlight: '#herramientas .grid',
     type: 'normal',
-    script: "La herramienta recoge datos y parámetros; la API envía la operación a pyhydra y devuelve resultados y figuras. Ese es el recorrido de la petición que muestra el esquema.\n\nExtremos, dependencia, interpolación y curvas IDF utilizan así los mismos métodos desde la web y desde notebooks. La aportación es conservar esa continuidad entre el método documentado y su ejecución. La demostración permitirá distinguir entrada, estimador e incertidumbre en una operación concreta.",
+    script: "El esquema sigue una petición desde la interfaz hasta el resultado. El usuario introduce datos y parámetros; la API recibe la operación, la dirige a pyhydra y devuelve las salidas y las figuras. La herramienta visual utiliza así el mismo núcleo que puede emplearse desde un notebook.\n\nLos ejemplos incluyen extremos, dependencia, interpolación y curvas IDF. Su utilidad consiste en facilitar el acceso a una operación manteniendo identificable el método que se ejecuta. En la demostración recorreré una de ellas para distinguir los datos de entrada, la selección de eventos, el ajuste y la incertidumbre. Ese recorrido permite interpretar el resultado antes de utilizarlo como información de diseño.",
     notes: "Esta diapositiva explica el acceso al método; la siguiente demuestra su operación. Tiempo de demo previsto: aproximadamente 90 segundos adicionales a la explicación.",
     bullets: [
       'Simulación estocástica CoSMoS en 3 pasos',
@@ -627,9 +627,9 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Distinguir acceso interactivo y núcleo científico antes de la demo.",
     visualGuide: ["Herramientas en la parte superior","API y núcleo compartido","Ruta de una petición"],
-    speechCues: ["datos y parámetros","API","pyhydra","mismos métodos","entrada, estimador e incertidumbre"],
+    speechCues: ["petición","datos y parámetros","API","mismo núcleo","método","datos de entrada","ajuste y la incertidumbre"],
     transition: "En esa demostración distinguiremos la serie que entra al cálculo, el estimador puntual y el origen de la incertidumbre mostrada.",
-    transitionCue: "ajustar extremos"
+    transitionCue: "herramienta de extremos"
   },
 
   {
@@ -647,14 +647,14 @@ export const slideLibrary: Slide[] = [
     webPurpose: 'Enseñar una sola cadena científica completa, conectada con el caso Valencia.',
     webAction: 'Ejecutar un ajuste preparado y señalar resultado, incertidumbre y trazabilidad. Máximo 3 minutos.',
     type: 'normal',
-    script: "La serie demo es sintética; no son los datos de Turís. Reviso la entrada y el análisis elegido: el umbral identifica eventos, mientras la GEV utiliza máximos anuales.\n\nEjecuto el ajuste. La curva puntual es MAP, el máximo de la posterior. Las bandas de esta interfaz se aproximan mediante Fisher; no proceden de cadenas MCMC.\n\nEl eje horizontal es el período de retorno y el vertical, el nivel estimado. Para un período de diseño leo curva y banda conjuntamente. Si falla la API, el respaldo procede del notebook de Valencia, con otros datos y métodos, y lo identificaré expresamente.",
+    script: "Estamos en la herramienta de extremos. La serie de demostración es sintética y debe distinguirse de los datos de Turís que veremos después. Primero reviso la entrada y la selección: el umbral permite identificar eventos, mientras que la GEV se ajusta a máximos anuales.\n\nEjecuto ahora el cálculo. La curva puntual corresponde al máximo de la posterior, MAP. Las bandas se aproximan mediante Fisher; no proceden de cadenas MCMC. En el gráfico, el período de retorno está en horizontal y la precipitación en vertical.\n\nPara leer un período de diseño debemos considerar conjuntamente curva y banda. Esta lectura conjunta permite reconocer cuánto respaldo ofrece la muestra al valor que usaríamos en el diseño.",
     notes: "En vivo: revisar entrada → ejecutar → leer curva y banda. En capturas: alternar Datos y ajuste → Resultado e incertidumbre. La serie es sintética. La GEV usa máximos anuales; las bandas Fisher alrededor de MLE no son una posterior MCMC.",
     bullets: ["Serie demo sintética o CSV identificado.","Extracción de eventos por umbral; GEV sobre máximos anuales.","Ajuste puntual MAP y bandas aproximadas mediante Fisher.","Respaldo local: figura del notebook de Valencia, con método y procedencia."],
     speakerGoal: "Guiar una demo breve y explicar exactamente lo que calcula.",
     visualGuide: ["Entrada sintética y selección del análisis","Máximos anuales usados por la GEV","MAP y banda aproximada mediante Fisher"],
-    speechCues: ["sintética","máximos anuales","MAP","Fisher","no proceden de cadenas MCMC","curva y banda","otros datos y métodos"],
+    speechCues: ["serie de demostración es sintética","máximos anuales","MAP","Fisher","curva y banda","cambio de datos y métodos"],
     transition: "La demo muestra que el método puede ejecutarse. Los casos permiten valorar qué conocimiento y qué capacidad operativa aporta.",
-    transitionCue: "problemas de ingeniería",
+    transitionCue: "evidencias de los casos",
     offlineSpeechCues: ["primera","demo sintética","45 máximos anuales","segunda captura","MAP","Fisher alrededor del ajuste MLE","valor y la incertidumbre"]
   },
 
@@ -774,7 +774,7 @@ export const slideLibrary: Slide[] = [
     subtitle: 'Tres reproducibles con notebooks en HYDRA; seis documentados desde su publicación o proyecto',
     estimatedMinutes: 2,
     type: 'table',
-    script: "Las filas reúnen nueve aplicaciones y las columnas, sus componentes. La última distingue Besaya, Calle 30 y Valencia, reproducibles hoy con notebooks en HYDRA, de otros seis casos documentados en publicaciones y proyectos.\n\nLos casos contrastan tres cuestiones: cómo calcular la frecuencia del impacto y su dependencia del modelo; cuánto condicionan datos y métodos el diseño; y cómo transferir componentes entre escalas y finalidades. Cada aplicación responde a una cuestión concreta. La tabla es el mapa de esa validación, no una afirmación de que los nueve casos tengan la misma disponibilidad.",
+    script: "Esta tabla es el mapa de las nueve aplicaciones que presentaré. Las columnas indican los componentes utilizados y la última diferencia su disponibilidad: Besaya, Calle 30 y Valencia cuentan hoy con notebooks reproducibles en HYDRA; los otros seis casos se documentan mediante publicaciones y proyectos.\n\nEl recorrido aborda tres cuestiones. La primera es cómo estimar la frecuencia del impacto y cómo influye el modelo. La segunda es cuánto condicionan el diseño los datos y el procedimiento. La tercera es qué componentes pueden transferirse entre escalas y finalidades.\n\nCada caso aporta una evidencia concreta. Esta distinción permite interpretar el conjunto sin atribuir a todas las aplicaciones el mismo alcance de reproducción actual.",
     notes: "Mantener la distinción entre evidencia histórica/documentada y reproducibilidad actual. Tres casos disponen de notebooks ejecutables en la plataforma.",
     bullets: [
       'Frecuencia sobre el impacto: cuenca fluvial cantábrica (Besaya).',
@@ -789,9 +789,9 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Dar a cada caso una pregunta distinta y delimitar su reproducibilidad.",
     visualGuide: ["Filas: aplicaciones","Columnas: componentes y disponibilidad en HYDRA","Tres preguntas de validación"],
-    speechCues: ["nueve aplicaciones","Besaya, Calle 30 y Valencia","otros seis","tres cuestiones","misma disponibilidad"],
+    speechCues: ["nueve aplicaciones","Besaya, Calle 30 y Valencia","tres cuestiones","frecuencia del impacto","datos y el procedimiento","transferirse","evidencia concreta"],
     transition: "Empezamos en Besaya, donde se formuló el principio que debe conservar toda la arquitectura.",
-    transitionCue: "Besaya"
+    transitionCue: "frecuencia sobre el impacto"
   },
 
   {
@@ -815,7 +815,7 @@ export const slideLibrary: Slide[] = [
     pyhydraRole:'Convierte un ensemble de parámetros y dos motores hidráulicos en una comparación probabilística trazable del impacto.',
     pyhydraModules:['pyhydra.modeling','pyhydra.modeling.hydraulic','HEC-RAS 2D','SFINCS'],
     processSteps:['Manning Monte Carlo','HEC-RAS 2D + SFINCS','Comparación emparejada','Distribuciones de impacto'],
-    script: "Arriba se comparan 995 pares de simulaciones: SFINCS en horizontal y HEC-RAS en vertical. La diagonal indica igualdad. Las correlaciones son 0,52 para calado y 0,49 para área.\n\nAbajo aparecen las distribuciones: verde para SFINCS y rojo para HEC-RAS. El área de HEC-RAS distingue dos regímenes, vinculados a un compartimento secundario de 7,4 hectáreas y un collado a cota 60,1 metros.\n\nLos 995 pares son 1.990 ejecuciones variando Manning. Muestran sensibilidad e incertidumbre estructural. Sin contraste observacional adicional, las diferencias no determinan qué motor reproduce mejor la realidad.",
+    script: "Este segundo trabajo sobre el Besaya examina la sensibilidad al motor hidráulico. Arriba vemos 995 pares de realizaciones, con SFINCS en horizontal y HEC-RAS en vertical. La diagonal representa igualdad. Las correlaciones de 0,52 en calado y 0,49 en área muestran diferencias entre sus respuestas.\n\nAbajo, las distribuciones permiten interpretar esas diferencias. HEC-RAS presenta dos regímenes de área, vinculados a la activación de un compartimento secundario de 7,4 hectáreas y un collado a cota 60,1 metros.\n\nSon 1.990 ejecuciones variando Manning. La comparación caracteriza sensibilidad e incertidumbre estructural; para determinar qué motor reproduce mejor la realidad necesitamos además contraste observacional.",
     notes: "995 pares = 1.990 ejecuciones. Explicar primero diagonal 1:1 y después distribuciones. La bifurcación topográfica tiene un anexo propio. Diferencia entre motores y validación frente a observaciones son preguntas diferentes.",
     bullets: [
       'Enfoque Monte Carlo: 995 simulaciones hidráulicas emparejadas sobre 9 usos de suelo (Manning).',
@@ -825,9 +825,9 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Leer las diferencias entre motores en los cuatro paneles.",
     visualGuide: ["Paneles superiores: pares SFINCS/HEC-RAS y diagonal 1:1","Paneles inferiores: distribuciones de calado y área","Regímenes asociados a la topografía"],
-    speechCues: ["995 pares","diagonal","0,52","0,49","dos regímenes","7,4 hectáreas","60,1 metros","1.990 ejecuciones","incertidumbre estructural"],
+    speechCues: ["995 pares","diagonal","0,52","0,49","dos regímenes","1.990 ejecuciones","incertidumbre estructural","contraste observacional"],
     transition: "En Mallorca cambia la dificultad de partida: disponer de muy pocos datos hidrológicos para construir y contrastar la cadena.",
-    transitionCue: "muy pocos datos"
+    transitionCue: "pocos datos"
   },
 
   {
@@ -853,7 +853,7 @@ export const slideLibrary: Slide[] = [
     pyhydraRole:'Formaliza después los bloques repetibles que este trabajo reveló como necesarios: eventos, dependencia, modelos y postproceso.',
     pyhydraModules:['pyhydra.climate','pyhydra.climate.time_series','cópulas','Iber'],
     processSteps:['Aforos','Qp + V + duración','Cópula gaussiana','Hidrogramas','Iber → T(calado)'],
-    script: "A la izquierda están los aforos del Besaya. Se extraen avenidas independientes, descritas por pico, volumen y duración. Una cópula gaussiana conserva su dependencia y genera hidrogramas plausibles.\n\nIber transforma los hidrogramas en calados y extensión. El último bloque reúne las salidas y estima su frecuencia. El período de retorno del impacto se calcula después de simular la respuesta, sobre la variable de decisión.\n\nEste trabajo de 2018 precede a pyhydra: establece el procedimiento científico que la tesis busca hacer repetible y transferible.",
+    script: "En el esquema del Besaya seguimos el agua desde los aforos hasta el resultado hidráulico. Primero se extraen avenidas independientes y se describen mediante pico, volumen y duración. Una cópula gaussiana permite conservar su dependencia al generar nuevos hidrogramas plausibles.\n\nDespués, Iber transforma esos hidrogramas en calados y extensión. El último bloque reúne las respuestas y estima su frecuencia. Por tanto, el período de retorno del calado se obtiene después de simular el comportamiento del sistema.\n\nEste trabajo de 2018 precede a pyhydra y establece el fundamento científico del desarrollo posterior. La tesis recoge la necesidad de repetir esas operaciones y conectarlas de una forma trazable y transferible.",
     notes: "El TFM y el artículo preceden a la arquitectura actual. La frecuencia de calado/extensión se estima después de la simulación hidráulica.",
     bullets: [
       'Los datos de partida son caudales observados, no precipitación.',
@@ -863,9 +863,9 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Mostrar dónde se calcula la frecuencia dentro de la cadena fundacional.",
     visualGuide: ["Aforos y descripción multivariante","Hidrogramas generados y simulación con Iber","Distribución del impacto al final"],
-    speechCues: ["aforos","pico, volumen y duración","cópula gaussiana","Iber","después de simular la respuesta","precede a pyhydra"],
+    speechCues: ["aforos","pico, volumen y duración","cópula gaussiana","Iber","después de simular","2018","fundamento científico"],
     transition: "Una cadena reproducible permite comparar sus componentes; en el Besaya la comparación se hizo entre dos motores hidráulicos.",
-    transitionCue: "motor hidráulico diferente"
+    transitionCue: "cambiar de motor"
   },
 
   {
@@ -887,7 +887,7 @@ export const slideLibrary: Slide[] = [
     pyhydraRole:'Une lluvia sintética, interpolación espacial, simulación física y reconstrucción de impactos en una cuenca sin aforos.',
     pyhydraModules:['pyhydra.data_sources','pyhydra.climate','pyhydra.climate.spatial_analysis','Iber 2D'],
     processSteps:['Lluvia observada','Cópulas + kriging','MaxDiss + Iber 2D','k-NN','T sobre calado'],
-    script: "Los mapas comparan el procedimiento clásico, a la izquierda, y el estocástico, a la derecha, en Sant Llorenç. Los colores son calados: las diferencias cambian espacialmente.\n\nLa cuenca no tenía aforos. Tras la tormenta de octubre de 2018, la lluvia se reconstruyó mediante hietogramas, dependencia entre estaciones y kriging. Se utilizaron una malla hidrológica de 25 metros e Iber con malla hidráulica de 8 metros basada en LiDAR.\n\nLa extensión se contrastó con Copernicus. El máximo de 5,85 metros es simulado, no medido. Aquí la cadena debe resolver también la incertidumbre de la lluvia espacial.",
+    script: "Los mapas comparan el procedimiento clásico, a la izquierda, con el estocástico, a la derecha, en Sant Llorenç. Los colores representan calados y permiten reconocer que las diferencias varían según la localización.\n\nLa dificultad de partida era una cuenca sin aforos. Tras el episodio de octubre de 2018, la precipitación se reconstruyó combinando hietogramas, dependencia entre estaciones y kriging. Esa entrada se transformó mediante una malla hidrológica de 25 metros e Iber, con una malla hidráulica de 8 metros basada en LiDAR.\n\nLa extensión se contrastó con Copernicus. El máximo de 5,85 metros es simulado. El caso muestra por qué la incertidumbre de la lluvia espacial debe acompañar a la interpretación hidráulica.",
     notes: "Panel izquierdo: procedimiento clásico; derecho: estocástico. Copernicus aporta referencia de extensión. 5,85 m es un máximo modelado, no una medición observada.",
     bullets: [
       'Sin aforo: contraste cualitativo con la mancha Copernicus y con marcas documentadas del episodio.',
@@ -897,9 +897,9 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Explicar qué compara el mapa y qué validación permite el caso.",
     visualGuide: ["Izquierda: procedimiento clásico; derecha: enfoque estocástico","Calado y extensión en la trama urbana","Alcance del contraste con Copernicus"],
-    speechCues: ["clásico","estocástico","no tenía aforos","kriging","25 metros","8 metros","5,85 metros","no medido"],
+    speechCues: ["procedimiento clásico","estocástico","sin aforos","precipitación se reconstruyó","25 metros","8 metros","5,85 metros es simulado","lluvia espacial"],
     transition: "La siguiente aplicación añade una exigencia operativa: hacer viable esa cadena en una infraestructura crítica.",
-    transitionCue: "exigencia operativa"
+    transitionCue: "Calle 30"
   },
 
   {
@@ -920,7 +920,7 @@ export const slideLibrary: Slide[] = [
     pyhydraRole:'Orquesta la cadena lluvia–caudal–hidráulica y permite asignar frecuencia directamente al calado en la red de túneles.',
     pyhydraModules:['pyhydra.climate','pyhydra.modeling','HEC-HMS','HEC-RAS 1D','MaxDiss + k-NN'],
     processSteps:['Lluvia multisitio','Cópulas','Selección inicial','HEC-HMS','MaxDiss + HEC-RAS 1D','k-NN → T(calado)'],
-    script: "La figura contiene dos selecciones. Primero se generan lluvias multisitio mediante extremos y cópulas; una selección inicial se transforma en hidrogramas con HEC-HMS.\n\nMaxDiss actúa después sobre esos hidrogramas, seleccionando casos para HEC-RAS 1D. No sustituye a HEC-HMS. k-NN reconstruye los impactos de los escenarios no simulados y el último bloque estima el período de retorno del calado.\n\nEsta reducción hace viable explorar muchos escenarios en la infraestructura de Calle 30. El caso, vinculado a FORESEE y Ferrovial, conecta la cadena estocástica con una necesidad industrial.",
+    script: "En Calle 30, la cadena debe hacer viable el cálculo de muchos escenarios para una infraestructura crítica. Sigamos las dos selecciones del esquema. Primero se generan lluvias multisitio mediante extremos y cópulas; la selección inicial se transforma en hidrogramas con HEC-HMS.\n\nDespués, MaxDiss selecciona entre esos hidrogramas los casos que se ejecutan en HEC-RAS 1D. A partir de sus resultados, k-NN reconstruye los impactos de los escenarios restantes. El último bloque calcula la frecuencia del calado.\n\nCada operación tiene así una función definida dentro del conjunto. La aplicación, vinculada a FORESEE y Ferrovial, traslada la cadena estocástica a una necesidad industrial y prepara los resultados que vamos a interpretar en la web.",
     notes: "Orden: preselección de lluvia → HEC-HMS → MaxDiss sobre hidrogramas → HEC-RAS 1D → k-NN → frecuencia del calado. La malla de salida no transforma el motor hidráulico 1D en 2D.",
     bullets: [
       'Multisitio: Precipitación espacialmente correlacionada (cópulas gaussianas) en los distritos de Madrid.',
@@ -931,9 +931,9 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Explicar las dos selecciones del flujo de Calle 30.",
     visualGuide: ["Lluvia multisitio y preselección inicial","HEC-HMS antes de MaxDiss","HEC-RAS 1D, reconstrucción y frecuencia del calado"],
-    speechCues: ["dos selecciones","HEC-HMS","MaxDiss actúa después","HEC-RAS 1D","k-NN","período de retorno del calado","necesidad industrial"],
+    speechCues: ["dos selecciones","HEC-HMS","Después, MaxDiss","HEC-RAS 1D","k-NN","frecuencia del calado","necesidad industrial"],
     transition: "Ahora podemos leer el resultado hidráulico de esa cadena en las gráficas de análisis interactivo.",
-    transitionCue: "análisis interactivo"
+    transitionCue: "Análisis interactivo"
   },
 
   {
@@ -960,7 +960,7 @@ export const slideLibrary: Slide[] = [
     ],
     pyhydraRole:'Hace navegable y repetible el flujo completo del caso, desde la precipitación multisitio hasta el mapa de impacto.',
     pyhydraModules:['pyhydra.data_sources','pyhydra.climate','pyhydra.modeling','MaxDiss + k-NN'],
-    script: "Estamos en Análisis interactivo. A la izquierda, el eje horizontal es el período de retorno y el vertical, el calado en Puente de Toledo. Para un mismo período comparamos el procedimiento clásico y el basado en cópulas; el cursor lee valores y la leyenda permite aislar las series.\n\nA la derecha, los perfiles recorren el tramo para períodos de cien y quinientos años. Las diferencias dependen también de la sección.\n\nAmbas gráficas permiten decidir qué calado considerar en un punto y con qué frecuencia. MaxDiss queda como detalle adicional de la selección.",
+    script: "Estamos en el apartado Análisis interactivo. Comienzo por la gráfica del Puente de Toledo: el eje horizontal representa el período de retorno y el vertical, el calado. Para comparar los procedimientos fijamos el mismo período y leemos las dos curvas. El cursor permite consultar valores y la leyenda aislar las series.\n\nEl perfil de la derecha añade la posición a lo largo del tramo para períodos de cien y quinientos años. Así podemos examinar en qué secciones aparecen las diferencias.\n\nLas gráficas responden a una pregunta de diseño concreta: qué calado considerar en un lugar y con qué frecuencia. Son la interpretación localizada de toda la cadena que acabamos de recorrer.",
     offlineScript: "La captura conserva las dos gráficas de Análisis interactivo. A la izquierda está el calado en el Puente de Toledo frente al período de retorno. Para un mismo período se comparan las series del enfoque clásico y del basado en cópulas.\n\nA la derecha, el eje horizontal recorre el tramo y los perfiles representan los calados para períodos de retorno de cien y quinientos años. La comparación muestra que las diferencias entre procedimientos también dependen de la sección.\n\nEsta copia es una imagen: para leer valores con el cursor y activar o desactivar series hay que abrir la herramienta en vivo. La conclusión que sí podemos explicar con la captura es cómo el resultado de toda la cadena se convierte en una comparación hidráulica localizada.",
     notes: "La visita principal se limita a Análisis interactivo: comparar curva de Puente de Toledo y perfil T100/T500. El cursor y la leyenda operan en vivo; la copia preparada conserva imágenes. MaxDiss es una ampliación opcional.",
     bullets: [
@@ -971,7 +971,7 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Guiar dos comparaciones visibles sin dispersarse por la web.",
     visualGuide: ["Curva de período de retorno en Puente de Toledo","Perfil longitudinal T100/T500","Cursor y leyenda de las series"],
-    speechCues: ["Análisis interactivo","período de retorno","Puente de Toledo","cursor","leyenda","cien y quinientos años","sección"],
+    speechCues: ["Análisis interactivo","Puente de Toledo","mismo período","cursor","perfil","cien y quinientos años","qué calado","interpretación localizada"],
     transition: "Hasta aquí hemos propagado escenarios por modelos físicos. Valencia plantea otra dificultad: que un solo dato extremo cambie el ajuste de entrada.",
     transitionCue: "extremo excepcional",
     offlineSpeechCues: ["izquierda","Puente de Toledo","mismo período","derecha","cien y quinientos años","Esta copia es una imagen","comparación hidráulica localizada"]
@@ -995,7 +995,7 @@ export const slideLibrary: Slide[] = [
     pyhydraRole:'Permite recalcular rápidamente extremos e incertidumbre cuando entra en la serie un evento sin precedente histórico.',
     pyhydraModules:['pyhydra.data_sources','pyhydra.climate.time_series','PyMC','análisis regional'],
     processSteps:['224 estaciones','Máximos anuales','GEV: 3 estimadores','RFA local/global','Antes ↔ después'],
-    script: "Las barras muestran el mismo cuantil T100 de precipitación en Turís. Sin la DANA, el ajuste bayesiano da 260 milímetros; al incorporarla, 952: un incremento del 266 por ciento.\n\nLa observación del episodio es otra magnitud: 710,8 milímetros en 24 horas, el 29 de octubre de 2024. También es distinta la frecuencia asignada a ese episodio: al incluirlo, los estimadores lo sitúan entre 66 y 91 años.\n\nEl extremo modifica mucho la inferencia con series cortas. Repetir el cálculo permite examinar esa sensibilidad y sus bandas; no convierte automáticamente una estimación en la verdad.",
+    script: "En Valencia examinamos la sensibilidad de una estimación al incorporar un episodio extraordinario. Las barras comparan el mismo cuantil de precipitación T100 en Turís: el ajuste bayesiano pasa de 260 a 952 milímetros al incluir la DANA, un incremento del 266 por ciento.\n\nConviene separar ese cuantil de la observación: el 29 de octubre de 2024 se registraron 710,8 milímetros en 24 horas. El período de retorno asignado a ese episodio, incluyendo el dato, se sitúa entre 66 y 91 años según el estimador.\n\nEl caso muestra cuánto puede influir un extremo en una serie corta. Repetir el análisis permite revisar esa sensibilidad y sus bandas antes de interpretar la cifra de diseño.",
     notes: "Distinguir tres magnitudes: lluvia observada (710,8 mm), nivel de retorno T100 (260/952 mm) y período de retorno asignado al episodio (66–91 años al incorporarlo). El +266 % se refiere al cambio del nivel T100 bayesiano.",
     bullets: [
       'Valencia (29-10-2024): 710,8 mm en 24 h en Turís (8337X), máximo de su serie.',
@@ -1006,9 +1006,9 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Relacionar las dos barras de T100 con la información que aporta la DANA.",
     visualGuide: ["Barras sin DANA y con DANA","260 frente a 952 mm, mismo cuantil","Distinguir T100 del período asignado al episodio"],
-    speechCues: ["mismo cuantil T100","260 milímetros","952","266 por ciento","710,8 milímetros","66 y 91 años","sensibilidad y sus bandas"],
+    speechCues: ["mismo cuantil","260 a 952","266 por ciento","observación","710,8","66 y 91 años","serie corta","sensibilidad y sus bandas"],
     transition: "Tanganica conserva la necesidad de estimar extremos con pocos datos, pero cambia la variable de diseño: de precipitación a nivel del lago.",
-    transitionCue: "datos y el notebook"
+    transitionCue: "materiales del análisis"
   },
 
   {
@@ -1035,14 +1035,14 @@ export const slideLibrary: Slide[] = [
     ],
     pyhydraRole:'Mantiene una cadena única y auditable para comparar métodos, escalas regionales y resultados antes/después de la DANA.',
     pyhydraModules:['pyhydra.climate.time_series','pyhydra.climate.spatial_analysis','PyMC','notebook trazable'],
-    script: "Ahora la ficha de Valencia conecta el resultado con el procedimiento que permite revisarlo. En la cabecera reconocemos el episodio de 710,8 milímetros y las cifras que acabamos de analizar. La página reúne también la comparación de estimadores y el enlace al notebook del estudio regional.\n\nEl punto de esta visita es la trazabilidad: poder identificar la serie, seguir la preparación de los datos y consultar cómo se obtuvieron las estimaciones. Una cifra aislada en una diapositiva no ofrece ese recorrido. El notebook permite examinar las decisiones del análisis y sus diferencias entre métodos.",
+    script: "La ficha de Valencia permite conectar las cifras de la diapositiva con el procedimiento de análisis. En la cabecera reconocemos la precipitación del episodio y los resultados que acabamos de comparar. La página reúne también los estimadores y el acceso al notebook del estudio regional.\n\nEsta visita muestra qué significa la trazabilidad para quien consulta un resultado: identificar la serie, revisar la preparación de los datos y examinar las decisiones del cálculo. El notebook permite seguir ese recorrido y estudiar las diferencias entre métodos.\n\nDe esta forma, el resultado presentado queda relacionado con unos materiales que pueden revisarse, siempre que se disponga de los datos y del entorno necesarios para repetir el análisis.",
     notes: "Este es un segundo momento de evidencia web con función distinta de la visita inicial a HYDRA: trazabilidad del caso Valencia. Mostrar el acceso al notebook sin ejecutarlo durante la defensa.",
     bullets: ["La ficha reúne resultados, métodos y materiales del caso.","El notebook permite revisar datos, preparación y estimadores.","Las diferencias entre métodos deben interpretarse con sus hipótesis."],
     backup: false,
     offlineScript: "La captura corresponde a la ficha de Valencia en HYDRA. En ella reconocemos el episodio de 710,8 milímetros y las cifras que acabamos de analizar, junto con el acceso a los materiales del caso.\n\nEsta vista documenta la conexión entre el resultado presentado y el notebook del estudio regional. Su función es la trazabilidad: identificar la serie, la preparación de datos y las decisiones del cálculo. La captura permite mostrar esa relación; abrir los enlaces y ejecutar el notebook exige disponer del entorno correspondiente.",
     speakerGoal: "Mostrar trazabilidad y acceso al procedimiento, sin repetir la interpretación de las barras de T100.",
     visualGuide: ["Cifras de la ficha","Comparación de estimadores","Acceso al notebook del estudio regional"],
-    speechCues: ["710,8 milímetros","comparación de estimadores","notebook","trazabilidad","decisiones del análisis"],
+    speechCues: ["ficha de Valencia","procedimiento de análisis","notebook","trazabilidad","decisiones del cálculo","repetir el análisis"],
     offlineSpeechCues: ["captura","710,8 milímetros","trazabilidad","notebook","entorno correspondiente"],
     transitionCue: "nivel del lago"
   },
@@ -1068,7 +1068,7 @@ export const slideLibrary: Slide[] = [
     pyhydraRole:'Encadena fuentes globales, señal climática y una relación caudal-nivel no lineal para estimar cotas de diseño donde la altimetría observada es corta.',
     pyhydraModules:['pyhydra.data_sources','pyhydra.climate','AdaBoost','CMIP6 + Hydroweb'],
     processSteps:['ERA5 → AdaBoost','Caudal → N(Q)','CMIP6 + delta','Bootstrap N(Q)','Extremos de nivel'],
-    script: "La figura distingue el nivel histórico T100 del cambio futuro. Para T100, el bootstrap da 770,19 metros y GEV/Weibull, entre 771,55 y 771,76. El incremento futuro superior a 0,9 metros corresponde a T5–T10 en 2041–2060, no a T100.\n\nLa altimetría de 1992–2023 es corta. ERA5 y AdaBoost estiman caudales, y una relación N(Q) en tres regímenes los transforma en niveles. Se incorporan 19 modelos CMIP6 mediante deltas mensuales.\n\nEl bootstrap remuestrea residuos caudal-nivel, no de AdaBoost, y genera unos 20.000 años. Las diferencias entre métodos deben acompañar la cota de diseño.",
+    script: "En Tanganica, la variable de diseño es el nivel del lago y el registro de altimetría de 1992–2023 resulta limitado. La cadena combina caudales estimados mediante ERA5 y AdaBoost con una relación caudal-nivel en tres regímenes. Los cambios futuros incorporan 19 modelos CMIP6 mediante deltas mensuales.\n\nLa figura compara el T100 histórico: 770,19 metros con bootstrap frente a 771,55–771,76 con GEV y Weibull. El incremento futuro superior a 0,9 metros corresponde a T5–T10 en 2041–2060.\n\nEl bootstrap remuestrea residuos de la relación caudal-nivel y genera unos 20.000 años. La diferencia entre métodos debe acompañar a la cota de diseño, porque refleja la sensibilidad de una estimación apoyada en registros cortos.",
     notes: "Primero explicar las dos comparaciones visibles. T100 histórico y cambio climático máximo T5–T10 son magnitudes diferentes. El bootstrap remuestrea residuos de N(Q), no de AdaBoost. La figura de forzamientos y las curvas por horizontes están en los anexos.",
     bullets: [
       'AdaBoost estima caudales mensuales a partir de ERA5; no estima directamente los niveles extremos.',
@@ -1078,9 +1078,9 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Separar nivel histórico T100, método de cálculo y cambio climático proyectado.",
     visualGuide: ["Comparación histórica T100: bootstrap y GEV/Weibull","Recuadro futuro: cambio máximo para T5–T10","Cadena caudal → nivel → extremos"],
-    speechCues: ["nivel histórico T100","770,19","771,55 y 771,76","T5–T10","no a T100","19 modelos CMIP6","residuos caudal-nivel","20.000 años"],
+    speechCues: ["nivel del lago","registro","19 modelos CMIP6","T100 histórico","770,19","T5–T10","relación caudal-nivel","diferencia entre métodos"],
     transition: "Para aplicar cadenas de este tipo a un territorio mayor aparece otro cuello de botella: calibrar muchos modelos de forma consistente.",
-    transitionCue: "muchos sistemas"
+    transitionCue: "ejecución hidrológica regional"
   },
 
   {
@@ -1102,7 +1102,7 @@ export const slideLibrary: Slide[] = [
     pyhydraRole:'Generaliza la experiencia andina: automatizar el ciclo parámetros-modelo-evaluación con SPOTPY para convertir clima en caudal de forma repetible.',
     pyhydraModules:['pyhydra.climate','pyhydra.modeling','SPOTPY','VIC','clima → caudal'],
     processSteps:['Campos climáticos','SPOTPY calibra','VIC lluvia → caudal','21 CMIP5','Caudal regional'],
-    script: "Los paneles representan Colombia, Bolivia, Perú y Ecuador. El eje horizontal recorre meses; el vertical muestra cambios porcentuales de caudal. La leyenda distingue horizontes y RCP. En ciertos meses de Perú y Ecuador aparecen aumentos superiores al 40 por ciento; otras combinaciones muestran reducciones.\n\nEl cálculo abarca más de 200 subcuencas: se completan datos con satélite e interpolación, SPOTPY organiza la calibración, VIC transforma las entradas en caudal y se propagan 21 modelos CMIP5.\n\nEl aporte es repetir consistentemente el ciclo regional. Las curvas son proyecciones condicionadas a esos datos, modelos y escenarios.",
+    script: "Los cuatro paneles representan Colombia, Bolivia, Perú y Ecuador. El eje horizontal recorre los meses y el vertical muestra cambios porcentuales de caudal; la leyenda distingue escenarios y horizontes. En algunos meses de Perú y Ecuador aparecen aumentos superiores al 40 por ciento, mientras otras combinaciones muestran reducciones.\n\nPara obtener esas curvas se procesaron más de 200 subcuencas. Los datos se completan con satélite e interpolación; SPOTPY organiza la calibración y VIC transforma las entradas en caudal. Después se propagan 21 modelos CMIP5.\n\nLa contribución operativa consiste en repetir consistentemente ese ciclo regional. La interpretación debe conservar su carácter de proyección condicionada a los datos, los modelos y los escenarios utilizados.",
     notes: "Los ejes muestran cambio porcentual del caudal mensual, no precipitación. El +40 % corresponde a determinados meses y escenarios de Perú/Ecuador. Automatización de la calibración no elimina la necesidad de validación hidrológica.",
     bullets: [
       'La escala territorial hizo inviable la calibración manual de los modelos hidrológicos.',
@@ -1112,9 +1112,9 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Leer el cambio estacional en los cuatro países y explicar qué automatización lo hizo posible.",
     visualGuide: ["Cuatro paneles por país","Meses en horizontal y cambio porcentual en vertical","Escenarios y horizontes de la leyenda"],
-    speechCues: ["meses","cambios porcentuales","40 por ciento","200 subcuencas","SPOTPY","VIC","21 modelos CMIP5","proyecciones condicionadas"],
+    speechCues: ["meses","cambios porcentuales","algunos meses","200 subcuencas","SPOTPY","VIC","21 modelos CMIP5","proyección condicionada"],
     transition: "Además del clima futuro, debemos comprobar cuánto cambia el diseño por el propio procedimiento de cálculo.",
-    transitionCue: "procedimiento de cálculo diferente"
+    transitionCue: "dos procedimientos"
   },
 
   {
@@ -1136,7 +1136,7 @@ export const slideLibrary: Slide[] = [
     pyhydraRole:'Escala la misma arquitectura desde una cuenca piloto hasta un encargo nacional con cientos de combinaciones climáticas.',
     pyhydraModules:['pyhydra.data_sources','pyhydra.climate','NEOPRENE','SFINCS'],
     processSteps:['73 estaciones','NEOPRENE + kriging','414 combinaciones','LEM + SFINCS','Capas de riesgo'],
-    script: "El mapa muestra precipitación por subcuencas en milímetros; no representa calados ni períodos de retorno.\n\nEl encargo abarca 52 cuencas y 1.464 puntos costeros. Se completaron 73 estaciones con NEOPRENE/STNSRP y se interpolaron campos mediante kriging universal a un kilómetro.\n\nEl informe combina 23 configuraciones GCM, dos SSP, tres variables y tres horizontes: 414 combinaciones climáticas documentadas, no 414 ejecuciones hidráulicas verificadas. La corrección de sesgo prepara entradas para LEM y SFINCS. La contribución es organizar fuentes, configuraciones y resultados con un procedimiento común a escala nacional.",
+    script: "El mapa de Panamá representa precipitación por subcuencas en milímetros. Es una entrada climática del análisis nacional. El encargo abarca 52 cuencas y 1.464 puntos costeros, con necesidades de organización y trazabilidad a gran escala.\n\nSe completaron 73 estaciones mediante NEOPRENE/STNSRP y se interpolaron campos con kriging universal a un kilómetro. Las 23 configuraciones GCM, dos SSP, tres variables y tres horizontes dan 414 combinaciones climáticas documentadas. Esa cifra no cuenta ejecuciones hidráulicas verificadas.\n\nLa corrección de sesgo prepara las entradas para LEM y SFINCS. La aportación es mantener un procedimiento común para organizar fuentes, configuraciones y resultados cuando el volumen de trabajo exige repetir numerosas operaciones.",
     notes: "El mapa es de precipitación, no de inundación. 414 = 23 GCM × 2 SSP × 3 variables × 3 horizontes, según Producto 3, pp. 3 y 29–30. No equivale a un registro comprobado de ejecuciones completadas ni a 414 simulaciones hidráulicas.",
     bullets: [
       '52 cuencas (hasta 13.400 km²) en ambas vertientes de Panamá, encargo del Ministerio de Ambiente y el BID.',
@@ -1147,9 +1147,9 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Leer el mapa como producto intermedio de datos y separar las magnitudes de escala.",
     visualGuide: ["Mapa y barra de precipitación","52 cuencas y 1.464 puntos: dominios de aplicación","414 combinaciones: dimensiones climáticas"],
-    speechCues: ["precipitación","52 cuencas","1.464 puntos costeros","73 estaciones","414 combinaciones climáticas","no 414 ejecuciones hidráulicas","procedimiento común"],
+    speechCues: ["precipitación","52 cuencas","1.464 puntos costeros","73 estaciones","414 combinaciones climáticas","procedimiento común","numerosas operaciones"],
     transition: "Con los casos revisados, podemos distinguir cómo se ha comunicado la investigación y cuál ha sido mi contribución personal.",
-    transitionCue: "qué se ha transferido"
+    transitionCue: "alcance de su transferencia"
   },
 
   {
@@ -1171,7 +1171,7 @@ export const slideLibrary: Slide[] = [
     pyhydraRole:'Transforma proyecciones climáticas en aportaciones y fichas de decisión para cualquier punto de la red hídrica española.',
     pyhydraModules:['pyhydra.data_sources','pyhydra.climate','SDM','red neuronal'],
     processSteps:['SPAIN02 + SIMPA','PCA 95 %','ANN de aportaciones','SDM climático','Sequía y fiabilidad'],
-    script: "Esta figura utiliza la tabla publicada del Embalse 2, para 2071–2100. A la izquierda vemos medias mensuales en hectómetros cúbicos por mes: gris para la referencia histórica, verde para RCP4.5 y naranja para RCP8.5.\n\nA la derecha están sus cambios porcentuales: cero significa sin cambio. Julio pasa de 0,56 a 0,13 con RCP8.5, aproximadamente un 77 por ciento menos. Hay que leer juntos el cambio relativo y el volumen inicial.\n\nSon medias del conjunto, no cuantiles ni envolventes de incertidumbre. SIMPCCe conecta clima, corrección de sesgo y aportaciones para conservar este detalle estacional en la gestión.",
+    script: "Esta figura permite conservar el detalle estacional que perderíamos con una media anual. Utiliza la tabla publicada del Embalse 2 para 2071–2100. A la izquierda están las medias mensuales en hectómetros cúbicos: la referencia histórica en gris, RCP4.5 en verde y RCP8.5 en naranja.\n\nA la derecha se representan sus cambios porcentuales. En julio, RCP8.5 pasa de 0,56 a 0,13 hectómetros cúbicos mensuales, aproximadamente un 77 por ciento menos. El volumen inicial ayuda a interpretar la magnitud de ese cambio relativo.\n\nSon medias del conjunto, sin representar cuantiles ni una envolvente de incertidumbre. SIMPCCe conecta clima, corrección de sesgo y aportaciones para trasladar esta información mensual a la gestión del embalse.",
     notes: "Fuente numérica: guía Fundación Canal (2022), tabla 25, p. 118 (página 119 del PDF). Embalse 2, columnas Hist Mean y RCP4.5/RCP8.5 2071–2100 Mean. El cambio es 100 × (futuro/histórico − 1), calculado con los valores redondeados de la tabla. No identificar esta figura como ampliación de la ficha anterior ni confundir media del conjunto con cuantiles o envolvente intermodelo. La captura original de ejemplo se conserva en los anexos.",
     bullets: [
       'Herramienta nacional aplicable a cualquier punto de la red hidrográfica española (guía metodológica Fundación Canal).',
@@ -1182,7 +1182,7 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Leer la estacionalidad en una figura vectorial trazable a valores publicados, distinguiendo volumen y cambio relativo.",
     visualGuide: ["Izquierda: medias históricas y futuras, en hm³/mes","Derecha: cambios porcentuales de esas mismas medias","Julio como ejemplo de volumen inicial y reducción relativa"],
-    speechCues: ["Embalse 2","2071–2100","medias mensuales","cambios porcentuales","0,56 a 0,13","77 por ciento menos","no cuantiles","detalle estacional"],
+    speechCues: ["detalle estacional","Embalse 2","medias mensuales","cambios porcentuales","0,56 a 0,13","77 por ciento menos","medias del conjunto","gestión del embalse"],
     transition: "Panamá lleva esa exigencia de repetir un flujo con procedencia controlada a un encargo de escala nacional.",
     transitionCue: "escala nacional"
   },
@@ -1201,14 +1201,14 @@ export const slideLibrary: Slide[] = [
     pyhydraRole:'Demuestra por qué la frecuencia debe propagarse por toda la cadena y evaluarse sobre el impacto, no heredarse de la lluvia.',
     pyhydraModules:['pyhydra.climate','pyhydra.climate.bias_correction','cópulas','MaxDiss + k-NN','Iber'],
     processSteps:['EURO-CORDEX','Sesgo + cópulas','10.000 años','MaxDiss + Iber','IDF ↔ estocástico'],
-    script: "En la figura, el mapa izquierdo representa diferencias de calado T100 para 2041–2070, RCP4.5. La diferencia no es uniforme espacialmente.\n\nLos recuadros añaden otro resultado: caudal T100 de 2011–2040, también RCP4.5. IDF da 208,8 y la cadena estocástica 278,5 metros cúbicos por segundo: un 33,4 por ciento más respecto a IDF. Ese porcentaje no corrige uniformemente el mapa.\n\nSe generaron 10.000 años y seleccionaron 200 casos para Iber mediante MaxDiss, reconstruyendo el resto con k-NN. La diferencia muestra sensibilidad al procedimiento; un resultado mayor no demuestra por sí solo mayor exactitud.",
+    script: "Este estudio compara el procedimiento convencional basado en IDF con una cadena estocástica. El mapa muestra diferencias de calado T100 para 2041–2070, RCP4.5, que cambian espacialmente.\n\nLos recuadros incluyen una comparación adicional de caudal T100 en 2011–2040. Para RCP4.5, IDF da 208,8 y el enfoque estocástico 278,5 metros cúbicos por segundo: un 33,4 por ciento más respecto a IDF. Ese porcentaje corresponde al caudal y no se traslada uniformemente al mapa de calados.\n\nEl cálculo utilizó 10.000 años sintéticos y 200 casos seleccionados con MaxDiss para Iber, reconstruyendo el resto mediante k-NN. La diferencia evidencia sensibilidad al procedimiento; demostrar mayor exactitud requiere contrastarla con observaciones.",
     notes: "Fuente contrastada: memoria definitiva, tabla 7.6, p. 114 (página 144 del PDF), y §8.6, p. 130. El ejemplo T100 RCP4.5 2011–2040 es 208,8 → 278,5 m³/s: +33,4 % respecto a IDF; tomando como base el estocástico, IDF es un 25,0 % menor. Las 24 comparaciones de la tabla dan alrededor del 33 % de incremento, sin reconstruir los extremos del rango narrado 30–37 %. Ese rango requiere el artículo original. El mapa corresponde a 2041–2070; no confundir horizontes ni variables.",
     bullets: ["Ejemplo T100 (2011–2040, RCP4.5): 208,8 → 278,5 m³/s, +33,4 % respecto a IDF.","El mapa representa diferencias de calado para 2041–2070.","El porcentaje de un caudal no es un factor corrector uniforme del mapa.","La diferencia entre métodos no prueba por sí sola mayor exactitud."],
     speakerGoal: "Distinguir la comparación espacial de calados de la comparación numérica de caudales.",
     visualGuide: ["Mapa: diferencia de calado en T100, 2041–2070 y RCP4.5","Cifras de caudal como comparación adicional","Diferencia entre métodos y verdad observada"],
-    speechCues: ["diferencias de calado","2041–2070","2011–2040","208,8","278,5","33,4 por ciento","no corrige uniformemente","mayor exactitud"],
+    speechCues: ["IDF","diferencias de calado","2041–2070","2011–2040","208,8","278,5","33,4 por ciento","sensibilidad al procedimiento"],
     transition: "La transferencia también debe funcionar cuando la decisión no es protegerse de una avenida, sino gestionar aportaciones escasas.",
-    transitionCue: "aportaciones disponibles"
+    transitionCue: "gestión de embalses"
   },
 
   {
@@ -1217,7 +1217,7 @@ export const slideLibrary: Slide[] = [
     title: 'Qué demuestra el conjunto de casos',
     subtitle: 'La modelación estocástica es el hilo que conecta datos, clima, física e impacto',
     estimatedMinutes: 2,
-    script: "Después de recorrer los casos, este gráfico permite valorar su conjunto. El eje espacial va desde una infraestructura hasta varios países. Los símbolos distinguen las dimensiones de la aplicación y los casos que hoy tienen notebooks reproducibles en HYDRA: Besaya, Calle 30 y Valencia.\n\nLa variedad de escalas no demuestra por sí sola que todo esté resuelto. Sí permite examinar qué bloques se reutilizan y qué adaptaciones exige cada problema. Los demás casos conservan su evidencia en publicaciones y proyectos. Esta distinción fija el alcance de la transferencia que puede comprobarse hoy.",
+    script: "Este gráfico reúne las aplicaciones para interpretar su alcance conjunto. El eje espacial recorre desde una infraestructura hasta varios países. Los símbolos distinguen las dimensiones abordadas y señalan los tres casos que hoy pueden reproducirse mediante notebooks en HYDRA: Besaya, Calle 30 y Valencia.\n\nLa comparación permite reconocer los bloques que se reutilizan y las adaptaciones que necesita cada problema. Los demás casos conservan sus evidencias en publicaciones y proyectos. Su diversidad documenta la transferencia de componentes entre contextos, con distintos grados de integración y disponibilidad actual.\n\nEse es el alcance de la síntesis: identificar qué capacidad se ha demostrado y dónde debe continuar la consolidación del sistema.",
     notes: 'Esta es la diapositiva de síntesis del bloque. Hacer una pausa antes de presentar la producción científica; después se delimita la autoría y se cierran las hipótesis. No enumerar otra vez los nueve casos: responder a “¿qué aprendemos de todos ellos juntos?”.',
     bullets: [
       'La lluvia de diseño es una entrada; el riesgo se decide con la distribución del impacto.',
@@ -1227,7 +1227,7 @@ export const slideLibrary: Slide[] = [
     backup: false,
     speakerGoal: "Sintetizar después de los resultados qué transferencia se ha demostrado y qué disponibilidad tiene cada caso.",
     visualGuide: ["Escala espacial del gráfico","Dimensiones de aplicación","Casos con notebooks actuales y casos documentados"],
-    speechCues: ["conjunto","infraestructura hasta varios países","Besaya, Calle 30 y Valencia","bloques se reutilizan","alcance de la transferencia"],
+    speechCues: ["alcance conjunto","Besaya, Calle 30 y Valencia","bloques que se reutilizan","distintos grados","capacidad se ha demostrado"],
     transitionCue: "producción científica"
   },
 
@@ -1244,7 +1244,7 @@ export const slideLibrary: Slide[] = [
       { value:'5 comunicaciones', label:'presentadas entre 2023 y 2025', implication:'VII JIA, HIC 2024, InterJIA 2024 y dos trabajos en VIII JIA' },
       { value:'2 DOI', label:'software científico publicado', implication:'pyhydra e HYDRA preservados y versionados en Zenodo' },
     ],
-    script: "Los recuadros distinguen estados: dos artículos publicados en Ingeniería del Agua, Calle 30 y SIMPCCe; dos manuscritos enviados, Tanganica y rugosidad del Besaya; cinco comunicaciones; y dos DOI de software para pyhydra e HYDRA.\n\nUn envío no equivale a una aceptación. Las publicaciones comunican resultados; el software archivado permite localizar y citar una versión concreta. Son productos complementarios de la investigación y de su transferencia.",
+    script: "La producción científica acompaña el desarrollo y la comunicación de estas aplicaciones. Los recuadros distinguen dos artículos publicados en Ingeniería del Agua, Calle 30 y SIMPCCe; dos manuscritos enviados, sobre Tanganica y rugosidad del Besaya; cinco comunicaciones y dos DOI de software, correspondientes a pyhydra e HYDRA.\n\nEl estado de cada trabajo es relevante: los manuscritos enviados permanecen en evaluación. Las publicaciones y comunicaciones presentan los resultados y sus métodos, mientras el archivo del software permite localizar y citar una versión concreta del desarrollo.\n\nEn conjunto, estos productos conservan distintas partes de la investigación y facilitan su consulta y continuidad, con la responsabilidad específica que explicaré a continuación.",
     notes: "Distinguir artículos publicados, envíos, comunicaciones y DOI. Mantener el estado documental de la versión de la memoria; no anticipar aceptaciones.",
     bullets: [
       'Infraestructura urbana: cadena estocástica completa con transformación lluvia–caudal y modelización 1D.',
@@ -1254,9 +1254,9 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Distinguir publicación, comunicación, evaluación y software citable.",
     visualGuide: ["Dos artículos publicados","Dos manuscritos enviados y cinco comunicaciones","Dos DOI de software"],
-    speechCues: ["dos artículos publicados","dos manuscritos enviados","cinco comunicaciones","dos DOI","no equivale a una aceptación","versión concreta"],
+    speechCues: ["producción científica","dos artículos publicados","dos manuscritos enviados","cinco comunicaciones","dos DOI","en evaluación","versión concreta"],
     transition: "La existencia de esos productos no explica por sí sola mi papel; la siguiente tabla lo delimita.",
-    transitionCue: "mi responsabilidad concreta"
+    transitionCue: "mi contribución"
   },
 
   {
@@ -1266,7 +1266,7 @@ export const slideLibrary: Slide[] = [
     subtitle: "Métodos aplicados, trabajo colaborativo y software propio",
     estimatedMinutes: 2,
     type: 'normal',
-    script: "La tabla separa trabajos liderados, colaboraciones y software. En los primeros, mi responsabilidad incluye metodología, simulación, análisis y redacción. Las colaboraciones delimitan aportaciones a calibración, clima, extremos y desarrollo.\n\nEn pyhydra e HYDRA participo como primer autor en diseño, desarrollo, documentación y publicación. La memoria recoge siete trabajos liderados y cuatro colaboraciones específicas. El trabajo del grupo sobre cópulas vine se cita como extensión, sin autoría mía. La tabla completa por publicación queda en reserva.",
+    script: "La tabla distingue tres ámbitos de mi contribución: los trabajos liderados, las colaboraciones y el software. En los primeros he asumido responsabilidades de metodología, simulación, análisis y redacción. En las colaboraciones, mi aportación se delimita a tareas de calibración, clima, extremos o desarrollo.\n\nEn pyhydra e HYDRA participo como primer autor en diseño, desarrollo, documentación y publicación. La memoria recoge siete trabajos liderados y cuatro colaboraciones específicas. El trabajo del grupo sobre cópulas vine se cita como extensión y no corresponde a mi autoría.\n\nEsta separación permite valorar la contribución doctoral dentro de un trabajo colectivo. La relación completa por publicación está disponible en los anexos para su consulta.",
     notes: "El detalle por publicación queda en reserva. La distinción de autoría debe mantenerse aunque se resuma el texto oral. El trabajo de cópulas vine citado como extensión no tiene autoría del doctorando.",
     mathBlock: "<table class=\"thesis-matrix authorship-matrix\"><thead><tr><th>Responsabilidad</th><th>Aportación</th></tr></thead><tbody><tr><th>Trabajos liderados</th><td>Metodología, simulación, análisis y redacción</td></tr><tr><th>Colaboraciones</th><td>Calibración, clima, extremos y software, con rol delimitado</td></tr><tr><th>pyhydra e HYDRA</th><td>Diseño, desarrollo, documentación y publicación con rol de primer autor</td></tr></tbody></table><p class=\"thesis-matrix-legend\">El detalle por publicación está disponible en los anexos.</p>",
     bullets: [
@@ -1274,9 +1274,9 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Delimitar la responsabilidad personal con tres filas legibles.",
     visualGuide: ["Trabajos liderados","Colaboraciones con aportación delimitada","Diseño y desarrollo del software"],
-    speechCues: ["trabajos liderados","colaboraciones","primer autor","siete trabajos","cuatro colaboraciones","sin autoría mía"],
+    speechCues: ["trabajos liderados","colaboraciones","software","primer autor","siete trabajos","cuatro colaboraciones","trabajo colectivo"],
     transition: "Con las responsabilidades delimitadas, podemos cerrar las tres hipótesis usando la evidencia presentada.",
-    transitionCue: "qué falta comprobar"
+    transitionCue: "hipótesis y sus evidencias"
   },
 
   // ════════════════════════════════════════════════════
@@ -1290,12 +1290,12 @@ export const slideLibrary: Slide[] = [
     subtitle: 'Evidencia acumulada, con el alcance de cada una',
     estimatedMinutes: 3,
     type: 'normal',
-    script: "La figura cierra las hipótesis con evidencia y límites. Arriba, H1: las campañas muestran capacidad operativa, pero no todas las etapas históricas estaban automatizadas y falta medir el ahorro frente al trabajo manual.\n\nEn el centro, H2: reutilizamos componentes en nueve casos, aunque solo tres tienen notebooks actuales. La reducción de barreras requiere evaluar su uso por otros equipos.\n\nAbajo, H3: cambiar procedimiento o muestra modifica las estimaciones. Es evidencia de sensibilidad metodológica y estadística. Afirmar una representación más consistente exige comparaciones sistemáticas y contraste observacional; una estimación mayor no es por sí sola más exacta.",
+    script: "Vuelvo a las tres hipótesis para cerrar la relación entre objetivos y evidencias. En H1, las campañas muestran capacidad operativa; falta medir de forma sistemática el ahorro frente al trabajo manual, y la automatización histórica tiene distinto alcance según el caso.\n\nEn H2, la reutilización entre aplicaciones respalda la modularidad. Besaya, Calle 30 y Valencia tienen notebooks actuales; evaluar el uso por otros equipos permitirá contrastar la reducción de barreras.\n\nEn H3, los cambios de método y muestra muestran sensibilidad, y las bandas expresan incertidumbre. Para demostrar una representación más consistente hacen falta comparaciones sistemáticas y contraste observacional. Este balance precisa qué sostiene cada hipótesis y qué parte debe comprobarse todavía.",
     notes: "La formulación de H1 contempla eficiencia, pero esta defensa acredita principalmente viabilidad operativa. H2 tiene tres casos con notebooks actuales. H3 muestra sensibilidad e incertidumbre, no una demostración general de exactitud superior.",
     bullets: ["H1: viabilidad demostrada; ahorro de tiempo pendiente de medir.","H2: reutilización entre aplicaciones; tres casos con notebooks reproducibles hoy.","H3: sensibilidad del diseño a métodos y datos; mayor valor no implica mayor exactitud."],
     speakerGoal: "Cerrar cada hipótesis con evidencia y un límite explícito.",
     visualGuide: ["H1: campañas de ejecuciones en la franja superior","H2: matriz central de componentes reutilizados","H3: comparaciones numéricas inferiores"],
-    speechCues: ["H1","capacidad operativa","medir el ahorro","H2","otros equipos","H3","sensibilidad metodológica y estadística","contraste observacional"],
+    speechCues: ["tres hipótesis","H1","ahorro","H2","otros equipos","H3","contraste observacional","qué parte debe comprobarse"],
     transition: "Ese cierre permite precisar la contribución doctoral sin confundir métodos previos, desarrollos propios y conocimiento aportado.",
     transitionCue: "contribución original"
   },
@@ -1307,7 +1307,7 @@ export const slideLibrary: Slide[] = [
     subtitle: 'Integración extremo a extremo, reproducibilidad sistemática y transferencia demostrada',
     estimatedMinutes: 3,
     type: 'normal',
-    script: "Los niveles de la figura separan procedencia y contribución. En la base están los métodos previos: extremos, cópulas, generadores y motores físicos. En el centro, los desarrollos de la tesis: submódulos, adaptadores y flujos documentados. Arriba, su integración reproducible y transferible.\n\nLos casos dan contenido a esa integración: examinar cómo influyen entradas y modelos, estimar frecuencia sobre el impacto y reutilizar componentes a otra escala. La originalidad es hacer operativa esa cadena, conservando su trazabilidad y declarando sus límites.",
+    script: "La figura distingue la procedencia de los componentes y la contribución que resulta de conectarlos. En la base están los métodos científicos previos: análisis de extremos, cópulas, generadores y motores físicos. En el nivel central se sitúan los desarrollos de la tesis: submódulos, adaptadores y flujos documentados. Arriba aparece su integración reproducible y transferible.\n\nLos casos dan contenido a esa integración: permiten examinar la influencia de entradas y modelos, estimar frecuencia sobre el impacto y reutilizar componentes en otra escala. La contribución original consiste en hacer operativa esa cadena, conservando la trazabilidad de sus decisiones y delimitando las condiciones en las que pueden interpretarse los resultados.",
     notes: "Base científica previa → desarrollo de componentes → integración reproducible y transferencia. Explicar esta jerarquía como conclusión de los casos.",
     results: [
       { value:'Extremo a extremo', label:'integración funcional', implication:'datos, estadística, escenarios, modelos físicos e impacto' },
@@ -1322,9 +1322,9 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Cerrar la tesis distinguiendo tres niveles de contribución.",
     visualGuide: ["Nivel inferior: conocimiento previo","Nivel intermedio: desarrollo de la tesis","Nivel superior: contribución original"],
-    speechCues: ["métodos previos","desarrollos de la tesis","integración reproducible y transferible","frecuencia sobre el impacto","originalidad","trazabilidad"],
+    speechCues: ["métodos científicos previos","desarrollos de la tesis","integración reproducible y transferible","frecuencia sobre el impacto","contribución original","trazabilidad"],
     transition: "Los límites se localizan precisamente en las etapas de la cadena que hemos recorrido.",
-    transitionCue: "criterio verificable"
+    transitionCue: "comprobaciones y desarrollos"
   },
 
   {
@@ -1334,7 +1334,7 @@ export const slideLibrary: Slide[] = [
     subtitle: 'La automatización organiza la incertidumbre; no elimina los límites de los datos ni de los modelos',
     estimatedMinutes: 2,
     type: 'normal',
-    script: "Las columnas sitúan límites en cada etapa: series cortas y calidad desigual; hipótesis de los generadores; licencias, versiones y coste de los motores; y contraste observacional del impacto todavía insuficiente.\n\nDebajo se proponen desarrollos: control de calidad, incertidumbre explícita, generación condicionada al clima y emuladores o ejecución distribuida.\n\nPriorizaría medir el acierto de los impactos y el ahorro real de trabajo. La plataforma facilita repetir y auditar; justificar las entradas, las hipótesis y las decisiones sigue siendo responsabilidad del equipo que realiza el estudio.",
+    script: "Las limitaciones se distribuyen a lo largo de la cadena. Las series pueden ser cortas o de calidad desigual; los generadores dependen de sus hipótesis; los motores tienen requisitos de licencia, versión y coste; y el contraste observacional del impacto sigue siendo insuficiente.\n\nLas propuestas inferiores responden a esas dificultades: reforzar el control de calidad, expresar la incertidumbre, condicionar la generación al clima y estudiar emuladores o ejecución distribuida. Priorizaría dos comprobaciones: medir el acierto de los impactos y cuantificar el ahorro real de trabajo.\n\nHYDRA facilita repetir y auditar el análisis. La selección de entradas y modelos y la justificación de las decisiones continúan requiriendo el criterio del equipo responsable.",
     notes: "Prioridad propuesta: validación observacional del impacto y medida del ahorro. Los intervalos representan incertidumbres consideradas y no garantizan cubrir todas las fuentes posibles.",
     bullets: [
       'Datos: las series cortas y los extremos raros mantienen una incertidumbre irreducible en la cola.',
@@ -1346,7 +1346,7 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Priorizar los límites y relacionarlos con desarrollos verificables.",
     visualGuide: ["Fila superior: etapas de la cadena","Limitación y siguiente etapa en cada columna","Prioridad: contraste observacional y ahorro medido"],
-    speechCues: ["series cortas","contraste observacional","generación condicionada al clima","acierto de los impactos","ahorro real","responsabilidad del equipo"],
+    speechCues: ["limitaciones","contraste observacional","control de calidad","generación al clima","acierto de los impactos","ahorro real","criterio del equipo responsable"],
     transition: "Ese es el alcance del trabajo y la continuidad que propongo. Quiero cerrar agradeciendo a quienes lo hicieron posible.",
     transitionCue: "agradecer"
   },
@@ -1371,7 +1371,7 @@ export const slideLibrary: Slide[] = [
     visualGuide: ["Familia, director y tutor","IHCantabria y Álvaro Galán"],
     speechCues: ["mi familia","Manuel del Jesus Peñil","César Álvarez Díaz","IHCantabria","Álvaro Galán"],
     transition: "Termino con la respuesta a la pregunta que abrió la defensa.",
-    transitionCue: "respuesta que resume el trabajo"
+    transitionCue: "idea central"
   },
 
   // ════════════════════════════════════════════════════
@@ -1385,7 +1385,7 @@ export const slideLibrary: Slide[] = [
     subtitle: 'HYDRA — Software libre y reproducible al servicio de la sociedad',
     estimatedMinutes: 1,
     type: 'title',
-    script: "La respuesta de la tesis es que podemos conectar datos, métodos y modelos en una cadena reproducible para estimar la frecuencia del impacto bajo incertidumbre. Los casos muestran su utilidad y también delimitan lo que queda por validar.\n\nLos repositorios y las versiones citables quedan disponibles para continuar ese trabajo. Muchas gracias por su atención. Quedo a disposición del tribunal para sus preguntas.",
+    script: "Para terminar, recupero la idea que ha guiado la defensa. La tesis desarrolla una cadena reproducible que conecta datos, métodos y modelos para estimar la frecuencia del impacto bajo incertidumbre hidrológica y climática. Las aplicaciones muestran su utilidad en problemas de ingeniería y permiten precisar los límites que he expuesto.\n\nLos repositorios y las versiones citables de pyhydra e HYDRA quedan disponibles para continuar esa investigación y revisar sus desarrollos. Con esta síntesis concluyo la exposición del trabajo y quedo a disposición del tribunal para las aclaraciones y preguntas que considere oportunas.",
     notes: "Terminar la respuesta científica, agradecer y ceder la palabra. Los enlaces quedan visibles durante las preguntas.",
     bullets: [
       'GitHub Librería: github.com/navass11/pyhydra (Licencia MIT)',
@@ -1396,7 +1396,7 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Dar una conclusión recordable y ceder la palabra.",
     visualGuide: ["Mensaje final","Repositorios y DOI para acceder al trabajo"],
-    speechCues: ["frecuencia del impacto bajo incertidumbre","lo que queda por validar","Muchas gracias","preguntas"],
+    speechCues: ["cadena reproducible","frecuencia del impacto","incertidumbre hidrológica y climática","problemas de ingeniería","límites","aclaraciones y preguntas"],
     transition: "Muchas gracias. Cedo la palabra al tribunal.",
     transitionCue: "Cedo la palabra al tribunal"
   },
@@ -1416,7 +1416,7 @@ export const slideLibrary: Slide[] = [
     type: 'figure',
     figure: 'fig_problematica_inundaciones.png', figurePosition: 'full',
     figureCaption: "Ilustración conceptual: mecanismos fluviales, urbanos y costeros y sistemas expuestos. No representa un episodio observado.",
-    script: "Esta ilustración conceptual reúne una avenida fluvial a la izquierda, inundación urbana en el centro e influencia costera a la derecha. No representa un episodio observado.\n\nEn el mismo dibujo aparecen personas, viviendas e infraestructuras. Para protegerlas interesa saber dónde llegará el agua, con qué calado y con qué frecuencia. La lluvia es una entrada; sus consecuencias dependen también de la cuenca, del sistema hidráulico y de la exposición. La tesis estudia esa conexión entre el forzamiento y sus consecuencias.",
+    script: "Esta ilustración reúne tres situaciones que pueden coincidir en un problema de inundación: una avenida fluvial, la acumulación de agua en la ciudad y la influencia costera. Es una representación conceptual, que nos ayuda a situar la pregunta de ingeniería.\n\nEn el dibujo también aparecen las personas, las viviendas y las infraestructuras expuestas. Para valorar su seguridad necesitamos conocer dónde puede llegar el agua, qué calado puede alcanzar y con qué frecuencia puede ocurrir. La precipitación inicia una parte del proceso, pero la cuenca y el sistema hidráulico transforman esa entrada. La tesis se ocupa de conectar esas etapas para estimar las consecuencias sobre una variable útil para decidir.",
     notes: "La imagen es conceptual. Señalar los sistemas expuestos y formular la pregunta de decisión. No presentarla como fotografía documental de un evento.",
     bullets: [
       'La misma precipitación puede producir consecuencias distintas según el estado de la cuenca y la exposición.',
@@ -1424,9 +1424,9 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Situar la variable sobre la que se toma una decisión.",
     visualGuide: ["Ilustración conceptual: río, ciudad y costa","Edificios, movilidad e infraestructuras expuestas"],
-    speechCues: ["ilustración conceptual","no representa un episodio observado","con qué calado","con qué frecuencia","exposición","forzamiento y sus consecuencias"],
+    speechCues: ["ilustración","pregunta de ingeniería","qué calado","con qué frecuencia","transforman esa entrada","variable útil para decidir"],
     transition: "Veamos cómo recorre esa distancia el procedimiento de cálculo habitual.",
-    transitionCue: "condiciones pueden cambiar"
+    transitionCue: "condiciones"
   },
 
   {
@@ -1461,7 +1461,7 @@ export const slideLibrary: Slide[] = [
     subtitle: 'La generación de escenarios solo adquiere valor cuando se conecta con datos, clima y modelos físicos',
     estimatedMinutes: 1,
     type: 'normal',
-    script: "El dibujo comienza con una serie observada y genera escenarios que atraviesan los modelos físicos. Cada ejecución produce una respuesta hidráulica.\n\nEl cambio decisivo está al final: un mapa de calado describe un escenario; la curva de frecuencia reúne muchos resultados y estima la probabilidad de superar un calado. La banda muestra la incertidumbre de esa estimación.\n\nLos años sintéticos no son nuevas observaciones. La validez depende de las hipótesis, los diagnósticos y los modelos utilizados en cada etapa.",
+    script: "La figura recorre la cadena necesaria para una modelación estocástica. A partir de una serie se generan escenarios plausibles, que se transforman mediante los modelos físicos en respuestas hidráulicas. Un mapa de calado representa el resultado de una de esas ejecuciones.\n\nAl reunir muchos resultados podemos construir la curva de frecuencia situada al final y estimar la probabilidad de superar un calado. La banda expresa la incertidumbre de esa estimación. Así conectamos los escenarios con la variable de decisión.\n\nLos años sintéticos amplían las realizaciones disponibles bajo unas hipótesis; no añaden nuevas observaciones. Por eso debemos revisar los diagnósticos del generador y la adecuación de los modelos antes de interpretar la curva.",
     notes: "Los años sintéticos son realizaciones del modelo. La curva final está condicionada a las hipótesis del generador y de los motores.",
     bullets: [
       'Representar escenarios plausibles exige datos y relaciones de dependencia.',
@@ -1470,9 +1470,9 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Explicar la cadena estocástica antes de comparar arquitecturas.",
     visualGuide: ["Serie corta de partida","Población de escenarios","Mapa por escenario y curva final"],
-    speechCues: ["serie observada","curva de frecuencia","probabilidad de superar un calado","incertidumbre","no son nuevas observaciones"],
+    speechCues: ["escenarios plausibles","respuestas hidráulicas","curva de frecuencia","probabilidad de superar un calado","incertidumbre","no añaden nuevas observaciones"],
     transition: "La cuestión es qué parte de esta cadena cubren conjuntamente los marcos disponibles.",
-    transitionCue: "comparar qué cubren"
+    transitionCue: "otros marcos"
   },
 
   {
@@ -1613,7 +1613,8 @@ const presentationRank = (slide: Slide) => presentationOrder.indexOf(slide.id);
 
 // One pacing estimate feeds the deck, presenter and rehearsal guide.
 function pacingMinutes(slide: Slide, transition = slide.transition ?? ''): number {
-  const words = (slide.script + ' ' + transition).trim().split(/\s+/).length;
+  const spokenWords = (text: string) => (text + ' ' + transition).trim().split(/\s+/).length;
+  const words = Math.max(spokenWords(slide.script), spokenWords(slide.offlineScript ?? slide.script));
   // Voice at 115 words/min, ~5 s per change, ~7 s to read a figure,
   // plus the GEV demo and explicitly timed orientation/result visits; rehearse to measure reality.
   return Math.round((words / 115 + 0.08 + (slide.figure ? 0.12 : 0) + (slide.webMode === 'demo' ? 1.2 : slide.id === 5 ? 0.8 : slide.id === 32 ? 0.5 : slide.id === 34 ? 0.35 : 0)) * 10) / 10;
@@ -1625,322 +1626,322 @@ const spokenBridges = new Map<number, { nextId: number; text: string }>([
     1,
     {
       "nextId": 4,
-      "text": "Para responder a ese problema, seguiré este recorrido: desde la motivación hasta las evidencias y los límites de la propuesta."
+      "text": "Presentaré el problema, los desarrollos y sus evidencias siguiendo esta estructura."
     }
   ],
   [
     4,
     {
       "nextId": 44,
-      "text": "El punto de partida es la decisión de ingeniería: qué consecuencias de una inundación necesitamos estimar para poder actuar."
+      "text": "Comenzaré por las consecuencias que necesitamos estimar para decidir ante una inundación."
     }
   ],
   [
     44,
     {
       "nextId": 4.5,
-      "text": "Estas consecuencias dependen de las condiciones de la cuenca y de lo que hay expuesto. Veamos por qué esas condiciones pueden cambiar."
+      "text": "La respuesta depende también de unas condiciones que pueden cambiar."
     }
   ],
   [
     4.5,
     {
       "nextId": 2,
-      "text": "Responder a esas condiciones exige concretar el alcance del trabajo. El título reúne las cuatro ideas que lo delimitan."
+      "text": "Ante esas condiciones, el título concreta el alcance de la investigación."
     }
   ],
   [
     2,
     {
       "nextId": 3,
-      "text": "Esa definición se construyó a partir de un problema real. El primer paso fue el trabajo del Besaya."
+      "text": "El origen de este planteamiento está en el trabajo del Besaya."
     }
   ],
   [
     3,
     {
       "nextId": 5.5,
-      "text": "La primera aplicación reveló la dificultad de conectar y repetir los cálculos. Para situarla, veamos cómo se construye habitualmente una inundación de diseño."
+      "text": "Para situar aquella dificultad, veamos cómo se estima habitualmente una inundación."
     }
   ],
   [
     5.5,
     {
       "nextId": 6,
-      "text": "La cadena transforma una entrada en una respuesta física. La siguiente figura muestra por qué la misma lluvia puede producir respuestas diferentes."
+      "text": "La siguiente figura muestra cómo una misma lluvia admite respuestas diferentes."
     }
   ],
   [
     6,
     {
       "nextId": 8,
-      "text": "Si la respuesta depende de esa combinación de condiciones, necesitamos una cadena que conserve su variabilidad. De ahí nace la pregunta doctoral."
+      "text": "Esa variabilidad de la respuesta conduce a la pregunta doctoral."
     }
   ],
   [
     8,
     {
       "nextId": 7,
-      "text": "La pregunta fija lo que queremos resolver. Las hipótesis expresan qué esperamos conseguir al integrar y automatizar la cadena."
+      "text": "La pregunta se desarrolla en las tres hipótesis de la memoria."
     }
   ],
   [
     7,
     {
       "nextId": 8.5,
-      "text": "Para contrastar esas hipótesis hay que concretar el trabajo a realizar. El objetivo general se desarrolla en cuatro objetivos específicos."
+      "text": "Para contrastarlas, el trabajo se organiza mediante los siguientes objetivos."
     }
   ],
   [
     8.5,
     {
       "nextId": 4.6,
-      "text": "Los objetivos delimitan los desarrollos. Su valor conjunto se resume en tres compromisos: integración, reproducibilidad y transferencia."
+      "text": "Su valor conjunto se resume en tres aportaciones que orientan el desarrollo."
     }
   ],
   [
     4.6,
     {
       "nextId": 9,
-      "text": "Esos compromisos responden a dificultades encontradas durante la investigación. La cronología muestra cómo se fue ampliando el problema inicial."
+      "text": "Estas necesidades fueron apareciendo a lo largo del recorrido investigador."
     }
   ],
   [
     9,
     {
       "nextId": 46,
-      "text": "La evolución reúne datos, escenarios y motores distintos. Ese recorrido permite precisar qué debe cubrir una cadena estocástica completa."
+      "text": "Ese recorrido permite precisar qué necesita una cadena estocástica completa."
     }
   ],
   [
     46,
     {
       "nextId": 10,
-      "text": "Con esas necesidades definidas, podemos comparar qué cubren conjuntamente los marcos existentes y dónde queda la brecha que aborda la tesis."
+      "text": "Podemos ahora comparar esas necesidades con la cobertura de otros marcos."
     }
   ],
   [
     10,
     {
       "nextId": 11,
-      "text": "La brecha requiere coordinar el cálculo, la ejecución y el acceso. La arquitectura asigna una responsabilidad a cada uno de esos niveles."
+      "text": "La arquitectura de HYDRA organiza las responsabilidades para cubrir esa combinación."
     }
   ],
   [
     11,
     {
       "nextId": 12,
-      "text": "La arquitectura distingue responsabilidades. Su despliegue debe conservar además el entorno y las condiciones necesarias para repetir un cálculo en otro equipo."
+      "text": "Veamos cómo se conserva y despliega ese entorno de cálculo."
     }
   ],
   [
     12,
     {
       "nextId": 5,
-      "text": "Ese despliegue sostiene una plataforma utilizable. Entramos ahora por primera vez en HYDRA para reconocer cómo se accede al trabajo."
+      "text": "Entramos ahora por primera vez en la plataforma HYDRA."
     }
   ],
   [
     5,
     {
       "nextId": 12.6,
-      "text": "La portada reúne los accesos. Dentro de ellos, el núcleo científico se organiza en tres bloques que recorren la cadena de análisis."
+      "text": "Dentro de esos accesos, el núcleo se organiza en tres bloques."
     }
   ],
   [
     12.6,
     {
       "nextId": 13,
-      "text": "El primer bloque prepara las entradas. La dificultad comienza en sus fuentes, que tienen coberturas, formatos y limitaciones diferentes."
+      "text": "Comenzaré por el bloque de datos y sus fuentes."
     }
   ],
   [
     13,
     {
       "nextId": 14,
-      "text": "Con las series identificadas y revisadas, podemos estimar la frecuencia de sus valores extremos y la incertidumbre de esa estimación."
+      "text": "Una vez revisadas las series, podemos estudiar la frecuencia de sus extremos."
     }
   ],
   [
     14,
     {
       "nextId": 15,
-      "text": "Una distribución individual no describe cómo coinciden varias variables. Las cópulas permiten incorporar esa dependencia al análisis de extremos."
+      "text": "Las cópulas añaden la dependencia entre variables a sus distribuciones individuales."
     }
   ],
   [
     15,
     {
       "nextId": 16,
-      "text": "Las distribuciones y la dependencia caracterizan los eventos. El siguiente paso es generar realizaciones que conserven las propiedades que necesitamos representar."
+      "text": "Esas propiedades permiten generar las realizaciones que alimentarán los modelos."
     }
   ],
   [
     16,
     {
       "nextId": 17,
-      "text": "Los escenarios generados son entradas al sistema. Los modelos físicos los transforman en caudales, calados y otras variables de interés para la decisión."
+      "text": "Los modelos físicos transforman después esos escenarios en caudales y calados."
     }
   ],
   [
     17,
     {
       "nextId": 18,
-      "text": "Los adaptadores conectan esos motores con el núcleo. Las herramientas web ofrecen otra forma de acceder a operaciones de ese mismo núcleo."
+      "text": "Las herramientas web facilitan el acceso a operaciones de ese mismo núcleo."
     }
   ],
   [
     18,
     {
       "nextId": 19,
-      "text": "Para mostrar esa conexión elegiré una operación concreta: ajustar extremos y distinguir el resultado puntual de la incertidumbre que lo acompaña."
+      "text": "Voy a mostrar ese recorrido en la herramienta de extremos."
     }
   ],
   [
     19,
     {
       "nextId": 27,
-      "text": "La demostración enseña cómo se utiliza una operación. Los casos permiten examinar qué aporta la cadena cuando se aplica a problemas de ingeniería."
+      "text": "Pasamos de la operación individual a las evidencias de los casos."
     }
   ],
   [
     27,
     {
       "nextId": 29,
-      "text": "Cada caso responde a una pregunta distinta. Empezamos por el Besaya, donde se estableció el principio de estimar la frecuencia después de simular el impacto."
+      "text": "El Besaya establece el primer principio: estimar la frecuencia sobre el impacto."
     }
   ],
   [
     29,
     {
       "nextId": 28,
-      "text": "Ese es el principio fundacional. El trabajo posterior del Besaya plantea otra pregunta: cuánto cambia el resultado al utilizar un motor hidráulico diferente."
+      "text": "El siguiente trabajo estudia cómo cambia ese impacto al cambiar de motor."
     }
   ],
   [
     28,
     {
       "nextId": 30,
-      "text": "La comparación de motores muestra una fuente de incertidumbre. En Mallorca cambia el problema de partida: construir la cadena con muy pocos datos hidrológicos."
+      "text": "En Mallorca, la dificultad comienza antes: disponer de entradas con pocos datos."
     }
   ],
   [
     30,
     {
       "nextId": 31,
-      "text": "Mallorca exige resolver la escasez de datos. Calle 30 añade una exigencia operativa: hacer viable el cálculo de muchos escenarios en una infraestructura crítica."
+      "text": "Calle 30 añade la exigencia de calcular muchos escenarios para una infraestructura."
     }
   ],
   [
     31,
     {
       "nextId": 32,
-      "text": "El esquema explica cómo se calcula. Abrimos ahora el análisis interactivo para interpretar las curvas y los perfiles que produce esa cadena."
+      "text": "Abrimos Análisis interactivo para interpretar el resultado de esa cadena."
     }
   ],
   [
     32,
     {
       "nextId": 33,
-      "text": "En Calle 30 hemos seguido los escenarios hasta la respuesta hidráulica. Valencia muestra cuánto puede cambiar el análisis de entrada cuando aparece un extremo excepcional."
+      "text": "Valencia muestra ahora la sensibilidad del análisis al incorporar un extremo excepcional."
     }
   ],
   [
     33,
     {
       "nextId": 34,
-      "text": "Las barras muestran el cambio de estimación. La ficha de Valencia permite dar el siguiente paso: seguir ese resultado hasta los datos y el notebook del análisis."
+      "text": "La ficha web permite seguir esas estimaciones hasta los materiales del análisis."
     }
   ],
   [
     34,
     {
       "nextId": 35,
-      "text": "La trazabilidad permite revisar cómo se estiman los extremos. En Tanganica esa necesidad se mantiene, pero la variable de diseño pasa de lluvia a nivel del lago."
+      "text": "En Tanganica, esa trazabilidad acompaña otra variable de diseño: el nivel del lago."
     }
   ],
   [
     35,
     {
       "nextId": 36,
-      "text": "El lago requiere combinar clima, caudal y nivel. La aplicación andina amplía otra dificultad: calibrar y simular muchos sistemas de forma consistente."
+      "text": "La aplicación andina amplía el problema a la ejecución hidrológica regional."
     }
   ],
   [
     36,
     {
       "nextId": 39,
-      "text": "La aplicación regional muestra capacidad de ejecución. El estudio de IAHR aísla otra cuestión de diseño: cuánto influye elegir un procedimiento de cálculo diferente."
+      "text": "El estudio de IAHR permite comparar dos procedimientos de cálculo del diseño."
     }
   ],
   [
     39,
     {
       "nextId": 38,
-      "text": "El procedimiento influye en la avenida de diseño. SIMPCCe aplica los componentes climáticos e hidrológicos a otra decisión: gestionar las aportaciones disponibles en los embalses."
+      "text": "SIMPCCe traslada el análisis climático e hidrológico a la gestión de embalses."
     }
   ],
   [
     38,
     {
       "nextId": 37,
-      "text": "El ejemplo del embalse muestra por qué importa conservar el detalle mensual. Panamá extiende la preparación de escenarios trazables a un encargo de escala nacional."
+      "text": "Panamá extiende la preparación trazable de escenarios a escala nacional."
     }
   ],
   [
     37,
     {
       "nextId": 39.5,
-      "text": "Con Panamá termina el recorrido de aplicaciones. El gráfico de síntesis permite valorar qué se ha transferido entre ellas y qué puede reproducirse hoy en HYDRA."
+      "text": "Podemos reunir ahora las aplicaciones para valorar el alcance de su transferencia."
     }
   ],
   [
     39.5,
     {
       "nextId": 39.6,
-      "text": "Esa síntesis delimita el alcance de los casos. La producción científica muestra cómo se han comunicado sus resultados y cómo se conserva el software."
+      "text": "La producción científica muestra cómo se comunican y conservan esos desarrollos."
     }
   ],
   [
     39.6,
     {
       "nextId": 39.7,
-      "text": "Los productos incluyen trabajos compartidos. Para valorar la contribución doctoral hay que distinguir mi responsabilidad concreta en la investigación y en el desarrollo tecnológico."
+      "text": "En estos trabajos compartidos, corresponde precisar cuál ha sido mi contribución."
     }
   ],
   [
     39.7,
     {
       "nextId": 40,
-      "text": "Con las evidencias y las responsabilidades delimitadas, podemos volver a las tres hipótesis y precisar qué las apoya y qué falta comprobar."
+      "text": "Con esas responsabilidades delimitadas, vuelvo a las hipótesis y sus evidencias."
     }
   ],
   [
     40,
     {
       "nextId": 41,
-      "text": "El balance de las hipótesis fija el alcance de la respuesta. Ahora puedo sintetizar la contribución original que reúne métodos previos, desarrollos e integración."
+      "text": "Ese balance permite sintetizar la contribución original de la tesis."
     }
   ],
   [
     41,
     {
       "nextId": 42,
-      "text": "Esa contribución tiene límites en los datos, los modelos y la validación. Reconocerlos permite proponer los siguientes desarrollos con un criterio verificable."
+      "text": "Sus límites permiten identificar qué comprobaciones y desarrollos deben seguir."
     }
   ],
   [
     42,
     {
       "nextId": 42.5,
-      "text": "Ese es el alcance del trabajo y la continuidad que propongo. Quiero agradecer ahora a quienes han hecho posible este recorrido."
+      "text": "Quiero agradecer a quienes han hecho posible este trabajo."
     }
   ],
   [
     42.5,
     {
       "nextId": 43,
-      "text": "Su apoyo ha acompañado todo el proceso. Termino con la respuesta que resume el trabajo y dejo paso a las preguntas del tribunal."
+      "text": "Termino recuperando la idea central que resume la investigación."
     }
   ]
 ]);
