@@ -374,6 +374,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     border: 1px solid rgba(255,255,255,0.04);
     line-height: 1.4;
   }
+  .preparation-details summary {cursor:pointer; padding:12px 0; color:#a8bacb; font-size:13px; line-height:1.5;}
   .panel-notes {
     font-size: 12.5px;
     color: #38bdf8;
@@ -759,9 +760,9 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
         <div>
           <label class="narration-choice">Texto del guion<select data-narration-mode><option value="live">Guion principal · en vivo</option><option value="prepared">Guion con capturas preparadas</option></select></label>
           <p class="narration-notice" data-narration-notice></p>
-          <div class="panel-section-label">🎙 Diálogo completo · qué decir</div>
+          <div class="panel-section-label">Guion completo para leer</div>
           <div class="panel-script" id="panel-script"></div>
-          <div class="panel-section-label">Transición a la siguiente diapositiva</div>
+          <div class="panel-section-label">Enlace con la siguiente diapositiva · para leer</div>
           <div class="panel-script" id="panel-transition"></div>
         </div>
 
@@ -775,7 +776,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
 
         <!-- Presenter notes (collapsible) -->
         <div>
-          <button class="notes-toggle-btn" id="notes-toggle">📝 Notas y preguntas típicas del tribunal ▼</button>
+          <button class="notes-toggle-btn" id="notes-toggle">Indicaciones de preparación (no se leen) ▼</button>
           <div id="panel-notes-body">
             <div class="panel-notes" id="panel-notes"></div>
           </div>
@@ -848,20 +849,19 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     <div>
       <label class="narration-choice">Texto del guion<select data-narration-mode><option value="live">Guion principal · en vivo</option><option value="prepared">Guion con capturas preparadas</option></select></label>
       <p class="narration-notice" data-narration-notice></p>
-      <span class="panel-section-label">🎙 Diálogo completo · qué decir</span>
+      <span class="panel-section-label">Guion completo para leer</span>
       <div id="pres-win-speech" style="font-size:16px; line-height:1.6; color:#cbd5e1; border-left:4px solid #0d9488; padding-left:16px; margin-top:6px;">—</div>
     </div>
 
     <div>
-      <span class="panel-section-label">Transición a la siguiente diapositiva</span>
+      <span class="panel-section-label">Enlace con la siguiente diapositiva · para leer</span>
       <div class="panel-script" id="pres-win-transition"></div>
     </div>
 
-    <!-- Notes & expected tribunal questions -->
-    <div>
-      <span class="panel-section-label" style="color:#38bdf8;">💡 Guía para el presentador y preguntas del tribunal</span>
+    <details class="preparation-details">
+      <summary>Indicaciones de preparación (no se leen)</summary>
       <div class="presenter-notes-area" id="pres-win-notes">—</div>
-    </div>
+    </details>
 
     <div class="panel-divider"></div>
 
@@ -1750,8 +1750,8 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       const body = document.getElementById('panel-notes-body')!;
       body.style.display = notesOpen ? 'block' : 'none';
       notesToggle.textContent = notesOpen
-        ? '📝 Notas y preguntas típicas del tribunal ▼'
-        : '📝 Notas y preguntas típicas del tribunal ▶';
+        ? 'Indicaciones de preparación (no se leen) ▼'
+        : 'Indicaciones de preparación (no se leen) ▶';
     });
   }
 

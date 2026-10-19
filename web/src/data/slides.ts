@@ -1271,7 +1271,7 @@ export const slideLibrary: Slide[] = [
     bullets: ["H1: viabilidad demostrada; ahorro de tiempo pendiente de medir.","H2: reutilización entre aplicaciones; tres casos con notebooks reproducibles hoy.","H3: sensibilidad del diseño a métodos y datos; mayor valor no implica mayor exactitud."],
     speakerGoal: "Cerrar cada hipótesis con evidencia y un límite explícito.",
     visualGuide: ["H1: campañas de ejecuciones en la franja superior","H2: matriz central de componentes reutilizados","H3: comparaciones numéricas inferiores"],
-    speechCues: ["H1","viabilidad","ahorro de tiempo","H2","tres casos reproducibles","H3","sensibilidad metodológica y estadística"],
+    speechCues: ["H1","capacidad operativa","medir el ahorro","H2","evaluar su uso por otros equipos","tres casos reproducibles","H3","sensibilidad metodológica y estadística","contrastes observacionales y comparaciones sistemáticas"],
     transition: "Ese cierre permite precisar la contribución doctoral sin confundir métodos previos, desarrollos propios y conocimiento aportado.",
     transitionCue: "contribución doctoral"
   },

@@ -46,7 +46,7 @@ const keywords: Record<number, readonly string[]> = {
   39: ['hipótesis H3', '10.000 años sintéticos', '200 casos', '30 y un 37 por ciento superiores', '278,5 frente a 208,8', 'no demuestra por sí sola', 'elección metodológica'],
   38: ['ámbito nacional', 'aportaciones mínimas a embalses', 'Premio al Talento Joven', '10 modelos CORDEX-AEMET', 'red neuronal', 'sequía y fiabilidad'],
   37: ['52 cuencas', '1.464 puntos costeros', '73 estaciones', '23 configuraciones GCM', '414 combinaciones', 'QDM y SDM', 'NS=0,87', 'SFINCS nacional'],
-  48: ['30 y un 37 por ciento', '266 por ciento', '1.990 simulaciones emparejadas', '414 combinaciones', 'componentes reutilizables', 'procedimientos trazables'],
+  48: ['208,8 frente a 278,5', '33,4 por ciento', '260 a 952 mm', '995 pares', '414 combinaciones', 'variable, método, horizonte y alcance'],
   39.5: ['nueve casos', 'Calle 30, Besaya y Valencia', 'publicación o su proyecto', 'frecuencia sobre la variable', 'núcleo común', 'visible, reproducible y transferible'],
   39.6: ['dos artículos publicados', 'cinco comunicaciones', 'dos manuscritos', 'versiones publicadas y citables en Zenodo'],
   39.7: ['trabajos que lidero', 'colaboraciones', 'diseño, desarrollo y documentación', 'autoría por publicación'],
@@ -68,6 +68,7 @@ const keywords: Record<number, readonly string[]> = {
   58: ['forzamientos del modelo', 'no como observaciones futuras'],
   59: ['dominio del caso Calle 30', 'lluvia multisitio', 'HEC-HMS', 'HEC-RAS 1D', 'frecuencia del calado'],
   60: ['Turís', 'Carlet', 'niveles de retorno', 'incertidumbre entre estimadores'],
+  62: ['mapas de la derecha', 'matrices', 'estadísticas mensuales', 'porcentajes', 'factores de cambio', '2071–2100'],
   61: ['entrenamiento y la validación', 'red neuronal de SIMPCCe', 'aportaciones y caudales mínimos', 'configura y valida el modelo'],
 };
 
@@ -104,7 +105,7 @@ export function presenterKeywords(slide: Slide, mode: NarrationMode, transition 
   return transition ? transitionKeywords[id] ?? [] : (mode === 'prepared' ? preparedKeywords[id] : undefined) ?? keywords[id] ?? [];
 }
 
-export function emphasizePresenterText(target: HTMLElement, text: string, phrases: readonly string[]): void {
+export function presenterTextParts(text: string, phrases: readonly string[]): { text: string; emphasized: boolean }[] {
   const lower = text.toLocaleLowerCase('es');
   const ranges: { start: number; end: number }[] = [];
   const wordCharacter = /[\p{L}\p{N}_]/u;
@@ -124,15 +125,26 @@ export function emphasizePresenterText(target: HTMLElement, text: string, phrase
       start = lower.indexOf(needle, start + 1);
     }
   }
-  const content = document.createDocumentFragment();
+  const parts: { text: string; emphasized: boolean }[] = [];
   let offset = 0;
   for (const { start, end } of ranges.sort((a, b) => a.start - b.start)) {
-    content.append(document.createTextNode(text.slice(offset, start)));
-    const strong = document.createElement('strong');
-    strong.textContent = text.slice(start, end);
-    content.append(strong);
+    if (start > offset) parts.push({ text: text.slice(offset, start), emphasized: false });
+    parts.push({ text: text.slice(start, end), emphasized: true });
     offset = end;
   }
-  content.append(document.createTextNode(text.slice(offset)));
+  if (offset < text.length) parts.push({ text: text.slice(offset), emphasized: false });
+  return parts;
+}
+
+export function emphasizePresenterText(target: HTMLElement, text: string, phrases: readonly string[]): void {
+  const content = document.createDocumentFragment();
+  for (const part of presenterTextParts(text, phrases)) {
+    if (!part.emphasized) content.append(document.createTextNode(part.text));
+    else {
+      const strong = document.createElement('strong');
+      strong.textContent = part.text;
+      content.append(strong);
+    }
+  }
   target.replaceChildren(content);
 }

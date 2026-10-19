@@ -14,6 +14,15 @@ new Function('exports', 'require', 'module', ts.transpile(fs.readFileSync(new UR
   module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022,
 }))(narrationModule.exports, require, narrationModule);
 const { dialogueFor, deliveryCue } = narrationModule.exports;
+const emphasisModule = { exports: {} };
+new Function('exports', 'require', 'module', ts.transpile(fs.readFileSync(new URL('../src/lib/presenter-emphasis.ts', import.meta.url), 'utf8'), {
+  module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022,
+}))(emphasisModule.exports, require, emphasisModule);
+const { presenterTextParts, presenterKeywords } = emphasisModule.exports;
+const emphasized = (s, mode = 'live', transition = false) => presenterTextParts(
+  transition ? s.transition ?? '' : dialogueFor(s, mode), presenterKeywords(s, mode, transition),
+).map(part => part.emphasized ? `**${part.text}**` : part.text).join('');
+
 const revisionDate = process.env.GUION_REVISION_DATE || new Intl.DateTimeFormat('es-ES', {
   day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Madrid',
 }).format(new Date());
@@ -32,17 +41,17 @@ slides.forEach((s, i) => {
   rows.push(`### ${i + 1}. ${s.title}`, '', `**Bloque:** ${s.block} · **Tiempo orientativo:** ${duration(s)}`, '');
   if (s.speakerGoal) rows.push('**Idea que debe quedar:** ' + s.speakerGoal, '');
   if (s.visualGuide?.length) rows.push('**Recorrido visual:**', '', ...s.visualGuide.map((cue, step) => `${step + 1}. ${cue}`), '');
-  rows.push('**Diálogo**', '', dialogueFor(s, 'live').trim(), '');
+  rows.push('**Diálogo**', '', emphasized(s).trim(), '');
   if (s.notes) rows.push('**Notas privadas:** ' + s.notes, '');
   if (s.webAction) rows.push('**Acción en la web:** ' + s.webAction, '');
-  if (s.offlineScript) rows.push('**Diálogo en demos preparadas (sustituye al diálogo anterior)**', '', dialogueFor(s, 'prepared'), '');
+  if (s.offlineScript) rows.push('**Diálogo en demos preparadas (sustituye al diálogo anterior)**', '', emphasized(s, 'prepared'), '');
   const cues = deliveryCue(s);
   if (cues) rows.push(...cues.split('\n\n').flatMap(cue => [`**[${cue}]**`, '']));
-  if (s.transition) rows.push(`**Transición:** ${s.transition}`, '');
+  if (s.transition) rows.push(`**Transición:** ${emphasized(s, 'live', true)}`, '');
 });
 rows.push('**[Pauta final: haz una pausa y cede la palabra al tribunal.]**', '', '## Guion de los anexos', '', 'Material disponible en **/defensa-anexos**, fuera del tiempo principal. Abrir solo el anexo que responda a la pregunta del tribunal.', '');
 backupSlides.forEach((s, i) => {
-  rows.push(`### Anexo ${i + 1}. ${s.title}`, '', `**Tiempo orientativo:** ${duration(s)}`, '', dialogueFor(s, 'live').trim(), '');
+  rows.push(`### Anexo ${i + 1}. ${s.title}`, '', `**Tiempo orientativo:** ${duration(s)}`, '', emphasized(s).trim(), '');
   const cue = deliveryCue(s, true);
   if (cue) rows.push(`**[${cue}]**`, '');
   if (s.notes) rows.push('**Notas privadas:** ' + s.notes, '');
