@@ -11,14 +11,6 @@ export const visualSlides: Record<number, { kind: string; metric?: string; figur
   6: { kind:'problem', figure:'esq_tforzante_timpacto.svg', metric:'T(forzante) ≠ T(impacto)', items:[
     {label:'Evento único',detail:'un pico de lluvia no describe todas las avenidas plausibles'},
     {label:'Estado antecedente',detail:'humedad y confluencias cambian la respuesta de la cuenca'},
-    {label:'Impacto hidráulico',detail:'la frecuencia se estima tras simular calados y extensión'} ] },
-  11: { kind:'layers', figure:'esq_arquitectura_capas.svg', metric:'Un núcleo científico, tres capas que lo hacen transferible', items:[
-    {label:'Métodos científicos',detail:'datos, extremos, escenarios y modelos físicos'},
-    {label:'Servicios de ejecución',detail:'API y notebooks sobre el mismo núcleo'},
-    {label:'Interfaz web',detail:'acceso, documentación y casos navegables'} ] },
-  6: { kind:'problem', figure:'esq_tforzante_timpacto.svg', metric:'T(forzante) ≠ T(impacto)', items:[
-    {label:'Evento único',detail:'un pico de lluvia no describe todas las avenidas plausibles'},
-    {label:'Estado antecedente',detail:'humedad y confluencias cambian la respuesta de la cuenca'},
     {label:'Impacto hidráulico',detail:'la frecuencia se estima después de simular calados y extensión'} ] },
   11: { kind:'layers', figure:'esq_arquitectura_capas.svg', metric:'Un núcleo científico, tres capas que lo hacen transferible', items:[
     {label:'Métodos científicos',detail:'datos, extremos, escenarios y modelos físicos'},
@@ -55,10 +47,10 @@ export const visualSlides: Record<number, { kind: string; metric?: string; figur
     {label:'Lluvia',detail:'eventos multisitio con cópulas'}, {label:'Caudal',detail:'transformación HEC-HMS'},
     {label:'Selección',detail:'subconjunto representativo MaxDiss'}, {label:'Hidráulica',detail:'HEC-RAS 1D'},
     {label:'Reconstrucción',detail:'miles de impactos con k-NN'} ] },
-  40: { kind:'evidence', figure:'esq_hipotesis_evidencia.svg', metric:'Las tres hipótesis se sostienen, cada una con el alcance de su evidencia', items:[
+  40: { kind:'evidence', figure:'esq_hipotesis_evidencia.svg', metric:'Cada hipótesis se contrasta con evidencia y con un límite', items:[
     {label:'H1 Automatización',detail:'miles de ejecuciones encadenadas sin intervención manual: viabilidad demostrada'},
     {label:'H2 Modularidad',detail:'los mismos bloques resuelven problemas y escalas diferentes'},
-    {label:'H3 Incertidumbre',detail:'caudal estocástico un 30–37 % superior al convencional; bandas en lugar de cifras únicas'} ] },
+    {label:'H3 Incertidumbre',detail:'sensibilidad del diseño a métodos y datos; bandas en lugar de cifras únicas'} ] },
   47: { kind:'method-map', figure:'esq_responsabilidades.svg', metric:'La procedencia se conserva en cada transformación', items:[
     {label:'Datos',detail:'observar, reunir y controlar fuentes'},
     {label:'Extremos y clima',detail:'caracterizar frecuencia y condiciones'},
@@ -66,7 +58,7 @@ export const visualSlides: Record<number, { kind: string; metric?: string; figur
     {label:'Respuesta física',detail:'simular lluvia, caudal y calado'},
     {label:'Impacto',detail:'estimar frecuencia para decidir'} ] },
   48: { kind:'evidence', figures:[{src:'fig_iahr2022_comparativa_es.svg',caption:'IAHR 2022: caudal estocástico frente a IDF'},{src:'fig_valencia_t100_auditorio.svg',caption:'Valencia: actualización de T100 en Turís'},{src:'besaya_fig04_intermodel_comparison.png',caption:'Besaya: HEC-RAS frente a SFINCS'},{src:'fig_panama_precipitacion.png',caption:'Panamá: precipitación por subcuencas'}], metric:'Cuatro resultados distintos sostenidos por una misma cadena reproducible', items:[
-    {label:'+30–37 %',detail:'caudal de diseño estocástico frente al convencional (IAHR 2022)'},
+    {label:'+33,4 %',detail:'ejemplo T100: 208,8 → 278,5 m³/s (IAHR 2022)'},
     {label:'+266 %',detail:'actualización de T100 al incorporar la DANA (Valencia)'},
     {label:'1.990',detail:'simulaciones hidráulicas emparejadas (Besaya)'},
     {label:'414',detail:'combinaciones de análisis climático (Panamá)'} ] },

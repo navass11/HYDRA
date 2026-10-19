@@ -13,6 +13,7 @@ export function dialogueFor(slide: Slide, mode: NarrationMode): string {
 }
 
 export function narrationNotice(slide: Slide, mode: NarrationMode): string {
+  if (slide.speakerGoal) return `${slide.speakerGoal}${mode === 'prepared' && slide.offlineScript ? ' · Explicación con capturas preparadas.' : ''}`;
   return mode === 'prepared' && slide.offlineScript
     ? 'Diálogo en demos preparadas del guion: sustituye al diálogo principal en esta diapositiva.'
     : 'Texto de «Diálogo» del guion oral completo por diapositiva. La transición se dice al cambiar de diapositiva.';

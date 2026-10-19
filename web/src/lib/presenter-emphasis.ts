@@ -1,3 +1,4 @@
+import type { Slide } from '../data/slides';
 import type { NarrationMode } from './defense-narration';
 
 // Editorial cues keyed by stable slide ID, independent of presentation order.
@@ -95,7 +96,11 @@ const transitionKeywords: Record<number, readonly string[]> = {
   41: ['límites', 'trabajo pendiente'], 42: ['agradecer'], 42.5: ['resultado', 'reto'], 43: ['Cedo la palabra al tribunal'],
 };
 
-export function presenterKeywords(id: number, mode: NarrationMode, transition = false): readonly string[] {
+export function presenterKeywords(slide: Slide, mode: NarrationMode, transition = false): readonly string[] {
+  if (transition && slide.transitionCue) return [slide.transitionCue];
+  if (!transition && mode === 'prepared' && slide.offlineSpeechCues) return slide.offlineSpeechCues;
+  if (!transition && slide.speechCues) return slide.speechCues;
+  const id = slide.id;
   return transition ? transitionKeywords[id] ?? [] : (mode === 'prepared' ? preparedKeywords[id] : undefined) ?? keywords[id] ?? [];
 }
 

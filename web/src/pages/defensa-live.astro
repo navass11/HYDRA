@@ -819,7 +819,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   <div class="presenter-window-left">
     <div style="padding:16px 24px; border-bottom:1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between; align-items:center;">
       <span style="font-weight:800; color:#5eead4;">📺 VISTA DEL PROYECTOR (PREVIEW)</span>
-      <span id="pres-win-counter" style="font-weight:700; color:#64748b;">1/29</span>
+      <span id="pres-win-counter" style="font-weight:700; color:#64748b;">1 / {totalSlides}</span>
     </div>
     <div class="presenter-preview-frame">
       <!-- Read-only mirror of what the audience sees: pointer-events disabled so its own
@@ -1018,6 +1018,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     return links.filter((link, index, all) => all.findIndex(other => other.href === link.href) === index).slice(0, 4);
   }
   function presenterObjectiveFor(slide: typeof slides[0]): string {
+    if (slide.speakerGoal) return slide.speakerGoal;
     if (slide.id === 1) return 'Presentar formalmente la tesis, la autoría y el marco institucional.';
     if (slide.webPurpose) return slide.webPurpose;
     const byBlock: Record<string,string> = {
@@ -1038,6 +1039,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     return byBlock[slide.block] ?? `Explicar la función de esta diapositiva dentro de ${slide.block}.`;
   }
   function presenterCueFor(slide: typeof slides[0]): string {
+    if (slide.visualGuide?.length) return slide.visualGuide.join(' → ');
     if (slide.id === 1) return 'Saludar al tribunal, hacer una pausa y nombrar director y tutor sin leer la portada.';
     if (slide.webAction) return slide.webAction;
     if (slide.figureCaption) return `Señalar en la figura: ${slide.figureCaption}`;
@@ -1458,13 +1460,13 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     const slide = slides[current];
     if (!slide) return;
     const dialogue = dialogueFor(slide, narrationMode);
-    const cues = presenterKeywords(slide.id, narrationMode);
+    const cues = presenterKeywords(slide, narrationMode);
     emphasizePresenterText(panelScriptEl, dialogue, cues);
     emphasizePresenterText(presWinSpeech, dialogue, cues);
-    const bridgeCues = presenterKeywords(slide.id, narrationMode, true);
+    const bridgeCues = presenterKeywords(slide, narrationMode, true);
     emphasizePresenterText(document.getElementById('panel-transition')!, slide.transition ?? '', bridgeCues);
     emphasizePresenterText(document.getElementById('pres-win-transition')!, slide.transition ?? '', bridgeCues);
-    const notes = [slide.notes, slide.webAction && `Acción en la web: ${slide.webAction}`, deliveryCue(slide)].filter(Boolean).join('\n\n');
+    const notes = [slide.visualGuide?.length && `Recorrido visual:\n${slide.visualGuide.map((cue,i) => `${i+1}. ${cue}`).join('\n')}`, slide.notes, slide.webAction && `Acción en la web: ${slide.webAction}`, deliveryCue(slide)].filter(Boolean).join('\n\n');
     panelNotes.textContent = notes || 'Sin anotaciones para esta sección.';
     presWinNotes.textContent = notes || 'Sin anotaciones para esta sección.';
     document.querySelectorAll<HTMLElement>('[data-narration-notice]').forEach(el => el.textContent = narrationNotice(slide, narrationMode));

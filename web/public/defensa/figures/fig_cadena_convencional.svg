@@ -8,7 +8,7 @@
   </defs>
   <rect width="1200" height="680" rx="28" fill="url(#bg)"/>
   <text x="56" y="72" fill="#e2e8f0" font-family="Inter,Arial,sans-serif" font-size="30" font-weight="700">Del registro al impacto: la cadena que debe conservar la incertidumbre</text>
-  <text x="56" y="112" fill="#94a3b8" font-family="Inter,Arial,sans-serif" font-size="20">El procedimiento convencional asigna un mismo período de retorno a variables que no son equivalentes.</text>
+  <text x="56" y="112" fill="#94a3b8" font-family="Inter,Arial,sans-serif" font-size="20">Tres supuestos que deben revisarse al pasar del forzamiento al impacto.</text>
   <g font-family="Inter,Arial,sans-serif" filter="url(#shadow)">
     <g transform="translate(55 190)"><rect width="180" height="150" rx="18" fill="#102a43" stroke="#38bdf8" stroke-width="2"/><text x="90" y="48" text-anchor="middle" fill="#7dd3fc" font-size="34">▥</text><text x="90" y="88" text-anchor="middle" fill="#f8fafc" font-size="20" font-weight="700">Registros</text><text x="90" y="118" text-anchor="middle" fill="#94a3b8" font-size="16">lluvia y caudal</text></g>
     <g transform="translate(285 190)"><rect width="180" height="150" rx="18" fill="#102a43" stroke="#38bdf8" stroke-width="2"/><text x="90" y="48" text-anchor="middle" fill="#7dd3fc" font-size="34">ƒ</text><text x="90" y="88" text-anchor="middle" fill="#f8fafc" font-size="20" font-weight="700">Extremos</text><text x="90" y="118" text-anchor="middle" fill="#94a3b8" font-size="16">cuantil T</text></g>

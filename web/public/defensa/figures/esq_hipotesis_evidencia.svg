@@ -53,6 +53,6 @@
       <rect x="0" y="30" width="60" height="34" fill="#A9D2CC"/><text x="70" y="54" font-size="16">260 sin la DANA</text>
       <rect x="0" y="72" width="220" height="34" fill="#B5334B"/><text x="12" y="96" font-size="16" font-weight="600" fill="#fff">952 con la DANA</text>
     </g>
-    <text y="146" font-size="14" fill="#4A6870">Barras a escala dentro de cada gráfico. Fuente: memoria, cap. 8.</text>
+    <text y="146" font-size="14" fill="#4A6870">Barras a escala dentro de cada gráfico. Fuente: memoria, cap. 7.</text>
   </g>
 </svg>

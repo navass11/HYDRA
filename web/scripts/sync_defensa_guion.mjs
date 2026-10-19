@@ -29,7 +29,10 @@ const duration = s => {
 };
 const rows = [heading, '', `Libreto del recorrido principal: **${slides.length} diapositivas**, unos **${totalMinutes} minutos**. El texto bajo **Diálogo** coincide con la vista de presentador en vivo y se pronuncia; la **Transición** acompaña el cambio de diapositiva. Las pautas entre corchetes son acciones privadas. Los tiempos incluyen el habla a 115 palabras/min, la transición, la lectura de figuras y la demostración. Son los mismos que utiliza la vista de presentador.`, ''];
 slides.forEach((s, i) => {
-  rows.push(`### ${i + 1}. ${s.title}`, '', `**Bloque:** ${s.block} · **Tiempo orientativo:** ${duration(s)}`, '', '**Diálogo**', '', dialogueFor(s, 'live').trim(), '');
+  rows.push(`### ${i + 1}. ${s.title}`, '', `**Bloque:** ${s.block} · **Tiempo orientativo:** ${duration(s)}`, '');
+  if (s.speakerGoal) rows.push('**Idea que debe quedar:** ' + s.speakerGoal, '');
+  if (s.visualGuide?.length) rows.push('**Recorrido visual:**', '', ...s.visualGuide.map((cue, step) => `${step + 1}. ${cue}`), '');
+  rows.push('**Diálogo**', '', dialogueFor(s, 'live').trim(), '');
   if (s.notes) rows.push('**Notas privadas:** ' + s.notes, '');
   if (s.webAction) rows.push('**Acción en la web:** ' + s.webAction, '');
   if (s.offlineScript) rows.push('**Diálogo en demos preparadas (sustituye al diálogo anterior)**', '', dialogueFor(s, 'prepared'), '');
@@ -54,11 +57,12 @@ const names = ['Introducción', 'Estado de la técnica', 'Arquitectura', 'Metodo
 const totals = names.map((_, i) => slides.filter(s => route(s) === i).reduce((n, s) => n + s.estimatedMinutes, 0));
 const table = '| Bloque | Tiempo orientativo |\n|---|---:|\n' + names.map((n, i) => `| ${n} | ${totals[i].toFixed(1).replace('.', ',')} min |`).join('\n');
 doc = doc.replace(/\| Bloque \|[^\n]*\n\|---[\s\S]*?(?=\n\n)/, table);
+doc = doc.replace(/Esta revisión contiene[^\n]+/, `Esta revisión contiene **${slides.length} diapositivas principales y ${backupSlides.length} anexos**. La estimación es de **${totalMinutes} minutos**, con voz a 115 palabras/minuto, transiciones, lectura de figuras y una demo breve. Debe comprobarse mediante ensayo cronometrado.`);
 const dialogueWords = slides.reduce((n, slide) => n + slide.script.trim().split(/\s+/).length, 0);
 const transitionWords = [...rows.join('\n').split('## Guion de los anexos')[0].matchAll(/\*\*Transición:\*\* (.*)/g)].reduce((n, match) => n + match[1].trim().split(/\s+/).length, 0);
 const decimal = number => number.toFixed(1).replace('.', ',');
 doc = doc.replace(/### Comprobación del libreto ·[^\n]+/, `### Comprobación del libreto · ${revisionDate}`);
 doc = doc.replace(/El recorrido (?:contiene|principal en vivo contiene)[^\n]+/, `El recorrido principal en vivo contiene **${dialogueWords} palabras de diálogo y ${transitionWords} de transiciones**. A 115 palabras por minuto, son unos **${decimal((dialogueWords + transitionWords) / 115)} minutos de voz**; la estimación completa es de **${totalMinutes} minutos**, incluyendo pausas, figuras y demostración. A 100 palabras por minuto, el texto solo requiere **${decimal((dialogueWords + transitionWords) / 100)} minutos**. La variante con demos preparadas sustituye el diálogo de la demo por la explicación de las capturas, sin ejecutar la API.`);
-doc = doc.replace(/Se ha comprobado la correspondencia del diálogo con[^\n]+/, `El diálogo está sincronizado con las ${slides.length} diapositivas principales y los ${backupSlides.length} anexos. Esta revisión del texto y los tiempos no sustituye un ensayo oral cronometrado del doctorando.`);
+doc = doc.replace(/(?:Se ha comprobado la correspondencia del diálogo con|El diálogo está sincronizado con)[^\n]+/, `El diálogo está sincronizado con las ${slides.length} diapositivas principales y los ${backupSlides.length} anexos. Esta revisión del texto y los tiempos no sustituye un ensayo oral cronometrado del doctorando.`);
 fs.writeFileSync(path, doc);
 console.log(`${slides.length} diálogos principales; ${backupSlides.length} anexos; ${totalMinutes} minutos.`);

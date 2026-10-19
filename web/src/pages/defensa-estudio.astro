@@ -55,7 +55,7 @@ const groups = [{key:'principal', label:'Presentación', slides}, {key:'anexos',
           {slide.offlineScript&&<p class="speech speech-prepared" hidden>{dialogueFor(slide,'prepared')}</p>}
         </section>
         {slide.transition&&<section class="transition"><h2>Transición</h2><p>{slide.transition}</p></section>}
-        {(slide.notes||slide.webAction||deliveryCue(slide,group.key==='anexos'))&&<details><summary>Notas y pautas del guion</summary>{slide.notes&&<p class="preparation">{slide.notes}</p>}{slide.webAction&&<p><strong>Acción en la web.</strong> {slide.webAction}</p>}{deliveryCue(slide,group.key==='anexos')&&<p class="preparation">{deliveryCue(slide,group.key==='anexos')}</p>}</details>}
+        {(slide.notes||slide.webAction||deliveryCue(slide,group.key==='anexos'))&&<details><summary>Notas y pautas del guion</summary>{slide.speakerGoal&&<p><strong>Objetivo al explicar.</strong> {slide.speakerGoal}</p>}{slide.visualGuide?.length&&<><p><strong>Recorrido visual</strong></p><ol>{slide.visualGuide.map(cue=><li>{cue}</li>)}</ol></>}{slide.notes&&<p class="preparation">{slide.notes}</p>}{slide.webAction&&<p><strong>Acción en la web.</strong> {slide.webAction}</p>}{deliveryCue(slide,group.key==='anexos')&&<p class="preparation">{deliveryCue(slide,group.key==='anexos')}</p>}</details>}
         <details class="slide-material"><summary>Ver diapositiva y figuras</summary>
         <section class="slide-content" aria-label="Contenido de la diapositiva">
           {slide.quote&&<blockquote>{slide.quote}</blockquote>}
