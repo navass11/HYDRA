@@ -1942,6 +1942,8 @@ const chapterIcons = [
     <span class="pres-counter" id="pres-counter" aria-live="polite">1 / {totalSlides}</span>
     <span class="pres-timer" id="pres-timer">⏱ 0:00</span>
     <a href={asset('/defensa-estudio')} id="study-entry" class="pres-topbar-btn pres-support-btn">Estudiar</a>
+    <button id="restart-presentation" class="pres-topbar-btn pres-support-btn" title="Volver a la primera diapositiva y poner el cronómetro a cero">Reiniciar</button>
+    <button class="pres-topbar-btn pres-support-btn" data-screen-awake aria-pressed="false">Activar pantalla</button>
     <a href={asset(reserve ? '/defensa-offline' : '/defensa-anexos')} class="pres-topbar-btn pres-support-btn" target={reserve ? undefined : '_blank'} title={reserve ? 'Volver a la presentación' : 'Abrir diapositivas de apoyo'}>{reserve ? 'Presentación' : 'Anexos'}</a>
     <a href={asset('/defensa/hydra-defensa-sin-conexion.zip')} download class="pres-topbar-btn pres-support-btn" title="Descargar presentación y anexos para usarlos sin Internet">Descargar</a>
     <button class="pres-topbar-btn" id="btn-toggle-notes" title="Notas del presentador" aria-label="Mostrar u ocultar notas del presentador">📝</button>
@@ -2365,6 +2367,7 @@ const chapterIcons = [
 
 <script>
   import { enableStudyEntry } from '../lib/defense-study-entry';
+  import { keepPresentationAwake } from '../lib/presentation-awake';
   import { slides as mainSlides, backupSlides } from '../data/slides.ts';
   document.querySelectorAll<HTMLButtonElement>('[data-capture-step]').forEach(button => {
     button.addEventListener('click', () => {
@@ -2386,6 +2389,7 @@ const chapterIcons = [
   // ── State ──
   let current = 0;
   let elapsed = 0;
+  let timerStartedAt = Date.now();
   let timerInterval: ReturnType<typeof setInterval> | null = null;
   let notesVisible = false;
 
@@ -2447,7 +2451,7 @@ const chapterIcons = [
   function startTimer() {
     if (timerInterval) return;
     timerInterval = setInterval(() => {
-      elapsed++;
+      elapsed = Math.floor((Date.now() - timerStartedAt) / 1000);
       const m = Math.floor(elapsed / 60);
       const s = elapsed % 60;
       timerEl.textContent = `⏱ ${m}:${s.toString().padStart(2,'0')}`;
@@ -2519,6 +2523,13 @@ const chapterIcons = [
   // ── Navigation ──
   document.getElementById('pres-next')!.addEventListener('click', () => goTo(current + 1));
   document.getElementById('pres-prev')!.addEventListener('click', () => goTo(current - 1));
+  document.getElementById('restart-presentation')!.addEventListener('click', () => {
+    timerStartedAt = Date.now(); elapsed = 0; timerEl.textContent = '⏱ 0:00';
+    document.querySelectorAll<HTMLButtonElement>('[data-capture-step="0"]').forEach(button=>button.click());
+    goTo(0);
+    const url = new URL(location.href); url.searchParams.set('slide', '0');
+    try { history.replaceState(null, '', url); } catch { /* Local files may restrict history updates. */ }
+  });
 
   // Projection fills the viewport without entering browser fullscreen.
   const shell = document.getElementById('pres-shell')!;
@@ -2594,6 +2605,7 @@ const chapterIcons = [
   const initSlide = urlSlide ? parseInt(urlSlide) : (stored ? parseInt(stored) : 0);
   goTo(Math.min(Math.max(0, initSlide), totalSlides - 1));
   startTimer();
+  if (!isPreview) keepPresentationAwake();
   enableStudyEntry({ getCurrent: () => current, group: reserve ? 'anexos' : 'principal', disabled: isPreview });
 </script>
 

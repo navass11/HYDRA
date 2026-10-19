@@ -197,9 +197,9 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
           if (e.origin !== window.location.origin || e.source !== window.parent) return;
           if (!e.data || e.data.type !== 'defensa-command') return;
           clearHighlight();
-          const { anchor, highlight } = e.data;
+          const { anchor, highlight, anchorPosition } = e.data;
           if (anchor) {
-            try { document.querySelector(anchor)?.scrollIntoView({ behavior: 'instant', block: 'center' }); } catch (_) {}
+            try { document.querySelector(anchor)?.scrollIntoView({ behavior: 'instant', block: anchorPosition === 'start' ? 'start' : 'center' }); } catch (_) {}
           }
           if (!highlight) return;
           cueFrame = requestAnimationFrame(function () {

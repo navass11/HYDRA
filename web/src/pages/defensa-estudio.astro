@@ -23,6 +23,7 @@ const groups = [{key:'principal', label:'Presentación', slides}, {key:'anexos',
       </label>
       <div class="reading-tools"><button id="font-less" aria-label="Reducir tamaño de letra">A−</button><button id="font-more" aria-label="Aumentar tamaño de letra">A+</button><a id="projection-link" href={asset('/defensa-offline?vista=presentacion')}>Ver diapositivas</a></div>
     </div>
+    <div class="session-tools"><button id="restart-presentation">Reiniciar presentación</button><button data-screen-awake aria-pressed="false">Activar pantalla</button></div>
   </header>
   <main id="study-content">
     {groups.map(group=>group.slides.map((slide,index)=>{
@@ -61,9 +62,10 @@ const groups = [{key:'principal', label:'Presentación', slides}, {key:'anexos',
     }))}
   </main>
   <footer class="study-nav"><button id="study-prev">← Anterior</button><span id="study-progress" role="status" aria-live="polite"></span><button id="study-next">Siguiente →</button></footer>
-  <aside class="study-preferences"><label>Guion para <select id="speech-mode"><option value="prepared">demos preparadas</option><option value="live">demostración en vivo</option></select></label><p>Se guarda tu última diapositiva en este dispositivo.</p></aside>
+  <aside class="study-preferences"><label>Guion para <select id="speech-mode"><option value="prepared">demos preparadas</option><option value="live">demostración en vivo</option></select></label><p>Se guarda tu última diapositiva en este dispositivo. «Pantalla activa» evita el bloqueo automático mientras esta página esté visible y el navegador lo permita.</p></aside>
   <dialog id="figure-dialog" aria-label="Figura ampliada"><div class="figure-toolbar"><p id="figure-caption"></p><button id="figure-close" autofocus>Cerrar figura</button></div><p class="zoom-help">Desplázate por la figura o usa los botones para ajustar el tamaño.</p><div class="zoom-controls"><button id="zoom-out" aria-label="Reducir figura">−</button><button id="zoom-in" aria-label="Ampliar figura">+</button></div><div class="figure-scroll" tabindex="0" aria-label="Figura ampliada, con desplazamiento"><img id="figure-large" alt="" /></div></dialog>
   <script>
+    import { keepPresentationAwake } from '../lib/presentation-awake';
     const articles=Array.from(document.querySelectorAll<HTMLElement>('article[data-group]'));
     const picker=document.getElementById('study-index') as HTMLSelectElement;
     const previous=document.getElementById('study-prev') as HTMLButtonElement;
@@ -101,6 +103,8 @@ const groups = [{key:'principal', label:'Presentación', slides}, {key:'anexos',
     speechMode.addEventListener('change',changeSpeech);changeSpeech();
     const requested=params.has('slide')?`${params.get('grupo')==='anexos'?'anexos':'principal'}-${params.get('slide')}`:read('hydra-study-position','principal-0');
     show(Math.max(0,articles.findIndex(article=>article.id===requested)),false);
+    document.getElementById('restart-presentation')!.addEventListener('click',()=>show(0));
+    keepPresentationAwake();
     const dialog=document.getElementById('figure-dialog') as HTMLDialogElement;
     const large=document.getElementById('figure-large') as HTMLImageElement;
     let zoom=100;
@@ -121,6 +125,7 @@ const groups = [{key:'principal', label:'Presentación', slides}, {key:'anexos',
   main{max-width:1000px;margin:auto;padding:28px 20px 40px;font-size:var(--study-size);line-height:1.65;overflow-wrap:anywhere}article{max-width:76ch;margin:auto}h1{font-size:1.8em;line-height:1.16;margin:.35em 0 .6em;letter-spacing:-.02em}h2{font-size:1.1em;line-height:1.3;margin:0 0 .8em}p{margin:.8em 0}.position{font-size:.78em;color:#46656d;margin:0}.subtitle{color:#46656d;line-height:1.4}li{margin:.5em 0}ul,ol{padding-left:1.3em}.results,.concepts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px;margin:1.5em 0}.results div,.concepts div{border-top:3px solid #3f8e93;padding:12px 0}.results dt{font-size:.85em}.results dd,.concepts dd{margin:0}.results strong{font-size:1.6em;line-height:1.3;display:block}.results span{font-size:.85em;display:block;color:#46656d}.concepts dt{font-weight:700}.concepts dd{color:#46656d}.dialogue{border-top:4px solid #23697a;margin-top:2em;padding:1.4em 0}.dialogue h2{color:#0e6269}.speech{white-space:pre-line;font-family:Charter,Georgia,serif;line-height:1.8}.transition{padding:18px 22px;border-left:4px solid #3f8e93;background:#dcebe7;margin:1em 0 1.5em}.transition p{margin:0}details{border-top:1px solid #a8bfbb;padding:1em 0}summary{cursor:pointer;font-weight:650;min-height:44px}.preparation{white-space:pre-wrap;font-size:.9em}.reference,figcaption{font-size:.8em;color:#46656d;line-height:1.5}figure{margin:1.5em 0}.figure-open{border:1px solid #b8ccc8;padding:0;width:100%;background:white;display:block;overflow:hidden}.figure-open img{width:100%;height:auto;display:block}.figure-open span{display:block;background:#e1eeea;padding:8px;font-size:14px;color:#164b56}figcaption{margin-top:8px}.scientific-content{max-width:100%;overflow-x:auto;padding:12px 0;font-size:.85em}.scientific-content table{border-collapse:collapse;min-width:600px;width:100%;color:#13323a}.scientific-content td,.scientific-content th{border-bottom:1px solid #a8bfbb;padding:10px;text-align:left}.scientific-content thead{background:#dcebe7}.scientific-content svg{max-width:100%;height:auto}.scientific-content .tm-yes{color:#0b6553}.scientific-content .tm-part{color:#874500}.scientific-content .tm-no{color:#526276}
   .study-nav{position:sticky;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px max(16px,env(safe-area-inset-left)) max(12px,env(safe-area-inset-bottom));background:#0e303a;color:#d5f0ec;z-index:5}.study-nav button{background:#184c58;color:#fff;border-color:#729499}.study-nav span{font-size:14px;text-align:center}.study-preferences{max-width:1000px;margin:auto;padding:24px 20px;color:#46656d;font-size:14px}.study-preferences select{max-width:100%;font-size:16px}.study-preferences label{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
   dialog{width:calc(100% - 24px);max-width:1200px;max-height:calc(100dvh - 24px);padding:16px;border:1px solid #729499;border-radius:8px;background:#eef3f1;color:#13323a}dialog::backdrop{background:rgba(3,20,28,.85)}.figure-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px}.figure-toolbar p{font-size:15px;line-height:1.4}.figure-toolbar button{flex-shrink:0}.zoom-help{font-size:14px;color:#46656d}.zoom-controls{display:flex;gap:8px;margin-bottom:10px}.figure-scroll{overflow:auto;max-height:65dvh;background:white;border:1px solid #b8ccc8}.figure-scroll img{display:block;max-width:none;height:auto}.zoom-controls button{min-width:48px}
+  .session-tools{max-width:1000px;margin:12px auto 0;display:flex;flex-wrap:wrap;gap:10px}.session-tools button{font-size:14px}
   @media(max-width:600px){.study-controls{flex-wrap:wrap}.slide-picker{flex-basis:100%}.reading-tools{width:100%}.reading-tools a{margin-left:auto}main{padding:24px 18px}h1{font-size:1.5em}.study-nav button{font-size:14px;padding:8px}.study-nav span{font-size:12px}.figure-toolbar{align-items:flex-start}}
   @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 </style>

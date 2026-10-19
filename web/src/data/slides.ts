@@ -8,6 +8,7 @@ export interface Slide {
   // Online (iframe) mode URL
   url?: string;
   anchor?: string;
+  anchorPosition?: 'start' | 'center';
   highlight?: string;
   webMode?: 'evidence' | 'demo';
   webLabel?: string;
@@ -812,16 +813,16 @@ export const slideLibrary: Slide[] = [
   {
 
     id: 32,
-    offlineFrames: [{"src": "offline_calle30_hallazgos.png", "label": "Hallazgos", "caption": "Ficha de Calle 30: resultados y cadena metodológica documentados."}],
+    offlineFrames: [{"src": "offline_calle30_analisis.png", "label": "Análisis interactivo", "caption": "Calle 30: curvas de período de retorno y perfil longitudinal de calados; enfoque basado en cópulas frente al clásico."}],
     block: 'Casos de estudio', blockColor: '#f59e0b',
-    title: 'Calle 30 en HYDRA: hallazgos clave en la web',
+    title: 'Calle 30 en HYDRA: análisis interactivo',
     subtitle: 'Del forzamiento meteorológico al período de retorno del calado',
     estimatedMinutes: 1,
-    url: '/cases/m30-manzanares', anchor: '#case-findings-heading', highlight: '#case-findings-heading',
+    url: '/cases/m30-manzanares', anchor: '#m30-interactive-heading', anchorPosition: 'start',
     webMode: 'evidence',
     webLabel: 'Evidencia 3 · Transferencia industrial',
-    webPurpose: 'Cerrar el argumento mostrando un caso aplicado con Ferrovial y resultados auditables.',
-    webAction: 'Señalar HEC-RAS 1D, la selección MaxDiss, la reconstrucción k-NN y el mapa final de período de retorno del calado.',
+    webPurpose: 'Comparar los resultados del enfoque basado en cópulas y del procedimiento clásico en el análisis interactivo de Calle 30.',
+    webAction: 'Mostrar Análisis interactivo. Comparar la curva de período de retorno del Puente de Toledo y el perfil longitudinal para T100 y T500. Utilizar las leyendas y el cursor para leer las series; después, si procede, mostrar la nube de eventos MaxDiss.',
     type: 'split',
     figure: 'foto_tunel_infraestructura_critica.png', figurePosition: 'right',
     figureCaption: 'La variable relevante para la operación no es solo la lluvia: es la cota alcanzada dentro de una infraestructura crítica',
@@ -833,13 +834,14 @@ export const slideLibrary: Slide[] = [
     ],
     pyhydraRole:'Hace navegable y repetible el flujo completo del caso, desde la precipitación multisitio hasta el mapa de impacto.',
     pyhydraModules:['pyhydra.data_sources','pyhydra.climate','pyhydra.modeling','MaxDiss + k-NN'],
-    script: 'La ficha web permite auditar la cadena completa de Calle 30. Lo esencial es distinguir los dos modelos: HEC-HMS transforma la precipitación multisitio en caudales y HEC-RAS 1D calcula los calados a lo largo de la red canalizada y de túneles. MaxDiss selecciona los escenarios que se simulan explícitamente y k-NN reconstruye el resto. Así se obtiene la frecuencia sobre el calado hidráulico, que es la variable de impacto relevante para el diseño.',
-    notes: 'Momento de navegación en vivo en /cases/m30-manzanares. Resaltar la cadena lluvia → HEC-HMS → HEC-RAS 1D → k-NN y el cálculo final del período de retorno del calado.',
+    script: 'En el análisis interactivo de Calle 30 podemos comparar los resultados de los dos procedimientos. La primera gráfica relaciona el período de retorno con el calado en el Puente de Toledo. Al mover el cursor leemos los valores de cada serie; la leyenda permite ocultarlas y volver a mostrarlas. El perfil longitudinal permite ver cómo cambia el calado a lo largo del tramo para períodos de retorno de cien y quinientos años. Así comprobamos que las diferencias entre procedimientos también varían de una sección a otra. Más abajo, la nube de eventos muestra el subconjunto representativo seleccionado mediante MaxDiss. Estas gráficas permiten examinar el resultado hidráulico, que es sobre el que se estima la frecuencia del impacto.',
+    offlineScript: 'La captura recoge el análisis interactivo de Calle 30. A la izquierda, la curva relaciona el período de retorno con el calado en el Puente de Toledo. A la derecha, el perfil longitudinal compara los calados a lo largo del tramo para períodos de retorno de cien y quinientos años. Las series contrastan el enfoque basado en cópulas y el procedimiento clásico. Esta copia muestra una imagen del resultado; para consultar valores con el cursor u ocultar series hay que abrir la herramienta en vivo.',
+    notes: 'Abrir directamente Análisis interactivo, sin detenerse en Hallazgos. Explicar primero los ejes y las series. Comparar un período de retorno en el Puente de Toledo y después una sección en el perfil longitudinal. Distinguir la captura de la interacción real.',
     bullets: [
-      'Hallazgos clave publicados en la propia web, no solo en la memoria.',
-      'Referencias del caso enlazadas: navas2024calle30 y el proyecto FORESEE.',
-      'El flujo completo (precipitación → HEC-HMS → HEC-RAS 1D → k-NN) es navegable paso a paso.',
-      'Página pensada para un ingeniero de Ferrovial que quiera auditar el caso sin acceso a la memoria completa.',
+      'Curvas de período de retorno del calado en el Puente de Toledo.',
+      'Perfil longitudinal para períodos de retorno de cien y quinientos años.',
+      'Cursores y leyendas para consultar y comparar las series en vivo.',
+      'Nube de eventos representativos seleccionados mediante MaxDiss.',
     ],
   },
 
