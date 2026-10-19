@@ -13,6 +13,7 @@ const { case: pc } = Astro.props;
 const base = import.meta.env.BASE_URL;
 const notebookSessionHref = (path: string) => `/api/notebooks/session?path=${encodeURIComponent(path)}`;
 const hasNotebooks = pc.steps.some((s) => s.notebookPath);
+const regionalNotebook = pc.slug === 'valencia-dana' ? pc.steps.find((s) => s.notebookPath?.endsWith('03_real_regional_study_pyhydra.ipynb')) : undefined;
 
 const stepColors: Record<number, string> = {
   1: 'border-sky-500/30 bg-sky-950/50',
@@ -85,6 +86,7 @@ const stepTitleColors: Record<number, string> = {
       >{pc.subtitle.es}</p>
 
       <!-- Stats row -->
+      <div id={regionalNotebook ? 'valencia-analysis-access' : undefined} class="scroll-mt-24">
       <div id="case-stats" class="flex flex-wrap gap-10 mt-10">
         {pc.stats.map((s) => (
           <div>
@@ -92,6 +94,14 @@ const stepTitleColors: Record<number, string> = {
             <span class="text-sm text-white/65" data-t-es={s.label.es} data-t-en={s.label.en}>{s.label.es}</span>
           </div>
         ))}
+      </div>
+      {regionalNotebook?.notebookPath && (
+        <div class="mt-7 max-w-3xl border-t border-white/30 pt-5">
+          <h2 class="text-xl font-bold text-white" data-t-es="Del resultado al procedimiento" data-t-en="From result to method">Del resultado al procedimiento</h2>
+          <p class="mt-2 text-white/85" data-t-es="El notebook del estudio regional documenta la preparación de datos, el ajuste de extremos y la comparación de estimadores." data-t-en="The regional study notebook documents data preparation, extreme-value fitting and estimator comparison.">El notebook del estudio regional documenta la preparación de datos, el ajuste de extremos y la comparación de estimadores.</p>
+          <a href={notebookSessionHref(regionalNotebook.notebookPath)} target="_blank" rel="noopener" class="mt-4 inline-flex rounded-lg bg-white px-5 py-3 font-semibold text-slate-900 hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white" data-t-es="Abrir notebook del estudio regional" data-t-en="Open regional study notebook">Abrir notebook del estudio regional</a>
+        </div>
+      )}
       </div>
     </div>
   </section>
