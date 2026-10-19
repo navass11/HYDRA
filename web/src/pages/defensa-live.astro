@@ -716,7 +716,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       <!-- Slide deck mode wrapper -->
       <div class="live-slide-wrap" id="slide-wrap">
         <iframe
-          class="audience-slide-frame"
+          class="audience-slide-frame" style="visibility:hidden"
           id="audience-slide-frame"
           src={asset('/defensa-offline/?slide=0&preview=1')}
           title="Diapositiva proyectada"
@@ -733,7 +733,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
 
         <!-- Slide title -->
         <div>
-          <div class="panel-section-label">Slide actual</div>
+          <div class="panel-section-label">Paso actual</div>
           <div class="panel-title" id="panel-title">HYDRA</div>
           <div class="panel-subtitle" id="panel-subtitle"></div>
         </div>
@@ -762,7 +762,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
           <p class="narration-notice" data-narration-notice></p>
           <div class="panel-section-label">Guion completo para leer</div>
           <div class="panel-script" id="panel-script"></div>
-          <div class="panel-section-label">Enlace con la siguiente diapositiva · para leer</div>
+          <div class="panel-section-label">Transición al siguiente paso · para leer</div>
           <div class="panel-script" id="panel-transition"></div>
         </div>
 
@@ -793,7 +793,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
 
         <!-- Next slide preview -->
         <div class="panel-next" id="panel-next">
-          <div class="panel-next-label">→ Siguiente slide</div>
+          <div class="panel-next-label">→ Siguiente paso</div>
           <div class="panel-next-title" id="panel-next-title">—</div>
           <div class="panel-next-block" id="panel-next-block"></div>
         </div>
@@ -824,7 +824,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     </div>
     <div class="presenter-preview-frame">
       <!-- Read-only slide or live-page reference. Website navigation follows the audience window. -->
-      <iframe id="pres-win-preview-iframe" style="width:100%; height:100%; border:none; background:#020617; pointer-events:none;" src={asset('/defensa-offline/?slide=0&preview=1')} tabindex="-1"></iframe>
+      <iframe id="pres-win-preview-iframe" style="width:100%; height:100%; border:none; background:#020617; pointer-events:none; visibility:hidden;" src={asset('/defensa-offline/?slide=0&preview=1')} tabindex="-1"></iframe>
     </div>
   </div>
 
@@ -836,12 +836,15 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
         <div class="presenter-large-timer" id="pres-win-timer">0:00</div>
       </div>
       <div style="text-align:right;">
-        <span class="panel-section-label">Próximo bloque</span>
+        <span class="panel-section-label">Siguiente paso</span>
         <div id="pres-win-next-block" style="font-size:14px; font-weight:700; color:#a5b4fc;">—</div>
       </div>
     </div>
 
     <div class="panel-divider"></div>
+
+    <h1 id="pres-win-title" style="font-size:22px;line-height:1.3;color:#f1f5f9;margin:0;">—</h1>
+    <p id="pres-win-step-kind" style="font-size:14px;line-height:1.4;color:#5eead4;margin:8px 0 20px;">—</p>
 
     <!-- Speech text -->
     <div>
@@ -852,7 +855,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     </div>
 
     <div>
-      <span class="panel-section-label">Enlace con la siguiente diapositiva · para leer</span>
+      <span class="panel-section-label">Transición al siguiente paso · para leer</span>
       <div class="panel-script" id="pres-win-transition"></div>
     </div>
 
@@ -865,7 +868,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
 
     <!-- Next slide Title -->
     <div class="panel-next">
-      <span class="panel-next-label">Siguiente diapositiva</span>
+      <span class="panel-next-label">Siguiente paso</span>
       <div class="panel-next-title" id="pres-win-next-title">—</div>
     </div>
 
@@ -898,7 +901,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   const base = (window as any).__hydra_base ?? '/';
 
   // Synchronizer BroadcastChannel for double-screen PPT-like view
-  const syncChannel = new BroadcastChannel('defensa-sync');
+  const syncChannel = new BroadcastChannel('defensa-sync-v2');
 
   // Adjust DOM visible nodes immediately based on mode
   if (isPresenterWindow) {
@@ -909,6 +912,8 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   // ── State ──
   let narrationMode: NarrationMode = params.get('modo') === 'prepared' ? 'prepared' : 'live';
   let current = -1;
+  let lastNavigationStamp = 0;
+  const navigationStorageKey = 'defensa-live-navigation-v2';
   let elapsed = 0;
   let timerStartedAt = isPresenterWindow
     ? Number(localStorage.getItem('defensa-live-timer-start')) || Date.now()
@@ -1063,8 +1068,20 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   }
 
   // ── Sync Channel communication ──
-  function broadcastChange(index: number) {
-    syncChannel.postMessage({ type: 'slide-change', index });
+  function publishNavigation(index: number) {
+    lastNavigationStamp = Math.max(Date.now(), lastNavigationStamp + 1);
+    const state = { index, slideId: slides[index].id, stamp: lastNavigationStamp };
+    localStorage.setItem('defensa-live-slide', String(index));
+    localStorage.setItem(navigationStorageKey, JSON.stringify(state));
+    syncChannel.postMessage({ type: 'slide-change', ...state });
+  }
+
+  function receiveNavigation(state: { index: number; slideId: number; stamp: number }) {
+    if (!Number.isInteger(state.stamp) || state.stamp <= lastNavigationStamp) return;
+    const index = slides.findIndex(slide => slide.id === state.slideId);
+    if (index < 0 || index !== state.index) return;
+    lastNavigationStamp = state.stamp;
+    goTo(index, false);
   }
 
   syncChannel.onmessage = (e) => {
@@ -1072,23 +1089,18 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       setNarrationMode(e.data.mode, false); return;
     }
     if (e.data?.type === 'presentation-restart' && Number.isFinite(e.data.startedAt)) {
-      restartPresentation(e.data.startedAt, false);
+      restartPresentation(e.data.startedAt, false); return;
     }
     if (e.data?.type === 'web-preview-request' && !isPresenterWindow) publishWebPreview();
     if (e.data?.type === 'web-preview-state' && isPresenterWindow) receiveWebPreview(e.data);
-    if (e.data && e.data.type === 'slide-change') {
-      goTo(e.data.index);
-    }
+    if (e.data?.type === 'slide-change') receiveNavigation(e.data);
   };
 
-  // Storage event listener fallback (very reliable for popups and multiple tabs)
+  // Both transports use the same versioned state; received updates are never echoed.
   window.addEventListener('storage', (e) => {
     if (e.key === 'defensa-live-timer-start' && e.newValue && Number.isFinite(Number(e.newValue))) timerStartedAt = Number(e.newValue);
-    if (e.key === 'defensa-live-slide' && e.newValue !== null) {
-      const idx = parseInt(e.newValue);
-      if (idx !== current) {
-        goTo(idx);
-      }
+    if (e.key === navigationStorageKey && e.newValue) {
+      try { receiveNavigation(JSON.parse(e.newValue)); } catch { /* Ignore invalid saved state. */ }
     }
   });
 
@@ -1104,6 +1116,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   let latestWebPreview: WebPreviewState | null = null;
   let previewAnimationFrame = 0;
   let audienceWebLoading = false;
+  let presenterDeckLoaded = false;
 
   function publishWebPreview() {
     if (isPresenterWindow || audienceWebLoading || !slides[current]?.webMode || !iframeWrap.classList.contains('active-mode')) return;
@@ -1131,8 +1144,19 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       presPreviewIframe.dispatchEvent(new Event('defensa-preview-resize'));
     }
     const target = new URL(liveUrl ? synced?.url ?? liveUrl : `${base.replace(/\/$/, '')}/defensa-offline/?slide=${current}&preview=1`, location.origin).href;
-    if (presPreviewIframe.src !== target) presPreviewIframe.src = target;
-    else if (liveUrl && synced) {
+    if (!liveUrl && presenterDeckLoaded) {
+      presPreviewIframe.style.visibility = 'hidden';
+      presPreviewIframe.contentWindow?.postMessage({ type: 'defensa-preview-slide', index: current }, location.origin);
+      return;
+    }
+    if (presPreviewIframe.src !== target) {
+      presenterDeckLoaded = false;
+      presPreviewIframe.style.visibility = 'hidden';
+      presPreviewIframe.src = target;
+    }
+    else if (!liveUrl) {
+      presPreviewIframe.contentWindow?.postMessage({ type: 'defensa-preview-slide', index: current }, location.origin);
+    } else if (synced) {
       try { presPreviewIframe.contentWindow?.scrollTo(synced.x, synced.y); } catch { /* Wait for page load. */ }
     }
   }
@@ -1150,17 +1174,18 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     const slide = slides[current];
     if (!isPresenterWindow || !slide) return;
     if (buildUrl(slide)) {
+      presPreviewIframe.style.visibility = 'visible';
       const state = latestWebPreview;
       if (state?.index === current) presPreviewIframe.contentWindow?.scrollTo(state.x, state.y);
       else presPreviewIframe.contentWindow?.postMessage({ type: 'defensa-command', anchor: slide.anchor ?? null, anchorPosition: slide.anchorPosition ?? 'center', highlight: null }, location.origin);
     } else {
+      presenterDeckLoaded = true;
       // The load callback uses the current index, never an index from a previous navigation.
       presPreviewIframe.contentWindow?.postMessage({ type: 'defensa-preview-slide', index: current }, location.origin);
     }
   });
 
   // ── Navigate Iframe ──
-  let iframeCurrentPath = '';
   let loadingSlowTimer: ReturnType<typeof setTimeout> | null = null;
   const loadingText = document.getElementById('iframe-loading-text');
 
@@ -1168,8 +1193,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     const url = buildUrl(slide);
     if (!url) return;
 
-    const targetPath = new URL(url, window.location.origin).pathname;
-    if (iframeCurrentPath !== targetPath) {
+    if (!isExpectedWebsite(slide)) {
       if (loading) loading.classList.add('visible');
       if (loadingText) loadingText.textContent = 'Cargando HYDRA…';
       if (loadingSlowTimer) clearTimeout(loadingSlowTimer);
@@ -1178,10 +1202,19 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       }, 4000);
       audienceWebLoading = true;
       iframe.src = url;
-      iframeCurrentPath = targetPath;
     } else {
       sendToIframe(slide);
     }
+  }
+
+  function isExpectedWebsite(slide: typeof slides[0]) {
+    const expected = buildUrl(slide);
+    if (!expected) return false;
+    try {
+      const actual = new URL(iframe.contentWindow!.location.href);
+      const target = new URL(expected, location.origin);
+      return actual.origin === target.origin && actual.pathname.replace(/\/+$/, '') === target.pathname.replace(/\/+$/, '') && actual.search === target.search;
+    } catch { return false; }
   }
 
   // ── Send commands to pages inside Iframe ──
@@ -1201,10 +1234,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       audienceWebLoading = false;
       if (loading) loading.classList.remove('visible');
       if (loadingSlowTimer) { clearTimeout(loadingSlowTimer); loadingSlowTimer = null; }
-      try {
-        iframeCurrentPath = new URL(iframe.src).pathname;
-      } catch (_) {}
-      if (slides[current]?.webMode) sendToIframe(slides[current]);
+      if (slides[current]?.webMode && isExpectedWebsite(slides[current])) sendToIframe(slides[current]);
       if (!isPresenterWindow) {
         publishWebPreview();
         try {
@@ -1217,6 +1247,13 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       }
     });
   }
+
+  window.addEventListener('message', (event) => {
+    if (event.origin !== location.origin || event.data?.type !== 'defensa-preview-ready') return;
+    if (event.data.index !== current || event.data.slideId !== slides[current]?.id) return;
+    if (event.source === audienceSlideFrame.contentWindow && !buildUrl(slides[current])) audienceSlideFrame.style.visibility = 'visible';
+    if (event.source === presPreviewIframe.contentWindow && !buildUrl(slides[current])) presPreviewIframe.style.visibility = 'visible';
+  });
 
   audienceSlideFrame.addEventListener('load', () => {
     audienceSlideFrame.contentWindow?.postMessage({ type: 'defensa-preview-slide', index: Math.max(0, current) }, '*');
@@ -1556,20 +1593,27 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   narrationPickers.forEach(picker => picker.addEventListener('change', () => setNarrationMode(picker.value === 'prepared' ? 'prepared' : 'live')));
 
   // ── Main Slide Navigation ──
-  function goTo(idx: number) {
-    if (idx < 0 || idx >= totalSlides) return;
+  function goTo(idx: number, announce = true) {
+    if (!Number.isInteger(idx) || idx < 0 || idx >= totalSlides) return;
     if (current === idx) return;
     current = idx;
     const slide = slides[idx];
+    const stepUrl = new URL(location.href); stepUrl.searchParams.set('slide', String(idx));
+    history.replaceState(null, '', stepUrl);
     iframe.contentWindow?.postMessage({ type: 'defensa-command', anchor: null, highlight: null }, window.location.origin);
 
     // If we are in the presenter window, update notes-only presentation layout
     if (isPresenterWindow) {
       if (presWinTimer) startTimer();
       presWinCounter.textContent = `${idx + 1} / ${totalSlides}`;
+      document.getElementById('pres-win-title')!.textContent = `${idx + 1}. ${slide.title}`;
+      document.getElementById('pres-win-step-kind')!.textContent = buildUrl(slide) ? 'Navegación web · al avanzar volvemos a las diapositivas' : `Diapositiva · ${slide.block}`;
+      const previousSlide = slides[idx - 1];
+      presWinPrevBtn.textContent = previousSlide && buildUrl(previousSlide) ? '← Volver a la navegación' : '← Diapositiva anterior';
       
       const nextSlide = slides[idx + 1];
-      presWinNextBlock.textContent = nextSlide ? `${nextSlide.block} · ~${nextSlide.estimatedMinutes} min` : 'FIN';
+      presWinNextBlock.textContent = nextSlide ? `${buildUrl(nextSlide) ? 'Navegación web' : 'Diapositiva'} ${idx + 2} · ~${nextSlide.estimatedMinutes} min` : 'FIN';
+      presWinNextBtn.textContent = nextSlide && buildUrl(nextSlide) ? 'Abrir navegación web →' : buildUrl(slide) ? 'Volver a las diapositivas →' : 'Diapositiva siguiente →';
       renderNarration();
       // Each new script starts at its opening, even after reading the previous one to the end.
       document.querySelector<HTMLElement>('.presenter-window-right')?.scrollTo({ top: 0, behavior: 'instant' });
@@ -1584,7 +1628,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       if (buildUrl(slide)) syncChannel.postMessage({ type: 'web-preview-request' });
 
       // Persist state
-      localStorage.setItem('defensa-live-slide', String(idx));
+      if (announce) publishNavigation(idx);
       return;
     }
 
@@ -1704,25 +1748,24 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       if (iframeWrap) iframeWrap.classList.remove('active-mode');
       slideWrap.classList.add('active-mode');
       slideWrap.style.background = `radial-gradient(ellipse 70% 50% at 50% 0%, ${slide.blockColor}0d 0%, transparent 70%), #020617`;
-      audienceSlideFrame.contentWindow?.postMessage({ type: 'defensa-preview-slide', index: idx }, '*');
+      audienceSlideFrame.style.visibility = 'hidden';
+      audienceSlideFrame.contentWindow?.postMessage({ type: 'defensa-preview-slide', index: idx }, location.origin);
     }
 
     // Persist slide state
-    localStorage.setItem('defensa-live-slide', String(idx));
+    if (announce) publishNavigation(idx);
   }
 
   // Helper actions to advance / return
   function next() {
     if (current < totalSlides - 1) {
       goTo(current + 1);
-      broadcastChange(current);
     }
   }
 
   function prev() {
     if (current > 0) {
       goTo(current - 1);
-      broadcastChange(current);
     }
   }
 
@@ -1836,8 +1879,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       const n = parseInt(goInput.value) - 1;
       if (!isNaN(n)) {
         goTo(Math.min(Math.max(0, n), totalSlides - 1));
-        broadcastChange(current);
-      }
+        }
     };
     goInput.addEventListener('change', jumpToSlide);
     goInput.addEventListener('keydown', event => {
@@ -1920,14 +1962,14 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   const urlSlide = params.get('slide');
   const initIdx = urlSlide ? parseInt(urlSlide) : (stored ? parseInt(stored) : 0);
 
-  goTo(Math.min(Math.max(0, initIdx), totalSlides - 1));
+  goTo(Number.isInteger(initIdx) ? Math.min(Math.max(0, initIdx), totalSlides - 1) : 0);
   startTimer();
   function restartPresentation(startedAt = Date.now(), announce = true) {
     timerStartedAt = startedAt; elapsed = 0;
     localStorage.setItem('defensa-live-timer-start', String(startedAt));
     if (timerEl) timerEl.textContent = '⏱ 0:00';
     if (presWinTimer) presWinTimer.textContent = '0:00';
-    goTo(0);
+    goTo(0, announce);
     const url = new URL(location.href); url.searchParams.set('slide', '0');
     history.replaceState(null, '', url);
     if (announce) syncChannel.postMessage({type:'presentation-restart', startedAt});

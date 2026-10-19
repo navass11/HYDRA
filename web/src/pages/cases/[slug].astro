@@ -147,6 +147,17 @@ const stepTitleColors: Record<number, string> = {
         />
       </section>
 
+      {pc.slug === 'los-corrales-buelna' && (
+        <section id="besaya-foundational" class="scroll-mt-6 space-y-5" aria-labelledby="besaya-foundational-title">
+          <h2 id="besaya-foundational-title" class="text-2xl font-bold text-white">Besaya 2018: frecuencia sobre el impacto</h2>
+          <p class="text-slate-300 leading-relaxed max-w-5xl">El trabajo fundacional describe las avenidas mediante pico, volumen y duración, conserva su dependencia al generar hidrogramas y utiliza Iber para obtener la respuesta hidráulica. El período de retorno del calado se estima después de simular esa respuesta.</p>
+          <figure id="besaya-foundational-figure" class="rounded-xl bg-white p-4">
+            <img src={`${base.replace(/\/$/, '')}/defensa/figures/fig_besaya_cadena_fundacional.svg`} alt="Aforos, eventos multivariantes, hidrogramas, Iber y frecuencia del calado en el trabajo fundacional del Besaya" class="w-full h-auto object-contain" style="max-height:calc(100svh - 220px)" loading="eager" />
+            <figcaption class="text-slate-700 text-sm mt-3">TFM (2017) y Revista de Obras Públicas 3598 (2018). La ejecución de Iber era manual. Los notebooks actuales de HYDRA se presentan en la sección siguiente.</figcaption>
+          </figure>
+        </section>
+      )}
+
       <!-- ── WORKFLOW ── -->
       <section id="case-workflow">
         <div id="case-workflow-heading" class="mb-8">

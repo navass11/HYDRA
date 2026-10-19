@@ -2450,7 +2450,7 @@ const chapterIcons = [
   const goInput    = document.getElementById('pres-go') as HTMLInputElement;
 
   window.addEventListener('message', (event) => {
-    if (!isPreview || event.data?.type !== 'defensa-preview-slide') return;
+    if (!isPreview || event.source !== window.parent || event.origin !== location.origin || event.data?.type !== 'defensa-preview-slide') return;
     const index = Number(event.data.index);
     if (Number.isInteger(index)) goTo(Math.min(Math.max(0, index), totalSlides - 1));
   });
@@ -2533,9 +2533,15 @@ const chapterIcons = [
       });
     }
 
+    if (isPreview) window.parent.postMessage({ type: 'defensa-preview-ready', index: idx, slideId: slide.id }, location.origin);
+
     // Save state
     if (!isPreview) {
-      try { localStorage.setItem(storageKey, String(idx)); } catch { /* Some browsers restrict storage for local files. */ }
+      try {
+        localStorage.setItem(storageKey, String(idx));
+        const url = new URL(location.href); url.searchParams.set('slide', String(idx));
+        history.replaceState(null, '', url);
+      } catch { /* Some browsers restrict storage/history for local files. */ }
     }
   }
 

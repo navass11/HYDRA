@@ -229,7 +229,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
         if (window.self !== window.top) {
           var FORWARD_KEYS = ['ArrowRight', 'ArrowLeft', ' ', 'f', 'F', 'm', 'M', 'p', 'P'];
           document.addEventListener('keydown', function (e) {
-            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLSelectElement || (e.target instanceof HTMLElement && e.target.isContentEditable)) return;
             if (FORWARD_KEYS.indexOf(e.key) === -1) return;
             e.preventDefault();
             try {

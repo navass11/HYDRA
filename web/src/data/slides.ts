@@ -836,11 +836,11 @@ export const slideLibrary: Slide[] = [
     title: 'Besaya 2018: aquí nace la frecuencia sobre el impacto',
     subtitle: 'Aforos → eventos multivariantes → Iber → distribución de calados',
     estimatedMinutes: 1,
-    url: '/cases/los-corrales-buelna', anchor: '#case-workflow-heading', highlight: '#case-workflow-heading',
+    url: '/cases/los-corrales-buelna', anchor: "#besaya-foundational-figure", highlight: "",
     webMode: 'evidence',
-    webLabel: 'Evidencia 2 · Reproducibilidad',
+    webLabel: "Visita web · Cadena fundacional del Besaya",
     webPurpose: 'Mostrar el origen conceptual de la cadena estocástica basada en impactos.',
-    webAction: 'Señalar el flujo fundacional y distinguirlo expresamente del estudio posterior de rugosidades.',
+    webAction: "Mostrar el esquema fundacional de 2018. Los notebooks actuales aparecen después, en una sección distinta; volver al relato al avanzar.",
     figure: 'fig_besaya_cadena_fundacional.svg', figurePosition: 'right',
     figureCaption: 'Cadena fundacional documentada en la memoria: el período de retorno se estima a partir del resultado hidráulico',
     caseReference: 'Referencia: TFM (2017); Revista de Obras Públicas 3598 (2018); memoria doctoral, cap. 7',
@@ -865,7 +865,8 @@ export const slideLibrary: Slide[] = [
     visualGuide: ["Aforos y descripción multivariante","Hidrogramas generados y simulación con Iber","Distribución del impacto al final"],
     speechCues: ["aforos","pico, volumen y duración","cópula gaussiana","Iber","después de simular","2018","fundamento científico"],
     transition: "Una cadena reproducible permite comparar sus componentes; en el Besaya la comparación se hizo entre dos motores hidráulicos.",
-    transitionCue: "cambiar de motor"
+    transitionCue: "cambiar de motor",
+    anchorPosition: "center"
   },
 
   {
@@ -1285,7 +1286,7 @@ export const slideLibrary: Slide[] = [
 
   {
     id: 40,
-    block: 'Validación', blockColor: '#8b5cf6',
+    block: "Conclusiones", blockColor: '#8b5cf6',
     title: "Qué evidencia aporta cada hipótesis y qué falta comprobar",
     subtitle: 'Evidencia acumulada, con el alcance de cada una',
     estimatedMinutes: 3,
@@ -1456,7 +1457,7 @@ export const slideLibrary: Slide[] = [
   {
 
     id: 46,
-    block: 'Motivación', blockColor: '#3b82f6',
+    block: "Estado del arte", blockColor: '#3b82f6',
     title: 'Qué necesita una modelación estocástica de inundaciones',
     subtitle: 'La generación de escenarios solo adquiere valor cuando se conecta con datos, clima y modelos físicos',
     estimatedMinutes: 1,
