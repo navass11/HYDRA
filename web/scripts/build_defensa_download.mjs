@@ -5,7 +5,7 @@ import { execFileSync } from 'node:child_process';
 import { build } from 'esbuild';
 const root=resolve(import.meta.dirname,'..'), dist=join(root,'dist');
 const temporary=await mkdtemp(join(tmpdir(),'hydra-defensa-')), bundle=join(temporary,'HYDRA-defensa');
-const routes=new Map([['defensa-offline','presentacion.html'],['defensa-anexos','anexos.html'],['defensa-respaldo','respaldo.html'],['defensa','INICIO.html']]);
+const routes=new Map([['defensa-offline','presentacion.html'],['defensa-anexos','anexos.html'],['defensa-estudio','estudio.html'],['defensa-respaldo','respaldo.html'],['defensa','INICIO.html']]);
 const assets=new Set();
 const normalize=url=>url.replace(/^\/HYDRA\//,'/');
 const local=url=>join(dist,normalize(url).replace(/^\//,''));

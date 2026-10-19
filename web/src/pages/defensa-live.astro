@@ -659,6 +659,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       HYDRA · Defensa
     </div>
     <a class="live-topbar-btn" href={asset('/defensa-anexos')} target="_blank">Anexos</a><a class="live-topbar-btn" href={asset('/defensa-respaldo')} target="_blank">Respaldo</a>
+    <a class="live-topbar-btn" href={asset('/defensa-estudio')} id="study-entry">Estudiar</a>
     <span class="live-block-badge" id="top-block">Apertura</span>
     <span class="live-mode-badge" id="live-mode-badge">📄 Diapositiva</span>
     <div class="live-progress-wrap">
@@ -863,6 +864,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
 </script>
 
 <script>
+  import { enableStudyEntry } from '../lib/defense-study-entry';
   import { slides, totalSlides } from '../data/slides.ts';
 
   // ── Mode detection ──
@@ -1782,6 +1784,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
 
   goTo(Math.min(Math.max(0, initIdx), totalSlides - 1));
   startTimer();
+  enableStudyEntry({ getCurrent: () => current, mode: 'live', disabled: isPresenterWindow });
 </script>
 
 </Layout>

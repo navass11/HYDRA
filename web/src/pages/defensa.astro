@@ -408,6 +408,10 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
 
       <!-- Mode selector -->
       <div class="defensa-modes">
+        <a href={asset('/defensa-estudio')} class="mode-card mode-offline">
+          <div class="mode-label">Estudiar en móvil o tablet</div>
+          <div class="mode-desc">Texto ajustable, figuras ampliables y guion por diapositiva.</div>
+        </a>
         <!-- Online mode -->
         <a href={asset('/defensa-live')} class="mode-card mode-online" id="btn-online">
           <span class="mode-recommended">Recomendado</span>
@@ -431,7 +435,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       </div>
 
       <div class="defensa-note"><p><a href={asset('/defensa/hydra-defensa-sin-conexion.zip')} download>Descargar para usar sin conexión</a></p>
-        <p>Incluye presentación, anexos y figuras. Descomprime el ZIP y abre <strong>INICIO.html</strong> en tu navegador. Guarda la carpeta completa antes de la defensa.</p>
+        <p>Incluye presentación, modo de estudio, anexos y figuras. Descomprime el ZIP y abre <strong>INICIO.html</strong> en tu navegador. Guarda la carpeta completa antes de la defensa.</p>
         <p><a href={asset('/defensa-anexos')}>Anexos para preguntas</a> · <a href={asset('/defensa-respaldo')}>Resultado de respaldo local</a></p>
         Atajos de teclado: <kbd>→</kbd> / <kbd>Space</kbd> siguiente &nbsp;·&nbsp;
         <kbd>←</kbd> anterior &nbsp;·&nbsp;
