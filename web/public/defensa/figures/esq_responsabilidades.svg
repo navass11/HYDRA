@@ -46,8 +46,8 @@
   <!-- bottom band -->
   <rect x="10" y="400" width="780" height="2" fill="#A9D2CC"/>
   <g font-size="18" fill="#13323A">
-    <text x="10" y="440">14 submódulos en tres bloques: fuentes de datos (4),</text>
-    <text x="10" y="466">clima y estadística (5) y modelización (5).</text>
+    <text x="10" y="440">Cuatro módulos funcionales en la web;</text>
+    <text x="10" y="466">14 submódulos en tres paquetes del código.</text>
     <text x="10" y="508" font-size="16" fill="#4A6870">Cada caso activa solo la combinación que necesita.</text>
   </g>
 </svg>

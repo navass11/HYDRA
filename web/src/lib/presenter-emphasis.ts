@@ -21,7 +21,7 @@ const keywords: Record<number, readonly string[]> = {
   46: ['serie observada', 'miles de escenarios', 'modelos físicos', 'mapa de calado por escenario', 'curva de frecuencia sobre el impacto', 'banda de incertidumbre'],
   9: ['2017', 'artículo de 2018', 'cuencas sin aforo', 'calibración automática', 'incertidumbre entre motores hidráulicos', 'arquitectura común'],
   10: ['falta de integración operativa', 'CLIMADA', 'RainyDay', 'wflow y HydroMT', 'Falter', 'ocho capacidades', 'componentes que la arquitectura utiliza'],
-  47: ['Los datos', 'Los extremos y el clima', 'Los escenarios', 'La respuesta física', 'el impacto', 'catorce submódulos en tres bloques'],
+  47: ['Los datos', 'Los extremos y el clima', 'Los escenarios', 'La respuesta física', 'el impacto', 'cuatro módulos funcionales'],
   11: ['tres niveles', 'núcleo científico pyhydra', 'servicios de ejecución', 'interfaz web', 'entorno en contenedores', 'mismos datos y la misma configuración'],
   12: ['contenedores', 'integración continua', 'repetir los cálculos', 'sin conexión', 'datos, los programas', 'licencias del modelo'],
   5: ['ecosistema reproducible completo', 'pyhydra', 'HYDRA', 'contenedores Docker'],

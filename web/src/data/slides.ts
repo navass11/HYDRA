@@ -217,7 +217,7 @@ export const slideLibrary: Slide[] = [
     visualGuide: ["Portada y navegación principal","Accesos a documentación, herramientas y casos/notebooks","Relación con el núcleo científico"],
     speechCues: ["primera vez en HYDRA","documentación de los módulos","herramientas interactivas","casos de estudio","esas tres entradas","núcleo científico"],
     offlineSpeechCues: ["primera entrada","portada de HYDRA","documentación de los módulos","herramientas interactivas","casos de estudio","capturas preparadas","núcleo científico"],
-    transitionCue: "tres bloques"
+    transitionCue: "cuatro módulos funcionales"
   },
 
   // ════════════════════════════════════════════════════
@@ -467,17 +467,17 @@ export const slideLibrary: Slide[] = [
   {
     id: 12.6,
     block: 'Arquitectura', blockColor: '#0891b2',
-    title: 'Catorce módulos organizados en tres bloques',
-    subtitle: 'La estructura funcional de la librería sigue el flujo del análisis de inundación',
+    title: "Cuatro módulos funcionales, un núcleo científico",
+    subtitle: "La misma organización que encontramos al navegar por HYDRA",
     estimatedMinutes: 1,
     type: 'figure',
     figure: 'fig_pyhydra_modules.svg', figurePosition: 'full',
-    figureCaption: 'Estructura de los submódulos descrita en el capítulo de arquitectura de la memoria',
-    script: "Las tres columnas muestran la organización de los catorce submódulos. El bloque de datos contiene cuatro, dedicados a lluvia, caudal, cambio climático y suelos. El bloque climático y estadístico agrupa cinco responsabilidades: extremos, análisis espacial, generación, corrección de sesgo y downscaling. Los otros cinco se ocupan de la modelización y su sensibilidad.\n\nLas rutas de la figura permiten localizar esos componentes en el código. Cada estudio utiliza los que necesita: puede terminar en un análisis de extremos o continuar hasta la simulación hidráulica. Así se conserva una organización común y se puede adaptar el recorrido a la pregunta del caso, como veremos en las aplicaciones.",
-    notes: "4 submódulos de datos, 5 de clima/estadística y 5 de modelización. Relacionar las columnas con las operaciones siguientes; las rutas pequeñas son localizadores de código.",
-    speakerGoal: "Dar un mapa funcional del núcleo sin recitar rutas de código.",
-    visualGuide: ["Columna de datos","Columna de clima y estadística","Columna de modelización"],
-    speechCues: ["catorce submódulos","bloque de datos","climático y estadístico","modelización","localizar","pregunta del caso"],
+    figureCaption: "Fuentes de datos → Análisis climático → Generación estocástica → Modelización",
+    script: "Las cuatro columnas corresponden a los cuatro módulos principales que acabamos de ver en la web. Fuentes de datos reúne lluvia, caudal, proyecciones climáticas y suelos. Análisis climático permite estudiar series y extremos, analizar su distribución espacial, corregir sesgos y aplicar downscaling híbrido. Generación estocástica construye escenarios sintéticos. Modelización conecta esos escenarios con los modelos hidrológicos e hidráulicos y permite estudiar su sensibilidad.\n\nConviene distinguir esta organización funcional de la estructura del código: análisis climático y generación estocástica comparten el paquete climate. Por eso, los catorce submódulos descritos en la memoria se distribuyen en tres paquetes principales, aunque la web presenta cuatro módulos funcionales. Cada estudio utiliza la combinación que necesita; no es obligatorio recorrerlos todos para obtener un resultado.",
+    notes: "Mantener los cuatro nombres de la web. No confundir cuatro módulos funcionales con tres paquetes del código (data_sources, climate y modeling) ni con los tres niveles de arquitectura (núcleo, servicios e interfaz). El downscaling híbrido integra etapas y utiliza otros componentes; el diagrama muestra su ubicación, no cuatro etapas obligatorias.",
+    speakerGoal: "Reconocer los cuatro módulos de la web y distinguirlos de la organización interna del código.",
+    visualGuide: ["Fuentes de datos", "Análisis climático", "Generación estocástica", "Modelización", "Franja inferior: correspondencia con los paquetes del código"],
+    speechCues: ["cuatro módulos principales", "Fuentes de datos", "Análisis climático", "Generación estocástica", "Modelización", "organización funcional", "estructura del código", "paquete climate", "catorce submódulos", "tres paquetes principales", "combinación que necesita"],
     transition: "La primera dificultad práctica es que las entradas proceden de fuentes muy distintas.",
     transitionCue: "bloque de datos"
   },
@@ -1508,7 +1508,7 @@ export const slideLibrary: Slide[] = [
     subtitle: 'Cinco responsabilidades científicas que después se materializan en la arquitectura',
     estimatedMinutes: 1,
     type: 'normal',
-    script: 'Antes de la arquitectura técnica, este es el mapa metodológico: cinco responsabilidades y los submódulos de pyhydra que las materializan. Los datos: lluvia, caudal, cambio climático y suelos. Los extremos y el clima: series, análisis regional y corrección de sesgo. Los escenarios: generación estocástica y downscaling híbrido. La respuesta física: HEC-HMS, SWAT+, SFINCS y HEC-RAS. Y el impacto: reconstrucción de escenarios no simulados, sensibilidad y período de retorno sobre el calado. Son catorce submódulos en tres bloques, y cada caso activa solo la combinación que necesita.',
+    script: 'Antes de la arquitectura técnica, este es el mapa metodológico: cinco responsabilidades y los submódulos de pyhydra que las materializan. Los datos: lluvia, caudal, cambio climático y suelos. Los extremos y el clima: series, análisis regional y corrección de sesgo. Los escenarios: generación estocástica y downscaling híbrido. La respuesta física: HEC-HMS, SWAT+, SFINCS y HEC-RAS. Y el impacto: reconstrucción de escenarios no simulados, sensibilidad y período de retorno sobre el calado. La web organiza estas capacidades en cuatro módulos funcionales: fuentes de datos, análisis climático, generación estocástica y modelización. El código reúne los catorce submódulos descritos en la memoria en tres paquetes principales; cada caso utiliza solo la combinación que necesita.',
     notes: 'Utilizar esta diapositiva como orientación. No enumerar aún clases ni submódulos. En la diapositiva siguiente se explica que la arquitectura asigna una capa técnica a estas responsabilidades.',
     backup: true,
     sectionLabel: "Mapa metodológico"
@@ -1772,7 +1772,7 @@ const spokenBridges = new Map<number, { nextId: number; text: string }>([
     5,
     {
       "nextId": 12.6,
-      "text": "Dentro de esos accesos, el núcleo se organiza en tres bloques."
+      "text": "Veamos los cuatro módulos funcionales que organiza la web."
     }
   ],
   [
