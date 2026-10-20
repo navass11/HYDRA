@@ -163,7 +163,7 @@ export const slideLibrary: Slide[] = [
     bullets: ["Requisitos: automatizar, modularizar y repetir el análisis.","pyhydra: librería Python que implementa el núcleo científico.","HYDRA: plataforma que integra núcleo, web, notebooks y servicios."],
     backup: false,
     speakerGoal: "Presentar pyhydra como respuesta a los objetivos e hipótesis, distinguir la plataforma y explicar su nombre.",
-    visualGuide: ["Requisitos derivados de las hipótesis y los objetivos","pyhydra: núcleo científico; HYDRA: plataforma","Hidra: funciones especializadas en un sistema coordinado"],
+    visualGuide: ["Requisitos derivados de las hipótesis y los objetivos","pyhydra: núcleo científico; HYDRA: plataforma","Origen del nombre: hidra de la mitología griega y logotipo oficial"],
     speechCues: ["hipótesis y los objetivos","requisitos","dar respuesta","pyhydra","núcleo científico","HYDRA designa la plataforma","hidra de la mitología griega","funciones especializadas","modularidad y la integración","transferencia a problemas reales"],
     transitionCue: "recorrido investigador",
     sectionLabel: "Respuesta tecnológica"

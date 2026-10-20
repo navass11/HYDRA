@@ -4,7 +4,7 @@ export const visualSlides: Record<number, { kind: string; metric?: string; figur
   2: { kind:'flow', metric:'El título describe una arquitectura reproducible, no un único algoritmo', items:[
     {label:'Modelo',detail:'una cadena completa de cálculo'}, {label:'Automático',detail:'reduce tareas manuales frágiles'},
     {label:'Inundación',detail:'calcula la frecuencia sobre el impacto'}, {label:'Estocástica',detail:'propaga múltiples escenarios plausibles'} ] },
-  4.6: { kind:'layers', figure:'esq_nombre_hydra.svg', metric:'HYDRA: funciones especializadas, un sistema coordinado', items:[
+  4.6: { kind:'layers', figure:'esq_nombre_hydra.svg', metric:'Origen del nombre: la hidra de la mitología griega', items:[
     {label:'Requisitos',detail:'automatizar, modularizar y repetir el análisis'},
     {label:'pyhydra',detail:'librería Python que implementa el núcleo científico'},
     {label:'HYDRA',detail:'plataforma que integra núcleo, web, notebooks y servicios'} ] },
