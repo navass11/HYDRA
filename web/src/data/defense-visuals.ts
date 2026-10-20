@@ -66,11 +66,6 @@ export const visualSlides: Record<number, { kind: string; metric?: string; figur
     {label:'Base científica',detail:'metodologías preexistentes incorporadas'},
     {label:'Desarrollo',detail:'módulos, adaptadores y pipelines'},
     {label:'Contribución original',detail:'integración, reproducibilidad y transferencia'} ] },
-  42: { kind:'roadmap', figure:'esq_limitaciones.svg', metric:'Cada limitación reconocida abre un desarrollo verificable', items:[
-    {label:'Series cortas',detail:'incertidumbre explícita en la cola'}, {label:'Motores externos',detail:'adaptadores y versiones registradas'},
-    {label:'Estacionariedad',detail:'generación condicionada al clima'}, {label:'Coste',detail:'emuladores + ejecución distribuida'},
-    {label:'Datos globales',detail:'control de calidad y trazabilidad'},
-    {label:'Validación observacional',detail:'métricas de acierto y ahorro medido'} ] },
   42.5: { kind:'acknowledgements', metric:'A todos, gracias', items:[
     {label:'Mi familia',detail:'el apoyo que sostuvo todo el recorrido'},
     {label:'Manuel del Jesus Peñil',detail:'rigor, confianza y vocación de utilidad'},
