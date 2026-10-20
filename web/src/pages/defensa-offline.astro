@@ -1699,6 +1699,17 @@ const chapterIcons = [
   .pres-shell .case-process-step:not(:last-child)::after { content: none; }
   .pres-shell .case-thesis-bridge { background: none; border-left-color: var(--deep); color: var(--ink); }
 
+  /* Case methodology stays in the same full-width footer for split and full figures. */
+  .pres-shell .case-process-footer { flex: 0 0 auto; width: 100%; min-width: 0; margin-top: 16px; }
+  .pres-shell .case-process-footer .case-process-label { margin: 0 0 7px; letter-spacing: normal; text-transform: none; }
+  .pres-shell .case-process-footer .case-process { list-style: none; padding: 0; margin: 0; gap: 6px; }
+  .pres-shell .case-process-footer .case-process-step { overflow-wrap: anywhere; line-height: 1.2; }
+  .pres-shell .has-case-process .slide-split-right { grid-template-rows: minmax(0, 1fr) auto; }
+  .pres-shell .has-case-process .slide-figure-full { flex: 1 1 0; overflow: hidden; }
+  .pres-shell .has-case-process .slide-figure-full img { flex: 1 1 0; width: 100%; min-height: 0; object-fit: contain; }
+  .pres-shell .has-case-process .slide-figure-full .slide-figure-caption,
+  .pres-shell .has-case-process .slide-figure-full .case-reference { flex: 0 0 auto; }
+
   /* ── Closing ── */
   .pres-shell .closing-takeaway { background: none; border-radius: 0; font-family: var(--font-text); }
   .pres-shell .closing-link { background: none; border: 0; padding: 0 26px 0 0; color: #c9dcd8; font-size: clamp(14px, 1.05vw, 17px); }
@@ -1993,10 +2004,11 @@ const chapterIcons = [
         const isTable = !hasOfflineFrames && slide.type === 'table';
         const isNormal = !hasOfflineFrames && !isTitle && !isIndex && !isQuote && !isFigure && !isSplit && !isTimeline && !isMatrix && !isTable;
         const visual = visualSlides[slide.id];
+        const hasCaseProcess = slide.block === 'Casos de estudio' && Boolean(slide.processSteps?.length);
 
         return (
           <div
-            class={`slide slide-id-${String(slide.id).replace('.', '-')} slide-type-${slide.type ?? 'normal'} ${slide.id === 43 ? 'closing-slide' : ''} ${idx === 0 ? 'active' : ''}`}
+            class={`slide slide-id-${String(slide.id).replace('.', '-')} slide-type-${slide.type ?? 'normal'} ${hasCaseProcess ? 'has-case-process' : ''} ${slide.id === 43 ? 'closing-slide' : ''} ${idx === 0 ? 'active' : ''}`}
             data-idx={idx}
             data-block={slide.block}
             data-color={slide.blockColor}
@@ -2283,14 +2295,7 @@ const chapterIcons = [
                           {secondaryFigSrc && <figure><img class="slide-figure" src={secondaryFigSrc} alt={slide.secondaryFigureCaption ?? ''} loading="lazy" />{slide.secondaryFigureCaption && <figcaption class="slide-figure-caption">{slide.secondaryFigureCaption}</figcaption>}</figure>}
                         </div>
                         {slide.caseReference && <div class="case-reference">{slide.caseReference}</div>}
-                        {slide.processSteps?.length ? (
-                          <>
-                            <div class="case-process-label">Proceso metodológico</div>
-                            <div class="case-process" style={`--process-color:${slide.blockColor}`}>
-                              {slide.processSteps.map(step => <div class="case-process-step">{step}</div>)}
-                            </div>
-                          </>
-                        ) : null}
+
                       </>
                     )}
                   </div>
@@ -2357,6 +2362,16 @@ const chapterIcons = [
                   })}
                 </div>
               </>
+            )}
+
+            {/* One shared footer for every case, independent of its figure layout. */}
+            {hasCaseProcess && (
+              <section class="case-process-footer" aria-label="Proceso metodológico">
+                <div class="case-process-label">Proceso metodológico</div>
+                <ol class="case-process" style={`--process-color:${slide.blockColor}`}>
+                  {slide.processSteps!.map(step => <li class="case-process-step">{step}</li>)}
+                </ol>
+              </section>
             )}
           </div>
         );

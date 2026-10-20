@@ -39,7 +39,7 @@ export interface Slide {
   results?: { value: string; label: string; implication?: string }[];
   pyhydraRole?: string;
   pyhydraModules?: string[];
-  processSteps?: string[]; // Compact methodological chain shown beside case-study figures
+  processSteps?: string[]; // Compact methodological chain shown in the shared case-study footer
   caseReference?: string; // Visible provenance for case-study evidence
   type?: 'title' | 'index' | 'quote' | 'timeline' | 'matrix' | 'figure' | 'split' | 'table' | 'normal';
   backup?: boolean;      // Material preparado para preguntas, fuera del relato principal
