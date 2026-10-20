@@ -901,7 +901,17 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   const base = (window as any).__hydra_base ?? '/';
 
   // Synchronizer BroadcastChannel for double-screen PPT-like view
-  const syncChannel = new BroadcastChannel('defensa-sync-v2');
+  // Storage remains usable when a browser suspends a background window or drops its channel.
+  const readSaved = (key: string) => { try { return localStorage.getItem(key); } catch { return null; } };
+  const saveShared = (key: string, value: string) => { try { localStorage.setItem(key, value); } catch { /* A restricted store must not stop navigation. */ } };
+  const sessionKey = 'defensa-live-window-v1';
+  type WindowSession = { slideId: number; startedAt: number; mode: NarrationMode; projection: boolean; panel: boolean; scroll: number };
+  let savedSession: Partial<WindowSession> = {};
+  try { savedSession = JSON.parse(sessionStorage.getItem(sessionKey) || '{}') ?? {}; } catch { /* Start without a saved window. */ }
+  let syncChannel: BroadcastChannel | null = null;
+  function sendSync(message: unknown) {
+    try { syncChannel?.postMessage(message); } catch { /* Navigation is also persisted and restored on focus. */ }
+  }
 
   // Adjust DOM visible nodes immediately based on mode
   if (isPresenterWindow) {
@@ -910,15 +920,13 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   }
 
   // ── State ──
-  let narrationMode: NarrationMode = params.get('modo') === 'prepared' ? 'prepared' : 'live';
+  let narrationMode: NarrationMode = (params.get('modo') ?? savedSession.mode ?? readSaved('defensa-live-narration')) === 'prepared' ? 'prepared' : 'live';
   let current = -1;
   let lastNavigationStamp = 0;
   const navigationStorageKey = 'defensa-live-navigation-v2';
   let elapsed = 0;
-  let timerStartedAt = isPresenterWindow
-    ? Number(localStorage.getItem('defensa-live-timer-start')) || Date.now()
-    : Date.now();
-  if (!isPresenterWindow) localStorage.setItem('defensa-live-timer-start', String(timerStartedAt));
+  let timerStartedAt = Number(readSaved('defensa-live-timer-start')) || savedSession.startedAt || Date.now();
+  saveShared('defensa-live-timer-start', String(timerStartedAt));
   let timerInterval: ReturnType<typeof setInterval> | null = null;
   let panelOpen = false;
   let notesOpen = true;
@@ -1056,35 +1064,38 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   // ── Timer ──
   function startTimer() {
     if (timerInterval) return;
-    timerInterval = setInterval(() => {
-      elapsed = Math.floor((Date.now() - timerStartedAt) / 1000);
+    const updateTimer = () => {
+      elapsed = Math.max(0, Math.floor((Date.now() - timerStartedAt) / 1000));
       const m = Math.floor(elapsed / 60);
       const s = elapsed % 60;
       const timeStr = `⏱ ${m}:${s.toString().padStart(2,'0')}`;
       const timeStrLarge = `${m}:${s.toString().padStart(2,'0')}`;
       if (timerEl) timerEl.textContent = timeStr;
       if (presWinTimer) presWinTimer.textContent = timeStrLarge;
-    }, 1000);
+    };
+    updateTimer();
+    timerInterval = setInterval(updateTimer, 1000);
   }
 
   // ── Sync Channel communication ──
   function publishNavigation(index: number) {
     lastNavigationStamp = Math.max(Date.now(), lastNavigationStamp + 1);
     const state = { index, slideId: slides[index].id, stamp: lastNavigationStamp };
-    localStorage.setItem('defensa-live-slide', String(index));
-    localStorage.setItem(navigationStorageKey, JSON.stringify(state));
-    syncChannel.postMessage({ type: 'slide-change', ...state });
+    saveShared('defensa-live-slide', String(index));
+    saveShared(navigationStorageKey, JSON.stringify(state));
+    saveWindowSession();
+    sendSync({ type: 'slide-change', ...state });
   }
 
   function receiveNavigation(state: { index: number; slideId: number; stamp: number }) {
     if (!Number.isInteger(state.stamp) || state.stamp <= lastNavigationStamp) return;
     const index = slides.findIndex(slide => slide.id === state.slideId);
-    if (index < 0 || index !== state.index) return;
+    if (index < 0) return;
     lastNavigationStamp = state.stamp;
     goTo(index, false);
   }
 
-  syncChannel.onmessage = (e) => {
+  function onSyncMessage(e: MessageEvent) {
     if (e.data?.type === 'narration-mode' && ['live', 'prepared'].includes(e.data.mode)) {
       setNarrationMode(e.data.mode, false); return;
     }
@@ -1094,11 +1105,24 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     if (e.data?.type === 'web-preview-request' && !isPresenterWindow) publishWebPreview();
     if (e.data?.type === 'web-preview-state' && isPresenterWindow) receiveWebPreview(e.data);
     if (e.data?.type === 'slide-change') receiveNavigation(e.data);
-  };
+    if (e.data?.type === 'session-request') {
+      const navigation = readSaved(navigationStorageKey);
+      if (navigation) { try { sendSync({ type: 'slide-change', ...JSON.parse(navigation) }); } catch { /* Invalid stored state. */ } }
+      if (!isPresenterWindow) publishWebPreview();
+    }
+  }
+  function reconnectSync() {
+    try {
+      syncChannel?.close();
+      syncChannel = new BroadcastChannel('defensa-sync-v2');
+      syncChannel.onmessage = onSyncMessage;
+    } catch { syncChannel = null; }
+  }
 
   // Both transports use the same versioned state; received updates are never echoed.
   window.addEventListener('storage', (e) => {
     if (e.key === 'defensa-live-timer-start' && e.newValue && Number.isFinite(Number(e.newValue))) timerStartedAt = Number(e.newValue);
+    if (e.key === 'defensa-live-narration' && e.newValue && ['live', 'prepared'].includes(e.newValue)) setNarrationMode(e.newValue as NarrationMode, false);
     if (e.key === navigationStorageKey && e.newValue) {
       try { receiveNavigation(JSON.parse(e.newValue)); } catch { /* Ignore invalid saved state. */ }
     }
@@ -1124,7 +1148,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       const page = iframe.contentWindow!;
       const url = page.location.href;
       if (new URL(url).origin !== location.origin) return;
-      syncChannel.postMessage({ type: 'web-preview-state', index: current, url, x: page.scrollX, y: page.scrollY, width: page.innerWidth, height: page.innerHeight });
+      sendSync({ type: 'web-preview-state', index: current, url, x: page.scrollX, y: page.scrollY, width: page.innerWidth, height: page.innerHeight });
     } catch { /* Only same-origin HYDRA pages can be previewed. */ }
   }
 
@@ -1145,7 +1169,8 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     }
     const target = new URL(liveUrl ? synced?.url ?? liveUrl : `${base.replace(/\/$/, '')}/defensa-offline/?slide=${current}&preview=1`, location.origin).href;
     if (!liveUrl && presenterDeckLoaded) {
-      presPreviewIframe.style.visibility = 'hidden';
+      if (presPreviewIframe.dataset.previewIndex !== String(current)) presPreviewIframe.style.visibility = 'hidden';
+      presPreviewIframe.dataset.previewIndex = String(current);
       presPreviewIframe.contentWindow?.postMessage({ type: 'defensa-preview-slide', index: current }, location.origin);
       return;
     }
@@ -1262,6 +1287,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   // ── Toggle Presentation View Layouts ──
   function setProjectionMode(val: boolean) {
     projectionMode = val;
+    saveWindowSession();
     const body = document.body;
     body.classList.toggle('projection-view', val);
     
@@ -1585,10 +1611,12 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   }
   function setNarrationMode(mode: NarrationMode, announce = true) {
     narrationMode = mode;
+    saveShared('defensa-live-narration', mode);
+    saveWindowSession();
     const url = new URL(location.href);url.searchParams.set('modo', mode);history.replaceState(null, '', url);
     renderNarration();
     updatePresenterPreview();
-    if (announce) syncChannel.postMessage({type: 'narration-mode', mode});
+    if (announce) sendSync({type: 'narration-mode', mode});
   }
   narrationPickers.forEach(picker => picker.addEventListener('change', () => setNarrationMode(picker.value === 'prepared' ? 'prepared' : 'live')));
 
@@ -1625,10 +1653,11 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
 
       // Sync the audience-view preview iframe inside the presenter popup window
       updatePresenterPreview();
-      if (buildUrl(slide)) syncChannel.postMessage({ type: 'web-preview-request' });
+      if (buildUrl(slide)) sendSync({ type: 'web-preview-request' });
 
       // Persist state
       if (announce) publishNavigation(idx);
+      saveWindowSession();
       return;
     }
 
@@ -1754,6 +1783,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
 
     // Persist slide state
     if (announce) publishNavigation(idx);
+    saveWindowSession();
   }
 
   // Helper actions to advance / return
@@ -1957,22 +1987,90 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   `;
   document.head.appendChild(anims);
 
-  // ── Init state load ──
-  const stored = localStorage.getItem('defensa-live-slide');
-  const urlSlide = params.get('slide');
-  const initIdx = urlSlide ? parseInt(urlSlide) : (stored ? parseInt(stored) : 0);
+  // Keep a per-window reading position; only explicit restart clears the timer.
+  function saveWindowSession() {
+    if (!slides[current]) return;
+    const state: WindowSession = {
+      slideId: slides[current].id, startedAt: timerStartedAt, mode: narrationMode,
+      projection: projectionMode, panel: panelOpen,
+      scroll: document.querySelector<HTMLElement>(isPresenterWindow ? '.presenter-window-right' : '#panel-scroll')?.scrollTop ?? 0,
+    };
+    try { sessionStorage.setItem(sessionKey, JSON.stringify(state)); } catch { /* Optional persistence. */ }
+  }
+  function recoverSession() {
+    const startedAt = Number(readSaved('defensa-live-timer-start'));
+    if (startedAt > 0 && Number.isFinite(startedAt)) timerStartedAt = startedAt;
+    try {
+      const navigation = readSaved(navigationStorageKey);
+      if (navigation) receiveNavigation(JSON.parse(navigation));
+    } catch { /* Ignore damaged storage. */ }
+    const mode = readSaved('defensa-live-narration');
+    if ((mode === 'live' || mode === 'prepared') && mode !== narrationMode) setNarrationMode(mode, false);
+    reconnectSync();
+    sendSync({ type: 'session-request' });
+    if (isPresenterWindow) { updatePresenterPreview(); sendSync({ type: 'web-preview-request' }); }
+    else {
+      if (!buildUrl(slides[current])) audienceSlideFrame.contentWindow?.postMessage({ type: 'defensa-preview-slide', index: current }, location.origin);
+      publishWebPreview();
+    }
+  }
+  document.querySelector<HTMLElement>('.presenter-window-right')?.addEventListener('scroll', saveWindowSession, { passive: true });
+  document.getElementById('panel-scroll')?.addEventListener('scroll', saveWindowSession, { passive: true });
+  window.addEventListener('pagehide', saveWindowSession);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') recoverSession(); else saveWindowSession();
+  });
+  window.addEventListener('focus', recoverSession);
+  window.addEventListener('pageshow', recoverSession);
+  window.addEventListener('online', recoverSession);
+  // Missed storage events during tab freezing are reconciled without reloading the page.
+  setInterval(() => {
+    if (document.visibilityState !== 'visible') return;
+    try { const navigation = readSaved(navigationStorageKey); if (navigation) receiveNavigation(JSON.parse(navigation)); } catch { /* Optional store. */ }
+  }, 5000);
 
-  goTo(Number.isInteger(initIdx) ? Math.min(Math.max(0, initIdx), totalSlides - 1) : 0);
+  setInterval(() => {
+    if (document.visibilityState !== 'visible' || buildUrl(slides[current])) return;
+    const frame = isPresenterWindow ? presPreviewIframe : audienceSlideFrame;
+    if (frame.style.visibility !== 'hidden') { delete frame.dataset.recoveryAttempt; return; }
+    if (!frame.dataset.recoveryAttempt) { frame.dataset.recoveryAttempt = String(Date.now()); return; }
+    const lastAttempt = Number(frame.dataset.recoveryAttempt);
+    if (Date.now() - lastAttempt < 30000) return;
+    frame.dataset.recoveryAttempt = String(Date.now());
+    // Reload only an unresponsive visual preview. The script, timer and reading position stay intact.
+    frame.src = new URL(`${base.replace(/\/$/, '')}/defensa-offline/?slide=${current}&preview=1`, location.origin).href;
+  }, 5000);
+
+  // ── Init state load ──
+  const stored = readSaved('defensa-live-slide');
+  const urlSlide = params.get('slide');
+  const navigationEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
+  const restoringWindow = navigationEntry?.type === 'reload' || navigationEntry?.type === 'back_forward' || (document as Document & { wasDiscarded?: boolean }).wasDiscarded;
+  const savedIndex = slides.findIndex(slide => slide.id === savedSession.slideId);
+  const initIdx = restoringWindow && savedIndex >= 0 ? savedIndex : urlSlide ? parseInt(urlSlide) : (stored ? parseInt(stored) : 0);
+
+  if (!restoringWindow && params.has('modo')) saveShared('defensa-live-narration', narrationMode);
+  reconnectSync();
+  goTo(Number.isInteger(initIdx) ? Math.min(Math.max(0, initIdx), totalSlides - 1) : 0, !restoringWindow && !isPresenterWindow);
+  panelOpen = savedSession.panel === true;
+  if (panelOpen && !isPresenterWindow) panel.classList.remove('collapsed');
+  if (!isPresenterWindow && savedSession.projection) setProjectionMode(true);
+  if (restoringWindow && savedSession.slideId === slides[current]?.id && Number.isFinite(savedSession.scroll)) {
+    document.querySelector<HTMLElement>(isPresenterWindow ? '.presenter-window-right' : '#panel-scroll')?.scrollTo({ top: savedSession.scroll!, behavior: 'instant' });
+  }
+  // A reload must not publish an old URL over the other window's newer navigation.
+  recoverSession();
   startTimer();
   function restartPresentation(startedAt = Date.now(), announce = true) {
     timerStartedAt = startedAt; elapsed = 0;
-    localStorage.setItem('defensa-live-timer-start', String(startedAt));
+    saveShared('defensa-live-timer-start', String(startedAt));
     if (timerEl) timerEl.textContent = '⏱ 0:00';
     if (presWinTimer) presWinTimer.textContent = '0:00';
     goTo(0, announce);
     const url = new URL(location.href); url.searchParams.set('slide', '0');
     history.replaceState(null, '', url);
-    if (announce) syncChannel.postMessage({type:'presentation-restart', startedAt});
+    saveWindowSession();
+    if (announce) sendSync({type:'presentation-restart', startedAt});
   }
   document.getElementById('restart-presentation')!.addEventListener('click', () => restartPresentation());
   document.getElementById('pres-win-restart')!.addEventListener('click', () => restartPresentation());
