@@ -237,7 +237,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
             </div>
             <span id="profile-badge" class="hidden shrink-0 text-xs font-semibold px-3 py-1 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 whitespace-nowrap"></span>
           </div>
-          <div id="plot-long" style="height:260px"></div>
+          <div id="plot-long" style="height:360px"></div>
         </div>
 
         <!-- Mapa 2D -->
@@ -480,10 +480,11 @@ import { newPlot, reactPlot } from '../../lib/plot-theme';
       ];
 
       const layout = mkLayout({
-        margin:{t:10,r:20,b:50,l:65},
+        margin:{t:10,r:20,b:130,l:65},
         xaxis:{title:'x (m)'},
         yaxis:{title: t('elev_z'), range:[0, yMaxVal]},
-        legend:{x:0.02, y:0.97},
+        legend:{orientation:'h', x:0, xanchor:'left', y:-0.35, yanchor:'top',
+          bgcolor:'rgba(0,0,0,0)', borderwidth:0, traceorder:'normal'},
       });
 
       if (!longInit) {
