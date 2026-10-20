@@ -190,20 +190,20 @@ export const slideLibrary: Slide[] = [
   {
     id: 5,
     offlineFrames: [{"src": "offline_hydra_home.png", "label": "Plataforma", "caption": "Portada local de HYDRA: acceso a módulos, herramientas y notebooks."}],
-    block: 'Arquitectura', blockColor: '#0891b2',
+    block: 'Demo en vivo', blockColor: '#0891b2',
     title: "Primera visita a HYDRA: del núcleo al navegador",
     subtitle: 'Núcleo científico, plataforma web y entorno reproducible',
     estimatedMinutes: 1,
     url: '/', anchor: "body", highlight: "",
     webMode: 'evidence',
     webLabel: "Primera navegación · Plataforma HYDRA",
-    webPurpose: "Situar al tribunal en la web y reconocer sus accesos antes de explicar los módulos.",
+    webPurpose: "Reconocer en la web los módulos ya explicados y situar el acceso a las herramientas antes de mostrar su funcionamiento.",
     webAction: "Entrar por primera vez en la portada. Mostrar los accesos a módulos, herramientas y casos/notebooks sin ejecutar todavía una herramienta. Volver al relato al pasar de diapositiva.",
     figure: 'fig_hydra_web_home.png', figurePosition: 'right',
     figureCaption: 'HYDRA integra documentación, herramientas y casos reproducibles',
     type: 'split',
-    script: "Entramos ahora por primera vez en HYDRA. La portada permite reconocer los accesos a la documentación de los módulos, las herramientas interactivas y los casos de estudio con sus notebooks.\n\nLa primera entrada que señalo es la documentación de módulos, donde se explica qué hace cada bloque y qué necesita. La segunda son las herramientas, que permiten ejecutar operaciones acotadas desde formularios y leer sus salidas. La tercera son los casos, que sitúan esas operaciones en un problema y enlazan los materiales disponibles. En esta primera visita no ejecutaremos aún una cadena territorial completa. El objetivo es reconocer esos accesos y la función que tendrán en el resto de la defensa, para que cada cambio entre diapositiva y web conserve una finalidad clara.\n\nLa web reúne esos recursos y los conecta con el núcleo científico. Aquí situamos esas tres entradas; después utilizaremos una herramienta e interpretaremos resultados concretos. Antes de ejecutar el cálculo, explicaré cómo se organiza el núcleo científico al que dan acceso.",
-    notes: "Primera visita necesaria. Navegación de orientación, distinta de la demostración GEV y de las páginas de resultados. No saltarla. Evitar recorrer menús o ejecutar cálculos todavía. No dejar recuadros de resaltado sobre la portada.",
+    script: "Una vez explicados los cuatro módulos y cómo se conectan sus operaciones, entramos por primera vez en HYDRA para reconocer su organización en la web. La portada permite reconocer los accesos a la documentación de los módulos, las herramientas interactivas y los casos de estudio con sus notebooks.\n\nLa primera entrada que señalo es la documentación de módulos, donde se explica qué hace cada bloque y qué necesita. La segunda son las herramientas, que permiten ejecutar operaciones acotadas desde formularios y leer sus salidas. La tercera son los casos, que sitúan esas operaciones en un problema y enlazan los materiales disponibles. En esta primera visita no ejecutaremos aún una cadena territorial completa. El objetivo es reconocer esos accesos y la función que tendrán en el resto de la defensa, para que cada cambio entre diapositiva y web conserve una finalidad clara.\n\nLa web reúne esos recursos y los conecta con el núcleo científico. Aquí situamos esas tres entradas; después utilizaremos una herramienta e interpretaremos resultados concretos. Los cuatro módulos que acabamos de explicar proporcionan el cálculo científico. A continuación veremos cómo se accede a algunas de sus operaciones desde las herramientas web.",
+    notes: "Primera visita necesaria, situada después de los módulos y antes de las herramientas web. Navegación de orientación, distinta de la demostración GEV y de las páginas de resultados. No saltarla. Evitar recorrer menús o ejecutar cálculos todavía. No dejar recuadros de resaltado sobre la portada.",
     bullets: [
       'Núcleo científico: concentra los métodos de datos, clima y modelización.',
       'Plataforma web: permite explorar documentación, herramientas y casos.',
@@ -212,12 +212,13 @@ export const slideLibrary: Slide[] = [
     ],
     backup: false,
     anchorPosition: "start",
-    offlineScript: "La captura muestra nuestra primera entrada en la portada de HYDRA. En ella se reconocen los accesos a la documentación de los módulos, las herramientas interactivas y los casos de estudio con sus notebooks.\n\nLa primera entrada que señalo es la documentación de módulos, donde se explica qué hace cada bloque y qué necesita. La segunda son las herramientas, que permiten ejecutar operaciones acotadas desde formularios y leer sus salidas. La tercera son los casos, que sitúan esas operaciones en un problema y enlazan los materiales disponibles. En esta primera visita no ejecutaremos aún una cadena territorial completa. El objetivo es reconocer esos accesos y la función que tendrán en el resto de la defensa, para que cada cambio entre diapositiva y web conserve una finalidad clara.\n\nEsta vista reúne los recursos que acompañan al núcleo científico. Esta copia utiliza capturas preparadas para conservar el recorrido sin conexión. Después veremos la configuración de una herramienta y sus resultados. Antes explicaré cómo se organiza el núcleo científico al que dan acceso.",
+    offlineScript: "Tras explicar los cuatro módulos y su conexión, esta captura muestra nuestra primera entrada en la portada de HYDRA. En ella se reconocen los accesos a la documentación de los módulos, las herramientas interactivas y los casos de estudio con sus notebooks.\n\nLa primera entrada que señalo es la documentación de módulos, donde se explica qué hace cada bloque y qué necesita. La segunda son las herramientas, que permiten ejecutar operaciones acotadas desde formularios y leer sus salidas. La tercera son los casos, que sitúan esas operaciones en un problema y enlazan los materiales disponibles. En esta primera visita no ejecutaremos aún una cadena territorial completa. El objetivo es reconocer esos accesos y la función que tendrán en el resto de la defensa, para que cada cambio entre diapositiva y web conserve una finalidad clara.\n\nEsta vista reúne los recursos que acompañan al núcleo científico. Esta copia utiliza capturas preparadas para conservar el recorrido sin conexión. Después veremos la configuración de una herramienta y sus resultados. Los módulos y su conexión ya han quedado explicados. A continuación veremos cómo las herramientas web permiten configurar operaciones concretas de ese núcleo y leer sus resultados.",
     speakerGoal: "Conservar una primera entrada explícita en HYDRA y orientar al tribunal antes de mostrar operaciones concretas.",
     visualGuide: ["Portada y navegación principal","Accesos a documentación, herramientas y casos/notebooks","Relación con el núcleo científico"],
     speechCues: ["primera vez en HYDRA","documentación de los módulos","herramientas interactivas","casos de estudio","esas tres entradas","núcleo científico","documentación de módulos","herramientas","casos"],
     offlineSpeechCues: ["primera entrada","portada de HYDRA","documentación de los módulos","herramientas interactivas","casos de estudio","capturas preparadas","núcleo científico","documentación de módulos","herramientas","casos"],
-    transitionCue: "cuatro módulos funcionales"
+    sectionLabel: "Navegación por HYDRA",
+    transitionCue: "herramientas web"
   },
 
   // ════════════════════════════════════════════════════
@@ -1770,7 +1771,7 @@ export const slideLibrary: Slide[] = [
 ];
 
 // Deliberate narrative order; supporting material remains available in the appendices.
-const presentationOrder = [1, 4, 44, 4.5, 2, 3, 5.5, 6, 8, 7, 8.5, 4.6, 9, 46, 10, 11, 12, 5, 12.6, 13, 14, 15, 15.5, 16, 17, 17.5, 18, 19, 27, 29, 28.1, 28.2, 28, 30, 31, 32, 33, 34, 35, 36, 39, 38, 37, 39.5, 39.6, 39.7, 40, 41, 42, 42.5, 43];
+const presentationOrder = [1, 4, 44, 4.5, 2, 3, 5.5, 6, 8, 7, 8.5, 4.6, 9, 46, 10, 11, 12, 12.6, 13, 14, 15, 15.5, 16, 17, 17.5, 5, 18, 19, 27, 29, 28.1, 28.2, 28, 30, 31, 32, 33, 34, 35, 36, 39, 38, 37, 39.5, 39.6, 39.7, 40, 41, 42, 42.5, 43];
 const appendixOrder = [20, 21, 22, 23, 24, 25, 26, 56, 57, 58, 59, 60, 61, 45, 8.6, 47, 48, 55, 62, 63];
 const presentationRank = (slide: Slide) => presentationOrder.indexOf(slide.id);
 
@@ -1788,7 +1789,7 @@ const spokenBridges = new Map<number, { nextId: number; text: string }>([
   [28.1,{nextId:28.2,text:"Veamos las fotografías asociadas a esos puntos para reconocer las superficies y el entorno del cauce."}],
   [28.2,{nextId:28,text:"Con el terreno situado, comparemos las 995 realizaciones emparejadas de los dos motores."}],
   [15.5, {nextId:16, text:"Con esos escenarios corregidos podemos generar realizaciones sintéticas coherentes."}],
-  [17.5, {nextId:18, text:"Las herramientas web permiten acceder a operaciones de esta cadena."}],
+  [17.5, {nextId:5, text:"Con los cuatro módulos y su conexión ya explicados, entremos por primera vez en HYDRA para reconocerlos en la web."}],
   [
     1,
     {
@@ -1904,15 +1905,15 @@ const spokenBridges = new Map<number, { nextId: number; text: string }>([
   [
     12,
     {
-      "nextId": 5,
-      "text": "Entramos ahora por primera vez en la plataforma HYDRA."
+      "nextId": 12.6,
+      "text": "Veamos los cuatro módulos funcionales y cómo organizan el cálculo científico."
     }
   ],
   [
     5,
     {
-      "nextId": 12.6,
-      "text": "Veamos los cuatro módulos funcionales que organiza la web."
+      "nextId": 18,
+      "text": "Una vez situados en la plataforma, veamos cómo se utilizan sus herramientas interactivas."
     }
   ],
   [
