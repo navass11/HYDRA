@@ -4,10 +4,10 @@ export const visualSlides: Record<number, { kind: string; metric?: string; figur
   2: { kind:'flow', metric:'El título describe una arquitectura reproducible, no un único algoritmo', items:[
     {label:'Modelo',detail:'una cadena completa de cálculo'}, {label:'Automático',detail:'reduce tareas manuales frágiles'},
     {label:'Inundación',detail:'calcula la frecuencia sobre el impacto'}, {label:'Estocástica',detail:'propaga múltiples escenarios plausibles'} ] },
-  4.6: { kind:'layers', figure:'esq_aporta.svg', metric:'La originalidad está en convertir conocimiento disperso en capacidad operativa', items:[
-    {label:'Integración extremo a extremo',detail:'datos → estadística → escenarios → modelos → impacto'},
-    {label:'Reproducibilidad sistemática',detail:'fuente, método, configuración y salida quedan trazados'},
-    {label:'Transferencia demostrada',detail:'problemas de escala y finalidad distintas'} ] },
+  4.6: { kind:'layers', figure:'esq_nombre_hydra.svg', metric:'HYDRA: funciones especializadas, un sistema coordinado', items:[
+    {label:'Requisitos',detail:'automatizar, modularizar y repetir el análisis'},
+    {label:'pyhydra',detail:'librería Python que implementa el núcleo científico'},
+    {label:'HYDRA',detail:'plataforma que integra núcleo, web, notebooks y servicios'} ] },
   6: { kind:'problem', figure:'esq_tforzante_timpacto.svg', metric:'T(forzante) ≠ T(impacto)', items:[
     {label:'Evento único',detail:'un pico de lluvia no describe todas las avenidas plausibles'},
     {label:'Estado antecedente',detail:'humedad y confluencias cambian la respuesta de la cuenca'},

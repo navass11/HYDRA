@@ -89,19 +89,12 @@ export const slideLibrary: Slide[] = [
     subtitle: 'Correspondencia directa con los capítulos de la memoria doctoral',
     estimatedMinutes: 1,
     type: 'index',
-    script: "La exposición sigue seis bloques que agrupan los capítulos de la memoria, en este orden. Primero, la introducción: el problema, la pregunta, las hipótesis y los objetivos. Después, el estado de la técnica y la brecha que justifica la tesis. En tercer lugar, la arquitectura de HYDRA. En cuarto, la metodología: datos, análisis climático y estadístico, y modelización, con una breve demostración. En quinto, los casos como evidencia de validación. Y por último, las conclusiones: contribución, límites y trabajo futuro. Esta misma ruta aparece en las diapositivas para situarnos durante la exposición; las visitas a la web forman parte de ese recorrido.",
+    script: "La exposición sigue seis bloques que agrupan los capítulos de la memoria, en este orden. Primero, la introducción: el problema, la pregunta, las hipótesis y los objetivos. Después, el estado de la técnica y la brecha que justifica la tesis. En tercer lugar, la arquitectura del sistema. En cuarto, la metodología: datos, análisis climático y estadístico, y modelización, con una breve demostración. En quinto, los casos como evidencia de validación. Y por último, las conclusiones: contribución, límites y trabajo futuro. Esta misma ruta aparece en las diapositivas para situarnos durante la exposición; las visitas a la web forman parte de ese recorrido.",
     notes: "Situar los seis bloques. La diapositiva de índice se utiliza una sola vez en el recorrido principal.",
-    bullets: [
-      '1. Introducción — Origen, motivación, problema, hipótesis y objetivos',
-      '2. Estado de la técnica — Antecedentes, soluciones existentes y brecha',
-      '3. Arquitectura de HYDRA — Núcleo científico, servicios e interfaz reproducible',
-      '4. Metodología — Datos; análisis climático y estadístico; modelización',
-      '5. Casos y validación — Evidencia científica y transferencia a proyectos reales',
-      '6. Conclusiones — Contribuciones, límites y trabajo futuro',
-    ],
+    bullets: ["1. Introducción — Origen, motivación, problema, hipótesis y objetivos","2. Estado de la técnica — Antecedentes, soluciones existentes y brecha","3. Arquitectura del sistema — Núcleo científico, servicios e interfaz reproducible","4. Metodología — Datos; análisis climático y estadístico; modelización","5. Casos y validación — Evidencia científica y transferencia a proyectos reales","6. Conclusiones — Contribuciones, límites y trabajo futuro"],
     speakerGoal: "Dar al tribunal un mapa de la argumentación.",
     visualGuide: ["Seis bloques del índice","Ruta superior de cada diapositiva"],
-    speechCues: ["seis bloques","introducción","estado de la técnica","arquitectura de HYDRA","metodología","casos","conclusiones","visitas a la web"],
+    speechCues: ["seis bloques","introducción","estado de la técnica","arquitectura del sistema","metodología","casos","conclusiones","visitas a la web"],
     transition: "Comencemos por la decisión que necesitamos tomar cuando estudiamos una inundación.",
     transitionCue: "consecuencias"
   },
@@ -117,7 +110,7 @@ export const slideLibrary: Slide[] = [
     figureCaption: 'Cuenca, observación y clima: el sistema físico que la arquitectura debe representar bajo incertidumbre',
     script: "El título resume el alcance de la tesis y conviene interpretar cada término. “Modelo” no significa un nuevo solver hidráulico: significa una cadena completa de cálculo. “Automático” indica que los datos, los métodos estadísticos, los escenarios y los modelos físicos pueden encadenarse sin repetir manualmente la preparación de archivos y el intercambio de datos entre etapas. “Inundación” señala que el resultado relevante no es únicamente la lluvia o el caudal, sino el impacto hidráulico: calado y extensión inundada. Y “estocástica” significa que no se estudia un único evento de diseño, sino una población de escenarios plausibles que representa la variabilidad y la incertidumbre. Esta definición exige además reproducibilidad operativa: conocer de dónde procede cada entrada, repetir las transformaciones, conservar las salidas en formatos estándar y registrar la configuración que produjo cada resultado. Por tanto, el modelo automático de inundación estocástica es una arquitectura reproducible que lleva la incertidumbre desde los datos hasta la variable sobre la que se toman decisiones.",
     processSteps:['Entradas trazables','Escenarios plausibles','Modelos físicos','Frecuencia del impacto'],
-    notes: 'Cita literal (cap. 1, primer párrafo, antes de la sección de antecedentes): "En esta memoria, el modelo automático de inundación estocástica que recoge el título se entiende en sentido amplio: no como un único motor hidráulico o algoritmo aislado, sino como una arquitectura reproducible de cálculo. Su núcleo central es pyhydra, la librería Python donde se implementan los módulos científicos y técnicos; HYDRA designa la plataforma que integra ese núcleo con web, notebooks, Docker y servicios de apoyo. [...] Es la automatización de esa cadena completa, y no de un componente particular, lo que constituye el objeto central de la investigación. [...] el término reproducible se emplea en un sentido operativo [...] que se concreta en cuatro contratos verificables: entradas trazables, transformaciones reproducibles, salidas en formatos estándar y registro suficiente para auditar cada resultado."\n\nDeliberadamente NO se explica aquí el nombre HYDRA en detalle — solo se menciona que existe una plataforma con nombre propio. En la siguiente diapositiva se explica el origen del trabajo en el TFM. La metáfora del nombre HYDRA puede comentarse al presentar el producto, una vez explicada la arquitectura.',
+    notes: "Interpretar los cuatro términos del título. El Besaya se presenta a continuación como antecedente científico del análisis sobre el impacto. La pregunta, las hipótesis y los objetivos se explican antes de introducir pyhydra como respuesta tecnológica y HYDRA como plataforma.",
     bullets: [
       'Modelo: arquitectura completa de cálculo, no un nuevo motor hidráulico.',
       'Automático: ejecución repetible de tareas que manualmente son lentas y frágiles.',
@@ -161,41 +154,37 @@ export const slideLibrary: Slide[] = [
   {
     id: 4.6,
     block: 'Motivación', blockColor: '#8b5cf6',
-    title: "Qué aporta la propuesta",
-    subtitle: 'De metodologías avanzadas pero fragmentadas a una capacidad de ingeniería reproducible',
+    title: "De los objetivos a pyhydra e HYDRA",
+    subtitle: "Un núcleo científico modular y una plataforma para hacerlo utilizable",
     estimatedMinutes: 2,
     type: 'normal',
-    script: "Con los objetivos fijados, anticipo qué aporta la tesis. No reivindica como nuevos los métodos estadísticos, los generadores ni los modelos físicos; su aportación es hacerlos trabajar juntos, y tiene tres partes. Integración: una sola cadena, de los datos al impacto, como muestra la franja superior. Reproducibilidad: cada resultado deja registro de su fuente, su método, su configuración y su salida, para facilitar su revisión y repetición con los datos y el entorno necesarios. Y transferencia: los componentes se reutilizan en problemas distintos, desde una infraestructura urbana hasta la escala nacional. Al presentar los casos distinguiré cuáles originaron la arquitectura y cuáles pueden reproducirse hoy con ella.",
-    notes: 'Esta diapositiva anticipa la respuesta a “¿qué aporta realmente la tesis?” y se recupera al final. No enumerar librerías. Explicar los tres pilares con una frase y un ejemplo: integración — Calle 30; reproducibilidad — Besaya/Valencia; transferencia — Panamá y SIMPCCe.\n\nOrden: esta diapositiva se presenta después de la pregunta y los objetivos, como anticipo de la respuesta; así la aportación no aparece antes de haber planteado el problema.',
-    bullets: [
-      'Integración: una sola cadena desde el dato hasta el impacto.',
-      'Reproducibilidad: resultados auditables por terceros.',
-      'Transferencia: el mismo núcleo aplicado a problemas de escala y finalidad distintas.',
-    ],
+    script: "Las hipótesis y los objetivos anteriores fijan los requisitos del desarrollo: automatizar el cálculo, organizarlo en módulos y conservar la información necesaria para repetirlo. Para dar respuesta a esos requisitos se desarrolla pyhydra, la librería de Python que reúne el núcleo científico.\n\nHYDRA designa la plataforma que integra ese núcleo con la web, los notebooks y los servicios de ejecución. Así distinguimos la implementación de los métodos y las formas de utilizarlos y documentarlos.\n\nEl nombre HYDRA evoca a la hidra de la mitología griega. Sus múltiples cabezas sobre un mismo organismo representan aquí funciones especializadas que trabajan de forma coordinada: datos, estadística, escenarios y modelos físicos conectados en un flujo común. La metáfora expresa la modularidad y la integración de la propuesta.\n\nLa aportación se valorará por esa integración, por la posibilidad de repetir el análisis y por su transferencia a problemas reales.",
+    notes: "Secuencia causal: pregunta → hipótesis → objetivos → requisitos → desarrollo de pyhydra → integración en HYDRA. El Besaya aporta el antecedente científico, no el origen causal del software. Significado del nombre: memoria definitiva, cap. 1, apartado 1.2, p. 10, nota al pie 1. No inventar un acrónimo. La metáfora representa módulos autónomos e integrados en un flujo unificado.",
+    bullets: ["Requisitos: automatizar, modularizar y repetir el análisis.","pyhydra: librería Python que implementa el núcleo científico.","HYDRA: plataforma que integra núcleo, web, notebooks y servicios."],
     backup: false,
-    speakerGoal: "Anticipar los tres compromisos de la propuesta; su balance con evidencia se reserva para el cierre.",
-    visualGuide: ["Integración de extremo a extremo","Registro para repetir el cálculo","Transferencia a otros problemas"],
-    speechCues: ["tres partes","Integración","Reproducibilidad","Transferencia","originaron la arquitectura","pueden reproducirse hoy"],
+    speakerGoal: "Presentar pyhydra como respuesta a los objetivos e hipótesis, distinguir la plataforma y explicar su nombre.",
+    visualGuide: ["Requisitos derivados de las hipótesis y los objetivos","pyhydra: núcleo científico; HYDRA: plataforma","Hidra: funciones especializadas en un sistema coordinado"],
+    speechCues: ["hipótesis y los objetivos","requisitos","dar respuesta","pyhydra","núcleo científico","HYDRA designa la plataforma","hidra de la mitología griega","funciones especializadas","modularidad y la integración","transferencia a problemas reales"],
     transitionCue: "recorrido investigador",
-    sectionLabel: "Aportaciones"
+    sectionLabel: "Respuesta tecnológica"
   },
 
   {
     id: 3,
     block: 'Apertura', blockColor: '#0d9488',
-    title: "Besaya: del primer caso al problema doctoral",
-    subtitle: 'Besaya 2017–2018: del primer desarrollo metodológico a una línea de investigación',
+    title: "Besaya: antecedente científico del análisis sobre el impacto",
+    subtitle: "TFM de 2017 y publicación de 2018: fundamento metodológico previo al software",
     estimatedMinutes: 2,
     type: 'timeline',
-    script: "El punto de partida real de esta tesis es mi Trabajo Fin de Máster, desarrollado en 2017 sobre el río Besaya a su paso por Los Corrales de Buelna. En aquel trabajo construí la primera cadena completa: caracterización multivariante de avenidas, generación de escenarios, simulación hidráulica con Iber y análisis estadístico de los impactos. El TFM recibió el premio principal en la categoría de Mejor Calidad y Contenido del primer Concurso Nacional de Proyectos Fin de Máster del Colegio de Ingenieros de Caminos, Canales y Puertos. El trabajo se publicó después en la Revista de Obras Públicas, número 3598 de mayo de 2018, y consolidó la observación que guía toda la tesis: el período de retorno del forzamiento no coincide necesariamente con el del impacto hidráulico. A partir de esa dificultad concreta —repetir, conectar y auditar una cadena extensa— nace la necesidad de pyhydra y, finalmente, de HYDRA.",
-    notes: "Origen: TFM de 2017, publicación ROP 3598 de mayo de 2018. La cadena y los resultados del caso se desarrollan después en validación.",
-    bullets: ["2017 — Primera cadena estocástica completa en el TFM del Besaya.","2018 — Publicación del principio T(forzamiento) ≠ T(impacto).","Límite — Conexiones manuales y configuración específica para una cuenca.","Tesis — Repetir y transferir la cadena conservando su trazabilidad."],
-    speakerGoal: "Explicar el origen del problema doctoral sin repetir todavía los resultados del caso.",
-    visualGuide: ["2017: primera cadena del TFM","2018: publicación del principio","Limitación manual y pregunta doctoral"],
+    script: "Un antecedente científico de esta tesis es mi Trabajo Fin de Máster, desarrollado en 2017 sobre el río Besaya a su paso por Los Corrales de Buelna. En aquel trabajo construí la primera cadena completa: caracterización multivariante de avenidas, generación de escenarios, simulación hidráulica con Iber y análisis estadístico de los impactos. El TFM recibió el premio principal en la categoría de Mejor Calidad y Contenido del primer Concurso Nacional de Proyectos Fin de Máster del Colegio de Ingenieros de Caminos, Canales y Puertos. El trabajo se publicó después en la Revista de Obras Públicas, número 3598 de mayo de 2018, y consolidó la observación que guía toda la tesis: el período de retorno del forzamiento no coincide necesariamente con el del impacto hidráulico. Este caso proporciona un antecedente metodológico y muestra la dificultad de repetir una cadena extensa.",
+    notes: "El Besaya es un antecedente científico y una evidencia del principio de frecuencia sobre el impacto. No presentarlo como origen de pyhydra. La librería se desarrolla para responder a los objetivos e hipótesis; su nombre y la plataforma se presentan después de formularlos.",
+    bullets: ["2017 — Cadena estocástica completa en el TFM del Besaya.","2018 — Publicación del principio T(forzamiento) ≠ T(impacto).","Dificultad — Conexiones manuales y configuración específica para una cuenca.","Antecedente — Base metodológica para plantear la investigación."],
+    speakerGoal: "Situar el Besaya como antecedente científico, antes de formular las hipótesis y los objetivos.",
+    visualGuide: ["2017: TFM y cadena estocástica","2018: frecuencia sobre el impacto","Dificultad operativa y antecedente metodológico"],
     speechCues: ["Trabajo Fin de Máster","2017","Los Corrales de Buelna","primera cadena completa","Iber","2018","período de retorno del forzamiento","repetir, conectar y auditar"],
     transition: "La pregunta dejó de ser cómo resolver una cuenca y pasó a ser cómo hacer reutilizable la cadena completa.",
     transitionCue: "estima habitualmente",
-    sectionLabel: "Origen de la investigación"
+    sectionLabel: "Antecedente científico"
   },
 
   {
@@ -213,7 +202,7 @@ export const slideLibrary: Slide[] = [
     figure: 'fig_hydra_web_home.png', figurePosition: 'right',
     figureCaption: 'HYDRA integra documentación, herramientas y casos reproducibles',
     type: 'split',
-    script: "Entramos ahora por primera vez en HYDRA. Esta portada será nuestro punto de referencia para las visitas a la web durante la defensa. Desde aquí podemos localizar la documentación de los módulos, las herramientas interactivas y los casos de estudio con sus notebooks.\n\nConviene distinguir los dos nombres: pyhydra es la librería que realiza el cálculo; HYDRA reúne las formas de acceder a ese trabajo y documentarlo. También podemos ejecutar el análisis directamente desde Python o desde un notebook.\n\nEn esta primera visita quiero situar esos accesos. Volveremos a ellos para realizar una operación e interpretar resultados concretos, después de explicar cómo se organiza el núcleo científico.",
+    script: "Entramos ahora por primera vez en HYDRA. La portada permite reconocer los accesos a la documentación de los módulos, las herramientas interactivas y los casos de estudio con sus notebooks.\n\nEs la forma de acceso a la plataforma que hemos definido después de los objetivos. Aquí situamos esas tres entradas; después utilizaremos una herramienta e interpretaremos resultados concretos. Antes de ejecutar el cálculo, explicaré cómo se organiza el núcleo científico al que dan acceso.",
     notes: "Primera visita necesaria. Navegación de orientación, distinta de la demostración GEV y de las páginas de resultados. No saltarla. Evitar recorrer menús o ejecutar cálculos todavía. No dejar recuadros de resaltado sobre la portada.",
     bullets: [
       'Núcleo científico: concentra los métodos de datos, clima y modelización.',
@@ -223,11 +212,11 @@ export const slideLibrary: Slide[] = [
     ],
     backup: false,
     anchorPosition: "start",
-    offlineScript: "La captura muestra la portada de HYDRA, que constituye nuestra primera entrada en la plataforma. En ella se localizan la documentación de los módulos, las herramientas interactivas y los casos de estudio con sus notebooks.\n\nConviene distinguir los dos nombres: pyhydra es la librería que realiza el cálculo; HYDRA reúne las formas de acceder a ese trabajo y documentarlo. El análisis también puede ejecutarse desde Python o desde un notebook.\n\nEn este recorrido utilizo capturas preparadas para conservar la explicación sin conexión. Esta primera vista nos sitúa en la plataforma. Las siguientes permitirán explicar una operación y los resultados de los casos, después de recorrer el núcleo científico.",
+    offlineScript: "La captura muestra nuestra primera entrada en la portada de HYDRA. En ella se reconocen los accesos a la documentación de los módulos, las herramientas interactivas y los casos de estudio con sus notebooks.\n\nEs la plataforma que hemos definido después de los objetivos. Esta copia utiliza capturas preparadas para conservar el recorrido sin conexión. Después veremos la configuración de una herramienta y sus resultados. Antes explicaré cómo se organiza el núcleo científico al que dan acceso.",
     speakerGoal: "Conservar una primera entrada explícita en HYDRA y orientar al tribunal antes de mostrar operaciones concretas.",
-    visualGuide: ["Portada y navegación principal","Módulos, herramientas y casos/notebooks","Diferencia entre pyhydra y HYDRA"],
-    speechCues: ["primera vez en HYDRA","documentación de los módulos","herramientas interactivas","casos de estudio","pyhydra","núcleo científico"],
-    offlineSpeechCues: ["portada de HYDRA","primera entrada","pyhydra","HYDRA","capturas preparadas","núcleo científico"],
+    visualGuide: ["Portada y navegación principal","Accesos a documentación, herramientas y casos/notebooks","Relación con el núcleo científico"],
+    speechCues: ["primera vez en HYDRA","documentación de los módulos","herramientas interactivas","casos de estudio","esas tres entradas","núcleo científico"],
+    offlineSpeechCues: ["primera entrada","portada de HYDRA","documentación de los módulos","herramientas interactivas","casos de estudio","capturas preparadas","núcleo científico"],
     transitionCue: "tres bloques"
   },
 
@@ -242,7 +231,7 @@ export const slideLibrary: Slide[] = [
     subtitle: 'La cadena es correcta; el problema aparece cuando la incertidumbre se pierde entre sus eslabones',
     estimatedMinutes: 2,
     figure: 'fig_cadena_convencional.svg', figurePosition: 'full',
-    figureCaption: 'Cadena clásica y tres supuestos que HYDRA permite sustituir por una propagación explícita de escenarios',
+    figureCaption: "Cadena convencional y tres supuestos que deben revisarse al propagar escenarios e incertidumbre.",
     type: 'figure',
     script: "Antes de presentar la solución, conviene fijar el procedimiento de referencia. Partimos de registros, ajustamos extremos, construimos un evento de diseño, lo transformamos mediante modelos hidrológicos e hidráulicos y obtenemos un mapa de inundación. Esta cadena física permite transformar la entrada en una respuesta hidráulica. La dificultad está en tres simplificaciones frecuentes: asumir estacionariedad, representar el extremo con un único evento y trasladar el mismo período de retorno desde el forzamiento hasta el impacto. La propuesta conserva la cadena física y organiza la exploración de múltiples escenarios para estimar la frecuencia del calado y de la extensión inundada, bajo las hipótesis del análisis.",
     notes: "El período de retorno se refiere a una variable y a hipótesis especificadas. En condiciones estacionarias, T100 corresponde a una probabilidad anual de superación de 0,01.",
@@ -333,12 +322,12 @@ export const slideLibrary: Slide[] = [
     type: 'split',
     figure: 'fig_objetivos_evidencias.svg', figurePosition: 'right',
     figureCaption: 'Cada objetivo conduce a un desarrollo concreto y a una evidencia verificable',
-    script: "El objetivo general es desarrollar y validar pyhydra como núcleo modular para operacionalizar el análisis probabilístico de inundaciones bajo incertidumbre climática e hidrológica, y demostrar su transferencia mediante la plataforma HYDRA.\n\nEse objetivo se concreta en cuatro compromisos. El primero integra datos y modelos de cambio climático en los flujos estocásticos. El segundo implementa y conecta la generación de eventos de precipitación y caudal. El tercero automatiza la configuración, ejecución y postprocesado de los modelos hidrológicos e hidráulicos. El cuarto consolida y documenta pyhydra y su despliegue en HYDRA, y los valida mediante casos reproducibles. Esta correspondencia permite valorar cada desarrollo a partir del objetivo al que responde y de la evidencia que aporta.",
-    notes: "Leer una fila objetivo–desarrollo–evidencia completa y recorrer las otras tres. Conservar estos cuatro criterios hasta el cierre.",
-    bullets: ["Objetivo general: desarrollar y validar pyhydra y demostrar su transferencia mediante HYDRA.","OE1–OE2: integrar datos y modelos climáticos, y generar eventos de precipitación y caudal.","OE3–OE4: automatizar los modelos físicos; documentar y validar pyhydra e HYDRA mediante casos reproducibles."],
+    script: "El objetivo general es desarrollar y validar un núcleo científico modular que permita aplicar el análisis probabilístico de inundaciones bajo incertidumbre climática e hidrológica, y demostrar su transferencia mediante una plataforma reproducible.\n\nEse objetivo se concreta en cuatro compromisos. El primero integra datos y modelos de cambio climático en los flujos estocásticos. El segundo implementa y conecta la generación de eventos de precipitación y caudal. El tercero automatiza la configuración, ejecución y postprocesado de los modelos hidrológicos e hidráulicos. El cuarto consolida y documenta la librería y su despliegue en una plataforma, y los valida mediante casos reproducibles. Estos objetivos definen los requisitos a los que debe responder el desarrollo tecnológico.",
+    notes: "Explicación funcional de los mismos objetivos de la memoria, que denominan pyhydra al núcleo e HYDRA a la plataforma. Aquí se presentan sus requisitos antes de dar nombre a la respuesta tecnológica, en la diapositiva siguiente. Leer una fila objetivo–desarrollo–evidencia y recorrer las otras tres.",
+    bullets: ["Objetivo general: desarrollar y validar un núcleo modular y demostrar su transferencia mediante una plataforma reproducible.","OE1–OE2: integrar datos y modelos climáticos, y generar eventos de precipitación y caudal.","OE3–OE4: automatizar los modelos físicos; documentar y validar el núcleo y la plataforma mediante casos reproducibles."],
     speakerGoal: "Relacionar cada objetivo con una evidencia que aparecerá en la defensa.",
     visualGuide: ["Leer una fila completa: objetivo, desarrollo y evidencia","Recorrer los cuatro objetivos"],
-    speechCues: ["objetivo general","pyhydra","HYDRA","cuatro compromisos","primero","segundo","tercero","cuarto","evidencia"],
+    speechCues: ["objetivo general","núcleo científico modular","plataforma reproducible","cuatro compromisos","primero","segundo","tercero","cuarto","requisitos"],
     transition: "El primer paso para cumplirlos es entender qué exige una cadena estocástica completa y qué ofrecen los métodos existentes.",
     transitionCue: "tres aportaciones",
     sectionLabel: "Objetivos"
@@ -1692,7 +1681,7 @@ const spokenBridges = new Map<number, { nextId: number; text: string }>([
     2,
     {
       "nextId": 3,
-      "text": "El origen de este planteamiento está en el trabajo del Besaya."
+      "text": "El Besaya aporta un antecedente científico para comprender este planteamiento."
     }
   ],
   [
@@ -1734,7 +1723,7 @@ const spokenBridges = new Map<number, { nextId: number; text: string }>([
     8.5,
     {
       "nextId": 4.6,
-      "text": "Su valor conjunto se resume en tres aportaciones que orientan el desarrollo."
+      "text": "Estos requisitos permiten presentar cómo se materializa la respuesta tecnológica."
     }
   ],
   [
