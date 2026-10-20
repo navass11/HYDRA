@@ -20,27 +20,23 @@
     </g>
   </g>
 
-  <!-- H2 -->
-  <text x="10" y="196" font-size="19" font-weight="600" fill="#13323A">H2 Modularidad: los mismos bloques en nueve casos</text>
-  <g transform="translate(10 210)" font-size="13.5" fill="#13323A">
-    <g font-weight="600" fill="#4A6870" text-anchor="middle">
-      <text x="430" y="14">Datos</text><text x="520" y="14">Clima</text><text x="610" y="14">Estocástica</text><text x="700" y="14">Modelado</text>
-    </g>
-    <g transform="translate(0 22)">
-      <text y="14">Besaya</text><text y="31">Sant Llorenç</text><text y="48">Calle 30</text><text y="65">Valencia</text><text y="82">Tanganica</text>
-      <text y="99">Andes</text><text y="116">IAHR 2022</text><text y="133">SIMPCCe</text><text y="150">Panamá</text>
-    </g>
-    <g fill="#0E4A57">
-      <!-- Datos, Clima: all nine -->
-      
-      <use href="#col" x="430"/><use href="#col" x="520"/>
-      <!-- Estocástica: Besaya, Sant Llorenç, Calle 30, IAHR -->
-      <circle cx="610" cy="31" r="6"/><circle cx="610" cy="48" r="6"/><circle cx="610" cy="65" r="6"/><circle cx="610" cy="133" r="6"/>
-      <!-- Modelado: all but Valencia -->
-      <circle cx="700" cy="31" r="6"/><circle cx="700" cy="48" r="6"/><circle cx="700" cy="65" r="6"/><circle cx="700" cy="99" r="6"/><circle cx="700" cy="116" r="6"/><circle cx="700" cy="133" r="6"/><circle cx="700" cy="150" r="6"/><circle cx="700" cy="167" r="6"/>
-    </g>
-    
-  </g>
+  <text x="10" y="196" font-size="19" font-weight="600" fill="#13323A">H2 Modularidad: componentes comunes en diez estudios</text>
+  <g font-size="13.5" fill="#13323A">
+<text x="440" y="222" text-anchor="middle">Datos</text>
+<text x="530" y="222" text-anchor="middle">Clima / extremos</text>
+<text x="620" y="222" text-anchor="middle">Estocástica</text>
+<text x="710" y="222" text-anchor="middle">Modelado</text>
+<text x="10" y="242">Besaya: impacto</text><circle cx="440" cy="238" r="5" fill="#0E4A57"/><circle cx="530" cy="238" r="5" fill="#0E4A57"/><circle cx="620" cy="238" r="5" fill="#0E4A57"/><circle cx="710" cy="238" r="5" fill="#0E4A57"/>
+<text x="10" y="258">Besaya: rugosidades</text><circle cx="440" cy="254" r="5" fill="#0E4A57"/><circle cx="620" cy="254" r="5" fill="#0E4A57"/><circle cx="710" cy="254" r="5" fill="#0E4A57"/>
+<text x="10" y="274">Sant Llorenç</text><circle cx="440" cy="270" r="5" fill="#0E4A57"/><circle cx="530" cy="270" r="5" fill="#0E4A57"/><circle cx="620" cy="270" r="5" fill="#0E4A57"/><circle cx="710" cy="270" r="5" fill="#0E4A57"/>
+<text x="10" y="290">Calle 30</text><circle cx="440" cy="286" r="5" fill="#0E4A57"/><circle cx="530" cy="286" r="5" fill="#0E4A57"/><circle cx="620" cy="286" r="5" fill="#0E4A57"/><circle cx="710" cy="286" r="5" fill="#0E4A57"/>
+<text x="10" y="306">Valencia</text><circle cx="440" cy="302" r="5" fill="#0E4A57"/><circle cx="530" cy="302" r="5" fill="#0E4A57"/>
+<text x="10" y="322">Tanganica</text><circle cx="440" cy="318" r="5" fill="#0E4A57"/><circle cx="530" cy="318" r="5" fill="#0E4A57"/><circle cx="710" cy="318" r="5" fill="#0E4A57"/>
+<text x="10" y="338">Andes</text><circle cx="440" cy="334" r="5" fill="#0E4A57"/><circle cx="530" cy="334" r="5" fill="#0E4A57"/><circle cx="710" cy="334" r="5" fill="#0E4A57"/>
+<text x="10" y="354">IAHR 2022</text><circle cx="440" cy="350" r="5" fill="#0E4A57"/><circle cx="530" cy="350" r="5" fill="#0E4A57"/><circle cx="620" cy="350" r="5" fill="#0E4A57"/><circle cx="710" cy="350" r="5" fill="#0E4A57"/>
+<text x="10" y="370">SIMPCCe</text><circle cx="440" cy="366" r="5" fill="#0E4A57"/><circle cx="530" cy="366" r="5" fill="#0E4A57"/><circle cx="710" cy="366" r="5" fill="#0E4A57"/>
+<text x="10" y="386">Panamá</text><circle cx="440" cy="382" r="5" fill="#0E4A57"/><circle cx="530" cy="382" r="5" fill="#0E4A57"/><circle cx="710" cy="382" r="5" fill="#0E4A57"/>
+</g>
 
   <!-- H3 -->
   <text x="10" y="418" font-size="19" font-weight="600" fill="#13323A">H3 Incertidumbre: el método cambia el diseño</text>

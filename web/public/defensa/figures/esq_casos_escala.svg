@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" role="img" aria-labelledby="t" font-family="Avenir Next, Avenir, Segoe UI, Helvetica, sans-serif">
-  <title id="t">Los nueve casos según escala espacial y dimensión de validación</title>
+  <title id="t">Los diez estudios según escala espacial y dimensión de validación</title>
 
   <!-- rows -->
   <g font-size="16" font-weight="600" fill="#13323A">
@@ -26,11 +26,12 @@
     <text x="737" y="500">Varios</text><text x="737" y="518">países</text>
   </g>
 
-  <!-- dots: filled = reproducible notebook, hollow = documented -->
+  <!-- Filled: notebooks available; execution has case-specific requirements. -->
   <g font-size="15" fill="#13323A" text-anchor="middle">
     <circle cx="212" cy="112" r="16" fill="#0E4A57"/><text x="212" y="152">Calle 30</text>
-    <circle cx="300" cy="112" r="16" fill="#0E4A57"/><text x="300" y="152">Besaya</text>
-    <circle cx="350" cy="112" r="16" fill="#fff" stroke="#0E4A57" stroke-width="3"/><text x="360" y="176">Sant Llorenç</text>
+    <circle cx="422" cy="88" r="16" fill="#0E4A57"/><text x="448" y="93" text-anchor="start">Besaya: impacto</text>
+    <circle cx="422" cy="150" r="16" fill="#0E4A57"/><text x="448" y="155" text-anchor="start">Besaya: rugosidades</text>
+    <circle cx="330" cy="112" r="16" fill="#fff" stroke="#0E4A57" stroke-width="3"/><text x="330" y="152">Sant Llorenç</text>
     <circle cx="527" cy="252" r="16" fill="#0E4A57"/><text x="527" y="292">Valencia</text>
     <circle cx="422" cy="392" r="16" fill="#fff" stroke="#0E4A57" stroke-width="3"/><text x="422" y="432">IAHR 2022</text>
     <circle cx="600" cy="372" r="16" fill="#fff" stroke="#0E4A57" stroke-width="3"/><text x="574" y="410">Panamá</text>
@@ -41,7 +42,7 @@
 
   <!-- legend -->
   <g font-size="15" fill="#13323A">
-    <circle cx="170" cy="545" r="9" fill="#0E4A57"/><text x="186" y="550">reproducible con notebooks en HYDRA</text>
+    <circle cx="170" cy="545" r="9" fill="#0E4A57"/><text x="186" y="550">con notebooks (requiere entorno)</text>
     <circle cx="500" cy="545" r="9" fill="#fff" stroke="#0E4A57" stroke-width="3"/><text x="516" y="550">documentado desde su publicación</text>
   </g>
 </svg>

@@ -47,7 +47,7 @@ const keywords: Record<number, readonly string[]> = {
   38: ['ámbito nacional', 'aportaciones mínimas a embalses', 'Premio al Talento Joven', '10 modelos CORDEX-AEMET', 'red neuronal', 'sequía y fiabilidad'],
   37: ['52 cuencas', '1.464 puntos costeros', '73 estaciones', '23 configuraciones GCM', '414 combinaciones', 'QDM y SDM', 'NS=0,87', 'SFINCS nacional'],
   48: ['208,8 frente a 278,5', '33,4 por ciento', '260 a 952 mm', '995 pares', '414 combinaciones', 'variable, método, horizonte y alcance'],
-  39.5: ['nueve casos', 'Calle 30, Besaya y Valencia', 'publicación o su proyecto', 'frecuencia sobre la variable', 'núcleo común', 'visible, reproducible y transferible'],
+  39.5: ['diez estudios', 'Besaya, rugosidades, Calle 30 y Valencia', 'publicación o su proyecto', 'frecuencia sobre la variable', 'núcleo común', 'visible, reproducible y transferible'],
   39.6: ['dos artículos publicados', 'cinco comunicaciones', 'dos manuscritos', 'versiones publicadas y citables en Zenodo'],
   39.7: ['trabajos que lidero', 'colaboraciones', 'diseño, desarrollo y documentación', 'autoría por publicación'],
   55: ['primer autor en siete trabajos', 'trabajos andinos', 'NEOPRENE', 'downscaling de EGU', 'Valencia', 'sin autoría mía', 'diseño, desarrollo y documentación'],

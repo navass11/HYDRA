@@ -2118,7 +2118,7 @@ const chapterIcons = [
                   <div class="slide-title">{slide.title}</div>
                   {slide.subtitle && <div class="slide-subtitle">{slide.subtitle}</div>}
                 </div>
-                <div class="case-thesis-bridge">La columna «En HYDRA» separa los casos que validan la arquitectura de los que la originaron y ampliaron.</div>
+                <div class="case-thesis-bridge">Dos trabajos distintos en el Besaya. «Notebook» indica disponibilidad; la ejecución depende de datos, entorno y motores.</div>
                 <div class="pres-table-container">
                   <table class="pres-table">
                     <thead>
@@ -2126,7 +2126,7 @@ const chapterIcons = [
                         <th>Caso de estudio</th>
                         <th>Aplicación principal</th>
                         <th style="text-align:center;">Datos (M1)</th>
-                        <th style="text-align:center;">Clima (M2)</th>
+                        <th style="text-align:center;">Clima / extremos (M2)</th>
                         <th style="text-align:center;">Estocástica (M3)</th>
                         <th style="text-align:center;">Modelado (M4)</th>
                         <th style="text-align:center;">En HYDRA</th>
@@ -2137,7 +2137,8 @@ const chapterIcons = [
                         const parts = b.split(' → ');
                         const caseName = parts[0] || '';
                         const details = parts[1] || '';
-                        const conciseDetails = caseName.includes('Besaya') ? 'Extremos + hidráulica 2D'
+                        const conciseDetails = caseName.includes('Manning') ? 'Monte Carlo · HEC-RAS / SFINCS'
+                          : caseName.includes('Besaya') ? 'Extremos + hidráulica 2D'
                           : caseName.includes('Mallorca') ? 'Downscaling híbrido'
                           : caseName.includes('Calle 30') ? 'Lluvia → HEC-HMS/RAS'
                           : caseName.includes('Valencia') ? 'Extremos bayesianos'
@@ -2151,7 +2152,8 @@ const chapterIcons = [
                         const cross = '—';
                         
                         let m1 = cross, m2 = cross, m3 = cross, m4 = cross;
-                        if (caseName.includes('Besaya')) { m1=check; m2=check; m3=check; m4=check; }
+                        if (caseName.includes('Manning')) { m1=check; m2=cross; m3=check; m4=check; }
+                        else if (caseName.includes('Besaya')) { m1=check; m2=check; m3=check; m4=check; }
                         else if (caseName.includes('Calle 30')) { m1=check; m2=check; m3=check; m4=check; }
                         else if (caseName.includes('Mallorca')) { m1=check; m2=check; m3=check; m4=check; }
                         else if (caseName.includes('Valencia') || caseName.includes('DANA')) { m1=check; m2=check; m3=cross; m4=cross; }

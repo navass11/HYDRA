@@ -34,7 +34,7 @@ export const visualSlides: Record<number, { kind: string; metric?: string; figur
     {label:'Máximos anuales',detail:'la GEV se ajusta a máximos por año'},
     {label:'Ajuste MAP',detail:'máximo de la posterior, sin MCMC'},
     {label:'Resultado',detail:'cuantil y bandas aproximadas mediante Fisher'} ] },
-  39.5: { kind:'layers', figure:'esq_casos_escala.svg', metric:'Tres casos se reproducen hoy con notebooks; los nueve aportan resultados contrastables', items:[
+  39.5: { kind:'layers', figure:'esq_casos_escala.svg', metric:'Diez estudios: cuatro con notebooks y seis documentados en publicaciones o proyectos', items:[
     {label:'Principio común',detail:'frecuencia estimada sobre el impacto'},
     {label:'Contextos distintos',detail:'escalas, climas y modelos diferentes'},
     {label:'Transferencia',detail:'módulos auditables sin reconstruir la cadena'} ] },
