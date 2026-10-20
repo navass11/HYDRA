@@ -473,11 +473,11 @@ export const slideLibrary: Slide[] = [
     type: 'figure',
     figure: 'fig_pyhydra_modules.svg', figurePosition: 'full',
     figureCaption: "Fuentes de datos → Análisis climático → Generación estocástica → Modelización",
-    script: "Las cuatro columnas corresponden a los cuatro módulos principales que acabamos de ver en la web. Fuentes de datos reúne lluvia, caudal, proyecciones climáticas y suelos. Análisis climático permite estudiar series y extremos, analizar su distribución espacial, corregir sesgos y aplicar downscaling híbrido. Generación estocástica construye escenarios sintéticos. Modelización conecta esos escenarios con los modelos hidrológicos e hidráulicos y permite estudiar su sensibilidad.\n\nConviene distinguir esta organización funcional de la estructura del código: análisis climático y generación estocástica comparten el paquete climate. Por eso, los catorce submódulos descritos en la memoria se distribuyen en tres paquetes principales, aunque la web presenta cuatro módulos funcionales. Cada estudio utiliza la combinación que necesita; no es obligatorio recorrerlos todos para obtener un resultado.",
+    script: "Las cuatro columnas corresponden a los módulos de la web: fuentes de datos, análisis climático, generación estocástica y modelización. Sus productos se conectan: series documentadas, distribuciones y escenarios, realizaciones sintéticas y respuestas físicas. Cada estudio utiliza los componentes necesarios.\n\nAnálisis climático y generación comparten el paquete climate; los catorce submódulos se distribuyen en tres paquetes del código. Ahora explicaré sus operaciones y comprobaciones, siguiendo el recorrido científico.",
     notes: "Mantener los cuatro nombres de la web. No confundir cuatro módulos funcionales con tres paquetes del código (data_sources, climate y modeling) ni con los tres niveles de arquitectura (núcleo, servicios e interfaz). El downscaling híbrido integra etapas y utiliza otros componentes; el diagrama muestra su ubicación, no cuatro etapas obligatorias.",
     speakerGoal: "Reconocer los cuatro módulos de la web y distinguirlos de la organización interna del código.",
     visualGuide: ["Fuentes de datos", "Análisis climático", "Generación estocástica", "Modelización", "Franja inferior: correspondencia con los paquetes del código"],
-    speechCues: ["cuatro módulos principales", "Fuentes de datos", "Análisis climático", "Generación estocástica", "Modelización", "organización funcional", "estructura del código", "paquete climate", "catorce submódulos", "tres paquetes principales", "combinación que necesita"],
+    speechCues: ["cuatro columnas","fuentes de datos","análisis climático","generación estocástica","modelización","productos","climate","catorce submódulos","tres paquetes","operaciones y comprobaciones"],
     transition: "La primera dificultad práctica es que las entradas proceden de fuentes muy distintas.",
     transitionCue: "bloque de datos"
   },
@@ -494,7 +494,7 @@ export const slideLibrary: Slide[] = [
     estimatedMinutes: 3,
     url: '/modules/fuentes-datos',
     type: 'normal',
-    script: "El primer problema aparece en las fuentes de datos, situadas a la izquierda. Estaciones, reanálisis, satélites, información de ríos y suelos y proyecciones climáticas tienen accesos, unidades y resoluciones diferentes.\n\nLos adaptadores centrales permiten adquirir y organizar esas entradas para producir las estructuras comunes de tiempo, espacio y variable que aparecen a la derecha. Cuando corresponde, se unifican referencias como UTC y WGS84. Los metadatos permiten conservar la procedencia y las condiciones de la consulta.\n\nEsta homogeneización facilita conectar el cálculo y repetirlo. La revisión experta de la calidad, la cobertura y la representatividad sigue siendo necesaria para decidir si una fuente resulta adecuada para el problema.",
+    script: "Las fuentes de la izquierda aportan observaciones, reanálisis, satélites, caudales, suelos y proyecciones. El adaptador central recibe una variable, un dominio y un período; descarga y convierte unidades, coordenadas y tiempos a estructuras comunes. La salida de la derecha conserva valores y metadatos de procedencia.\n\nAntes de ajustar modelos revisamos ausencias, cobertura, resolución y representatividad. Una serie de ERA5 puede aportar continuidad temporal, pero sus extremos locales deben contrastarse con estaciones. Homogeneizar formatos permite conectar etapas; no convierte todas las fuentes en observaciones equivalentes.",
     notes: "La salida común no garantiza calidad física. Revisar unidades, ausencias, representatividad y metadatos antes del análisis.",
     bullets: [
       'Precipitación: ERA5 (0.25°, horaria, desde 1940), GPM-IMERG (0.1°, 30 min, desde 2000, hasta 60°N/S), PERSIANN-CCS (~0.04°, horaria, desde 2003).',
@@ -505,7 +505,7 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Mostrar qué transforma un adaptador de datos y qué conserva.",
     visualGuide: ["Cinco familias de fuentes a la izquierda","Adaptadores en el centro","Salida común y metadatos a la derecha"],
-    speechCues: ["fuentes de datos","adaptadores","estructuras comunes","UTC y WGS84","procedencia","calidad"],
+    speechCues: ["variable, un dominio y un período","estructuras comunes","metadatos","ausencias","representatividad","ERA5","contrastarse con estaciones","no convierte"],
     transition: "Con las entradas identificadas y revisadas, podemos estimar la frecuencia de sus valores extremos.",
     transitionCue: "frecuencia de sus extremos"
   },
@@ -520,8 +520,8 @@ export const slideLibrary: Slide[] = [
     figure: 'fig_gev_comparacion.png', figurePosition: 'right',
     figureCaption: "Ejemplo ilustrativo de curvas GEV: estimadores, extrapolación y bandas; no constituye una validación comparativa.",
     type: 'split',
-    script: "La expresión de la izquierda resume el ajuste GEV mediante tres parámetros: localización, escala y forma. La forma controla el comportamiento de la cola.\n\nA la derecha vemos sus consecuencias. El eje horizontal es el período de retorno y el vertical, la precipitación máxima anual. Los puntos representan la muestra; las curvas azul, roja y verde ilustran distintos estimadores. Para un mismo período, la altura de cada curva proporciona un valor de diseño y su banda expresa incertidumbre. Hacia la derecha, la extrapolación aumenta y las estimaciones se separan.\n\nLa referencia punteada solo se conoce en este ejemplo ilustrativo. En un caso real debemos justificar el ajuste y su incertidumbre.",
-    notes: "Figura ilustrativa con distribución de referencia. No atribuir estos puntos a Turís ni interpretar la línea de referencia como una verdad conocida en casos reales. La demo MAP/Fisher y la inferencia bayesiana con MCMC son procedimientos distintos.",
+    script: "Partimos de máximos anuales y ajustamos la GEV mediante localización, escala y forma; este último parámetro controla la cola. Comparamos máxima verosimilitud, L-momentos o inferencia bayesiana según los datos y supuestos.\n\nA la derecha, para un período de retorno horizontal, la curva proporciona el cuantil de precipitación y la banda, su incertidumbre. La extrapolación aumenta hacia la derecha. Cuando una estación tiene pocos datos, el análisis regional puede aportar información de estaciones homogéneas, normalizada y reescalada localmente. La homogeneidad debe justificarse. La referencia punteada solo se conoce en esta figura ilustrativa.",
+    notes: "Memoria: §5.2 (GEV/GPD, estimadores e incertidumbre) y §5.3.1 (AFR). GEV sobre máximos de bloque y GPD sobre excedencias independientes son enfoques distintos. AFR: diagnosticar discordancia/heterogeneidad, normalizar por índice local, ajustar distribución regional y reescalar. No atribuir sus resultados a la curva ilustrativa de la derecha. Bootstrap, posterior MCMC y aproximación Fisher de la demo no son intercambiables.",
     mathBlock: `
       <div class="gev-equation">
         <span>F(x; &mu;, &sigma;, &xi;) =</span>
@@ -533,11 +533,11 @@ export const slideLibrary: Slide[] = [
       'Máxima verosimilitud: ajuste rápido, sensible a extremos aislados.',
       'L-momentos: opción robusta para registros cortos (menos de 30 años).',
       'Inferencia bayesiana: banda de credibilidad; exige revisar priors y convergencia.',
-      'Aproximación de Fisher: alternativa de menor coste para análisis exploratorios.',
+      'Análisis regional: normalizar, combinar estaciones homogéneas y reescalar los cuantiles locales.',
     ],
     speakerGoal: "Un valor de diseño debe leerse junto con su incertidumbre.",
     visualGuide: ["Izquierda: parámetros de la GEV","Derecha: puntos y curvas","Períodos mayores: extrapolación y bandas"],
-    speechCues: ["tres parámetros","localización, escala y forma","período de retorno","precipitación máxima anual","muestra","banda","ejemplo ilustrativo"],
+    speechCues: ["máximos anuales","localización, escala y forma","máxima verosimilitud","L-momentos","inferencia bayesiana","cuantil","incertidumbre","análisis regional","estaciones homogéneas","figura ilustrativa"],
     transition: "Pero ajustar cada variable por separado no describe cómo ocurren conjuntamente.",
     transitionCue: "dependencia entre variables"
   },
@@ -552,7 +552,7 @@ export const slideLibrary: Slide[] = [
     figure: 'fig_copula_joint_ret.png', figurePosition: 'right',
     figureCaption: 'Período de retorno conjunto (AND en rojo, OR en azul) para confluencias fluviales costeras',
     type: 'split',
-    script: "Una inundación puede depender de varias variables que no se comportan de forma independiente. Aquí el eje horizontal representa caudal y el vertical nivel del mar. Los puntos negros son pares observados y los grises, generados. Las distribuciones de los bordes describen cada variable por separado; la cópula describe cómo se relacionan.\n\nLas curvas rojas, AND, corresponden a superar ambos umbrales. Las azules, OR, a superar al menos uno. La definición debe elegirse según el problema físico. Las cruces indican combinaciones de máxima densidad sobre las curvas.\n\nLa idea esencial es que un período de retorno conjunto admite muchas parejas de valores. Su respuesta hidráulica puede ser diferente; por eso necesitamos generar combinaciones y propagarlas por el modelo.",
+    script: "El caudal horizontal y el nivel del mar vertical tienen distribuciones marginales propias, representadas en los bordes. Ajustamos esas marginales y después una cópula para conservar su dependencia al generar pares. Los puntos negros son observaciones y los grises, realizaciones.\n\nLas curvas AND, rojas, exigen superar ambos umbrales; las OR, azules, al menos uno. Las cruces localizan máxima densidad sobre cada curva. Un mismo período de retorno conjunto admite muchas parejas, con impactos diferentes. Por eso propagamos las combinaciones por el modelo físico antes de asignar frecuencia al impacto.",
     notes: "Q está en m³/s y SL en metros. AND: ambos umbrales; OR: al menos uno. Las cruces MPDE localizan máxima densidad sobre una isolínea: no equivalen automáticamente a máxima respuesta hidráulica.",
     bullets: [
       'Familias: gaussiana para pico, duración y volumen; Gumbel, Clayton y Frank para eventos compuestos.',
@@ -562,7 +562,7 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "La dependencia determina qué combinaciones deben simularse.",
     visualGuide: ["Ejes Q y SL y puntos observados","Distribuciones marginales en los bordes","Curvas AND/OR y cruces de máxima densidad"],
-    speechCues: ["caudal","nivel del mar","cópula","AND","ambos umbrales","OR","al menos uno","muchas parejas","respuesta hidráulica"],
+    speechCues: ["distribuciones marginales","cópula","dependencia","puntos negros","grises","AND","ambos umbrales","OR","al menos uno","muchas parejas","frecuencia al impacto"],
     transition: "Una vez descritas las distribuciones y la dependencia, podemos generar escenarios que conserven las propiedades seleccionadas.",
     transitionCue: "generar las realizaciones"
   },
@@ -577,17 +577,12 @@ export const slideLibrary: Slide[] = [
     figure: "anexo_stochastic_modelo.png", figurePosition: 'right',
     figureCaption: "Diagnóstico estacional de una demo sintética: media, desviación estándar y autocorrelación; «observado» designa la entrada de demostración.",
     type: 'split',
-    script: "Con esas distribuciones y dependencias generamos escenarios que deben conservar las propiedades relevantes de las entradas. Los tres gráficos muestran cómo se revisa esa condición. El primero compara las medias mensuales; el segundo, la dispersión; el tercero, la autocorrelación de primer retardo, que describe la persistencia entre valores consecutivos.\n\nEsta captura corresponde a una demostración sintética: la serie etiquetada «observado» también es sintética. Sirve para explicar el diagnóstico, no para validar todos los generadores. En la librería, CoSMoS trabaja con la distribución y la autocorrelación; NSRP y STNSRP representan procesos de precipitación.\n\nDespués seleccionamos escenarios representativos con MaxDiss y podemos reconstruir resultados mediante k-NN. Así reservamos las simulaciones físicas más costosas para un subconjunto justificado.",
-    notes: "Captura de una demo sintética: la entrada etiquetada «observado» también es sintética. La herramienta calibra con CoSMoS y utiliza una simulación rápida AR(1) estacional con transformación marginal. Los diagnósticos deben revisarse antes de usar el ensemble.",
-    bullets: [
-      'NSRP / STNSRP: lluvia puntual y multisitio calibrada con media, varianza, probabilidad de día seco y autocorrelación.',
-      'CoSMoS: reproduce a la vez la distribución marginal y la autocorrelación estacional.',
-      'MaxDiss: selecciona un subconjunto de escenarios que cubre todo el rango del ensemble.',
-      'k-NN y clasificación de hidrogramas: reconstruyen los impactos de los escenarios no simulados.',
-    ],
+    script: "El generador se elige según el problema: NEOPRENE representa lluvia mediante tormentas y células, en un punto con NSRP o en varias estaciones con STNSRP. CoSMoS reproduce una distribución marginal y su dependencia temporal.\n\nCalibramos con las series de entrada y generamos realizaciones; después comprobamos estacionalidad, dispersión, persistencia y, cuando corresponde, dependencia espacial. Los tres gráficos comparan media mensual, desviación típica y autocorrelación. Aquí la entrada «observado» también es sintética: explica el diagnóstico, sin validar todos los generadores. La salida es un ensemble que alimentará los modelos físicos.",
+    notes: "Memoria: §5.4. NEOPRENE (NSRP/STNSRP) y CoSMoS son librerías externas integradas como envoltorios. En lluvia también se comprueban frecuencia de días secos/húmedos y extremos; en multisitio, correlación espacial y simultaneidad. La captura es una demo sintética con simulación rápida AR(1) estacional y transformación marginal, no una ejecución completa de STNSRP. Selección MaxDiss y reconstrucción k-NN se explican después de los motores físicos.",
+    bullets: ["NEOPRENE: tormentas y células; NSRP puntual o STNSRP multisitio.","CoSMoS: distribución marginal, autocorrelación y estacionalidad.","Calibrar → generar → comprobar media, dispersión, persistencia y dependencia espacial.","Salida: realizaciones sintéticas; verificar sus propiedades antes de simular impactos."],
     speakerGoal: "Generar, comprobar propiedades y seleccionar escenarios representativos.",
     visualGuide: ["Tres gráficos: media, dispersión y autocorrelación","Barras de la serie de entrada y línea simulada","Condición previa a usar las realizaciones"],
-    speechCues: ["tres gráficos","medias mensuales","dispersión","autocorrelación","demostración sintética","MaxDiss","k-NN"],
+    speechCues: ["NEOPRENE","NSRP","STNSRP","CoSMoS","Calibramos","comprobamos","dependencia espacial","tres gráficos","también es sintética","ensemble"],
     transition: "Esas trayectorias deben convertirse ahora en una respuesta hidrológica e hidráulica.",
     transitionCue: "modelos físicos"
   },
@@ -600,7 +595,7 @@ export const slideLibrary: Slide[] = [
     estimatedMinutes: 2,
     url: '/modules/modelizacion',
     type: 'normal',
-    script: "Los escenarios anteriores deben convertirse en una respuesta física. Un modelo hidrológico transforma lluvia en caudal; un modelo hidráulico calcula niveles, velocidades y extensión inundada. En el esquema aparecen HEC-HMS y SWAT+ para la primera tarea, y HEC-RAS y SFINCS para la segunda.\n\nEl adaptador central organiza cuatro operaciones: preparar las entradas del motor, ejecutarlo, homogeneizar sus salidas y comprobar los resultados. Ese contrato común permite cambiar de motor sin reconstruir todo el tratamiento estadístico.\n\nLa integración tiene un alcance concreto: Iber se utilizó manualmente en los trabajos fundacionales. Además, automatizar archivos y ejecuciones no decide la geometría, las condiciones de contorno ni la validez física. Esas decisiones requieren criterio experto.",
+    script: "El modelo hidrológico convierte lluvia en hidrogramas; el hidráulico transforma caudales y condiciones de contorno en calados, velocidades y extensión inundada. HEC-HMS y SWAT+ cubren la primera tarea; HEC-RAS y SFINCS, la segunda.\n\nEl adaptador prepara archivos, ejecuta el motor con su versión registrada, lee las salidas y comprueba unidades, rangos y finalización. Obtenemos respuestas comparables por escenario. La geometría, la rugosidad, las condiciones de contorno y la estabilidad numérica requieren revisión experta. Iber fue el motor manual de los trabajos fundacionales; no tiene un adaptador propio en pyhydra.",
     notes: "El esquema del adaptador distingue preparación, ejecución, homogeneización y validación. Iber se usó manualmente en los trabajos fundacionales; no atribuirle integración automática.",
     bullets: [
       'HEC-HMS: calibración automática de parámetros frente a NSE, PBIAS o RMSE.',
@@ -611,7 +606,7 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Los adaptadores conectan escenarios y respuestas físicas.",
     visualGuide: ["Escenarios de entrada","Cuatro operaciones del adaptador","Motores conectados e Iber manual"],
-    speechCues: ["modelo hidrológico","modelo hidráulico","cuatro operaciones","preparar","ejecutarlo","homogeneizar","comprobar","Iber","criterio"],
+    speechCues: ["hidrogramas","calados, velocidades y extensión","HEC-HMS y SWAT+","HEC-RAS y SFINCS","prepara archivos","versión registrada","respuestas comparables","revisión experta","Iber"],
     transition: "Con los métodos y los adaptadores conectados, podemos ofrecer la misma operación a través de una herramienta web.",
     transitionCue: "herramientas web"
   },
@@ -628,7 +623,7 @@ export const slideLibrary: Slide[] = [
     estimatedMinutes: 1,
     url: '/', anchor: '#herramientas', highlight: '#herramientas .grid',
     type: 'normal',
-    script: "La parte superior muestra seis accesos al cálculo: extremos GEV, cópulas, series sintéticas, curvas IDF, análisis regional y corrección de sesgo. Aunque sus formularios son distintos, comparten el recorrido representado debajo. La interfaz envía datos y parámetros a la API; esta llama a pyhydra y devuelve el resultado.\n\nLa web permite utilizar operaciones del mismo núcleo sin escribir cada llamada en Python. Interpretarlas exige conocer entradas, método e hipótesis. Voy a mostrarlo con una sola herramienta: el ajuste de extremos. Recorreremos su configuración y después leeremos una curva con su banda de incertidumbre, siguiendo la pantalla.",
+    script: "Los seis accesos superiores permiten utilizar extremos, cópulas, series sintéticas, curvas IDF, análisis regional y corrección de sesgo. El esquema inferior muestra el recorrido común: la web envía entradas y parámetros a la API, pyhydra calcula y devuelve resultados.\n\nLa interfaz hace accesible el cálculo; interpretar sus hipótesis y límites exige criterio técnico. Mostraré una operación completa con la herramienta de extremos.",
     notes: "Esta diapositiva explica el acceso al método; la siguiente demuestra su operación. Tiempo de demo previsto: aproximadamente 90 segundos adicionales a la explicación.",
     bullets: [
       'Simulación estocástica CoSMoS en 3 pasos',
@@ -638,7 +633,7 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "La interfaz facilita el acceso; la interpretación exige conocer el método.",
     visualGuide: ["Seis herramientas de la parte superior","API común","Núcleo pyhydra"],
-    speechCues: ["seis accesos","API","pyhydra","entrada","método","ajuste de extremos","configuración","curva con su banda"],
+    speechCues: ["seis accesos","recorrido común","entradas y parámetros","API","pyhydra","hipótesis y límites","herramienta de extremos"],
     transition: "En esa demostración distinguiremos la serie que entra al cálculo, el estimador puntual y el origen de la incertidumbre mostrada.",
     transitionCue: "herramienta de extremos",
     sectionLabel: "Herramientas interactivas"
@@ -646,7 +641,7 @@ export const slideLibrary: Slide[] = [
 
   {
     id: 19,
-    offlineScript: "En la primera captura vemos la configuración de la herramienta, antes de ejecutar el ajuste. Está seleccionada la opción Demo, una serie sintética de precipitación diaria de 1980 a 2024. Los controles definen la selección de eventos y los parámetros del cálculo; todavía no hay un resultado en esta vista.\n\nPaso a «Resultado e incertidumbre», la segunda captura. Ahora sí vemos el cálculo ejecutado. El eje horizontal representa el período de retorno y el vertical, la precipitación. La curva verde es el ajuste MAP. La banda P5–P95 se aproxima mediante Fisher alrededor del ajuste MLE; no es una posterior obtenida con MCMC.\n\nPara un período de diseño debemos leer curva y banda conjuntamente. El ensanchamiento de la banda muestra la incertidumbre de la extrapolación.",
+    offlineScript: "La primera captura muestra la entrada Demo: precipitación diaria sintética de 1980 a 2024. Los controles configuran eventos y ajuste; todavía no hay resultados. La GEV utiliza máximos anuales.\n\nPaso a la segunda captura, «Resultado e incertidumbre». El eje horizontal indica período de retorno y el vertical, precipitación. La curva verde es el ajuste MAP. La banda P5–P95 utiliza una aproximación de Fisher alrededor del ajuste MLE; no procede de MCMC. Leemos curva y banda conjuntamente para el período de diseño: su ensanchamiento advierte de incertidumbre al extrapolar.",
 
     offlineFrames: [{"src":"offline_gev_entrada.png","label":"Configuración inicial","caption":"Estado anterior al cálculo: selección de la serie sintética Demo y controles del ajuste."},{"src":"offline_gev_resultado.png","label":"Resultado e incertidumbre","caption":"Resultado de la demo sintética: curva MAP y banda aproximada Fisher alrededor de MLE."}],
     block: 'Demo en vivo', blockColor: '#10b981',
@@ -659,15 +654,15 @@ export const slideLibrary: Slide[] = [
     webPurpose: 'Enseñar una sola cadena científica completa, conectada con el caso Valencia.',
     webAction: 'Ejecutar un ajuste preparado y señalar resultado, incertidumbre y trazabilidad. Máximo 3 minutos.',
     type: 'normal',
-    script: "Estamos en la herramienta de extremos. En la columna de entrada mantengo seleccionada la opción Demo: es una serie sintética de precipitación diaria de 1980 a 2024. Los controles permiten definir un umbral y separar eventos; la GEV se ajustará a los máximos anuales. Pulso «Ajustar modelo» para ejecutar el cálculo.\n\nCuando aparece el resultado, pasamos al gráfico. El eje horizontal representa el período de retorno y el vertical, la precipitación. La curva verde es el ajuste MAP, máximo de la posterior. La banda P5–P95 es una aproximación de Fisher alrededor del ajuste MLE; no procede de cadenas MCMC.\n\nPara un período de diseño leemos conjuntamente la curva y la banda. La amplitud creciente advierte de la incertidumbre al extrapolar.",
+    script: "En la columna de entrada selecciono Demo: precipitación diaria sintética de 1980 a 2024. Los controles permiten separar eventos; la GEV utiliza máximos anuales. Pulso «Ajustar modelo».\n\nEn el resultado, el eje horizontal indica período de retorno y el vertical, precipitación. La curva verde es el ajuste MAP, máximo de la posterior. La banda P5–P95 utiliza una aproximación de Fisher alrededor del ajuste MLE; no procede de MCMC. Para un período de diseño leemos curva y banda conjuntamente: su ensanchamiento advierte de incertidumbre al extrapolar.",
     notes: "En vivo: revisar entrada → ejecutar → leer curva y banda. En capturas: alternar Datos y ajuste → Resultado e incertidumbre. La serie es sintética. La GEV usa máximos anuales; las bandas Fisher alrededor de MLE no son una posterior MCMC.",
     bullets: ["Serie demo sintética o CSV identificado.","Extracción de eventos por umbral; GEV sobre máximos anuales.","Ajuste puntual MAP y bandas aproximadas mediante Fisher.","Respaldo local: figura del notebook de Valencia, con método y procedencia."],
     speakerGoal: "Configurar primero; ejecutar y leer después la curva y la banda.",
     visualGuide: ["Entrada: opción Demo y controles","Acción: Ajustar modelo","Resultado: curva MAP y banda Fisher"],
-    speechCues: ["columna de entrada","Demo","serie sintética","máximos anuales","Ajustar modelo","Cuando aparece el resultado","MAP","Fisher","curva y la banda"],
+    speechCues: ["columna de entrada","Demo","máximos anuales","Ajustar modelo","MAP","Fisher","MLE","no procede de MCMC","curva y banda"],
     transition: "La demo muestra que el método puede ejecutarse. Los casos permiten valorar qué conocimiento y qué capacidad operativa aporta.",
     transitionCue: "evidencias de los casos",
-    offlineSpeechCues: ["primera captura","antes de ejecutar","Demo","todavía no hay un resultado","segunda captura","MAP","Fisher","curva y banda"],
+    offlineSpeechCues: ["primera captura","Demo","todavía no hay resultados","máximos anuales","segunda captura","MAP","Fisher","MLE","no procede de MCMC","curva y banda"],
     sectionLabel: "Demostración GEV"
   },
 
@@ -1609,11 +1604,82 @@ export const slideLibrary: Slide[] = [
   "figureCaption": "Figura 10 del artículo de Navas y del Jesus (2025), p. 144: ficha de aportaciones, ejemplo de Alcántara.",
   "script": "Esta es la ficha de aportaciones reproducida en la figura 10 del artículo de SIMPCCe. El ejemplo se identifica como embalse de Alcántara. Las matrices superiores muestran cambios anuales por modelo para RCP4.5 y RCP8.5. Debajo se presentan aportaciones medias, varianza y cuantil 25 por mes, junto a paneles que comparan el cambio porcentual de la media y factores de cambio de los cuantiles. Las filas corresponden a los tres horizontes futuros.\n\nLa ficha muestra los productos que genera la herramienta. Para leer un valor concreto debe ampliarse su panel y comprobar variable, unidad, horizonte y escenario. ",
   "notes": "Fuente: figura 10, p.144, del artículo publicado de Navas y del Jesus (2025). Ejemplo identificado como Alcántara. La diapositiva principal muestra el apoyo a decisiones de la figura 11; este anexo conserva la ficha de aportaciones. No inventar valores a partir de la imagen."
+},
+{
+  "id": 15.5,
+  "block": "Bloque climático-estadístico",
+  "blockColor": "#0ea5e9",
+  "sectionLabel": "Análisis climático",
+  "title": "Cambio climático: corregir el sesgo antes de propagar escenarios",
+  "subtitle": "Referencia observada, histórico del modelo y proyección futura",
+  "estimatedMinutes": 1,
+  "type": "figure",
+  "figure": "esq_metodo_sesgo.svg",
+  "figurePosition": "full",
+  "figureCaption": "Síntesis de la memoria doctoral, §5.5, pp. 65–66. La corrección se documenta por variable, modelo, escenario y horizonte.",
+  "script": "Para incorporar cambio climático necesitamos tres entradas: observaciones, histórico del modelo y proyección futura. El período histórico común permite caracterizar diferencias sistemáticas. El método delta aplica cambios mensuales; el mapeo cuantil corrige la distribución. QDM y SDM permiten tratar la señal de cambio según el método elegido.\n\nLa salida es un escenario corregido y documentado, que podrá alimentar la generación o los modelos físicos. Comprobamos medias, frecuencia de precipitación y extremos según la variable. Corregir sesgos no elimina la incertidumbre climática ni garantiza reproducir cualquier extremo local.",
+  "notes": "Fuente: memoria §5.5, pp. 65–66. Delta aditivo para temperatura y multiplicativo para precipitación; EQM empírico; QDM multiplicativo; SDM paramétrico gamma/normal. Preservación de la señal depende de método y variable, no atribuirla por igual a todos. Conservar referencia, período histórico común, modelo, escenario, horizonte y configuración. Comprobar calidad de referencia, extrapolación y resultados físicos; no presentar una variante universal ni una validación automática fuera de muestra.",
+  "speakerGoal": "Explicar qué se compara, qué se corrige y qué incertidumbre permanece.",
+  "visualGuide": [
+    "Tres entradas: referencia, control y futuro",
+    "Métodos: delta o corrección de distribuciones",
+    "Escenarios corregidos y controles"
+  ],
+  "speechCues": [
+    "tres entradas",
+    "período histórico común",
+    "diferencias sistemáticas",
+    "delta",
+    "mapeo cuantil",
+    "QDM y SDM",
+    "escenario corregido y documentado",
+    "Comprobamos",
+    "no elimina"
+  ],
+  "transitionCue": "escenarios corregidos",
+  "transition": "Con esos escenarios corregidos podemos generar realizaciones sintéticas coherentes."
+},
+{
+  "id": 17.5,
+  "block": "Bloque de modelización",
+  "blockColor": "#0ea5e9",
+  "sectionLabel": "Propagación del impacto",
+  "title": "Del ensemble a los mapas de período de retorno",
+  "subtitle": "Seleccionar, simular, reconstruir y comprobar antes de estimar frecuencia",
+  "estimatedMinutes": 1,
+  "type": "figure",
+  "figure": "esq_metodo_impacto.svg",
+  "figurePosition": "full",
+  "figureCaption": "Síntesis de la memoria doctoral, §5.6–5.6.1, pp. 66–68. N escenarios generados; n seleccionados para simulación física.",
+  "script": "Simular físicamente todos los escenarios puede resultar costoso. El esquema separa N escenarios de un subconjunto n: MaxDiss selecciona realizaciones que cubren su variabilidad. Ejecutamos esas realizaciones y k-NN reconstruye los mapas restantes a partir de escenarios similares.\n\nValidamos excluyendo simulaciones conocidas y comparando sus mapas reconstruidos con los físicos: error de calado, acierto de extensión y cuantiles altos. Si la cobertura es insuficiente, ampliamos o revisamos la selección. Finalmente estimamos la frecuencia del calado en cada celda, conservando la duración representada o los pesos de ocurrencia. Esa frecuencia corresponde al impacto.",
+  "notes": "Fuente: memoria §5.6–5.6.1, pp. 66–68. MaxDiss cubre el espacio de descriptores; su selección no asigna probabilidad ni garantiza representatividad hidráulica por sí sola. k-NN interpola mapas usando vecinos y pesos; exige validación cruzada por aplicación. Métricas: RMSE/sesgo de calado, CSI y sobre/infrapredicción de extensión, error en cuantiles altos. Conservar la frecuencia del ensemble completo; no asignar el mismo peso a cada representante MaxDiss por defecto. Estimar T sobre máximos/ocurrencias de impacto según el diseño temporal y los supuestos del estudio. La validación de reconstrucción contra el motor no equivale a validación contra observaciones.",
+  "speakerGoal": "Mostrar cómo el ensemble se transforma en frecuencia del impacto y cómo se comprueba la reconstrucción.",
+  "visualGuide": [
+    "N escenarios → MaxDiss → n simulaciones",
+    "Mapas físicos → k-NN → ensemble de impactos",
+    "Validación cruzada y frecuencia por celda"
+  ],
+  "speechCues": [
+    "N escenarios",
+    "subconjunto n",
+    "MaxDiss",
+    "k-NN",
+    "Validamos excluyendo",
+    "error de calado",
+    "acierto de extensión",
+    "cuantiles altos",
+    "ampliamos o revisamos",
+    "frecuencia del calado",
+    "pesos de ocurrencia",
+    "impacto"
+  ],
+  "transitionCue": "herramientas web",
+  "transition": "Las herramientas web permiten acceder a operaciones de esta cadena."
 }
 ];
 
 // Deliberate narrative order; supporting material remains available in the appendices.
-const presentationOrder = [1, 4, 44, 4.5, 2, 3, 5.5, 6, 8, 7, 8.5, 4.6, 9, 46, 10, 11, 12, 5, 12.6, 13, 14, 15, 16, 17, 18, 19, 27, 29, 28, 30, 31, 32, 33, 34, 35, 36, 39, 38, 37, 39.5, 39.6, 39.7, 40, 41, 42, 42.5, 43];
+const presentationOrder = [1, 4, 44, 4.5, 2, 3, 5.5, 6, 8, 7, 8.5, 4.6, 9, 46, 10, 11, 12, 5, 12.6, 13, 14, 15, 15.5, 16, 17, 17.5, 18, 19, 27, 29, 28, 30, 31, 32, 33, 34, 35, 36, 39, 38, 37, 39.5, 39.6, 39.7, 40, 41, 42, 42.5, 43];
 const appendixOrder = [20, 21, 22, 23, 24, 25, 26, 56, 57, 58, 59, 60, 61, 45, 8.6, 47, 48, 55, 62];
 const presentationRank = (slide: Slide) => presentationOrder.indexOf(slide.id);
 
@@ -1628,6 +1694,8 @@ function pacingMinutes(slide: Slide, transition = slide.transition ?? ''): numbe
 
 // Each transition states why the next slide is needed in this exact order.
 const spokenBridges = new Map<number, { nextId: number; text: string }>([
+  [15.5, {nextId:16, text:"Con esos escenarios corregidos podemos generar realizaciones sintéticas coherentes."}],
+  [17.5, {nextId:18, text:"Las herramientas web permiten acceder a operaciones de esta cadena."}],
   [
     1,
     {
@@ -1778,8 +1846,8 @@ const spokenBridges = new Map<number, { nextId: number; text: string }>([
   [
     15,
     {
-      "nextId": 16,
-      "text": "Esas propiedades permiten generar las realizaciones que alimentarán los modelos."
+      "nextId": 15.5,
+      "text": "Antes de generar escenarios futuros, debemos tratar el sesgo de las proyecciones climáticas."
     }
   ],
   [
@@ -1792,8 +1860,8 @@ const spokenBridges = new Map<number, { nextId: number; text: string }>([
   [
     17,
     {
-      "nextId": 18,
-      "text": "Las herramientas web facilitan el acceso a operaciones de ese mismo núcleo."
+      "nextId": 17.5,
+      "text": "Veamos cómo obtener impactos para el ensemble completo sin simularlo íntegramente."
     }
   ],
   [
