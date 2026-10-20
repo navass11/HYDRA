@@ -683,7 +683,8 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       <div class="live-progress-fill" id="live-progress" style="width:3.45%"></div>
     </div>
     <span class="live-counter" id="live-counter" aria-live="polite">1 / {totalSlides}</span>
-    <span class="live-timer" id="live-timer">⏱ 0:00</span>
+    <span class="live-timer" id="live-timer">Total 0:00</span>
+    <span class="live-timer" id="live-slide-timer" title="Tiempo desde que entraste en la diapositiva actual; vuelve a cero al cambiar de diapositiva.">Diapositiva 0:00</span>
     <button class="live-topbar-btn live-topbar-btn-primary" id="btn-present" title="Abre la vista de presentador en otra ventana y pone esta pantalla en modo proyección" aria-label="Abrir vista de presentador">🎬 Presentar</button>
     <button class="live-topbar-btn" id="btn-panel-toggle" title="Mostrar u ocultar el panel lateral (N)" aria-label="Mostrar panel lateral" aria-expanded="false">Mostrar Panel</button>
     <button class="live-topbar-btn active" id="btn-projection" title="Activar o desactivar proyección (M)" aria-label="Activar modo proyección" aria-keyshortcuts="M" aria-pressed="false">📺 Proyectar (M)</button>
@@ -830,10 +831,14 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
 
   <!-- Right Side: Notes and large controls -->
   <div class="presenter-window-right">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
+    <div style="display:flex; flex-wrap:wrap; gap:16px; justify-content:space-between; align-items:center;">
       <div>
-        <span class="panel-section-label">Tiempo transcurrido</span>
+        <span class="panel-section-label">Tiempo total</span>
         <div class="presenter-large-timer" id="pres-win-timer">0:00</div>
+      </div>
+      <div title="Tiempo desde que entraste en esta diapositiva. Al cambiar empieza de nuevo; recargar conserva el tiempo.">
+        <span class="panel-section-label">En esta diapositiva</span>
+        <div class="presenter-large-timer" id="pres-win-slide-timer" style="color:#5eead4;">0:00</div>
       </div>
       <div style="text-align:right;">
         <span class="panel-section-label">Siguiente paso</span>
@@ -905,7 +910,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   const readSaved = (key: string) => { try { return localStorage.getItem(key); } catch { return null; } };
   const saveShared = (key: string, value: string) => { try { localStorage.setItem(key, value); } catch { /* A restricted store must not stop navigation. */ } };
   const sessionKey = 'defensa-live-window-v1';
-  type WindowSession = { slideId: number; startedAt: number; mode: NarrationMode; projection: boolean; panel: boolean; scroll: number };
+  type WindowSession = { slideId: number; startedAt: number; slideStartedAt: number; mode: NarrationMode; projection: boolean; panel: boolean; scroll: number };
   let savedSession: Partial<WindowSession> = {};
   try { savedSession = JSON.parse(sessionStorage.getItem(sessionKey) || '{}') ?? {}; } catch { /* Start without a saved window. */ }
   let syncChannel: BroadcastChannel | null = null;
@@ -925,6 +930,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   let lastNavigationStamp = 0;
   const navigationStorageKey = 'defensa-live-navigation-v2';
   let elapsed = 0;
+  let slideStartedAt = Date.now();
   let timerStartedAt = Number(readSaved('defensa-live-timer-start')) || savedSession.startedAt || Date.now();
   saveShared('defensa-live-timer-start', String(timerStartedAt));
   let timerInterval: ReturnType<typeof setInterval> | null = null;
@@ -1062,37 +1068,39 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   }
 
   // ── Timer ──
+  function updateTimer() {
+    const format = (seconds: number) => `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`;
+    elapsed = Math.max(0, Math.floor((Date.now() - timerStartedAt) / 1000));
+    const partial = Math.max(0, Math.floor((Date.now() - slideStartedAt) / 1000));
+    timerEl.textContent = `Total ${format(elapsed)}`;
+    presWinTimer.textContent = format(elapsed);
+    document.getElementById('live-slide-timer')!.textContent = `Diapositiva ${format(partial)}`;
+    document.getElementById('pres-win-slide-timer')!.textContent = format(partial);
+  }
   function startTimer() {
-    if (timerInterval) return;
-    const updateTimer = () => {
-      elapsed = Math.max(0, Math.floor((Date.now() - timerStartedAt) / 1000));
-      const m = Math.floor(elapsed / 60);
-      const s = elapsed % 60;
-      const timeStr = `⏱ ${m}:${s.toString().padStart(2,'0')}`;
-      const timeStrLarge = `${m}:${s.toString().padStart(2,'0')}`;
-      if (timerEl) timerEl.textContent = timeStr;
-      if (presWinTimer) presWinTimer.textContent = timeStrLarge;
-    };
     updateTimer();
-    timerInterval = setInterval(updateTimer, 1000);
+    if (!timerInterval) timerInterval = setInterval(updateTimer, 1000);
   }
 
   // ── Sync Channel communication ──
   function publishNavigation(index: number) {
     lastNavigationStamp = Math.max(Date.now(), lastNavigationStamp + 1);
-    const state = { index, slideId: slides[index].id, stamp: lastNavigationStamp };
+    const state = { index, slideId: slides[index].id, stamp: lastNavigationStamp, enteredAt: slideStartedAt };
     saveShared('defensa-live-slide', String(index));
     saveShared(navigationStorageKey, JSON.stringify(state));
     saveWindowSession();
     sendSync({ type: 'slide-change', ...state });
   }
 
-  function receiveNavigation(state: { index: number; slideId: number; stamp: number }) {
+  function receiveNavigation(state: { index: number; slideId: number; stamp: number; enteredAt?: number }) {
     if (!Number.isInteger(state.stamp) || state.stamp <= lastNavigationStamp) return;
     const index = slides.findIndex(slide => slide.id === state.slideId);
     if (index < 0) return;
     lastNavigationStamp = state.stamp;
-    goTo(index, false);
+    goTo(index, false, state.enteredAt);
+    if (Number.isFinite(state.enteredAt) && state.enteredAt! > 0) slideStartedAt = state.enteredAt!;
+    updateTimer();
+    saveWindowSession();
   }
 
   function onSyncMessage(e: MessageEvent) {
@@ -1621,10 +1629,12 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   narrationPickers.forEach(picker => picker.addEventListener('change', () => setNarrationMode(picker.value === 'prepared' ? 'prepared' : 'live')));
 
   // ── Main Slide Navigation ──
-  function goTo(idx: number, announce = true) {
+  function goTo(idx: number, announce = true, enteredAt = Date.now()) {
     if (!Number.isInteger(idx) || idx < 0 || idx >= totalSlides) return;
     if (current === idx) return;
     current = idx;
+    slideStartedAt = Number.isFinite(enteredAt) && enteredAt > 0 ? enteredAt : Date.now();
+    updateTimer();
     const slide = slides[idx];
     const stepUrl = new URL(location.href); stepUrl.searchParams.set('slide', String(idx));
     history.replaceState(null, '', stepUrl);
@@ -1991,7 +2001,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   function saveWindowSession() {
     if (!slides[current]) return;
     const state: WindowSession = {
-      slideId: slides[current].id, startedAt: timerStartedAt, mode: narrationMode,
+      slideId: slides[current].id, startedAt: timerStartedAt, slideStartedAt, mode: narrationMode,
       projection: projectionMode, panel: panelOpen,
       scroll: document.querySelector<HTMLElement>(isPresenterWindow ? '.presenter-window-right' : '#panel-scroll')?.scrollTop ?? 0,
     };
@@ -2051,7 +2061,14 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
 
   if (!restoringWindow && params.has('modo')) saveShared('defensa-live-narration', narrationMode);
   reconnectSync();
-  goTo(Number.isInteger(initIdx) ? Math.min(Math.max(0, initIdx), totalSlides - 1) : 0, !restoringWindow && !isPresenterWindow);
+  let initialSlideStartedAt = restoringWindow ? savedSession.slideStartedAt : undefined;
+  if (isPresenterWindow && !initialSlideStartedAt) {
+    try {
+      const navigation = JSON.parse(readSaved(navigationStorageKey) || '{}');
+      if (navigation.slideId === slides[initIdx]?.id) initialSlideStartedAt = navigation.enteredAt;
+    } catch { /* A new slide starts its own partial timer. */ }
+  }
+  goTo(Number.isInteger(initIdx) ? Math.min(Math.max(0, initIdx), totalSlides - 1) : 0, !restoringWindow && !isPresenterWindow, initialSlideStartedAt);
   panelOpen = savedSession.panel === true;
   if (panelOpen && !isPresenterWindow) panel.classList.remove('collapsed');
   if (!isPresenterWindow && savedSession.projection) setProjectionMode(true);
@@ -2066,7 +2083,10 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     saveShared('defensa-live-timer-start', String(startedAt));
     if (timerEl) timerEl.textContent = '⏱ 0:00';
     if (presWinTimer) presWinTimer.textContent = '0:00';
-    goTo(0, announce);
+    goTo(0, false, startedAt);
+    slideStartedAt = startedAt;
+    updateTimer();
+    if (announce) publishNavigation(0);
     const url = new URL(location.href); url.searchParams.set('slide', '0');
     history.replaceState(null, '', url);
     saveWindowSession();

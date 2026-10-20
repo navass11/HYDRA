@@ -1984,7 +1984,8 @@ const chapterIcons = [
       <div class="pres-progress-fill" id="pres-progress" style="width: 3.45%"></div>
     </div>
     <span class="pres-counter" id="pres-counter" aria-live="polite">1 / {totalSlides}</span>
-    <span class="pres-timer" id="pres-timer">⏱ 0:00</span>
+    <span class="pres-timer" id="pres-timer">Total 0:00</span>
+    <span class="pres-timer" id="pres-slide-timer" title="Tiempo desde que entraste en esta diapositiva; vuelve a cero al cambiar.">Diapositiva 0:00</span>
     <a href={asset('/defensa-estudio')} id="study-entry" class="pres-topbar-btn pres-support-btn">Estudiar</a>
     <button id="restart-presentation" class="pres-topbar-btn pres-support-btn" title="Volver a la primera diapositiva y poner el cronómetro a cero">Reiniciar</button>
     <button class="pres-topbar-btn pres-support-btn" data-screen-awake aria-pressed="false">Activar pantalla</button>
@@ -2446,6 +2447,8 @@ const chapterIcons = [
   let current = 0;
   let elapsed = 0;
   let timerStartedAt = Date.now();
+  let slideStartedAt = Date.now();
+  let savedTiming: { slideId?: number; startedAt?: number; enteredAt?: number } = {};
   let timerInterval: ReturnType<typeof setInterval> | null = null;
   let notesVisible = false;
 
@@ -2453,6 +2456,10 @@ const chapterIcons = [
   // Its own chrome is hidden and it must not clobber the standalone offline-mode
   // progress saved under the same localStorage key.
   const isPreview = new URLSearchParams(window.location.search).get('preview') === '1';
+  if (!isPreview) {
+    try { savedTiming = JSON.parse(sessionStorage.getItem(`${storageKey}-timing`) || '{}') ?? {}; } catch { /* Optional persistence. */ }
+    if (Number.isFinite(savedTiming.startedAt) && savedTiming.startedAt! > 0) timerStartedAt = savedTiming.startedAt!;
+  }
   if (!isPreview) {
     const stage = document.querySelector<HTMLElement>('.pres-main')!;
     const canvas = document.getElementById('slide-viewport')!;
@@ -2504,20 +2511,27 @@ const chapterIcons = [
   });
 
   // ── Timer ──
+  function updateTimer() {
+    const format = (seconds: number) => `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`;
+    elapsed = Math.max(0, Math.floor((Date.now() - timerStartedAt) / 1000));
+    const partial = Math.max(0, Math.floor((Date.now() - slideStartedAt) / 1000));
+    timerEl.textContent = `Total ${format(elapsed)}`;
+    document.getElementById('pres-slide-timer')!.textContent = `Diapositiva ${format(partial)}`;
+  }
+  function saveTiming() {
+    if (isPreview) return;
+    try { sessionStorage.setItem(`${storageKey}-timing`, JSON.stringify({ slideId: slides[current].id, startedAt: timerStartedAt, enteredAt: slideStartedAt })); } catch { /* Optional persistence. */ }
+  }
   function startTimer() {
-    if (timerInterval) return;
-    timerInterval = setInterval(() => {
-      elapsed = Math.floor((Date.now() - timerStartedAt) / 1000);
-      const m = Math.floor(elapsed / 60);
-      const s = elapsed % 60;
-      timerEl.textContent = `⏱ ${m}:${s.toString().padStart(2,'0')}`;
-    }, 1000);
+    updateTimer();
+    if (!timerInterval && !isPreview) timerInterval = setInterval(updateTimer, 1000);
   }
 
   // ── Render ──
-  function goTo(idx: number) {
+  function goTo(idx: number, enteredAt = Date.now()) {
     if (idx < 0 || idx >= totalSlides) return;
 
+    if (current !== idx || !timerInterval) slideStartedAt = Number.isFinite(enteredAt) && enteredAt > 0 ? enteredAt : Date.now();
     const prev = allSlides[current];
     const next = allSlides[idx];
 
@@ -2571,6 +2585,8 @@ const chapterIcons = [
 
     if (isPreview) window.parent.postMessage({ type: 'defensa-preview-ready', index: idx, slideId: slide.id }, location.origin);
 
+    updateTimer();
+    saveTiming();
     // Save state
     if (!isPreview) {
       try {
@@ -2585,9 +2601,10 @@ const chapterIcons = [
   document.getElementById('pres-next')!.addEventListener('click', () => goTo(current + 1));
   document.getElementById('pres-prev')!.addEventListener('click', () => goTo(current - 1));
   document.getElementById('restart-presentation')!.addEventListener('click', () => {
-    timerStartedAt = Date.now(); elapsed = 0; timerEl.textContent = '⏱ 0:00';
+    timerStartedAt = Date.now(); slideStartedAt = timerStartedAt; elapsed = 0;
     document.querySelectorAll<HTMLButtonElement>('[data-capture-step="0"]').forEach(button=>button.click());
-    goTo(0);
+    goTo(0, timerStartedAt);
+    updateTimer(); saveTiming();
     const url = new URL(location.href); url.searchParams.set('slide', '0');
     try { history.replaceState(null, '', url); } catch { /* Local files may restrict history updates. */ }
   });
@@ -2678,7 +2695,9 @@ const chapterIcons = [
   const urlParams = new URLSearchParams(window.location.search);
   const urlSlide = urlParams.get('slide');
   const initSlide = urlSlide ? parseInt(urlSlide) : (stored ? parseInt(stored) : 0);
-  goTo(Math.min(Math.max(0, initSlide), totalSlides - 1));
+  const initialIndex = Number.isInteger(initSlide) ? Math.min(Math.max(0, initSlide), totalSlides - 1) : 0;
+  const isReload = (performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined)?.type === 'reload';
+  goTo(initialIndex, isReload && savedTiming.slideId === slides[initialIndex]?.id ? savedTiming.enteredAt : undefined);
   startTimer();
   if (!isPreview) keepPresentationAwake();
   enableStudyEntry({ getCurrent: () => current, group: reserve ? 'anexos' : 'principal', mode: () => narrationMode, disabled: isPreview });
