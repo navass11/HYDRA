@@ -121,7 +121,7 @@ export const slideLibrary: Slide[] = [
     speakerGoal: "Delimitar qué significa el título y evitar que se interprete como un nuevo solver hidráulico.",
     visualGuide: ["Modelo y automatización","Inundación y escenarios estocásticos","Contratos de reproducibilidad"],
     speechCues: ["cadena completa de cálculo","Automático","impacto hidráulico","población de escenarios plausibles","reproducibilidad operativa","variable sobre la que se toman decisiones"],
-    transitionCue: "trabajo del Besaya",
+    transitionCue: "antecedente científico",
     sectionLabel: "Alcance de la tesis"
   },
 
@@ -181,7 +181,7 @@ export const slideLibrary: Slide[] = [
     bullets: ["2017 — Cadena estocástica completa en el TFM del Besaya.","2018 — Publicación del principio T(forzamiento) ≠ T(impacto).","Dificultad — Conexiones manuales y configuración específica para una cuenca.","Antecedente — Base metodológica para plantear la investigación."],
     speakerGoal: "Situar el Besaya como antecedente científico, antes de formular las hipótesis y los objetivos.",
     visualGuide: ["2017: TFM y cadena estocástica","2018: frecuencia sobre el impacto","Dificultad operativa y antecedente metodológico"],
-    speechCues: ["Trabajo Fin de Máster","2017","Los Corrales de Buelna","primera cadena completa","Iber","2018","período de retorno del forzamiento","repetir, conectar y auditar"],
+    speechCues: ["antecedente científico","Trabajo Fin de Máster","2017","Los Corrales de Buelna","primera cadena completa","Iber","2018","período de retorno del forzamiento","antecedente metodológico","repetir una cadena extensa"],
     transition: "La pregunta dejó de ser cómo resolver una cuenca y pasó a ser cómo hacer reutilizable la cadena completa.",
     transitionCue: "estima habitualmente",
     sectionLabel: "Antecedente científico"
@@ -202,7 +202,7 @@ export const slideLibrary: Slide[] = [
     figure: 'fig_hydra_web_home.png', figurePosition: 'right',
     figureCaption: 'HYDRA integra documentación, herramientas y casos reproducibles',
     type: 'split',
-    script: "Entramos ahora por primera vez en HYDRA. La portada permite reconocer los accesos a la documentación de los módulos, las herramientas interactivas y los casos de estudio con sus notebooks.\n\nEs la forma de acceso a la plataforma que hemos definido después de los objetivos. Aquí situamos esas tres entradas; después utilizaremos una herramienta e interpretaremos resultados concretos. Antes de ejecutar el cálculo, explicaré cómo se organiza el núcleo científico al que dan acceso.",
+    script: "Entramos ahora por primera vez en HYDRA. La portada permite reconocer los accesos a la documentación de los módulos, las herramientas interactivas y los casos de estudio con sus notebooks.\n\nLa web reúne esos recursos y los conecta con el núcleo científico. Aquí situamos esas tres entradas; después utilizaremos una herramienta e interpretaremos resultados concretos. Antes de ejecutar el cálculo, explicaré cómo se organiza el núcleo científico al que dan acceso.",
     notes: "Primera visita necesaria. Navegación de orientación, distinta de la demostración GEV y de las páginas de resultados. No saltarla. Evitar recorrer menús o ejecutar cálculos todavía. No dejar recuadros de resaltado sobre la portada.",
     bullets: [
       'Núcleo científico: concentra los métodos de datos, clima y modelización.',
@@ -212,7 +212,7 @@ export const slideLibrary: Slide[] = [
     ],
     backup: false,
     anchorPosition: "start",
-    offlineScript: "La captura muestra nuestra primera entrada en la portada de HYDRA. En ella se reconocen los accesos a la documentación de los módulos, las herramientas interactivas y los casos de estudio con sus notebooks.\n\nEs la plataforma que hemos definido después de los objetivos. Esta copia utiliza capturas preparadas para conservar el recorrido sin conexión. Después veremos la configuración de una herramienta y sus resultados. Antes explicaré cómo se organiza el núcleo científico al que dan acceso.",
+    offlineScript: "La captura muestra nuestra primera entrada en la portada de HYDRA. En ella se reconocen los accesos a la documentación de los módulos, las herramientas interactivas y los casos de estudio con sus notebooks.\n\nEsta vista reúne los recursos que acompañan al núcleo científico. Esta copia utiliza capturas preparadas para conservar el recorrido sin conexión. Después veremos la configuración de una herramienta y sus resultados. Antes explicaré cómo se organiza el núcleo científico al que dan acceso.",
     speakerGoal: "Conservar una primera entrada explícita en HYDRA y orientar al tribunal antes de mostrar operaciones concretas.",
     visualGuide: ["Portada y navegación principal","Accesos a documentación, herramientas y casos/notebooks","Relación con el núcleo científico"],
     speechCues: ["primera vez en HYDRA","documentación de los módulos","herramientas interactivas","casos de estudio","esas tres entradas","núcleo científico"],
@@ -329,7 +329,7 @@ export const slideLibrary: Slide[] = [
     visualGuide: ["Leer una fila completa: objetivo, desarrollo y evidencia","Recorrer los cuatro objetivos"],
     speechCues: ["objetivo general","núcleo científico modular","plataforma reproducible","cuatro compromisos","primero","segundo","tercero","cuarto","requisitos"],
     transition: "El primer paso para cumplirlos es entender qué exige una cadena estocástica completa y qué ofrecen los métodos existentes.",
-    transitionCue: "tres aportaciones",
+    transitionCue: "respuesta tecnológica",
     sectionLabel: "Objetivos"
   },
 
