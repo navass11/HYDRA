@@ -1073,35 +1073,32 @@ export const slideLibrary: Slide[] = [
   {
     id: 35,
     block: 'Casos de estudio', blockColor: '#f59e0b',
-    title: 'Lago Tanganica: niveles de diseño con registros limitados',
-    subtitle: 'De variables climáticas a caudal, nivel del lago y extremos futuros',
+    title: "Lago Tanganica: niveles de diseño bajo cambio climático",
+    subtitle: "De ERA5 y CMIP6 al cambio de nivel extremo respecto al histórico",
     estimatedMinutes: 2,
     url: '/cases/lago-tanganica', anchor: '#case-findings-heading', highlight: '#case-findings-heading',
-    figure: "fig_tanganica_resultados_auditorio.svg", figurePosition: 'right',
-    figureCaption: "T100 histórico: comparación de niveles por método; la proyección climática máxima corresponde a T5–T10, no a T100.",
+    figure: "fig_tanganica_resultados_auditorio.svg", figurePosition: 'full',
+    figureCaption: "Detalle de la figura 7.15: horizonte 2041–2060. Los cuatro horizontes se conservan en el anexo.",
 
 
-    caseReference: 'Referencia: VIII Jornadas de Ingeniería del Agua (2025); manuscrito enviado a Ingeniería del Agua',
-    type: 'split',
-    results: [
-      { value:'R² > 0,85', label:'AdaBoost en validación cruzada', implication:'R² = 0,96 sobre el conjunto completo' },
-      { value:'770,19 m', label:'nivel bootstrap para T100', implication:'frente a 771,55-771,76 m con GEV/Weibull' },
-      { value:'> 0,9 m', label:'máximo incremento proyectado', implication:'2041-2060 y retornos cortos T5-T10' },
-    ],
-    pyhydraRole:'Encadena fuentes globales, señal climática y una relación caudal-nivel no lineal para estimar cotas de diseño donde la altimetría observada es corta.',
+    caseReference: "Fuente: memoria doctoral, §7.6, pp. 108–110; figura 7.15 (Navas et al., 2025a)",
+    type: 'figure',
+    results: [{"value": "R² > 0,85", "label": "AdaBoost en validación cruzada", "implication": "estima caudales mensuales; no valida toda la proyección"}, {"value": "19 modelos", "label": "ensemble climático CMIP6", "implication": "SSP2-4.5 y SSP5-8.5; método delta mensual"}, {"value": "ΔNivel(T)", "label": "cambio respecto al histórico", "implication": "se aplica sobre niveles históricos ajustados con GEV"}],
+
+    pyhydraRole: "Integra datos globales, método delta mensual y análisis de niveles extremos en un sistema lacustre con registros limitados.",
     pyhydraModules:['pyhydra.data_sources','pyhydra.climate','AdaBoost','CMIP6 + Hydroweb'],
-    processSteps:['ERA5 → AdaBoost','Caudal → N(Q)','CMIP6 + delta','Bootstrap N(Q)','Extremos de nivel'],
-    script: "En el lago Tanganica necesitamos estimar niveles de diseño con un registro de altimetría limitado a 1992–2023. La comparación de la derecha muestra el T100 histórico: 770,19 metros mediante bootstrap, frente a 771,55–771,76 con GEV y Weibull. La elección del procedimiento cambia la cota estimada.\n\nLa franja inferior explica cómo se construye el cálculo. ERA5 y AdaBoost permiten estimar aportaciones; una relación caudal-nivel en tres regímenes las transforma en niveles. El bootstrap remuestrea los residuos de esa relación para generar unos 20.000 años.\n\nEl recuadro futuro responde a otra comparación: incorpora deltas mensuales de 19 modelos CMIP6 y obtiene aumentos superiores a 0,9 metros para T5–T10 en 2041–2060. Ese incremento no corresponde al T100 histórico de la parte superior.",
-    notes: "Primero explicar las dos comparaciones visibles. T100 histórico y cambio climático máximo T5–T10 son magnitudes diferentes. El bootstrap remuestrea residuos de N(Q), no de AdaBoost. La figura de forzamientos y las curvas por horizontes están en los anexos.",
+    processSteps: ["ERA5 → AdaBoost", "Caudal → N(Q)", "CMIP6 + delta", "Residuos N(Q) → bootstrap", "ΔNivel(T) + GEV histórica"],
+    script: "En el lago Tanganica estimamos cotas de diseño bajo cambio climático con altimetría de 1992–2023. A la izquierda, AdaBoost convierte ERA5 en caudales mensuales; la relación empírica N(Q) los transforma en niveles. Los deltas de 19 modelos CMIP6 incorporan la señal climática. El bootstrap remuestrea los residuos de N(Q).\n\nA la derecha mostramos el horizonte 2041–2060 de la memoria. El eje horizontal indica el período de retorno; el vertical, el incremento de nivel respecto al histórico. Los colores distinguen ambos escenarios SSP y las barras de error representan incertidumbre intermodelo. Los cuatro horizontes están en el anexo.\n\nLos cambios calculados con máximos anuales sintéticos se suman a las cotas históricas ajustadas con GEV. Así obtenemos niveles futuros conservando la referencia observada.",
+    notes: "Fuente: §7.6.2–7.6.3, pp. 108–109; figura 7.15, p. 110. El texto menciona 770,19 m bootstrap y 771,55–771,76 m GEV/Weibull para T100; el intervalo entre métodos no es una banda de confianza. R²=0,96 corresponde al conjunto completo y no es una validación independiente. Hay una discrepancia entre texto/pie y las barras de la figura 7.15 sobre el horizonte máximo y el umbral de 0,6 m para T100–T500: no afirmar esos dos resultados hasta contrastar la tabla numérica original. No atribuir al bootstrap de N(Q) todas las fuentes de incertidumbre. El detalle mostrado conserva las barras y ejes originales del horizonte identificado.",
     bullets: [
       'AdaBoost estima caudales mensuales a partir de ERA5; no estima directamente los niveles extremos.',
       'La función N(Q), separada en tres regímenes por K-means, transforma caudal en nivel del lago.',
       'El bootstrap remuestrea residuos de N(Q) y los percentiles de máximos anuales determinan los cambios de nivel.',
-      'Las anomalías de cuatro horizontes CMIP6 se aplican sobre los niveles históricos obtenidos con la altimetría Hydroweb 1992-2023.',
+      'Los cambios de nivel de cuatro horizontes se aplican sobre las cotas históricas ajustadas con GEV a la altimetría Hydroweb 1992–2023.',
     ],
-    speakerGoal: "Distinguir la comparación de métodos histórica de la proyección futura.",
-    visualGuide: ["Derecha: T100 histórico por método","Abajo: ERA5 → aportaciones → nivel → extremos","Recuadro: cambio futuro en T5–T10"],
-    speechCues: ["T100 histórico","770,19","GEV y Weibull","franja inferior","relación caudal-nivel","residuos","recuadro futuro","T5–T10"],
+    speakerGoal: "Explicar el encadenamiento y leer correctamente el incremento proyectado respecto al histórico.",
+    visualGuide: ["Izquierda: cinco etapas de cálculo", "Derecha: detalle original 2041–2060", "Eje horizontal: período de retorno; vertical: variación de nivel", "Colores: SSP; barras de error: incertidumbre intermodelo"],
+    speechCues: ["cotas de diseño", "caudales mensuales", "relación empírica caudal-nivel", "19 modelos CMIP6", "residuos", "2041–2060", "período de retorno", "incremento de nivel", "incertidumbre intermodelo", "niveles históricos ajustados con GEV"],
     transition: "Para aplicar cadenas de este tipo a un territorio mayor aparece otro cuello de botella: calibrar muchos modelos de forma consistente.",
     transitionCue: "ejecución hidrológica regional"
   },
@@ -1567,7 +1564,7 @@ export const slideLibrary: Slide[] = [
   "estimatedMinutes": 1,
   "figure": "fig_tanganika_variaciones_nivel.png",
   "figureCaption": "Cambio del nivel extremo para T5-T500, cuatro horizontes y los escenarios SSP2-4.5 y SSP5-8.5",
-  "script": "El problema de Tanganica no es simular una inundación 2D, sino obtener cotas extremas de diseño para el puerto de Kalundu con una serie de altimetría satelital corta, de 1992 a 2023. La cadena tiene cinco pasos y conviene no mezclarlos. Primero, las variables climáticas de ERA5 se reducen mediante componentes principales y AdaBoost estima los caudales mensuales de entrada al lago. Segundo, esos caudales se convierten en niveles mediante una relación empírica N(Q): K-means separa tres regímenes de caudal y se ajustan funciones distintas para representar su respuesta no lineal. Tercero, 19 modelos CMIP6, bajo SSP2-4.5 y SSP5-8.5, incorporan la señal climática mediante el método delta mensual. Cuarto, el bootstrap remuestrea los residuos de la relación caudal-nivel, no los de AdaBoost, y genera aproximadamente 20.000 años simulados. Finalmente, los máximos anuales sintéticos proporcionan cambios de nivel por percentiles empíricos, que se suman a los niveles históricos ajustados con GEV. Para T100, GEV y Weibull sitúan el nivel histórico entre 771,55 y 771,76 m, mientras el bootstrap produce 770,19 m. El mayor incremento futuro supera 0,9 m en 2041-2060 para T5-T10; a finales de siglo queda por debajo de 0,6 m para T100-T500."
+  "script": "El problema de Tanganica no es simular una inundación 2D, sino obtener cotas extremas de diseño para el puerto de Kalundu con una serie de altimetría satelital corta, de 1992 a 2023. La cadena tiene cinco pasos y conviene no mezclarlos. Primero, las variables climáticas de ERA5 se reducen mediante componentes principales y AdaBoost estima los caudales mensuales de entrada al lago. Segundo, esos caudales se convierten en niveles mediante una relación empírica N(Q): K-means separa tres regímenes de caudal y se ajustan funciones distintas para representar su respuesta no lineal. Tercero, 19 modelos CMIP6, bajo SSP2-4.5 y SSP5-8.5, incorporan la señal climática mediante el método delta mensual. Cuarto, el bootstrap remuestrea los residuos de la relación caudal-nivel, no los de AdaBoost, y genera aproximadamente 20.000 años simulados. Finalmente, los máximos anuales sintéticos proporcionan cambios de nivel por percentiles empíricos, que se suman a los niveles históricos ajustados con GEV. Para T100, GEV y Weibull sitúan el nivel histórico entre 771,55 y 771,76 m, mientras el bootstrap produce 770,19 m. La figura compara cambios de nivel respecto al histórico, en metros, para cuatro horizontes y dos escenarios. Las barras de error representan la incertidumbre del ensemble climático. No identificaré aquí un horizonte de máximo global ni un umbral común para T100-T500, porque el texto y la figura de la memoria no coinciden plenamente en esas conclusiones."
 },
 {
   "id": 58,
@@ -1575,11 +1572,11 @@ export const slideLibrary: Slide[] = [
   "type": "figure",
   "block": "Casos de estudio",
   "blockColor": "#f59e0b",
-  "title": "Anexo: forzamientos climáticos de Tanganica",
+  "title": "Anexo: caudales proyectados de entrada al lago Tanganica",
   "estimatedMinutes": 1,
   "figure": "fig_tanganika_proyecciones.png",
-  "figureCaption": "Proyecciones climáticas que alimentan la estimación de niveles futuros",
-  "script": "Estas proyecciones alimentan la estimación de niveles futuros. Se presentan como forzamientos del modelo, no como observaciones futuras."
+  "figureCaption": "Figura 7.14, p. 110: caudales de entrada estimados con AdaBoost; no son niveles del lago",
+  "script": "La figura 7.14 de la memoria muestra caudales mensuales de entrada al lago, estimados mediante AdaBoost: el eje vertical está en metros cúbicos por segundo. La serie histórica aparece en gris y las proyecciones SSP2-4.5 y SSP5-8.5 en azul y rojo, con bandas de incertidumbre intermodelo. Estos caudales alimentan la relación caudal-nivel; no son observaciones futuras ni cotas del lago."
 },
 {
   "id": 59,

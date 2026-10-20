@@ -1372,21 +1372,21 @@ pilotCases.push({
   stats: [
     { value: '>230.000 km²', label: { es: 'Superficie de cuenca (4 países)', en: 'Basin area (4 countries)' } },
     { value: '19', label: { es: 'Modelos climáticos CMIP6', en: 'CMIP6 climate models' } },
-    { value: 'R²=0,96', label: { es: 'Ajuste del regresor AdaBoost', en: 'AdaBoost regressor fit' } },
+    { value: 'R²=0,96', label: { es: 'Ajuste sobre el conjunto completo', en: 'Fit on the complete dataset' } },
     { value: '~20.000 años', label: { es: 'Series simuladas (bootstrap)', en: 'Simulated series-years (bootstrap)' } },
   ],
   keyFindings: [
     {
-      es: 'El mayor incremento del nivel máximo de diseño NO ocurre a finales de siglo: se proyecta en el horizonte 2041-2060 (+0,9 m para T5-T10).',
-      en: 'The largest increase in maximum design level does NOT occur at the end of the century: it is projected for the 2041-2060 horizon (+0.9 m for T5-T10).',
+      es: 'La figura 7.15 compara incrementos de nivel respecto al histórico, no cotas absolutas: la respuesta depende del período de retorno, del horizonte temporal y del escenario SSP.',
+      en: 'Figure 7.15 compares level increases relative to the historical baseline, not absolute elevations: results depend on return period, time horizon and SSP scenario.',
     },
     {
-      es: 'Hacia 2081-2100 el incremento se estabiliza por debajo de 0,6 m para T100-T500, amortiguado por la propia expansión de la superficie del lago.',
-      en: 'By 2081-2100 the increase stabilises below 0.6 m for T100-T500, damped by the lake’s own surface area expansion.',
+      es: 'Los cambios estimados mediante máximos anuales sintéticos se aplican sobre los niveles históricos ajustados con GEV a la altimetría Hydroweb (1992–2023).',
+      en: 'Changes estimated from synthetic annual maxima are applied to historical levels fitted with GEV using Hydroweb altimetry (1992–2023).',
     },
     {
-      es: 'AdaBoost fue seleccionado entre 6 algoritmos de machine learning evaluados, alcanzando R²=0,96 en la predicción de caudales de entrada.',
-      en: 'AdaBoost was selected among 6 evaluated machine-learning algorithms, reaching R²=0.96 in inflow prediction.',
+      es: 'AdaBoost alcanza R² > 0,85 en validación cruzada y R²=0,96 sobre el conjunto completo. Estas métricas corresponden al regresor de caudales y no validan por sí solas toda la proyección climática.',
+      en: 'AdaBoost reaches R² > 0.85 in cross-validation and R²=0.96 on the complete dataset. These metrics describe the inflow regressor and do not independently validate the whole climate projection.',
     },
   ],
   references: [
@@ -1411,12 +1411,12 @@ pilotCases.push({
       svg: figImg('fig_tanganika_variaciones_nivel.png', 'Variación proyectada del nivel del Lago Tanganica'),
     },
     {
-      title: { es: 'Proyecciones de nivel del lago por escenario y horizonte', en: 'Lake level projections by scenario and horizon' },
+      title: { es: 'Caudal de entrada al lago: histórico y proyecciones', en: 'Lake inflow: historical estimates and projections' },
       caption: {
-        es: 'Proyecciones del nivel máximo de diseño del Lago Tanganica, mostrando el efecto amortiguador de la expansión de la superficie del lago hacia finales de siglo.',
-        en: 'Maximum design level projections for Lake Tanganyika, showing the damping effect of lake surface expansion towards the end of the century.',
+        es: 'Figura 7.14, p. 110 de la memoria: caudales mensuales estimados con AdaBoost (m³/s), histórico y SSP2-4.5/SSP5-8.5, con incertidumbre intermodelo.',
+        en: 'Thesis figure 7.14, p. 110: monthly inflows estimated with AdaBoost (m³/s), historical and SSP2-4.5/SSP5-8.5 projections with inter-model uncertainty.',
       },
-      svg: figImg('fig_tanganika_proyecciones.png', 'Proyecciones del nivel del Lago Tanganica'),
+      svg: figImg('fig_tanganika_proyecciones.png', 'Caudales de entrada al lago Tanganica, figura 7.14'),
     },
   ],
 });
