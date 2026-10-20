@@ -1710,6 +1710,13 @@ const chapterIcons = [
   .pres-shell .has-case-process .slide-figure-full .slide-figure-caption,
   .pres-shell .has-case-process .slide-figure-full .case-reference { flex: 0 0 auto; }
 
+  /* The UAV figures use the available height, with no intrinsic-image shrink. */
+  .pres-shell :is(.slide-id-28-1, .slide-id-28-2) .slide-subtitle { max-width: none; }
+  .pres-shell :is(.slide-id-28-1, .slide-id-28-2) .slide-figure-full { flex: 1 1 0; overflow: hidden; }
+  .pres-shell :is(.slide-id-28-1, .slide-id-28-2) .slide-figure-full img { flex: 1 1 0; width: 100%; height: 0; min-height: 0; object-fit: contain; }
+  .pres-shell :is(.slide-id-28-1, .slide-id-28-2) .slide-figure-caption,
+  .pres-shell :is(.slide-id-28-1, .slide-id-28-2) .case-reference { flex: 0 0 auto; max-width: none; margin-top: 5px; line-height: 1.25; }
+
   /* ── Closing ── */
   .pres-shell .closing-takeaway { background: none; border-radius: 0; font-family: var(--font-text); }
   .pres-shell .closing-link { background: none; border: 0; padding: 0 26px 0 0; color: #c9dcd8; font-size: clamp(14px, 1.05vw, 17px); }
