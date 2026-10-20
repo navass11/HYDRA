@@ -415,7 +415,6 @@ export const slideLibrary: Slide[] = [
     `,
     bullets: [
       'Ningún marco revisado cubre a la vez las ocho capacidades de la tabla.',
-      'Stan, PyMC o extRemes se integran como componentes; no compiten con HYDRA.',
     ],
     speakerGoal: "Localizar la brecha mediante la matriz comparativa.",
     visualGuide: ["Columnas: capacidades; filas: marcos","Diferenciar capacidad completa y parcial","Combinación de capacidades de HYDRA"],
