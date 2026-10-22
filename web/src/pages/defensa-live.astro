@@ -642,6 +642,14 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
     overflow: hidden;
   }
+  .presenter-tools { display:flex; flex-wrap:wrap; gap:8px; padding:12px 16px 0; }
+  .presenter-tools button { padding:8px 12px; color:#e2e8f0; background:#17313d; border:1px solid #5c7c83; border-radius:5px; font:600 13px/1.3 system-ui; cursor:pointer; }
+  .presenter-tools button[aria-pressed="true"] { background:#c8ede6; color:#133e45; border-color:#5eead4; }
+  .presenter-tools button:focus-visible { outline:3px solid #f0bd8a; outline-offset:3px; }
+  .presenter-tools button[hidden], .preview-status[hidden], .presentation-laser[hidden] { display:none; }
+  .preview-status { position:absolute; inset:0; z-index:5; display:grid; place-items:center; background:#17313d; color:#edf5f2; padding:24px; text-align:center; font:500 16px/1.5 system-ui; pointer-events:none; }
+  :global(.presentation-laser) { position:absolute; z-index:50; width:15px; height:15px; border-radius:50%; background:#ed243e; border:2px solid white; box-shadow:0 0 0 5px #ed243e55,0 0 15px #ff364f; transform:translate(-50%,-50%); pointer-events:none; }
+  :global(.presentation-laser[hidden]) { display:none; }
   .presenter-notes-area {
     font-size: 15px;
     line-height: 1.6;
@@ -823,8 +831,14 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       <span id="pres-win-preview-label" style="font-weight:800; color:#5eead4;">Diapositiva actual</span>
       <span id="pres-win-counter" style="font-weight:700; color:#64748b;">1 / {totalSlides}</span>
     </div>
+    <div class="presenter-tools" aria-label="Controles de la vista previa">
+      <button id="pres-control-web" type="button" aria-pressed="false" hidden title="Navega y desplaza la web desde esta vista; los cambios se reflejan en la pantalla proyectada.">Controlar web</button>
+      <button id="pres-laser" type="button" aria-pressed="false" aria-keyshortcuts="L Escape" title="Activa el puntero, mueve el ratón sobre la vista previa y pulsa Escape para desactivarlo.">Puntero láser (L)</button>
+      <button id="pres-recover-preview" type="button">Recuperar vista</button>
+    </div>
     <div class="presenter-preview-frame">
-      <!-- Read-only slide or live-page reference. Website navigation follows the audience window. -->
+      <div id="pres-preview-status" class="preview-status" role="status" hidden>Recuperando vista previa…</div>
+      <!-- Slides and website preview, with optional presenter control and shared laser. -->
       <iframe id="pres-win-preview-iframe" style="width:100%; height:100%; border:none; background:#020617; pointer-events:none; visibility:hidden;" src={asset('/defensa-offline/?slide=0&preview=1')} tabindex="-1"></iframe>
     </div>
   </div>
@@ -895,6 +909,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
 
 <script>
   import { enableStudyEntry } from '../lib/defense-study-entry';
+  import { setupPresenterInteraction } from '../lib/presenter-interaction';
   import { keepPresentationAwake } from '../lib/presentation-awake';
   import { dialogueFor, deliveryCue, narrationNotice, type NarrationMode } from '../lib/defense-narration';
   import { emphasizePresenterText, presenterKeywords } from '../lib/presenter-emphasis';
@@ -982,6 +997,23 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   const presWinPrevBtn     = document.getElementById('pres-win-prev') as HTMLButtonElement;
   const presWinNextBtn     = document.getElementById('pres-win-next') as HTMLButtonElement;
   const presPreviewIframe  = document.getElementById('pres-win-preview-iframe') as HTMLIFrameElement;
+
+  const previewStatus = document.getElementById('pres-preview-status')!;
+  let previewPendingSince = 0, previewRepairCount = 0, previewRepairIndex = -1;
+  function setPreviewBusy(busy: boolean) {
+    previewStatus.hidden = !busy;
+    if (busy && !previewPendingSince) previewPendingSince = Date.now();
+    if (!busy) previewPendingSince = 0;
+  }
+  function repairPresenterPreview() {
+    if (!isPresenterWindow || !slides[current]) return;
+    presenterDeckLoaded = false;
+    setPreviewBusy(true);
+    const target = buildUrl(slides[current]) ? latestWebPreview?.index === current ? latestWebPreview.url : buildUrl(slides[current])! : `${base.replace(/\/$/, '')}/defensa-offline/?slide=${current}&preview=1`;
+    presPreviewIframe.src = new URL(target, location.origin).href;
+    previewPendingSince = Date.now();
+  }
+  document.getElementById('pres-recover-preview')!.addEventListener('click', () => { previewRepairCount = 0; repairPresenterPreview(); });
 
   // Render the same 1920 × 1080 canvas on both screens, scaling the whole
   // iframe rather than reflowing projection typography into a small preview.
@@ -1104,6 +1136,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   }
 
   function onSyncMessage(e: MessageEvent) {
+    interaction.receive(e.data);
     if (e.data?.type === 'narration-mode' && ['live', 'prepared'].includes(e.data.mode)) {
       setNarrationMode(e.data.mode, false); return;
     }
@@ -1165,7 +1198,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     const slide = slides[current];
     const liveUrl = buildUrl(slide);
     const label = document.getElementById('pres-win-preview-label')!;
-    label.textContent = liveUrl ? 'Página web actual · vista de referencia' : 'Diapositiva actual';
+    label.textContent = liveUrl ? 'Página web actual · control desde el presentador' : 'Diapositiva actual';
     presPreviewIframe.title = liveUrl ? `Página de HYDRA: ${slide.title}` : `Diapositiva ${current + 1}: ${slide.title}`;
     const synced = latestWebPreview?.index === current ? latestWebPreview : null;
     const canvasWidth = String(liveUrl && synced ? synced.width : 1920);
@@ -1177,14 +1210,16 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     }
     const target = new URL(liveUrl ? synced?.url ?? liveUrl : `${base.replace(/\/$/, '')}/defensa-offline/?slide=${current}&preview=1`, location.origin).href;
     if (!liveUrl && presenterDeckLoaded) {
-      if (presPreviewIframe.dataset.previewIndex !== String(current)) presPreviewIframe.style.visibility = 'hidden';
+      if (presPreviewIframe.dataset.previewIndex !== String(current)) setPreviewBusy(true);
       presPreviewIframe.dataset.previewIndex = String(current);
       presPreviewIframe.contentWindow?.postMessage({ type: 'defensa-preview-slide', index: current }, location.origin);
       return;
     }
-    if (presPreviewIframe.src !== target) {
+    let loadedTarget = '';
+    try { loadedTarget = presPreviewIframe.contentWindow?.location.href ?? ''; } catch { /* Loading a same-origin view. */ }
+    if (presPreviewIframe.src !== target && loadedTarget !== target) {
       presenterDeckLoaded = false;
-      presPreviewIframe.style.visibility = 'hidden';
+      setPreviewBusy(true);
       presPreviewIframe.src = target;
     }
     else if (!liveUrl) {
@@ -1199,7 +1234,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     try {
       if (new URL(state.url).origin !== location.origin || !buildUrl(slides[current])) return;
       latestWebPreview = state;
-      updatePresenterPreview();
+      if (!interaction.isControlling()) updatePresenterPreview();
     } catch { /* Ignore malformed sync messages. */ }
   }
 
@@ -1207,7 +1242,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     const slide = slides[current];
     if (!isPresenterWindow || !slide) return;
     if (buildUrl(slide)) {
-      presPreviewIframe.style.visibility = 'visible';
+      { presPreviewIframe.style.visibility = 'visible'; setPreviewBusy(false); }
       const state = latestWebPreview;
       if (state?.index === current) presPreviewIframe.contentWindow?.scrollTo(state.x, state.y);
       else presPreviewIframe.contentWindow?.postMessage({ type: 'defensa-command', anchor: slide.anchor ?? null, anchorPosition: slide.anchorPosition ?? 'center', highlight: null }, location.origin);
@@ -1285,7 +1320,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     if (event.origin !== location.origin || event.data?.type !== 'defensa-preview-ready') return;
     if (event.data.index !== current || event.data.slideId !== slides[current]?.id) return;
     if (event.source === audienceSlideFrame.contentWindow && !buildUrl(slides[current])) audienceSlideFrame.style.visibility = 'visible';
-    if (event.source === presPreviewIframe.contentWindow && !buildUrl(slides[current])) presPreviewIframe.style.visibility = 'visible';
+    if (event.source === presPreviewIframe.contentWindow && !buildUrl(slides[current])) { presPreviewIframe.style.visibility = 'visible'; setPreviewBusy(false); }
   });
 
   audienceSlideFrame.addEventListener('load', () => {
@@ -1633,6 +1668,9 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     if (!Number.isInteger(idx) || idx < 0 || idx >= totalSlides) return;
     if (current === idx) return;
     current = idx;
+    interaction.hide();
+    interaction.refresh();
+    previewRepairIndex = idx; previewRepairCount = 0;
     slideStartedAt = Number.isFinite(enteredAt) && enteredAt > 0 ? enteredAt : Date.now();
     updateTimer();
     const slide = slides[idx];
@@ -1929,6 +1967,8 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
 
   // Keyboard shortcut keys logic
   function handleNavKey(key: string) {
+    if (key === 'l' || key === 'L') { interaction.toggleLaser(); return; }
+    if (key === 'Escape') { interaction.stopLaser(); return; }
     if (key === 'ArrowRight' || key === ' ') next();
     if (key === 'ArrowLeft') prev();
     if (key === 'n' || key === 'N') {
@@ -1996,6 +2036,30 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     }
   `;
   document.head.appendChild(anims);
+
+  const interaction = setupPresenterInteraction({
+    presenter: isPresenterWindow, preview: presPreviewIframe, website: iframe, deck: audienceSlideFrame,
+    current: () => ({ index: current, id: slides[current]?.id, web: Boolean(slides[current] && buildUrl(slides[current])) }),
+    send: sendSync,
+  });
+  setInterval(() => {
+    if (!isPresenterWindow || document.visibilityState !== 'visible' || !slides[current]) return;
+    try {
+      const doc = presPreviewIframe.contentDocument;
+      const active = doc?.querySelector<HTMLElement>('.slide.active');
+      const ready = buildUrl(slides[current])
+        ? doc?.readyState === 'complete' && Boolean(doc.body?.children.length) && !doc.querySelector('#pres-shell')
+        : Number(active?.dataset.idx) === current && Boolean(active);
+      if (ready) {
+        presPreviewIframe.style.visibility = 'visible'; setPreviewBusy(false); interaction.refresh(); return;
+      }
+      setPreviewBusy(true);
+      if (!buildUrl(slides[current])) presPreviewIframe.contentWindow?.postMessage({ type:'defensa-preview-slide', index:current }, location.origin);
+      if (previewRepairIndex !== current) { previewRepairIndex = current; previewRepairCount = 0; }
+      if (Date.now() - previewPendingSince > 8000 && previewRepairCount < 2) { previewRepairCount++; repairPresenterPreview(); }
+      previewStatus.textContent = previewRepairCount >= 2 ? 'No se ha podido mostrar la vista previa. Pulsa «Recuperar vista» para volver a cargarla.' : 'Recuperando vista previa…';
+    } catch { setPreviewBusy(true); }
+  }, 750);
 
   // Keep a per-window reading position; only explicit restart clears the timer.
   function saveWindowSession() {
