@@ -2395,9 +2395,10 @@ const chapterIcons = [
 
     <!-- Notes panel -->
     <div class="pres-notes-panel" id="notes-panel" style="display: none;">
+      <label class="notes-mode">Vista del texto <select data-presenter-copy><option value="brief">Apoyo breve</option><option value="full">Guion completo</option></select></label>
       <label class="notes-mode">Texto del guion <select id="notes-narration-mode"><option value="live">Guion principal · en vivo</option><option value="prepared" selected>Guion con capturas preparadas</option></select></label>
       <p class="notes-mode-notice" id="notes-narration-notice"></p>
-      <span class="notes-label">Guion completo para leer</span>
+      <span class="notes-label" data-copy-label>Apoyo breve para exponer</span>
       <div class="notes-text" id="notes-speech">—</div>
       <span class="notes-label">Enlace con la siguiente diapositiva · para leer</span>
       <div class="notes-text" id="notes-transition">—</div>
@@ -2424,6 +2425,8 @@ const chapterIcons = [
   import { keepPresentationAwake } from '../lib/presentation-awake';
   import { slides as mainSlides, backupSlides } from '../data/slides.ts';
   import { dialogueFor, deliveryCue, narrationNotice, type NarrationMode } from '../lib/defense-narration';
+  import { setupPresenterCopy } from '../lib/presenter-copy';
+  import '../styles/presenter-copy.css';
   import { emphasizePresenterText, presenterKeywords } from '../lib/presenter-emphasis';
   document.querySelectorAll<HTMLButtonElement>('[data-capture-step]').forEach(button => {
     button.addEventListener('click', () => {
@@ -2669,9 +2672,11 @@ const chapterIcons = [
     if (!isNaN(n)) goTo(Math.min(Math.max(0, n), totalSlides - 1));
   });
 
+  const presenterCopy = setupPresenterCopy(() => renderNarration(current));
+
   function renderNarration(idx: number) {
     const source = (reserve ? backupSlides : mainSlides)[idx];
-    emphasizePresenterText(document.getElementById('notes-speech')!, dialogueFor(source, narrationMode), presenterKeywords(source, narrationMode));
+    emphasizePresenterText(document.getElementById('notes-speech')!, presenterCopy.textFor(source, narrationMode), presenterKeywords(source, narrationMode));
     emphasizePresenterText(document.getElementById('notes-transition')!, source.transition ?? '—', presenterKeywords(source, narrationMode, true));
     document.getElementById('notes-narration-notice')!.textContent = narrationNotice(source, narrationMode);
     notesText.textContent = [source.visualGuide?.length && `Recorrido visual:\n${source.visualGuide.map((cue,i) => `${i+1}. ${cue}`).join('\n')}`, source.notes, source.webAction && `Acción en la web: ${source.webAction}`, deliveryCue(source, reserve)].filter(Boolean).join('\n\n') || '—';

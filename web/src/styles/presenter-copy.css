@@ -1,0 +1,49 @@
+/* At the lectern the speaking copy, bridge and controls take priority. Full
+   reading mode retains the expanded study text and preparation material. */
+body.presenter-brief .presenter-window-layout { grid-template-columns: 1fr 1fr; }
+body.presenter-brief .presenter-window-right { padding: 16px 20px; gap: 8px; }
+body.presenter-brief .presenter-window-right > * { flex-shrink: 0; }
+body.presenter-brief .presenter-large-timer { font-size: 24px; line-height: 1.1; }
+body.presenter-brief .presenter-timing { gap: 8px !important; }
+body.presenter-brief #pres-win-title { font-size: 19px !important; line-height: 1.25 !important; }
+body.presenter-brief #pres-win-step-kind { margin: 0 !important; font-size: 12px !important; }
+body.presenter-brief :is(.panel-scroll, .presenter-window-right) > div:has([data-presenter-copy]) {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 10px;
+  row-gap: 6px;
+}
+body.presenter-brief :is(.panel-scroll, .presenter-window-right) > div:has([data-presenter-copy]) > :not(.narration-choice) { grid-column: 1 / -1; }
+body.presenter-brief .narration-choice { font-size: 11px; gap: 3px; margin: 0; }
+body.presenter-brief .narration-choice select { font-size: 12px; padding: 6px; min-width: 0; }
+body.presenter-brief :is(#pres-win-speech, #panel-script) {
+  font-size: 17px !important;
+  line-height: 1.5 !important;
+  padding-left: 12px !important;
+  margin-top: 0 !important;
+}
+body.presenter-brief :is(#pres-win-transition, #panel-transition) { font-size: 15px; line-height: 1.4; }
+body.presenter-brief :is(.narration-notice, .panel-divider, .panel-brief,
+  #panel-subtitle, #panel-results-wrap, #panel-pyhydra-wrap, #panel-bullets-wrap,
+  #panel-links-wrap, #panel-next, .preparation-details, .presenter-next-extra) { display: none !important; }
+body.presenter-brief .panel-scroll > div:has(#notes-toggle) { display: none; }
+body.presenter-brief .presenter-nav { gap: 8px !important; padding-top: 6px; }
+body.presenter-brief .presenter-nav button { padding: 10px 8px !important; font-size: 13px !important; }
+body.presenter-brief .presenter-session { gap: 8px !important; }
+body.presenter-brief .presenter-session button { font-size: 12px; padding: 6px 10px; }
+body.presenter-brief .panel-scroll { gap: 10px; padding: 14px; }
+body.presenter-brief #panel-script { font-size: 15px !important; line-height: 1.45 !important; }
+body.presenter-brief :is(.notes-mode-notice, .notes-preparation, .notes-next) { display: none; }
+body.presenter-brief .pres-notes-panel { padding: 14px; gap: 8px; }
+body.presenter-brief .notes-mode { margin: 0; font-size: 11px; gap: 3px; }
+body.presenter-brief .notes-mode select { font-size: 12px; padding: 6px; }
+body.presenter-brief .notes-text { font-size: 15px; line-height: 1.45; }
+@media (max-height: 760px) {
+  body.presenter-brief .presenter-window-right { padding: 12px 16px; gap: 6px; }
+  body.presenter-brief #pres-win-speech { font-size: 16px !important; line-height: 1.45 !important; }
+  body.presenter-brief .presenter-window-right .panel-section-label { margin-bottom: 3px; }
+}
+@media (max-width: 800px) {
+  body.presenter-brief .presenter-window-layout { grid-template-columns: 1fr; }
+  body.presenter-brief .presenter-window-left { display: none; }
+}

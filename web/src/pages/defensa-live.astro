@@ -767,9 +767,10 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
 
         <!-- Script speech -->
         <div>
-          <label class="narration-choice">Texto del guion<select data-narration-mode><option value="live">Guion principal · en vivo</option><option value="prepared">Guion con capturas preparadas</option></select></label>
+          <label class="narration-choice copy-choice">Vista del texto<select data-presenter-copy><option value="brief">Apoyo breve</option><option value="full">Guion completo</option></select></label>
+      <label class="narration-choice">Texto del guion<select data-narration-mode><option value="live">Guion principal · en vivo</option><option value="prepared">Guion con capturas preparadas</option></select></label>
           <p class="narration-notice" data-narration-notice></p>
-          <div class="panel-section-label">Guion completo para leer</div>
+          <div class="panel-section-label" data-copy-label>Apoyo breve para exponer</div>
           <div class="panel-script" id="panel-script"></div>
           <div class="panel-section-label">Transición al siguiente paso · para leer</div>
           <div class="panel-script" id="panel-transition"></div>
@@ -845,7 +846,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
 
   <!-- Right Side: Notes and large controls -->
   <div class="presenter-window-right">
-    <div style="display:flex; flex-wrap:wrap; gap:16px; justify-content:space-between; align-items:center;">
+    <div class="presenter-timing" style="display:flex; flex-wrap:wrap; gap:16px; justify-content:space-between; align-items:center;">
       <div>
         <span class="panel-section-label">Tiempo total</span>
         <div class="presenter-large-timer" id="pres-win-timer">0:00</div>
@@ -867,9 +868,10 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
 
     <!-- Speech text -->
     <div>
+      <label class="narration-choice copy-choice">Vista del texto<select data-presenter-copy><option value="brief">Apoyo breve</option><option value="full">Guion completo</option></select></label>
       <label class="narration-choice">Texto del guion<select data-narration-mode><option value="live">Guion principal · en vivo</option><option value="prepared">Guion con capturas preparadas</option></select></label>
       <p class="narration-notice" data-narration-notice></p>
-      <span class="panel-section-label">Guion completo para leer</span>
+      <span class="panel-section-label" data-copy-label>Apoyo breve para exponer</span>
       <div id="pres-win-speech" style="font-size:16px; line-height:1.6; color:#cbd5e1; border-left:4px solid #0d9488; padding-left:16px; margin-top:6px;">—</div>
     </div>
 
@@ -886,17 +888,17 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     <div class="panel-divider"></div>
 
     <!-- Next slide Title -->
-    <div class="panel-next">
+    <div class="panel-next presenter-next-extra">
       <span class="panel-next-label">Siguiente paso</span>
       <div class="panel-next-title" id="pres-win-next-title">—</div>
     </div>
 
     <!-- Navigation Buttons -->
-    <div style="display:flex; gap:16px; margin-top:auto;">
+    <div class="presenter-nav" style="display:flex; gap:16px; margin-top:auto;">
       <button class="live-nav-btn" id="pres-win-prev" style="flex:1; padding:12px; font-size:14px;">← Diapositiva anterior</button>
       <button class="live-nav-btn live-nav-next" id="pres-win-next" style="flex:1.5; padding:12px; font-size:14px;">Diapositiva siguiente →</button>
     </div>
-    <div style="display:flex;flex-wrap:wrap;gap:12px">
+    <div class="presenter-session" style="display:flex;flex-wrap:wrap;gap:12px">
       <button class="live-nav-btn" id="pres-win-restart">Reiniciar presentación</button>
       <button class="live-nav-btn" data-screen-awake aria-pressed="false">Activar pantalla</button>
     </div>
@@ -911,8 +913,10 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   import { enableStudyEntry } from '../lib/defense-study-entry';
   import { setupPresenterInteraction } from '../lib/presenter-interaction';
   import { keepPresentationAwake } from '../lib/presentation-awake';
-  import { dialogueFor, deliveryCue, narrationNotice, type NarrationMode } from '../lib/defense-narration';
+  import { deliveryCue, narrationNotice, type NarrationMode } from '../lib/defense-narration';
   import { emphasizePresenterText, presenterKeywords } from '../lib/presenter-emphasis';
+  import { setupPresenterCopy } from '../lib/presenter-copy';
+  import '../styles/presenter-copy.css';
   import { slides, totalSlides } from '../data/slides.ts';
 
   // ── Mode detection ──
@@ -1635,11 +1639,15 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     }, 50);
   }
 
+  const presenterCopy = setupPresenterCopy(() => {
+    renderNarration();
+    document.querySelector<HTMLElement>(isPresenterWindow ? '.presenter-window-right' : '#panel-scroll')?.scrollTo({top:0, behavior:'instant'});
+  });
   const narrationPickers = document.querySelectorAll<HTMLSelectElement>('[data-narration-mode]');
   function renderNarration() {
     const slide = slides[current];
     if (!slide) return;
-    const dialogue = dialogueFor(slide, narrationMode);
+    const dialogue = presenterCopy.textFor(slide, narrationMode);
     const cues = presenterKeywords(slide, narrationMode);
     emphasizePresenterText(panelScriptEl, dialogue, cues);
     emphasizePresenterText(presWinSpeech, dialogue, cues);
