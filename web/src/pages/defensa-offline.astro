@@ -683,6 +683,11 @@ const chapterIcons = [
 
   /* ── Presenter panel ── */
   .pres-notes-panel {
+    position: absolute;
+    inset: 0 0 0 auto;
+    z-index: 10;
+    height: 100%;
+    box-sizing: border-box;
     width: 280px;
     flex-shrink: 0;
     background: rgba(10,15,30,0.95);
@@ -2467,16 +2472,19 @@ const chapterIcons = [
   if (!isPreview) {
     const stage = document.querySelector<HTMLElement>('.pres-main')!;
     const canvas = document.getElementById('slide-viewport')!;
+    const notes = document.getElementById('notes-panel')!;
     const fitCanvas = () => {
-      const scale = Math.min(stage.clientWidth / 1920, stage.clientHeight / 1080);
+      const availableWidth = Math.max(1, stage.clientWidth - notes.offsetWidth);
+      const scale = Math.min(availableWidth / 1920, stage.clientHeight / 1080);
       Object.assign(canvas.style, {
         position: 'absolute', width: '1920px', height: '1080px',
-        left: `${(stage.clientWidth - 1920 * scale) / 2}px`,
+        left: `${(availableWidth - 1920 * scale) / 2}px`,
         top: `${(stage.clientHeight - 1080 * scale) / 2}px`,
         transformOrigin: 'top left', transform: `scale(${scale})`,
       });
     };
     new ResizeObserver(fitCanvas).observe(stage);
+    new ResizeObserver(fitCanvas).observe(notes);
     fitCanvas();
   }
   if (isPreview) {

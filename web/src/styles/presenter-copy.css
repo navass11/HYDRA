@@ -34,10 +34,10 @@ body.presenter-brief .presenter-session button { font-size: 12px; padding: 6px 1
 body.presenter-brief .panel-scroll { gap: 10px; padding: 14px; }
 body.presenter-brief #panel-script { font-size: 15px !important; line-height: 1.45 !important; }
 body.presenter-brief :is(.notes-mode-notice, .notes-preparation, .notes-next) { display: none; }
-body.presenter-brief .pres-notes-panel { padding: 14px; gap: 8px; }
+body.presenter-brief .pres-notes-panel { width: clamp(340px, 36vw, 480px); padding: 14px; gap: 8px; }
 body.presenter-brief .notes-mode { margin: 0; font-size: 11px; gap: 3px; }
 body.presenter-brief .notes-mode select { font-size: 12px; padding: 6px; }
-body.presenter-brief .notes-text { font-size: 15px; line-height: 1.45; }
+body.presenter-brief .notes-text { flex: 0 0 auto; font-size: 15px; line-height: 1.45; }
 @media (max-height: 760px) {
   body.presenter-brief .presenter-window-right { padding: 12px 16px; gap: 6px; }
   body.presenter-brief #pres-win-speech { font-size: 16px !important; line-height: 1.45 !important; }
