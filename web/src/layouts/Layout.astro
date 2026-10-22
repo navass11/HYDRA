@@ -139,6 +139,10 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       <slot />
     </main>
 
+    <script>
+      import '../lib/scroll-restoration';
+    </script>
+
     {/* postMessage listener for defensa-live iframe mode */}
     <script is:inline>
       (function () {
