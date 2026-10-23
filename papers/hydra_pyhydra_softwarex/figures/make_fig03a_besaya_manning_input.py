@@ -15,6 +15,7 @@ from pathlib import Path
 import matplotlib
 matplotlib.rcParams["pdf.fonttype"] = 42
 matplotlib.rcParams["ps.fonttype"] = 42
+matplotlib.rcParams.update({"font.size": 9, "axes.labelsize": 9.5, "xtick.labelsize": 9, "ytick.labelsize": 9, "legend.fontsize": 9})
 import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib.patches import Patch
@@ -32,7 +33,7 @@ GROUP_COLOR = {
 medians = df.median()
 order = sorted(df.columns, key=lambda c: (GROUP_COLOR[c], medians[c]))
 
-fig, ax = plt.subplots(figsize=(6.6, 4.4))
+fig, ax = plt.subplots(figsize=(5.4, 3.7))
 bp = ax.boxplot(
     [df[c].values for c in order], vert=False, patch_artist=True, labels=order,
     medianprops=dict(color="#0b0b0b", linewidth=1.6),
@@ -46,10 +47,9 @@ for w, cap in zip(bp["whiskers"], bp["caps"]):
     w.set_color("#52514e"); cap.set_color("#52514e")
 ax.legend(handles=[Patch(facecolor=h, edgecolor="#0b0b0b", alpha=0.75, label=l)
                    for h, l in [("#2a78d6", "Water"), ("#eb6834", "Built / impervious"), ("#1baf7a", "Vegetated")]],
-          loc="lower right", frameon=False, fontsize=10)
+          loc="lower right", frameon=False, fontsize=9)
 ax.set_xlabel("Manning's n")
-ax.tick_params(labelsize=10)
-ax.xaxis.label.set_size(11)
+ax.tick_params(labelsize=9)
 ax.grid(axis="x", linestyle=":", alpha=0.4)
 fig.tight_layout()
 fig.savefig("fig03a_besaya_manning_input.pdf")

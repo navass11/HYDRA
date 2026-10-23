@@ -13,6 +13,40 @@ Official sources:
 - [SoftwareX Guide for Authors](https://www.sciencedirect.com/journal/softwarex/publish/guide-for-authors)
 - [Official Original Software Publication LaTeX template](https://legacyfileshare.elsevier.com/promis_misc/softwarex-osp-template.tex)
 
+## Release 0.3.0: licence change to GPL-3.0-only (23 October 2026)
+
+pyhydra builds on GPL-3.0 code, so the MIT licence of the earlier releases was
+not valid for a derived work (supervisor comment). Chosen by the authors:
+**GPL-3.0-only**, version **0.3.0**; HYDRA stays MIT (independent project).
+
+- pyhydra `v0.3.0` (commit `2ea0100`, tag `v0.3.0`, Zenodo
+  `10.5281/zenodo.23594513`, licence recorded by Zenodo as GPL-3.0; CI run
+  `39945818609`): `LICENSE` and `LICENSE.txt` hold the GPLv3 text. Same test
+  results: 297/297 on Python 3.10-3.12, 296 + 1 skipped on 3.9; coverage 32%
+  (31% on 3.9); no `exit code 128` annotation.
+- Manuscript moved to v0.3.0 (C1-C3, test paragraph, executable version,
+  `navas2026pyhydra`, abstract, Impact, Conclusions, Data availability, AI
+  statement) and states the GPL basis in Software architecture. Earlier
+  records v0.2.1 and v0.2.2 remain archived as MIT.
+- The template's C3 asks for "one of the approved licenses": GPL-3.0 is one.
+
+## Supervisor review (23 October 2026)
+
+Comments from the second author and the changes made:
+
+- **Figure text too small**: figures 1, 2 and 3 (TikZ) were redrawn at the
+  final printed width (about 137 mm) with 8.5 pt text, and the Besaya and
+  Valencia plots were regenerated at that width with 9 pt text, so none is
+  scaled down in the article (before, the effective size was about 5-7 pt).
+  The redrawn M-30 figure also fixes "1,000 selected events" to the 625 events
+  of the published study.
+- **pyhydra in bold** throughout the running text, captions, tables and
+  title (`\pyhydra{}` macro); not in code, URLs, file names or citations.
+- **Acknowledgements**: references to IHCantabria and the University of
+  Cantabria removed (affiliations already show them); SIAR and AVAMET added
+  as data providers; the Azure academic subscription is kept.
+- **Open**: licence (GPLv3 constraint) and the length of the AI declaration.
+
 ## Zenodo deposit of the pilot-case data (14 October 2026)
 
 The guide asks for research data to be deposited in a repository (Option C).
@@ -443,7 +477,7 @@ the following changes were made to `main.tex` and this audit:
 | Generative-AI declaration | Present | Identifies ChatGPT, Codex (OpenAI, versions not recorded) and Claude Sonnet 5 (`claude-sonnet-5`, Anthropic), what each assisted with and when, and states assistance did not extend to designing methodology or validating scientific content. AI-assisted figures are identified in their captions. |
 | Data-availability statement | Present | Confirms open software/notebooks and explains why restricted model projects or project datasets are not redistributed. |
 | Software citation | Pass | pyhydra (metadata subject) and the companion HYDRA platform are cited separately through their own Zenodo records (specific-version DOI in the manuscript; concept DOI in each repository's own README/CITATION.cff). |
-| Test suite / software quality evidence | Pass, with honest gaps disclosed | v0.2.2: 297 tests in 18 files; 297/297 passing on Python 3.10-3.12, 296 passing + 1 skipped on 3.9 (an older-PyMC/NumPy-2.0 incompatibility, guarded to skip rather than fail); 32% line coverage (31% on 3.9), concentrated in statistical/modelling-adapter code. Verified in a public GitHub Actions run tied to the cited commit. |
+| Test suite / software quality evidence | Pass, with honest gaps disclosed | v0.3.0: 297 tests in 18 files; 297/297 passing on Python 3.10-3.12, 296 passing + 1 skipped on 3.9 (an older-PyMC/NumPy-2.0 incompatibility, guarded to skip rather than fail); 32% line coverage (31% on 3.9), concentrated in statistical/modelling-adapter code. Verified in a public GitHub Actions run tied to the cited commit. |
 | Highlights | Pass | `highlights.txt`, five bullets, 71-78 characters each (limit 85), no unexplained acronyms. |
 | Graphical abstract | Optional, absent | Recommended but not required. |
 
@@ -458,9 +492,9 @@ blocker. It is listed below for completeness only.
 | Requirement | pyhydra (C2, binding) | HYDRA (cited, not binding) | Status |
 |---|---:|---:|---|
 | Public GitHub repository | Public | Public | Verified. |
-| Permanent version link | `v0.2.2` tag (commit `cbbb6bb`), matches Zenodo `10.5281/zenodo.23365448` | `v0.1.2` tag, matches Zenodo `10.5281/zenodo.21705293` | Verified via the Zenodo API against each tag's commit. |
+| Permanent version link | `v0.3.0` tag (commit `2ea0100`), matches Zenodo `10.5281/zenodo.23594513` | `v0.1.2` tag, matches Zenodo `10.5281/zenodo.21705293` | Verified via the Zenodo API against each tag's commit. |
 | Well-documented `README.md` | Present, current | Present, current | Updated this round; installation, purpose, extras and citation all reflect the current release. |
-| License file | `LICENSE` and `LICENSE.txt` (MIT, identical; `LICENSE.txt` added in v0.2.2 because the official OSP template requires a `Licence.txt`) | `LICENSE` (MIT) | Resolved for pyhydra, the C2 repository. HYDRA is not the C2 repository. |
+| License file | `LICENSE` and `LICENSE.txt` (GPL-3.0-only; the official template requires `LICENSE.txt`) | `LICENSE` (MIT) | Resolved for pyhydra, the C2 repository. HYDRA is an independent MIT project and is not the C2 repository. |
 | Source code under `repo/src` | Resolved -- `src/pyhydra/` | Not compliant (`api/`, `web/`, `notebooks/`, `docker/` at repo root) | None required for submission, since HYDRA is not the C2 repository. |
 | Recognized open-source license | MIT | MIT | Confirmed. |
 | Accepted-version archival by SoftwareX | Future action | N/A (not the metadata repository) | Be prepared for Elsevier to copy the accepted pyhydra code to its GitHub organization. |

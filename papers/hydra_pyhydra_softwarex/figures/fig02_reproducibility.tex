@@ -1,46 +1,50 @@
-\documentclass[tikz,border=2mm]{standalone}
-\usepackage{helvet}
+\documentclass[tikz,border=0.5mm]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
 \renewcommand{\familydefault}{\sfdefault}
-\usetikzlibrary{arrows.meta,positioning}
+\hyphenpenalty=10000\exhyphenpenalty=10000
+\usetikzlibrary{arrows.meta,positioning,calc}
 \definecolor{datablue}{HTML}{4477AA}
 \definecolor{methodgreen}{HTML}{228833}
 \definecolor{modelorange}{HTML}{EE7733}
 \definecolor{impactpurple}{HTML}{AA3377}
 \begin{document}
+% Designed at the final printed width (about 137 mm = \linewidth); 8.5 pt text.
 \begin{tikzpicture}[
-  font=\fontsize{8}{9.4}\selectfont,
+  font=\fontsize{8.5}{10}\selectfont,
   stage/.style={rounded corners=2pt, line width=0.8pt, align=center,
-    minimum width=24mm, minimum height=17mm, text width=21mm, inner sep=1.5mm},
+    minimum width=31mm, minimum height=15mm, text width=28mm, inner sep=1.4mm},
   record/.style={rounded corners=2pt, draw=black!55, fill=black!4,
-    align=center, minimum width=24mm, minimum height=9mm, text width=21mm,
+    align=center, minimum width=31mm, minimum height=9.5mm, text width=28mm,
     inner sep=1mm},
-  arrow/.style={-{Stealth[length=2mm]}, line width=0.85pt, draw=black!55},
+  arrow/.style={-{Stealth[length=2.2mm]}, line width=0.85pt, draw=black!55},
   link/.style={line width=0.7pt, draw=black!35, dashed}
 ]
-\node[stage, draw=datablue, fill=datablue!8] (source) {\textbf{Source}\\service or local data};
-\node[stage, draw=datablue, fill=datablue!8, right=2.5mm of source] (normal) {\textbf{Normalise}\\tables, grids, geometry};
-\node[stage, draw=methodgreen, fill=methodgreen!8, right=2.5mm of normal] (events) {\textbf{Analyse}\\events, extremes, dependence};
-\node[stage, draw=methodgreen, fill=methodgreen!8, right=2.5mm of events] (scenarios) {\textbf{Generate}\\or select scenarios};
-\node[stage, draw=modelorange, fill=modelorange!8, right=2.5mm of scenarios] (simulate) {\textbf{Simulate}\\hydrology and hydraulics};
-\node[stage, draw=impactpurple, fill=impactpurple!7, right=2.5mm of simulate] (impact) {\textbf{Aggregate}\\impact metrics and uncertainty};
-\node[stage, draw=impactpurple, fill=impactpurple!7, right=2.5mm of impact] (product) {\textbf{Publish}\\figures, tables, GeoTIFF};
-
+\node[stage, draw=datablue, fill=datablue!8] (source) {\textbf{1 Source}\\service or local data};
+\node[stage, draw=datablue, fill=datablue!8, right=3mm of source] (normal) {\textbf{2 Normalise}\\tables, grids, geometry};
+\node[stage, draw=methodgreen, fill=methodgreen!8, right=3mm of normal] (events) {\textbf{3 Analyse}\\events, extremes, dependence};
+\node[stage, draw=methodgreen, fill=methodgreen!8, right=3mm of events] (scenarios) {\textbf{4 Generate}\\or select scenarios};
+\node[record, below=5mm of source] (r1) {query + source version};
+\node[record, below=5mm of normal] (r2) {units + coordinates};
+\node[record, below=5mm of events] (r3) {method + parameters};
+\node[record, below=5mm of scenarios] (r4) {seed + selection};
+\node[stage, draw=modelorange, fill=modelorange!8, below=9mm of r1] (simulate) {\textbf{5 Simulate}\\hydrology and hydraulics};
+\node[stage, draw=impactpurple, fill=impactpurple!7, right=3mm of simulate] (impact) {\textbf{6 Aggregate}\\impact metrics, uncertainty};
+\node[stage, draw=impactpurple, fill=impactpurple!7, right=3mm of impact] (product) {\textbf{7 Publish}\\figures, tables, GeoTIFF};
+\node[record, below=5mm of simulate] (r5) {engine + project};
+\node[record, below=5mm of impact] (r6) {filters + statistics};
+\node[record, below=5mm of product] (r7) {code + environment};
 \draw[arrow] (source) -- (normal);
 \draw[arrow] (normal) -- (events);
 \draw[arrow] (events) -- (scenarios);
-\draw[arrow] (scenarios) -- (simulate);
+\draw[arrow] (scenarios.east) -- ++(2mm,0) |- ($(r4.south)!0.5!(simulate.north)+(0,0)$) -| (simulate.north);
 \draw[arrow] (simulate) -- (impact);
 \draw[arrow] (impact) -- (product);
-
-\node[record, below=7mm of source] (r1) {query + source version};
-\node[record, below=7mm of normal] (r2) {units + coordinates};
-\node[record, below=7mm of events] (r3) {method + parameters};
-\node[record, below=7mm of scenarios] (r4) {seed + selection};
-\node[record, below=7mm of simulate] (r5) {engine + project};
-\node[record, below=7mm of impact] (r6) {filters + statistics};
-\node[record, below=7mm of product] (r7) {code + environment};
 \foreach \a/\b in {source/r1,normal/r2,events/r3,scenarios/r4,simulate/r5,impact/r6,product/r7}
   \draw[link] (\a.south) -- (\b.north);
-\node[font=\bfseries, anchor=east] at ([xshift=-2mm]r1.west) {Audit record};
+\node[anchor=west, text=black!70] at ([xshift=2mm]r7.east |- r6.south) {};
+\node[draw=black!55, fill=black!4, rounded corners=2pt, minimum width=4mm, minimum height=3mm,
+  anchor=north west, inner sep=0pt] (leg) at ([yshift=-4mm]r5.south west) {};
+\node[anchor=west] at ([xshift=1.5mm]leg.east) {audit record kept for each stage};
 \end{tikzpicture}
 \end{document}
