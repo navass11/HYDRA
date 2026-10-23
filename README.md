@@ -112,7 +112,7 @@ uvicorn api.main:app --reload --host 0.0.0.0 --port 8000
 When running outside Docker, install the canonical `pyhydra` package, for example:
 
 ```bash
-pip install git+https://github.com/navass11/pyhydra.git
+pip install "git+https://github.com/navass11/pyhydra.git@v0.3.1"
 ```
 
 ## Deployment
@@ -144,7 +144,7 @@ Use the standalone pyhydra repository when you need the Python library as a
 dependency:
 
 ```bash
-pip install git+https://github.com/navass11/pyhydra.git
+pip install "git+https://github.com/navass11/pyhydra.git@v0.3.1"
 ```
 
 Use this repository when you need the complete browser/API/Jupyter deployment.
@@ -183,4 +183,10 @@ release is listed on that concept DOI's Zenodo page.
 
 ## License
 
-MIT. See [`LICENSE`](LICENSE).
+HYDRA is an independent project released under the MIT licence. See
+[`LICENSE`](LICENSE).
+
+The Docker images install [`pyhydra`](https://github.com/navass11/pyhydra),
+which is distributed under GPL-3.0-only (from v0.3.0 on; earlier releases were
+MIT). An image that bundles pyhydra therefore contains GPL-3.0-only software:
+check the terms of both licences before redistributing an image.

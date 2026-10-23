@@ -19,8 +19,10 @@ RUN pip install --no-cache-dir --upgrade setuptools && \
 COPY docker/cosmos_py-0.1.0-py3-none-any.whl /tmp/
 RUN pip install --no-cache-dir /tmp/cosmos_py-0.1.0-py3-none-any.whl
 
-# Install the canonical pyhydra package from its own repository.
-RUN pip install --no-cache-dir git+https://github.com/navass11/pyhydra.git
+# Install the canonical pyhydra package from its own repository, pinned to a release
+# (override with --build-arg PYHYDRA_REF=<tag>).
+ARG PYHYDRA_REF=v0.3.1
+RUN pip install --no-cache-dir "git+https://github.com/navass11/pyhydra.git@${PYHYDRA_REF}"
 
 # Copy the HYDRA notebooks and support files.
 COPY . .

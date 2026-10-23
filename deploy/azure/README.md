@@ -600,6 +600,35 @@ Repetir el mismo patron para `swat`, `sfincs`, `aemet`, `era5`, `gpm`,
 datos existan localmente. Los catalogos y notebooks base se incluyen en las
 imagenes Docker; los productos descargados o generados viven en `dockerdata`.
 
+#### Datos nuevos para los casos piloto (pyhydra 0.3.1)
+
+Con pyhydra 0.3.1 todos los notebooks de `notebooks/pilot_cases` se ejecutan,
+pero Rugosidades 05-06 y Valencia 03 necesitan archivos que el share no tiene.
+Hay que subir estos 8 a `dockerdata`, respetando las rutas:
+
+| Ruta en `dockerdata` | Para |
+|---|---|
+| `pilot_cases/manning_rugosidades/dem_corrales.asc` (26 MB) y `dem_corrales.prj` | Rugosidades 05 y 06 |
+| `pilot_cases/valencia_dana/Daily_series_conjuntas_legacy.csv` (17 MB) | Valencia 03 |
+| `pilot_cases/valencia_dana/Estaciones_Conjuntas_legacy.csv` | Valencia 03 |
+| `pilot_cases/valencia_dana/stan_reference/resultados_regional_pequeno.csv`, `resultados_regional_grande.csv`, `resultados_jerarquico_regional_pequeno.csv`, `resultados_jerarquico_regional_grande.csv` | Valencia 03 |
+
+Los mismos archivos estan en el deposito de Zenodo
+[10.5281/zenodo.23599126](https://doi.org/10.5281/zenodo.23599126) (version 1.1.0).
+Desde una carpeta que contenga `pilot_cases/` con esos archivos:
+
+```bash
+az storage file upload-batch \
+  --account-name "$AZ_STORAGE_ACCOUNT" \
+  --account-key "$AZ_STORAGE_KEY" \
+  --destination "$AZ_FILE_SHARE" \
+  --destination-path pilot_cases \
+  --source pilot_cases
+```
+
+HYDRA lee los datos de `dockerdata`, no de Zenodo: `pyhydra-get-data` (que
+descarga de Zenodo) solo hace falta fuera de Azure.
+
 Mapa de rutas:
 
 ```text
