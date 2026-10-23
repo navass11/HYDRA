@@ -13,6 +13,30 @@ Official sources:
 - [SoftwareX Guide for Authors](https://www.sciencedirect.com/journal/softwarex/publish/guide-for-authors)
 - [Official Original Software Publication LaTeX template](https://legacyfileshare.elsevier.com/promis_misc/softwarex-osp-template.tex)
 
+## Release 0.3.1 and data deposit 1.1.0 (23 October 2026)
+
+All 25 pilot-case notebooks were executed end to end on the archived data
+(Zenodo `10.5281/zenodo.23599126`, version 1.1.0, which adds the roughness DEM,
+the Valencia legacy matrices and Stan reference results, and the 24 old
+terrain files, so that `los_corrales_buelna` has the same 5,910 files as the
+original share). The run exposed code that fails with current libraries and
+packages the notebooks need but no extra declared; both were fixed.
+
+- pyhydra `v0.3.1` (commit `e96fbca`, tag `v0.3.1`, Zenodo
+  `10.5281/zenodo.23599934`; CI run `39978050001`): `pyhydra-get-data` downloads
+  from Zenodo (MD5-checked, resumable) instead of the private Azure share, the
+  embedded token is gone; fixes for SciPy 1.18 (`kstest`), pandas 3 (`'M'`
+  offset) and matplotlib (`boxplot(labels=)`); new `notebooks` extra. Tests:
+  299 in 19 files, 299/299 on Python 3.10-3.12 and 298 + 1 skipped on 3.9;
+  coverage 32% (31% on 3.9); no `exit code 128` annotation.
+- Manuscript moved to v0.3.1 and to deposit version 1.1.0 (C1-C2, C7, test
+  paragraph, installation extras, Table 3 footnote, executable version, AI
+  statement, bibliography). Notebooks needing HEC-HMS or HEC-RAS skip the
+  engine steps by design; the text says so.
+- Earlier records (v0.2.1, v0.2.2, v0.3.0) still embed the Azure token in the
+  archived code. Rotate it in Azure to close it.
+- HYDRA notebooks and Dockerfiles still need the same fixes (separate task).
+
 ## Release 0.3.0: licence change to GPL-3.0-only (23 October 2026)
 
 pyhydra builds on GPL-3.0 code, so the MIT licence of the earlier releases was
@@ -66,9 +90,7 @@ README states that the third-party records (AEMET, CHC, SIAR, AVAMET, CORDEX)
 keep their providers' terms. The manuscript cites it as `navas2026pilotdata`
 (Data availability, Table 3, bibliography).
 
-Still to do (not needed for the submission): make `pyhydra-get-data` download
-from this record instead of the private Azure file share, and revoke the
-token of that share.
+`pyhydra-get-data` now downloads from this record (see release 0.3.1).
 
 ## Check against the Guide for authors (14 October 2026)
 

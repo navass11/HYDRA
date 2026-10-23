@@ -35,7 +35,7 @@ order = sorted(df.columns, key=lambda c: (GROUP_COLOR[c], medians[c]))
 
 fig, ax = plt.subplots(figsize=(5.4, 3.7))
 bp = ax.boxplot(
-    [df[c].values for c in order], vert=False, patch_artist=True, labels=order,
+    [df[c].values for c in order], vert=False, patch_artist=True, tick_labels=order,
     medianprops=dict(color="#0b0b0b", linewidth=1.6),
     flierprops=dict(marker="o", markersize=3, markerfacecolor="0.5", markeredgecolor="none", alpha=0.6),
     widths=0.6,

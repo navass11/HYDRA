@@ -103,10 +103,10 @@ stochastic rainfall generation \sep extreme value statistics \sep uncertainty qu
 \toprule
 Nr. & Code metadata description & Metadata \\
 \midrule
-C1 & Current code version & v0.3.0 \\[3pt]
+C1 & Current code version & v0.3.1 \\[3pt]
 C2 & Permanent GitHub link to code/repository used for this code version &
-\url{https://github.com/navass11/pyhydra/tree/v0.3.0}; archived at
-\url{https://doi.org/10.5281/zenodo.23594513} \\[3pt]
+\url{https://github.com/navass11/pyhydra/tree/v0.3.1}; archived at
+\url{https://doi.org/10.5281/zenodo.23599934} \\[3pt]
 C3 & Legal Code License & GNU General Public License v3.0 only (GPL-3.0-only) \\[3pt]
 C4 & Code versioning system used & git \\[3pt]
 C5 & Software code languages, tools, and services used &
@@ -116,12 +116,12 @@ Not yet published on PyPI; install with \texttt{pip} directly from the
 GitHub repository in C2, optionally pinned to the tag in C1
 (\cref{sec:architecture}). Core dependencies are declared in
 \texttt{pyproject.toml}; optional functionality is distributed through
-the \texttt{statistics}, \texttt{geospatial}, \texttt{models} and
-\texttt{all} extras (\cref{sec:architecture}). External engines (HEC-HMS,
+the \texttt{statistics}, \texttt{geospatial}, \texttt{models},
+\texttt{notebooks} and \texttt{all} extras (\cref{sec:architecture}). External engines (HEC-HMS,
 HEC-RAS, SFINCS, SWAT+) are not bundled and must be installed on the
 host \\[3pt]
 C7 & If available Link to developer documentation/manual &
-\url{https://github.com/navass11/pyhydra/tree/v0.3.0} (README,
+\url{https://github.com/navass11/pyhydra/tree/v0.3.1} (README,
 \texttt{docs/} package/installation guide, and
 \texttt{notebooks/pilot\_cases/}, which include the four illustrative
 examples of \cref{sec:examples}, inspectable and executable from this
@@ -274,12 +274,13 @@ imported lazily inside the functions that need them, so
 the package loads -- and the parts of the API that do not need them run --
 even when those dependencies are absent; a user who only needs
 extreme-value analysis or bias correction can install \pyhydra{} with
-\texttt{pip} alone. Everything else is grouped into three installable
+\texttt{pip} alone. Everything else is grouped into four installable
 extras -- \texttt{statistics} (PyMC, pyvinecopulib, lmoments3),
 \texttt{geospatial} (GeoPandas, rasterio, pykrige, earthaccess,
-hydromt\_sfincs) and \texttt{models} (hecdss, pySWATPlus, spotpy,
-NEOPRENE), plus a legacy \texttt{geo} extra for bare GDAL bindings and an
-\texttt{all} extra covering all four -- so installing, for example,
+hydromt\_sfincs), \texttt{models} (hecdss, pySWATPlus, spotpy,
+NEOPRENE) and \texttt{notebooks} (seaborn, contextily, xlrd, openpyxl),
+plus a legacy \texttt{geo} extra for bare GDAL bindings and an
+\texttt{all} extra covering all five -- so installing, for example,
 \texttt{pyhydra[statistics]} from the GitHub repository installs exactly
 what a given workflow needs. One extended dependency, CoSMoS\_py (spatial random
 fields), is not yet published on PyPI and must be installed separately
@@ -351,7 +352,7 @@ and GeoJSON/\texttt{geopandas} as the common data currency between blocks
 and with external tools such as QGIS); and \emph{operational transfer}
 (documentation, example notebooks and a reproducible Docker environment are
 treated as first-class deliverables, not optional accessories). A
-\texttt{pytest} suite of 297 tests in eighteen test files exercises the
+\texttt{pytest} suite of 299 tests in nineteen test files exercises the
 statistical, modelling and UQ utilities most exposed to regression. A GitHub
 Actions workflow (Ubuntu, core plus lightweight extended dependencies
 including PyMC) runs this suite on every push across a Python 3.9--3.12
@@ -359,15 +360,15 @@ matrix; the one test that depends on PyMC/pytensor is still marked
 \texttt{optional\_dependency} and guarded to skip rather than fail if that
 stack is unavailable or, as happens with the older PyMC resolved on Python
 3.9, incompatible with the installed NumPy. For the code version in
-Table~\ref{tab:metadata} (commit \texttt{2ea0100}, 23 October 2026), this
-workflow reports 297/297 passed on Python 3.10--3.12 and 296 passed
+Table~\ref{tab:metadata} (commit \texttt{e96fbca}, 23 October 2026), this
+workflow reports 299/299 passed on Python 3.10--3.12 and 298 passed
 plus 1 skipped on 3.9, with 32\% line coverage (31\% on 3.9) -- concentrated in the
 statistical and modelling-adapter code exercised directly by unit tests,
 lower in the data-connector and engine-automation modules whose
 behaviour is instead exercised, not formally verified, by the pilot-case
 notebooks of \cref{sec:examples} against real services and engines. Runs
 archived at
-\url{https://github.com/navass11/pyhydra/actions/runs/39945818609}.
+\url{https://github.com/navass11/pyhydra/actions/runs/39978050001}.
 
 \paragraph{Reproducibility boundary} Reproducibility is reported at the
 level supported by each workflow. Extreme-value fitting, copula analysis
@@ -457,14 +458,16 @@ Spanish pilot sites, each reproduced as a notebook sequence under
 exposes the same notebooks through a browser, without requiring the
 underlying \pyhydra{} sequence to change. \cref{tab:reproducibility} traces
 each workflow to its permanent notebook sequence and states, per the
-reproducibility boundary defined above, what is required to re-run it.
+reproducibility boundary defined above, what is required to re-run it. All 25
+notebooks run to completion on the archived data; steps that call HEC-HMS or
+HEC-RAS are skipped when the engine is not installed.
 
 \begin{table}[!htbp]
 \small
 \centering
 \caption{Traceability of the four illustrative workflows. Notebook paths
 are relative to
-\url{https://github.com/navass11/pyhydra/tree/v0.3.0/notebooks/pilot_cases/}.
+\url{https://github.com/navass11/pyhydra/tree/v0.3.1/notebooks/pilot_cases/}.
 ``Yes'' marks inputs that are the authors' own or openly licensed.
 ``Partial'' marks cases where some inputs are third-party records (AEMET,
 SIAR, AVAMET, CHC), whose reuse and redistribution follow their providers'
@@ -498,8 +501,8 @@ SFINCS, HEC-RAS & Ensemble aggregation re-runs from the archived 2$\times$1{,}00
 {\footnotesize $^{\ast}$Steps 01--08 form the impact-frequency workflow;
 step 09 applies the \texttt{uq} decision layer to its MaxDiss design.
 $^{\dagger}$Steps 01--02 produce the results reported here; step 03 extends the
-regional analysis with a hierarchical Bayesian GEV (PyMC) on project data not
-distributed through \texttt{pyhydra-get-data}.}
+regional analysis with a hierarchical Bayesian GEV (PyMC), using the legacy
+station matrix and the Stan reference results archived with the data.}
 \end{table}
 
 \textbf{Los Corrales de Buelna (Besaya River, Cantabria).} The founding
@@ -776,7 +779,8 @@ Claude Sonnet 5, Claude Opus 5.5 and Claude Sonnet 5.5 (Anthropic; model IDs
 \texttt{claude-sonnet-5}, \texttt{claude-opus-5-5} and
 \texttt{claude-sonnet-5-5}) for editing text, auditing the manuscript against
 the repositories, notebooks, cited sources and Crossref, fixing software
-defects, writing plotting scripts and the \texttt{FloodEventCopula} options
+defects (including running the pilot-case notebooks on the archived data and
+correcting what failed), writing plotting scripts and the \texttt{FloodEventCopula} options
 and M-30 notebooks, compiling the manuscript and carrying out the software
 releases. Figures whose code was AI-assisted say so in their captions.
 Assistance did not extend to designing the underlying methodology or
@@ -798,7 +802,7 @@ subscription.
 \bibliography{references}
 
 \section*{Current executable software version}
-\pyhydra{} v0.3.0 (commit \texttt{2ea0100}) is the executable software version
+\pyhydra{} v0.3.1 (commit \texttt{e96fbca}) is the executable software version
 described in this publication; its archived record and immutable GitHub
 tag link are provided in Table~\ref{tab:metadata} and should be cited
 independently using the corresponding Zenodo record
