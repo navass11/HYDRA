@@ -45,7 +45,12 @@ Comments from the second author and the changes made:
 - **Acknowledgements**: references to IHCantabria and the University of
   Cantabria removed (affiliations already show them); SIAR and AVAMET added
   as data providers; the Azure academic subscription is kept.
-- **Open**: licence (GPLv3 constraint) and the length of the AI declaration.
+- **Licence (GPLv3 constraint)**: resolved with release 0.3.0 (see above).
+- **AI declaration** shortened from about 290 to 162 words, keeping the tools,
+  model IDs, tasks, date range, the caption disclosure for AI-assisted figures,
+  the limit of the assistance and the authors' responsibility. The longer
+  version, with a dated breakdown per session, is in the git history
+  (commit `9ed40c1`).
 
 ## Zenodo deposit of the pilot-case data (14 October 2026)
 
