@@ -52,17 +52,23 @@ Comments from the second author and the changes made:
   version, with a dated breakdown per session, is in the git history
   (commit `9ed40c1`).
 
-## Zenodo deposit of the pilot-case data (14 October 2026)
+## Zenodo deposit of the pilot-case data (published 23 October 2026)
 
 The guide asks for research data to be deposited in a repository (Option C).
-The Zenodo deposit `10.5281/zenodo.23366599` (draft id 23366599; four files:
-README plus three zips; version 1.0.0; CC-BY-4.0) holds the Besaya
-HEC-HMS/HEC-RAS projects and processed data, the M-30 sample and results and
-the Valencia series. The optional 746 MB terrain zip is not uploaded. The
-manuscript cites it as `navas2026pilotdata` (Data availability, Table 3,
-bibliography). **The record must be published on Zenodo before submission**:
-until then the DOI does not resolve. The repository README of pyhydra and
-`pyhydra-get-data` still point to the private file share.
+The deposit `10.5281/zenodo.23366599` (concept DOI `10.5281/zenodo.23366598`;
+version 1.0.0; CC-BY-4.0; 14 files, 17.3 GB) is **published** and the DOI
+resolves. It holds the complete data that the pilot-case notebooks read, in
+the layout expected by `pyhydra-get-data`: the Besaya gauges, CORDEX data,
+HEC-HMS and HEC-RAS projects, processed data, climate-change scenarios and
+flood maps; the M-30 sample and results; the roughness case; and the Valencia
+series. File names and sizes were checked against the local package. The
+README states that the third-party records (AEMET, CHC, SIAR, AVAMET, CORDEX)
+keep their providers' terms. The manuscript cites it as `navas2026pilotdata`
+(Data availability, Table 3, bibliography).
+
+Still to do (not needed for the submission): make `pyhydra-get-data` download
+from this record instead of the private Azure file share, and revoke the
+token of that share.
 
 ## Check against the Guide for authors (14 October 2026)
 
