@@ -1,10 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 610" role="img" aria-labelledby="title desc">
-<title id="title">Calle 30: cadena metodológica según la memoria doctoral</title><desc id="desc">Recomposición de la figura 7.11: datos de precipitación, caracterización de eventos, cópulas, eventos sintéticos, selección inicial, HEC-HMS, MaxDiss, HEC-RAS 1D con modelo urbano, reconstrucción k-NN y período de retorno del calado por píxel.</desc>
+<title id="title">Calle 30: selección de lluvia y respuesta hidráulica 1D</title><desc id="desc">Precipitación, eventos, cópulas y lluvia sintética. MaxDiss selecciona eventos de lluvia antes de HEC-HMS. Los caudales alimentan HEC-RAS 1D con la geometría urbana. k-NN reconstruye calados y se estima su período de retorno por sección.</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#39767c"/></marker></defs>
-<rect width="1800" height="610" rx="10" fill="#edf3f1"/>
-<g font-family="Arial,sans-serif" fill="#183f48">
-
-
+<rect width="1800" height="610" rx="10" fill="#edf3f1"/><g font-family="Arial,sans-serif" fill="#183f48">
 <g transform="translate(40 20)"><rect width="400" height="170" rx="7" fill="#e1edf1" stroke="#548792" stroke-width="2"/><text x="200" y="47" text-anchor="middle" font-size="30" font-weight="700">Precipitación</text>
 <text x="200" y="96" text-anchor="middle" font-size="26">ERA5 + pluviómetros AEMET</text>
 </g>
@@ -20,35 +17,38 @@
 <text x="200" y="96" text-anchor="middle" font-size="26">Precipitación</text>
 <text x="200" y="131" text-anchor="middle" font-size="26">en las subcuencas</text>
 </g>
-<g transform="translate(1360 220)"><rect width="400" height="170" rx="7" fill="#e2eee7" stroke="#528469" stroke-width="2"/><text x="200" y="47" text-anchor="middle" font-size="30" font-weight="700">Selección inicial</text>
-<text x="200" y="96" text-anchor="middle" font-size="26">Escenarios de precipitación</text>
-<text x="200" y="131" text-anchor="middle" font-size="26">para HEC-HMS</text>
+<g transform="translate(1360 220)"><rect width="400" height="170" rx="7" fill="#e2eee7" stroke="#528469" stroke-width="2"/><text x="200" y="47" text-anchor="middle" font-size="30" font-weight="700">Selección · MaxDiss</text>
+<text x="200" y="96" text-anchor="middle" font-size="26">Eventos de lluvia</text>
+<text x="200" y="131" text-anchor="middle" font-size="26">antes de HEC-HMS</text>
 </g>
 <g transform="translate(920 220)"><rect width="400" height="170" rx="7" fill="#fff2e2" stroke="#c89554" stroke-width="2"/><text x="200" y="47" text-anchor="middle" font-size="30" font-weight="700">Hidrología · HEC-HMS</text>
 <text x="200" y="96" text-anchor="middle" font-size="26">Transformación lluvia–caudal</text>
-<text x="200" y="131" text-anchor="middle" font-size="26">Hidrogramas de entrada</text>
+<text x="200" y="131" text-anchor="middle" font-size="26">Caudales de entrada</text>
 </g>
-<g transform="translate(480 220)"><rect width="400" height="170" rx="7" fill="#e2eee7" stroke="#528469" stroke-width="2"/><text x="200" y="47" text-anchor="middle" font-size="30" font-weight="700">Selección hidráulica</text>
-<text x="200" y="96" text-anchor="middle" font-size="26">MaxDiss sobre</text>
-<text x="200" y="131" text-anchor="middle" font-size="26">los hidrogramas</text>
+<g transform="translate(480 220)"><rect width="400" height="170" rx="7" fill="#fff2e2" stroke="#c89554" stroke-width="2"/><text x="200" y="47" text-anchor="middle" font-size="30" font-weight="700">Hidráulica · HEC-RAS 1D</text>
+<text x="200" y="96" text-anchor="middle" font-size="26">Respuesta hidráulica</text>
+<text x="200" y="131" text-anchor="middle" font-size="26">en secciones</text>
 </g>
-<g transform="translate(40 420)"><rect width="400" height="170" rx="7" fill="#e1edf1" stroke="#548792" stroke-width="2"/><text x="200" y="47" text-anchor="middle" font-size="30" font-weight="700">Modelo urbano</text>
-<text x="200" y="96" text-anchor="middle" font-size="26">MDT, drenaje y geometría</text>
+<g transform="translate(40 220)"><rect width="400" height="170" rx="7" fill="#e1edf1" stroke="#548792" stroke-width="2"/><text x="200" y="47" text-anchor="middle" font-size="30" font-weight="700">Modelo urbano</text>
+<text x="200" y="96" text-anchor="middle" font-size="26">Terreno, drenaje y geometría</text>
 <text x="200" y="131" text-anchor="middle" font-size="26">Entrada al modelo hidráulico</text>
 </g>
-<g transform="translate(480 420)"><rect width="400" height="170" rx="7" fill="#fff2e2" stroke="#c89554" stroke-width="2"/><text x="200" y="47" text-anchor="middle" font-size="30" font-weight="700">Hidráulica · HEC-RAS 1D</text>
-<text x="200" y="96" text-anchor="middle" font-size="26">Simulación de los</text>
-<text x="200" y="131" text-anchor="middle" font-size="26">escenarios seleccionados</text>
-</g>
-<g transform="translate(920 420)"><rect width="400" height="170" rx="7" fill="#f9fcfb" stroke="#82aaa8" stroke-width="2"/><text x="200" y="47" text-anchor="middle" font-size="30" font-weight="700">Reconstrucción k-NN</text>
-<text x="200" y="96" text-anchor="middle" font-size="26">Mapas de calado</text>
+<g transform="translate(480 420)"><rect width="400" height="170" rx="7" fill="#f9fcfb" stroke="#82aaa8" stroke-width="2"/><text x="200" y="47" text-anchor="middle" font-size="30" font-weight="700">Reconstrucción k-NN</text>
+<text x="200" y="96" text-anchor="middle" font-size="26">Calados de escenarios</text>
 <text x="200" y="131" text-anchor="middle" font-size="26">no simulados</text>
 </g>
-<g transform="translate(1360 420)"><rect width="400" height="170" rx="7" fill="#d3e9e4" stroke="#276b71" stroke-width="2"/><text x="200" y="47" text-anchor="middle" font-size="30" font-weight="700">Períodos de retorno</text>
-<text x="200" y="96" text-anchor="middle" font-size="26">Calado por píxel</text>
-<text x="200" y="131" text-anchor="middle" font-size="26">Probabilidad de excedencia anual</text>
+<g transform="translate(920 420)"><rect width="400" height="170" rx="7" fill="#d3e9e4" stroke="#276b71" stroke-width="2"/><text x="200" y="47" text-anchor="middle" font-size="30" font-weight="700">Períodos de retorno</text>
+<text x="200" y="96" text-anchor="middle" font-size="26">Calado por sección</text>
+<text x="200" y="131" text-anchor="middle" font-size="26">Frecuencia de excedencia</text>
 </g>
-<g fill="none" stroke="#39767c" stroke-width="3" marker-end="url(#arrow)"><path d="M440 105H480"/><path d="M880 105H920"/><path d="M1320 105H1360"/><path d="M1560 190V220"/><path d="M1360 305H1320"/><path d="M920 305H880"/><path d="M680 390V420"/><path d="M440 505H480"/><path d="M880 505H920"/><path d="M1320 505H1360"/></g>
-
-
-</g></svg>
+<g fill="none" stroke="#39767c" stroke-width="3" marker-end="url(#arrow)">
+<path d="M440 105H480"/>
+<path d="M880 105H920"/>
+<path d="M1320 105H1360"/>
+<path d="M1560 190V220"/>
+<path d="M1360 305H1320"/>
+<path d="M920 305H880"/>
+<path d="M440 305H480"/>
+<path d="M680 390V420"/>
+<path d="M880 505H920"/>
+</g></g></svg>
