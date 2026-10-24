@@ -293,7 +293,7 @@ a persistent file share rather than baked into the images.
 \subsection{Software functionalities}
 \label{sec:functionalities}
 
-\cref{tab:modules} lists the fifteen sub-modules and their main
+\Cref{tab:modules} lists the fifteen sub-modules and their main
 capabilities. The statistical modules implement established methodology
 rather than novel formulations: bias correction follows standard
 delta/quantile-mapping approaches \citep{teutschbein2012biascorrection},
@@ -303,7 +303,37 @@ theory \citep{genest2007copulas} -- consistent with the framing in
 \cref{sec:motivation} that the contribution is architectural, not a new
 statistical method.
 
-\begin{table}[h]
+
+Four design principles guide the implementation: \emph{modularity} (each
+block can be used independently -- extreme-value analysis does not require
+geospatial or modelling dependencies); \emph{reproducibility} (standardised
+notebooks, explicit parameters and data conventions preserve the evidence
+needed to regenerate a result, while identifying any required credentials,
+input projects or host-installed engines);
+\emph{interoperability} (NetCDF/\texttt{xarray}, GeoTIFF, \texttt{pandas}
+and GeoJSON/\texttt{geopandas} as the common data currency between blocks
+and with external tools such as QGIS); and \emph{operational transfer}
+(documentation, example notebooks and a reproducible Docker environment are
+treated as first-class deliverables, not optional accessories). A
+\texttt{pytest} suite of 299 tests in 19 test files exercises the
+statistical, modelling and UQ utilities most exposed to regression. A GitHub
+Actions workflow (Ubuntu, core plus lightweight extended dependencies
+including PyMC) runs this suite on every push across a Python 3.9--3.12
+matrix; the one test that depends on PyMC/pytensor is still marked
+\texttt{optional\_dependency} and guarded to skip rather than fail if that
+stack is unavailable or, as happens with the older PyMC resolved on Python
+3.9, incompatible with the installed NumPy. For the code version in
+Table~\ref{tab:metadata} (commit \texttt{e96fbca}, 23 October 2026), this
+workflow reports 299/299 passed on Python 3.10--3.12 and 298 passed
+plus 1 skipped on 3.9, with 32\% line coverage (31\% on 3.9) -- concentrated in the
+statistical and modelling-adapter code exercised directly by unit tests,
+lower in the data-connector and engine-automation modules whose
+behaviour is instead exercised, not formally verified, by the pilot-case
+notebooks of \cref{sec:examples} against real services and engines. Runs
+archived at
+\url{https://github.com/navass11/pyhydra/actions/runs/39978050001}.
+
+\begin{table}[!htbp]
 \small
 \centering
 \caption{\pyhydra{} modules by functional block.}
@@ -338,36 +368,6 @@ GP, Gaussian Process; DSS, Data Storage System (HEC file format); SCE-UA,
 Shuffled Complex Evolution -- University of Arizona; RBF, Radial Basis
 Function.}
 \end{table}
-\FloatBarrier
-
-Four design principles guide the implementation: \emph{modularity} (each
-block can be used independently -- extreme-value analysis does not require
-geospatial or modelling dependencies); \emph{reproducibility} (standardised
-notebooks, explicit parameters and data conventions preserve the evidence
-needed to regenerate a result, while identifying any required credentials,
-input projects or host-installed engines);
-\emph{interoperability} (NetCDF/\texttt{xarray}, GeoTIFF, \texttt{pandas}
-and GeoJSON/\texttt{geopandas} as the common data currency between blocks
-and with external tools such as QGIS); and \emph{operational transfer}
-(documentation, example notebooks and a reproducible Docker environment are
-treated as first-class deliverables, not optional accessories). A
-\texttt{pytest} suite of 299 tests in 19 test files exercises the
-statistical, modelling and UQ utilities most exposed to regression. A GitHub
-Actions workflow (Ubuntu, core plus lightweight extended dependencies
-including PyMC) runs this suite on every push across a Python 3.9--3.12
-matrix; the one test that depends on PyMC/pytensor is still marked
-\texttt{optional\_dependency} and guarded to skip rather than fail if that
-stack is unavailable or, as happens with the older PyMC resolved on Python
-3.9, incompatible with the installed NumPy. For the code version in
-Table~\ref{tab:metadata} (commit \texttt{e96fbca}, 23 October 2026), this
-workflow reports 299/299 passed on Python 3.10--3.12 and 298 passed
-plus 1 skipped on 3.9, with 32\% line coverage (31\% on 3.9) -- concentrated in the
-statistical and modelling-adapter code exercised directly by unit tests,
-lower in the data-connector and engine-automation modules whose
-behaviour is instead exercised, not formally verified, by the pilot-case
-notebooks of \cref{sec:examples} against real services and engines. Runs
-archived at
-\url{https://github.com/navass11/pyhydra/actions/runs/39978050001}.
 
 \paragraph{Reproducibility boundary} Reproducibility is reported at the
 level supported by each workflow. Extreme-value fitting, copula analysis
@@ -455,7 +455,7 @@ Spanish pilot sites, each reproduced as a notebook sequence under
 \texttt{notebooks/\allowbreak pilot\_cases/} in the \pyhydra{} repository itself
 (\cref{tab:metadata}, C7); the companion HYDRA platform additionally
 exposes the same notebooks through a browser, without requiring the
-underlying \pyhydra{} sequence to change. \cref{tab:reproducibility} traces
+underlying \pyhydra{} sequence to change. \Cref{tab:reproducibility} traces
 each workflow to its permanent notebook sequence and states, per the
 reproducibility boundary defined above, what is required to re-run it. All 25
 notebooks run to completion on the archived data; steps that call HEC-HMS or
