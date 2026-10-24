@@ -568,13 +568,12 @@ assessed.
 \begin{figure}[h]
 \centering
 \includegraphics[scale=1.05]{figures/fig05_valencia_return_levels.pdf}
-\caption{Turís (8337X). (a) Annual maximum daily rainfall, 2008--2024; the
-29 October 2024 event (710.8~mm) is the record. (b) GEV return-level curves
-fitted by maximum likelihood without (16 years) and with (17 years) that
-event; bands: 95\% Fisher intervals; dots: empirical positions. The shape
-parameter rises from $\xi{=}0.22$ to $0.67$ and the $T{=}100$-year level from
-227 to 822~mm (\cref{tab:valencia}). The plotted values are those printed by
-the notebooks.}
+\caption{Turís (8337X): GEV return-level curves fitted by maximum likelihood
+without (16 years) and with (17 years) the 29 October 2024 event; bands: 95\%
+Fisher intervals; dots: empirical positions (square: the 2024 record,
+710.8~mm). The shape parameter rises from $\xi{=}0.22$ to $0.67$ and the
+$T{=}100$-year level from 227 to 822~mm (\cref{tab:valencia}). The plotted
+values are those printed by the notebooks.}
 \label{fig:valencia}
 \end{figure}
 
@@ -632,12 +631,14 @@ range; dots: outliers). Data from the Zenodo dataset
 \begin{figure}[h]
 \centering
 \includegraphics[scale=1.05]{figures/fig03b_besaya_flooded_area.pdf}
-\caption{Output of the same case: distribution of flooded area across the
-995 valid SFINCS runs (five numerically non-converged runs removed), from
-the archived per-run results \citep{navas2026besayadata}; dashed line:
-median. This single-engine distribution documents the ensemble-aggregation
-workflow only; the two-engine SFINCS/HEC-RAS inundation comparison is out of
-scope here and reported separately.}
+\caption{Output of the same case: flooded area of each of the 995 valid
+SFINCS runs (five numerically non-converged runs removed) against the Manning
+$n$ of the river class, from the archived per-run results
+\citep{navas2026besayadata}; line: least-squares fit. In a regression on the
+nine standardised classes the river carries $\beta{=}0.93$ and every other
+class $|\beta|\le0.08$ ($R^2{=}0.87$). This single-engine result documents the
+ensemble-aggregation workflow only; the two-engine comparison is out of scope
+here and reported separately.}
 \label{fig:besaya-area}
 \end{figure}
 
