@@ -1,4 +1,4 @@
-"""Regenerate fig03b_besaya_flooded_area.pdf.
+"""Regenerate fig03b_besaya_flooded_area.pdf (Figure 6 of the article).
 
 Output of the SFINCS--HEC-RAS demonstration case, single engine: the
 distribution of flooded area (km^2) across the SFINCS runs, from the open
@@ -13,27 +13,23 @@ raster outputs.
 import os
 from pathlib import Path
 
-import matplotlib
-matplotlib.rcParams["pdf.fonttype"] = 42
-matplotlib.rcParams["ps.fonttype"] = 42
-matplotlib.rcParams.update({"font.size": 9, "axes.labelsize": 9.5, "xtick.labelsize": 9, "ytick.labelsize": 9, "legend.fontsize": 9})
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+
+from figstyle import BLACK, BLUE
 
 CSV = Path(os.environ.get("ZENODO_DIR", ".")) / "data" / "comparison_clean_995.csv"
 areas = pd.read_csv(CSV)["sfincs_area_km2"].to_numpy()
 assert areas.size == 995, areas.size
 
-fig, ax = plt.subplots(figsize=(5.4, 3.3))
-ax.hist(areas, bins=30, color="#2a78d6", edgecolor="#0b0b0b", alpha=0.8, linewidth=0.5)
-ax.axvline(np.median(areas), color="#0b0b0b", linewidth=1.6, linestyle="--",
-           label=f"median = {np.median(areas):.3f} km$^2$")
-ax.set_xlabel("Flooded area (km$^2$)", fontsize=9.5)
-ax.set_ylabel("Simulations", fontsize=9.5)
-ax.tick_params(labelsize=9)
-ax.legend(frameon=False, loc="upper right", fontsize=9)
-ax.grid(axis="y", linestyle=":", alpha=0.4)
-fig.tight_layout()
+fig, ax = plt.subplots(figsize=(5.4, 3.6))
+ax.hist(areas, bins=30, color=BLUE, edgecolor="white", linewidth=0.5)
+ax.axvline(np.median(areas), color=BLACK, linewidth=1.5, linestyle="--",
+           label=f"Median = {np.median(areas):.3f} km$^2$")
+ax.set_xlabel("Flooded area (km$^2$)")
+ax.set_ylabel(f"Number of simulations ($N$ = {areas.size})")
+ax.grid(axis="x", visible=False)
+ax.legend(loc="upper right")
 fig.savefig("fig03b_besaya_flooded_area.pdf")
 print("saved fig03b_besaya_flooded_area.pdf")
