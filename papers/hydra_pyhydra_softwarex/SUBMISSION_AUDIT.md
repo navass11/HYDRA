@@ -13,6 +13,16 @@ Official sources:
 - [SoftwareX Guide for Authors](https://www.sciencedirect.com/journal/softwarex/publish/guide-for-authors)
 - [Official Original Software Publication LaTeX template](https://legacyfileshare.elsevier.com/promis_misc/softwarex-osp-template.tex)
 
+## HYDRA v0.2.0 (24 October 2026)
+
+The HYDRA release cited in the manuscript was v0.1.2 (July), whose notebooks no
+longer matched the ones the article describes. HYDRA v0.2.0 (commit `5270295`,
+Zenodo `10.5281/zenodo.23617051`, MIT) has the 25 pilot-case notebooks identical
+to pyhydra v0.3.1, pyhydra pinned to that release in the Docker images, and the
+read-only-data fixes; its images (tag `1ef69b3b`) are deployed to Azure
+Container Apps and the demo answers (checked 24 October 2026). The manuscript now
+cites it (C7, executable-version section, bibliography, demo access date).
+
 ## Release 0.3.1 and data deposit 1.1.0 (23 October 2026)
 
 All 25 pilot-case notebooks were executed end to end on the archived data
