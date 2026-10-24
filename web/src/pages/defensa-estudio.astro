@@ -34,7 +34,7 @@ const groups = [{key:'principal', label:'Presentación', slides}, {key:'anexos',
     <p class="settings-help">Se guarda tu última diapositiva en este dispositivo. «Pantalla activa» evita el bloqueo automático mientras esta página esté visible y el navegador lo permita.</p>
     <a id="projection-link" href={asset('/defensa-offline?vista=presentacion')}>Abrir vista de diapositivas</a>
   </dialog>
-  <main id="study-content" tabindex="-1" aria-label="Lectura del guion">
+  <main data-hydra-scroll id="study-content" tabindex="-1" aria-label="Lectura del guion">
     {groups.map(group=>group.slides.map((slide,index)=>{
       const visual=visualSlides[slide.id];
       const figures=[
@@ -77,6 +77,7 @@ const groups = [{key:'principal', label:'Presentación', slides}, {key:'anexos',
   <footer class="study-nav"><button id="study-prev">← Anterior</button><span id="study-progress" role="status" aria-live="polite"></span><button id="study-next">Siguiente →</button></footer>
   <dialog id="figure-dialog" aria-label="Figura ampliada"><div class="figure-toolbar"><p id="figure-caption"></p><button id="figure-close" autofocus>Cerrar figura</button></div><p class="zoom-help">Desplázate por la figura o usa los botones para ajustar el tamaño.</p><div class="zoom-controls"><button id="zoom-out" aria-label="Reducir figura">−</button><button id="zoom-in" aria-label="Ampliar figura">+</button></div><div class="figure-scroll" tabindex="0" aria-label="Figura ampliada, con desplazamiento"><img id="figure-large" alt="" /></div></dialog>
   <script>
+    import '../lib/scroll-restoration';
     import { keepPresentationAwake } from '../lib/presentation-awake';
     const articles=Array.from(document.querySelectorAll<HTMLElement>('article[data-group]'));
     const picker=document.getElementById('study-index') as HTMLSelectElement;
@@ -104,7 +105,7 @@ const groups = [{key:'principal', label:'Presentación', slides}, {key:'anexos',
       if(location.protocol==='file:')target.pathname=target.pathname.replace(/defensa-anexos$/,'anexos.html').replace(/defensa-offline$/,'presentacion.html');
       projection.href=target.href;
       save('hydra-study-position',article.id);
-      const url=new URL(location.href);url.searchParams.set('grupo',article.dataset.group!);url.searchParams.set('slide',article.dataset.index!);try{history.replaceState(null,'',url);}catch{}
+      const url=new URL(location.href);url.searchParams.set('grupo',article.dataset.group!);url.searchParams.set('slide',article.dataset.index!);try{history.replaceState(history.state,'',url);}catch{}
       document.title=`${Number(article.dataset.index)+1}. ${article.querySelector('h1')!.textContent} · Estudiar HYDRA`;
       if(scroll){reading.scrollTo({top:0,behavior:'instant'});article.querySelector('h1')!.focus({preventScroll:true});}
     }
@@ -117,7 +118,7 @@ const groups = [{key:'principal', label:'Presentación', slides}, {key:'anexos',
     speechMode.value=['live','prepared'].includes(params.get('modo')??'')?params.get('modo')!:'live';
     function changeSpeech(){
       const mode=speechMode.value==='prepared'?'prepared':'live';
-      const url=new URL(location.href);url.searchParams.set('modo',mode);try{history.replaceState(null,'',url);}catch{}
+      const url=new URL(location.href);url.searchParams.set('modo',mode);try{history.replaceState(history.state,'',url);}catch{}
       const target=new URL(projection.href);target.searchParams.set('modo',mode);projection.href=target.href;
       articles.forEach(article=>{
         const prepared=article.querySelector<HTMLElement>('.speech-prepared');
