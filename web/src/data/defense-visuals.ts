@@ -44,9 +44,9 @@ export const visualSlides: Record<number, { kind: string; metric?: string; figur
     {label:'Modelos físicos',detail:'transformar lluvia en caudal y calado'},
     {label:'Decisión',detail:'estimar frecuencia sobre la variable de impacto'} ] },
   32: { kind:'flow', metric:'En Calle 30 la frecuencia se calcula sobre el calado, con HEC-RAS 1D', items:[
-    {label:'Lluvia',detail:'eventos multisitio con cópulas'}, {label:'Caudal',detail:'transformación HEC-HMS'},
-    {label:'Selección',detail:'subconjunto representativo MaxDiss'}, {label:'Hidráulica',detail:'HEC-RAS 1D'},
-    {label:'Reconstrucción',detail:'miles de impactos con k-NN'} ] },
+    {label:'Lluvia',detail:'eventos multisitio con cópulas'}, {label:'Selección',detail:'MaxDiss sobre eventos de lluvia'},
+    {label:'Caudal',detail:'transformación HEC-HMS'}, {label:'Hidráulica',detail:'HEC-RAS 1D'},
+    {label:'Reconstrucción',detail:'calados por sección con k-NN'} ] },
   40: { kind:'evidence', figure:'esq_hipotesis_evidencia.svg', metric:'Cada hipótesis se contrasta con evidencia y con un límite', items:[
     {label:'H1 Automatización',detail:'campañas de cálculo: capacidad operativa; ahorro por medir'},
     {label:'H2 Modularidad',detail:'los mismos bloques resuelven problemas y escalas diferentes'},
