@@ -454,13 +454,13 @@ x_or, y_or = copula.joint_return_period(t=100, kind='or')
 \pyhydra{} has been exercised through four flood-risk workflows at three
 Spanish pilot sites, each reproduced as a notebook sequence under
 \texttt{notebooks/\allowbreak pilot\_cases/} in the \pyhydra{} repository itself
-(\cref{tab:metadata}, C7); the companion platform HYDRA additionally
-exposes the same notebooks through a browser, without requiring the
-underlying \pyhydra{} sequence to change. \Cref{tab:reproducibility} traces
+(\cref{tab:metadata}, C7); the companion platform HYDRA exposes
+them in a browser. \Cref{tab:reproducibility} traces
 each workflow to its permanent notebook sequence and states, per the
 reproducibility boundary defined above, what is required to re-run it. All 25
-notebooks run to completion on the archived data; steps that call HEC-HMS or
-HEC-RAS are skipped when the engine is not installed.
+notebooks run to completion on the archived data: the nine Besaya notebooks
+skip their HEC-HMS/HEC-RAS steps when the engine is not installed, and the
+other 16 need no engine.
 
 \begin{table}[!htbp]
 \small
@@ -566,8 +566,11 @@ three methods (MLE, L-moments, Bayesian/MCMC), and a pooled-regional fit
 L-moments. Including the event raises the estimated $T{=}100$-year return
 level by a factor of 3.5--4.6 depending on method and scale, from
 218--271~mm to 756--1{,}241~mm (\cref{fig:valencia,tab:valencia}). All
-values are recomputed with \pyhydra{} v0.3.1; sensitivity to the choice of
-stations is not assessed.
+values are recomputed with \pyhydra{} v0.3.1. They are point estimates from a
+short annual-maximum record in which one record-breaking value dominates the
+upper tail, so the ratios show the sensitivity of the fit to that event, not
+calibrated return levels; sensitivity to the choice of stations is not
+assessed.
 
 
 \begin{figure}[h]
@@ -725,9 +728,8 @@ modular, tested, GPL-3.0-licensed software: an installable scientific core with
 a modular, reproducible architecture; harmonised access to hydro-climatic
 and hydrological data; automation of hydrological and hydraulic models; and
 propagation and analysis of uncertainty across the whole chain. The
-companion platform HYDRA separately provides an optional operational web,
-API, Jupyter and Docker environment on top of this core, without changing
-how \pyhydra{} itself is installed or used. Four workflows at three
+companion platform HYDRA separately provides an optional web, API, Jupyter
+and Docker environment. Four workflows at three
 Spanish pilot sites -- Besaya, M-30 Manzanares and Valencia -- span fluvial,
 urban and extreme-rainfall flood risk. Together they
 show that the same modular components support markedly different study
