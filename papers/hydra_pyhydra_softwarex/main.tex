@@ -78,8 +78,7 @@ stochastic generators, bias correction and downscaling, automation of
 HEC-HMS, HEC-RAS, SFINCS and SWAT+, and uncertainty propagation, including
 a pilot-based rule that decides whether an expensive solver can be emulated
 within a fixed simulation budget. It is illustrated through four workflows
-at three Spanish sites, including a re-run of the copula generation and
-MaxDiss selection of a published study of Madrid's M-30. \pyhydra{} is
+at three Spanish sites. \pyhydra{} is
 GPL-3.0-licensed, installable from GitHub (not yet on PyPI) and archived on
 Zenodo; the companion HYDRA platform exposes its notebooks in a browser.
 \end{abstract}
@@ -192,8 +191,8 @@ architecture usable axis-by-axis; harmonised access to hydro-climatic and
 hydrological data; automation of hydrological/hydraulic model execution;
 and propagation of uncertainty across the whole chain, from Monte Carlo
 ensembles to Bayesian posteriors -- described in \cref{sec:description} and
-demonstrated in \cref{sec:examples,sec:impact}. The companion HYDRA
-platform separately exposes this core through a web/API/Jupyter/Docker
+demonstrated in \cref{sec:examples,sec:impact}. The companion platform
+HYDRA separately exposes this core through a web/API/Jupyter/Docker
 environment (\cref{sec:architecture}).
 
 The contribution is therefore not a new probability distribution or
@@ -352,7 +351,7 @@ and GeoJSON/\texttt{geopandas} as the common data currency between blocks
 and with external tools such as QGIS); and \emph{operational transfer}
 (documentation, example notebooks and a reproducible Docker environment are
 treated as first-class deliverables, not optional accessories). A
-\texttt{pytest} suite of 299 tests in nineteen test files exercises the
+\texttt{pytest} suite of 299 tests in 19 test files exercises the
 statistical, modelling and UQ utilities most exposed to regression. A GitHub
 Actions workflow (Ubuntu, core plus lightweight extended dependencies
 including PyMC) runs this suite on every push across a Python 3.9--3.12
@@ -552,7 +551,7 @@ edited the source and rendered the final figure.}
 \label{fig:m30}
 \end{figure}
 
-\textbf{Valencia DANA (October 2024).} Implements an extreme-value fitting
+\textbf{Valencia's DANA (October 2024).} Implements an extreme-value fitting
 comparison for the record-breaking rainfall event that struck the
 Comunitat Valenciana on 29 October 2024, when AEMET's official post-event
 report \citep{aemet2024dana} recorded new national single-station
