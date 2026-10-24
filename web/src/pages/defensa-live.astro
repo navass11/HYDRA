@@ -1378,7 +1378,8 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
           <div class="slide-main-title" style="font-size:clamp(34px, 4.2vw, 58px); font-weight:900; color:#fff; letter-spacing:-0.03em; line-height:1.15; margin-bottom:16px; max-width:${isFirst ? '760px' : 'none'}; animation:fadeInUp 0.6s ease both;">${slide.title}</div>
           ${slide.subtitle ? `<div class="slide-main-subtitle" style="font-size:clamp(16px, 1.9vw, 21px); color:${isFirst ? '#cbd5e1' : '#94a3b8'}; max-width:760px; line-height:1.5; margin-bottom:22px; animation:fadeInUp 0.6s ease 0.1s both;">${slide.subtitle}</div>` : ''}
 
-          ${!isFirst && slide.bullets?.length ? `
+          ${slide.id === 43 ? `<a href="https://hydra-web.yellowwave-5aaa93b0.spaincentral.azurecontainerapps.io/" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:20px;color:#e2e8f0;text-decoration:none;margin:12px 0;"><img src="${base.replace(/\/$/, '')}/defensa/figures/qr_hydra.svg" alt="QR para abrir la web de HYDRA" style="width:220px;height:220px;background:white;"/><span style="font-size:24px;">Web de HYDRA<br/>Herramientas y casos</span></a>` : ''}
+          ${!isFirst && slide.id !== 43 && slide.bullets?.length ? `
             <ul class="slide-title-bullets" style="display:grid; grid-template-columns:1fr; gap:10px; text-align:left; max-width:620px; padding:0; margin:0 0 24px 0; list-style:none; animation:fadeInUp 0.6s ease 0.2s both;">
               ${slide.bullets.map(b => `<li style="font-size:clamp(16px, 1.8vw, 19px); color:#cbd5e1; padding:10px 16px; border-radius:8px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05);">${b}</li>`).join('')}
             </ul>
