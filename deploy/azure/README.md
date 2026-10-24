@@ -629,6 +629,16 @@ az storage file upload-batch \
 HYDRA lee los datos de `dockerdata`, no de Zenodo: `pyhydra-get-data` (que
 descarga de Zenodo) solo hace falta fuera de Azure.
 
+Los datos compartidos se montan en solo lectura. Los notebooks de HYDRA
+coinciden con los de pyhydra v0.3.1 salvo cuatro (Besaya 03 y 09, M-30 03 y
+04): los tres primeros escribian sus resultados en la carpeta compartida y el
+ultimo tenia una linea de continuacion que empieza por `%`; ahora escriben en
+la copia de sesion cuando la carpeta compartida no es escribible. Se
+comprobo ejecutando los 25 notebooks de `pilot_cases` en la imagen
+`Dockerfile.jupyter` (linux/amd64) con los datos en solo lectura y los
+notebooks en una copia de sesion. Esos cuatro cambios hay que llevarlos
+tambien a pyhydra en su proxima version.
+
 Mapa de rutas:
 
 ```text
