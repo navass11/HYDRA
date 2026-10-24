@@ -394,8 +394,8 @@ environment. Colours identify functional stages and do not encode values.}
 to a single module, uncertainty quantification cuts across the four
 functional blocks: asymptotic, bootstrap and Bayesian posterior estimates on
 extreme-value parameters and return levels
-(\texttt{climate.time\_series}); posterior propagation across pooled
-stations and prediction variance from spatial interpolators
+(\texttt{climate.time\_series}); posterior propagation across the
+stations of a region and prediction variance from spatial interpolators
 (\texttt{climate.spatial\_analysis}); and Monte Carlo roughness ensembles
 aggregated into spatial impact statistics with outlier screening
 (\texttt{modeling.hydraulic}) -- the machinery exercised by the
@@ -482,7 +482,7 @@ Copula generation and MaxDiss re-run with \pyhydra{}; design depths read from ar
 Valencia DANA &
 \texttt{valencia\_\allowbreak dana/} (3 nb.$^{\dagger}$) &
 Partial (AEMET, SIAR and AVAMET series under provider terms; Zenodo \citep{navas2026pilotdata}) & None &
-Reproducible for the single-station and pooled-regional analyses with those
+Reproducible for the point and regional (RFA) analyses with those
 records \\[4pt]
 {\fontsize{9}{10}\selectfont SFINCS--HEC-RAS} &
 \texttt{manning\_\allowbreak rugosidades/} (7 nb.) &
@@ -552,9 +552,9 @@ intensity records at Turís (station 8337X); the dataset used here,
 aggregated on calendar days, gives 710.8~mm/24h at that station. Two
 notebooks, downloadable in full with \texttt{pyhydra-get-data
 valencia\_dana} and requiring no AEMET credentials at run time, fit GEV
-distributions at Turís with and without the event: single-station fits by
-three methods (MLE, L-moments, Bayesian/MCMC), and a pooled-regional fit
-(index-flood standardisation over all nine stations) by MLE and
+distributions at Turís with and without the event: point fits by
+three methods (MLE, L-moments, Bayesian/MCMC), and a regional frequency
+analysis (RFA; index-flood standardisation over all nine stations) by MLE and
 L-moments. Including the event raises the estimated $T{=}100$-year return
 level by a factor of 3.5--4.6 depending on method and scale, from
 218--271~mm to 756--1{,}241~mm (\cref{fig:valencia,tab:valencia}). All
@@ -568,13 +568,13 @@ assessed.
 \begin{figure}[h]
 \centering
 \includegraphics[scale=1.05]{figures/fig05_valencia_return_levels.pdf}
-\caption{$T{=}100$-year return-level estimates at station 8337X (Turís),
-with and without the 29 October 2024 event, for the single-station (MLE,
-L-moments, Bayesian/MCMC) and pooled-regional-RFA (MLE, L-moments) fits
-reproduced by the two archived notebooks described in the text. Markers are
-independent point estimates, not intervals; labels give their ratio
-(\cref{tab:valencia}). The plotted values are those printed by the
-notebooks.}
+\caption{Turís (8337X). (a) Annual maximum daily rainfall, 2008--2024; the
+29 October 2024 event (710.8~mm) is the record. (b) GEV return-level curves
+fitted by maximum likelihood without (16 years) and with (17 years) that
+event; bands: 95\% Fisher intervals; dots: empirical positions. The shape
+parameter rises from $\xi{=}0.22$ to $0.67$ and the $T{=}100$-year level from
+227 to 822~mm (\cref{tab:valencia}). The plotted values are those printed by
+the notebooks.}
 \label{fig:valencia}
 \end{figure}
 
@@ -588,11 +588,11 @@ notebooks.}
 \toprule
 Scale & Method & Without & With & Ratio \\
 \midrule
-Single station & Bayesian/MCMC & 258.5 & 932.6 & 3.6 \\
-Single station & L-moments & 218.0 & 755.6 & 3.5 \\
-Single station & MLE & 227.0 & 821.8 & 3.6 \\
-Pooled regional & L-moments & 252.1 & 1{,}012.3 & 4.0 \\
-Pooled regional & MLE & 271.3 & 1{,}241.3 & 4.6 \\
+Point & Bayesian/MCMC & 258.5 & 932.6 & 3.6 \\
+Point & L-moments & 218.0 & 755.6 & 3.5 \\
+Point & MLE & 227.0 & 821.8 & 3.6 \\
+Regional (RFA) & L-moments & 252.1 & 1{,}012.3 & 4.0 \\
+Regional (RFA) & MLE & 271.3 & 1{,}241.3 & 4.6 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -801,7 +801,8 @@ full responsibility for the content of the article and the archived code.
 The authors thank the Confederaci{\'o}n Hidrogr{\'a}fica del Cant{\'a}brico,
 the Agencia Estatal de Meteorolog{\'i}a, the SIAR network and AVAMET for the
 hydrological and climate records used in the associated case studies, and the
-Instituto Geogr{\'a}fico Nacional for openly available PNOA products.
+Instituto Geogr{\'a}fico Nacional for openly available cartographic products
+(orthophotography, digital terrain models, land cover and other mapping).
 Computationally intensive workflows used a Microsoft Azure academic
 subscription.
 
