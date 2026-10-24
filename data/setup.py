@@ -49,33 +49,40 @@ def download_swat_lrew():
     except Exception as e:
         print(f"⚠  SWATdata method failed ({e}), trying direct GitHub download…")
 
-    # Fallback: download from GitHub releases
-    url  = "https://github.com/chrisschuerz/SWATdata/archive/refs/heads/main.zip"
+    # Fallback: download the SWATdata repository (its default branch is "master") and
+    # unpack the SWAT+ demo project it ships as a nested zip (the LREW TxtInOut files).
+    url  = "https://github.com/chrisschuerz/SWATdata/archive/refs/heads/master.zip"
     dest = DATA_DIR / "swat" / "lrew"
-    dest.mkdir(parents=True, exist_ok=True)
-    tmp_zip = DATA_DIR / "swat" / "lrew_tmp.zip"
+    swat_dir = DATA_DIR / "swat"
+    swat_dir.mkdir(parents=True, exist_ok=True)
+    tmp_zip = swat_dir / "lrew_tmp.zip"
+    nested_zip = swat_dir / "lrew_project_tmp.zip"
+    tmp_dir = swat_dir / "_tmp"
 
     try:
         print(f"  Downloading {url} …")
         urllib.request.urlretrieve(url, tmp_zip)
         with zipfile.ZipFile(tmp_zip) as z:
-            # Extract only the LREW TxtInOut folder
-            lrew_members = [m for m in z.namelist() if "LREW" in m]
-            z.extractall(DATA_DIR / "swat" / "_tmp", members=lrew_members)
-        # Move to final location
-        extracted_root = next((DATA_DIR / "swat" / "_tmp").iterdir())
-        lrew_src = next((p for p in extracted_root.rglob("TxtInOut") if "LREW" in str(p)), None)
-        if lrew_src:
-            if dest.exists():
-                shutil.rmtree(dest)
-            shutil.copytree(lrew_src.parent, dest)
-            print(f"✓  LREW extracted to {dest}")
-        shutil.rmtree(DATA_DIR / "swat" / "_tmp", ignore_errors=True)
-        tmp_zip.unlink(missing_ok=True)
+            member = next((m for m in z.namelist() if m.endswith("inst/extdata/plus_rev59_project.zip")), None)
+            if member is None:
+                raise FileNotFoundError("SWAT+ demo project not found in the SWATdata repository")
+            nested_zip.write_bytes(z.read(member))
+        shutil.rmtree(tmp_dir, ignore_errors=True)
+        with zipfile.ZipFile(nested_zip) as zp:
+            zp.extractall(tmp_dir)
+        project_dir = next(p for p in tmp_dir.iterdir() if p.is_dir())
+        if dest.exists():
+            shutil.rmtree(dest)
+        shutil.copytree(project_dir, dest)
+        print(f"✓  LREW extracted to {dest}")
         return True
     except Exception as e:
         print(f"✗  Could not download LREW: {e}")
         return False
+    finally:
+        shutil.rmtree(tmp_dir, ignore_errors=True)
+        tmp_zip.unlink(missing_ok=True)
+        nested_zip.unlink(missing_ok=True)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
