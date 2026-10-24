@@ -2,8 +2,8 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
 title: "HYDRA: web platform, notebooks and deployment environment for pyhydra"
-version: 0.1.2
-date-released: "2026-07-30"
+version: 0.2.0
+date-released: "2026-10-24"
 license: MIT
 repository-code: "https://github.com/navass11/HYDRA"
 url: "https://hydra-web.yellowwave-5aaa93b0.spaincentral.azurecontainerapps.io/"
@@ -45,4 +45,4 @@ references:
   - type: software
     title: "pyhydra: a modular Python library for hydrological and climate analysis"
     doi: "10.5281/zenodo.20932554"
-    version: 0.2.0
+    version: 0.3.1
