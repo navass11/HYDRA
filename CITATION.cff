@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
 title: "HYDRA: web platform, notebooks and deployment environment for pyhydra"
-version: 0.2.1
+version: 0.2.2
 date-released: "2026-10-24"
 license: MIT
 repository-code: "https://github.com/navass11/HYDRA"
