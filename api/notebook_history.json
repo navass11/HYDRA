@@ -1,0 +1,636 @@
+{
+"AEMET_download.ipynb": [
+"2db0f0e38a16cc9546c1",
+"dd2b7f68c8cb8f05dbb4"
+],
+"CDS_download.ipynb": [
+"950803a69a1bd405e372",
+"69cfdb6284e95a1e7c75"
+],
+"ERA-5_download.ipynb": [
+"0c9c5b008f41b0884bd2"
+],
+"ESGF_download.ipynb": [
+"9c099d0e5fba6a84a728",
+"f98cbcac23aabe73e931"
+],
+"GPM_download.ipynb": [
+"bfa3698ca2e8677fc874",
+"f2a547e8e5a5fe61d544"
+],
+"OGIMET_download.ipynb": [
+"833c80ed024835db4133",
+"0625367260a8b3fa7791"
+],
+"PERSSIAN_download.ipynb": [
+"66822778b76f7d740074",
+"9441ed4522be5770f4e6"
+],
+"Statistical_Downscaling.ipynb": [
+"56f107d1aad59e7c1e63"
+],
+"climate/bias_correction.ipynb": [
+"96220ae2a1147cb564b5",
+"0bb406d69084bb768fc7",
+"cdeae81069f76b19588d",
+"64e047b89444b297035d",
+"babe17b2156cecc7c4a7",
+"9c208641904b981bc214"
+],
+"climate/bias_correction/bias_correction.ipynb": [
+"96220ae2a1147cb564b5"
+],
+"climate/event_extraction.ipynb": [
+"8ef4c5db862c3bc6e943",
+"c44439d8f1fd0c93ee0a",
+"c752de2c654499cd5cde",
+"01a34be0ef36a994ddf3"
+],
+"climate/event_extraction/event_extraction.ipynb": [
+"8ef4c5db862c3bc6e943"
+],
+"climate/extreme_value_analysis.ipynb": [
+"552708a584bfced8313e",
+"bbc09f1df6f9f6d8039d",
+"dffbf4b6d89b3017333a",
+"7c0a3f88012e6f75e990",
+"4a2fcc7ec73e901ba7cc"
+],
+"climate/extreme_value_analysis/extreme_value_analysis.ipynb": [
+"552708a584bfced8313e"
+],
+"climate/spatial_analysis/bayes_hierarchical.ipynb": [
+"d30c345d7496f7b060cc",
+"185c0c80df18004f429b",
+"addc449c4a8e20705acd",
+"62566ef3edb0c7a171bd",
+"47863a2836d1cd06ffc0",
+"8739a7a386d1225d8731"
+],
+"climate/spatial_analysis/bayes_hierarchical/bayes_hierarchical.ipynb": [
+"d30c345d7496f7b060cc"
+],
+"climate/spatial_analysis/compound_flooding.ipynb": [
+"be217d80b299b6a65931",
+"22f900ee98ff6fbda650",
+"3c8da3e1b4f33e48eb24",
+"7bcbcb723b5fb4f6a7c6",
+"3765638c75821af67683",
+"9848b868c5c5b4e6cba0",
+"d278b8af6b46deae6450"
+],
+"climate/spatial_analysis/compound_flooding/compound_flooding.ipynb": [
+"be217d80b299b6a65931"
+],
+"climate/spatial_analysis/copulas.ipynb": [
+"d36a3cb7d26ea8e925f8",
+"cb4a2f8bd776dc4ccda4",
+"8b53c05427303e81d860"
+],
+"climate/spatial_analysis/copulas/copulas.ipynb": [
+"d36a3cb7d26ea8e925f8"
+],
+"climate/spatial_analysis/interpolation.ipynb": [
+"e16b3afd5b814615390f",
+"2452c17fb6ca385c5772",
+"445a3c8c045b48bd9f33",
+"31f6e73c66799a9200da"
+],
+"climate/spatial_analysis/interpolation/interpolation.ipynb": [
+"e16b3afd5b814615390f"
+],
+"climate/spatial_analysis/regional_frequency_analysis.ipynb": [
+"b2dcdab05e5be2057236",
+"3d4c101f136afbb1f744",
+"6ffe88dd0c000b56434f",
+"8c56612650cb47f3a26a",
+"a4d35addf0531cce8c2d",
+"4421f65d6f2641ca35d5",
+"7a33048b340e7343b8bf"
+],
+"climate/spatial_analysis/regional_frequency_analysis/regional_frequency_analysis.ipynb": [
+"b2dcdab05e5be2057236"
+],
+"climate/spatial_field_generation.ipynb": [
+"bbac92a5dfdee5a951f5",
+"74116096712ebf6b7fdb",
+"c8df46b2f5ef148f4748"
+],
+"climate/spatial_field_generation/spatial_field_generation.ipynb": [
+"bbac92a5dfdee5a951f5"
+],
+"climate/stochastic_generation.ipynb": [
+"b5dca96d4268a4a59ddc",
+"8b074cb8059232f487fa",
+"a835cbae107e4d6d7128",
+"c1e35f7bb42f5e02eae4",
+"df8b8c262b40dbee604f",
+"a01a17464d479c8c4f55",
+"1ee397027d507887a508",
+"54f218ed8cc5424c6151",
+"5688814321e676e9a861",
+"258b018fef73d4b3436b",
+"7bc01e2ac5cf8ba5ba29"
+],
+"climate/stochastic_generation/stochastic_generation.ipynb": [
+"b5dca96d4268a4a59ddc"
+],
+"data_sources/climate_change/CDS_download.ipynb": [
+"791f956a365f837db520",
+"76b6f7dc679f2e14ab5d",
+"5af2fb12bcad85db7d18",
+"eef20ebeaabf00383d5b",
+"95d80082199f35c5e35c",
+"8f080fc79ff6852d8f14",
+"427e7670ff5ba535a9e2"
+],
+"data_sources/climate_change/CDS_download/CDS_download.ipynb": [
+"791f956a365f837db520"
+],
+"data_sources/climate_change/ESGF_download.ipynb": [
+"f92c48600b2631620ee6",
+"fd6c1abb19d88def9db6",
+"85ccf0e405c22ee52a54",
+"157f2fdf4c1353817c77",
+"d6a681e88df3c644cc4a",
+"a84a8b41cabb3a843f1e",
+"8b1056f0460095131e69"
+],
+"data_sources/climate_change/ESGF_download/ESGF_download.ipynb": [
+"f92c48600b2631620ee6"
+],
+"data_sources/rainfall/AEMET_download.ipynb": [
+"ef802471fd79d7301b02",
+"d3f45686b8272562a244",
+"99e04d0e64921421dc0a",
+"76a7a979db73460d591d",
+"daf9400f27628790445f",
+"d44801c03849347e47f9",
+"f5c8df4ba6efc0491572"
+],
+"data_sources/rainfall/AEMET_download/AEMET_download.ipynb": [
+"ef802471fd79d7301b02"
+],
+"data_sources/rainfall/ERA5_download.ipynb": [
+"7fa62e11d91f3e5525b4",
+"a9ecd4a4a378272591be",
+"c1912f32fc4752fe34da",
+"b04f90562e06ea6696a2",
+"662f8ba7d8268be6188b",
+"7fc81a5c2b53d7f8a9c1",
+"44c32b2359940aa1eaa2"
+],
+"data_sources/rainfall/ERA5_download/ERA5_download.ipynb": [
+"7fa62e11d91f3e5525b4"
+],
+"data_sources/rainfall/GPM_download.ipynb": [
+"1c46d495699ba7ae1e42",
+"150d0b3b35ee822d19b3",
+"60b061372f6d5389d174",
+"f734649eb65ad786eb19",
+"74f5b21cc231b991f492",
+"709e32c0d8d4430ee012"
+],
+"data_sources/rainfall/GPM_download/GPM_download.ipynb": [
+"1c46d495699ba7ae1e42"
+],
+"data_sources/rainfall/Meteostat_download.ipynb": [
+"c36a02c1859a63cf3463",
+"80c58d98823c51f08feb",
+"cb00531663029d834488"
+],
+"data_sources/rainfall/Meteostat_download/Meteostat_download.ipynb": [
+"c36a02c1859a63cf3463"
+],
+"data_sources/rainfall/OGIMET_download.ipynb": [
+"a894fdeb6a5b05918993",
+"6ae9b8ce1eeb6f7770e7",
+"e325b1af9f3f4c0a765a",
+"83f3be03d9d964b37931",
+"3e910056ff723af8f464",
+"0f2c8abcfc7be1c26f5c",
+"4f36c5d6fa8f8b7ec412",
+"d21de5f587a20a2ee38b"
+],
+"data_sources/rainfall/OGIMET_download/OGIMET_download.ipynb": [
+"a894fdeb6a5b05918993"
+],
+"data_sources/rainfall/PERSSIAN_download.ipynb": [
+"3f79900d61a0cf2ee827",
+"4dc20f744607243ac92b",
+"0cb861225727aaa64d58",
+"3416b95b81c2c3c96507",
+"4db3ea31165d6cd6152c",
+"2a6c7cefa52c18c47efd",
+"9790f29094295b1507db"
+],
+"data_sources/rainfall/PERSSIAN_download/PERSSIAN_download.ipynb": [
+"3f79900d61a0cf2ee827"
+],
+"data_sources/river_discharge/GRDC_download.ipynb": [
+"4763f2ddc9de27f94a8b",
+"c10086fc8493c8ef3c2b",
+"564ffb7835aa4c952e1f",
+"0421d9ef2d3ba185225d"
+],
+"data_sources/river_discharge/GRDC_download/GRDC_download.ipynb": [
+"4763f2ddc9de27f94a8b"
+],
+"data_sources/river_discharge/GloFAS_download.ipynb": [
+"41e04af2437423af60c1",
+"e4b22eca8bc496b265af",
+"58a53af5224845074e44",
+"3c02ea4d4572e97fe083",
+"346b2c9f149a1e043f79",
+"c0a32bc6fd536e4dd957",
+"dc6e628b33a56a896e87"
+],
+"data_sources/river_discharge/GloFAS_download/GloFAS_download.ipynb": [
+"41e04af2437423af60c1"
+],
+"data_sources/river_discharge/USGS_download.ipynb": [
+"30c6a55b1dcf7ea0d9ed",
+"2afd918aecc69ad1f684",
+"628054fd676ac1aaf21d",
+"896abba8996379b1a57f"
+],
+"data_sources/river_discharge/USGS_download/USGS_download.ipynb": [
+"30c6a55b1dcf7ea0d9ed"
+],
+"data_sources/soils/SoilGrids_download.ipynb": [
+"13286d4dbe42bd759356",
+"960efea0338283291433",
+"ae830e49fe576a6f7e2d",
+"84da96f1a9dd860d90c4"
+],
+"data_sources/soils/SoilGrids_download/SoilGrids_download.ipynb": [
+"13286d4dbe42bd759356"
+],
+"modeling/hydraulic/HEC_RAS.ipynb": [
+"e9b79ce4e3b2fb650138",
+"0b297c6efd47eefefcd5",
+"0735f7601f8e8a96a3e8",
+"a2b100aebbd74372c9a7",
+"4ca317ecafc6f5113cd9",
+"04599c223c71ff24c4fc"
+],
+"modeling/hydraulic/HEC_RAS/HEC_RAS.ipynb": [
+"e9b79ce4e3b2fb650138"
+],
+"modeling/hydraulic/SFINCS.ipynb": [
+"4c6a9b75dd78a07e9325",
+"c911a0a637cc46a2bde4",
+"ca8a4f36ffc0e13ebd6c",
+"bc1e4e5c82f646b91392",
+"5995c29bb4607ed42995",
+"65d09fdb011a250a3c06"
+],
+"modeling/hydraulic/SFINCS/SFINCS.ipynb": [
+"4c6a9b75dd78a07e9325"
+],
+"modeling/hydraulic/manning_sensitivity/01_monte_carlo_rugosidades.ipynb": [
+"530f74111498dc551a98",
+"7e1aa5c365d0f6cae6de",
+"2553abb7c38bf3fbdd6c",
+"fad0a2ccf39f75a645c6",
+"a9e929cd644ae8bfd260"
+],
+"modeling/hydraulic/manning_sensitivity/01_monte_carlo_rugosidades/01_monte_carlo_rugosidades.ipynb": [
+"530f74111498dc551a98"
+],
+"modeling/hydraulic/manning_sensitivity/02_analisis_sfincs.ipynb": [
+"cf310cb8d5a1405e4303",
+"b29ef53513874730107e",
+"2e3728b82a5d6f184e94",
+"9aaec35cedbbc8f25be1"
+],
+"modeling/hydraulic/manning_sensitivity/02_analisis_sfincs/02_analisis_sfincs.ipynb": [
+"cf310cb8d5a1405e4303"
+],
+"modeling/hydraulic/manning_sensitivity/03_analisis_hecras.ipynb": [
+"bdfe7b2479cbdca820e3",
+"59f64e2fffca5ecc9f00",
+"c1161b1206f630255fbb",
+"39ba3fed57ab93a0f332"
+],
+"modeling/hydraulic/manning_sensitivity/03_analisis_hecras/03_analisis_hecras.ipynb": [
+"bdfe7b2479cbdca820e3"
+],
+"modeling/hydraulic/manning_sensitivity/04_comparacion_modelos.ipynb": [
+"2ff023128508c95790d4",
+"1cf71c4dff3149ef1523",
+"8ef0d6ffe6f40daabc53",
+"1db233ef9b3ce192e450"
+],
+"modeling/hydraulic/manning_sensitivity/04_comparacion_modelos/04_comparacion_modelos.ipynb": [
+"2ff023128508c95790d4"
+],
+"modeling/hydraulic/manning_sensitivity/05_analisis_regimenes.ipynb": [
+"93eb9fa180aecf6b13d1",
+"50afc703c77ab8c5e58e",
+"195902ab070d33efa3cf",
+"dc5e7d99d93252e733ab",
+"1e0eff8df48ad9860547"
+],
+"modeling/hydraulic/manning_sensitivity/05_analisis_regimenes/05_analisis_regimenes.ipynb": [
+"93eb9fa180aecf6b13d1"
+],
+"modeling/hydraulic/manning_sensitivity/06_figuras_paper.ipynb": [
+"1dd9051eca1456f931e3",
+"88decdec213bdebaf809",
+"7c637d56454a8c361e45",
+"4b96368c3f1aebc8016b"
+],
+"modeling/hydraulic/manning_sensitivity/06_figuras_paper/06_figuras_paper.ipynb": [
+"1dd9051eca1456f931e3"
+],
+"modeling/hydraulic/manning_sensitivity/07_correlated_manning.ipynb": [
+"fef018bb3a39ca575a8e",
+"328f94611f1e119b14c2"
+],
+"modeling/hydraulic/manning_sensitivity/07_correlated_manning/07_correlated_manning.ipynb": [
+"fef018bb3a39ca575a8e"
+],
+"modeling/hydrology/HEC_HMS.ipynb": [
+"27cc91036a578ed05fa2",
+"095dc9f489c52a8ba7b3",
+"1b3f023fb88e3db74057",
+"e0b22f891c58445dc369",
+"3053df85e817a8abd484",
+"87bc3c0b2a11190bcf7e",
+"076b988d269752959351",
+"c5849d1dcb09045fd47f",
+"ce9339fdf8d2ea18e18e",
+"44c88fec272fb1c3a02c"
+],
+"modeling/hydrology/HEC_HMS/HEC_HMS.ipynb": [
+"27cc91036a578ed05fa2"
+],
+"modeling/hydrology/SWAT.ipynb": [
+"7d6cfa4a55eaf33ceac3",
+"dc36f8b61b66dfcbf1ad",
+"b51ee8753e764e67851d",
+"2188c2a7135a45a626fd",
+"07821aae6a4a7669fab1",
+"44ffce2c7cc75d10a6d8",
+"9b4c1f3d4aac98add7ca",
+"9f8dc5b4f993c9bb5052",
+"15b67224f5b94122ef8d",
+"56eddd4060de85c9f729"
+],
+"modeling/hydrology/SWAT/SWAT.ipynb": [
+"7d6cfa4a55eaf33ceac3"
+],
+"pilot_cases/los_corrales_buelna/01_data_acquisition.ipynb": [
+"1cd466bcbefddb45736e",
+"b27c0a03982532395644",
+"5e869ea219c889abfe74",
+"b664490f610a743d726d",
+"adc249c69014efe596ad",
+"83efb82876f63de73d43"
+],
+"pilot_cases/los_corrales_buelna/01_data_acquisition/01_data_acquisition.ipynb": [
+"1cd466bcbefddb45736e"
+],
+"pilot_cases/los_corrales_buelna/02_spatial_interpolation.ipynb": [
+"54becc9186e7676ea77e",
+"5812a1f52754d8620217",
+"0e3d761c00d45ed68209",
+"01637d792f87523ee493",
+"a0c3d3ba668abe1873e8",
+"4134127b3816724d61fa"
+],
+"pilot_cases/los_corrales_buelna/02_spatial_interpolation/02_spatial_interpolation.ipynb": [
+"54becc9186e7676ea77e"
+],
+"pilot_cases/los_corrales_buelna/03_extreme_value_analysis.ipynb": [
+"50db69597723ca2cc8fa",
+"3cb758cd13a68572814d",
+"ac4ee2cb95a890623da6",
+"d90b8ab06328de055999",
+"ecc77877e5cd174e8674",
+"a65de3366663ce94bc4a",
+"8b8fc45c63b11eae2596",
+"129ac0a5bab24efb085e"
+],
+"pilot_cases/los_corrales_buelna/03_extreme_value_analysis/03_extreme_value_analysis.ipynb": [
+"50db69597723ca2cc8fa"
+],
+"pilot_cases/los_corrales_buelna/04_design_storm_hms.ipynb": [
+"70f562edb54b68e27788",
+"c004accc3a423850c4db",
+"cf112974d98e2c07a154",
+"2885a9ced13d5c1814e7",
+"472e8ae570d0a789544e",
+"9736687fc624393bbcec"
+],
+"pilot_cases/los_corrales_buelna/04_design_storm_hms/04_design_storm_hms.ipynb": [
+"70f562edb54b68e27788"
+],
+"pilot_cases/los_corrales_buelna/05_continuous_simulation.ipynb": [
+"e6ebf43b32ae5eefa2aa",
+"1a0c80660c270a417319",
+"c5e91a0c9bb1c46ca695",
+"a914bc5bd2c463d83c3d",
+"0b5f20f23eb350564d29",
+"c8847581bcae264d8848",
+"74a7030ff90780d1d72d",
+"b112b167d194e1c2028f"
+],
+"pilot_cases/los_corrales_buelna/05_continuous_simulation/05_continuous_simulation.ipynb": [
+"e6ebf43b32ae5eefa2aa"
+],
+"pilot_cases/los_corrales_buelna/06_hybrid_event_reconstruction.ipynb": [
+"c4a6230461512292f8ef",
+"4dcbc045bc46afcc0172",
+"3d51e8f0f8a81c82d210",
+"938ce833d739d45cf296",
+"c120e4e1f9e94f4b8f69",
+"169adf02c32c061d006d"
+],
+"pilot_cases/los_corrales_buelna/06_hybrid_event_reconstruction/06_hybrid_event_reconstruction.ipynb": [
+"c4a6230461512292f8ef"
+],
+"pilot_cases/los_corrales_buelna/07_hec_ras_hydraulics.ipynb": [
+"a5afb4692e2c1bad8d55",
+"45d2e2da5efa6d7d3c91",
+"16d5db7d50278efff91e",
+"2e60d41f657ca204b864",
+"6309d05b207d391cca13",
+"0f0d6476f1b731295af1",
+"71f23932153da23a92e2"
+],
+"pilot_cases/los_corrales_buelna/07_hec_ras_hydraulics/07_hec_ras_hydraulics.ipynb": [
+"a5afb4692e2c1bad8d55"
+],
+"pilot_cases/los_corrales_buelna/07_hec_ras_hydraulics_run.ipynb": [
+"ae7000992d360c484b81",
+"16d5db7d50278efff91e",
+"2e60d41f657ca204b864"
+],
+"pilot_cases/los_corrales_buelna/08_hybrid_return_periods.ipynb": [
+"d8fe90cafc7bacfa5387",
+"e6b6ac858bfe381c1457",
+"28dc52baab054add9166",
+"65aee1e2fd2b4e4f8254",
+"dc3623cb6c0139e6280d",
+"f0b079820c4a12ee358e",
+"a3b8fa164fe08eece15c",
+"2dcf43fafcf7382e9df4",
+"a0fbe6de30e39ac159b8",
+"e17853cea36cf232e61e"
+],
+"pilot_cases/los_corrales_buelna/08_hybrid_return_periods/08_hybrid_return_periods.ipynb": [
+"d8fe90cafc7bacfa5387"
+],
+"pilot_cases/los_corrales_buelna/09_uncertainty_propagation_strategy.ipynb": [
+"eb264f25db73435e8640",
+"8c51c8925d99421a4136"
+],
+"pilot_cases/los_corrales_buelna/09_uncertainty_propagation_strategy/09_uncertainty_propagation_strategy.ipynb": [
+"eb264f25db73435e8640"
+],
+"pilot_cases/m30_manzanares/01_rain_data.ipynb": [
+"633bc00dd5a5b7464bb0",
+"6e09796d455a20991472"
+],
+"pilot_cases/m30_manzanares/01_rain_data/01_rain_data.ipynb": [
+"633bc00dd5a5b7464bb0"
+],
+"pilot_cases/m30_manzanares/02_classification.ipynb": [
+"d2285d3bd0cd35d88122"
+],
+"pilot_cases/m30_manzanares/02_classification/02_classification.ipynb": [
+"d2285d3bd0cd35d88122"
+],
+"pilot_cases/m30_manzanares/03_copula_generation.ipynb": [
+"73f99e0ca7f9db027906",
+"d46cead8265c024649c2",
+"f7bf1a0e6cc260d9c243",
+"c7318e2fb4cc7707aa19",
+"269ab4736fb9eda5c698",
+"ebcc76c424ad2b453ff5"
+],
+"pilot_cases/m30_manzanares/03_copula_generation/03_copula_generation.ipynb": [
+"73f99e0ca7f9db027906"
+],
+"pilot_cases/m30_manzanares/04_maxdiss_selection.ipynb": [
+"95a0176cc30d10512b21",
+"a410a1d70d4bede52225",
+"1624ab603ca2dff0783c"
+],
+"pilot_cases/m30_manzanares/04_maxdiss_selection/04_maxdiss_selection.ipynb": [
+"95a0176cc30d10512b21"
+],
+"pilot_cases/m30_manzanares/05_hms_ras_simulation.ipynb": [
+"fce40a0b5ee4789176ad",
+"55523f2845e916c22e08",
+"8e2789b9ac92c01c8e47"
+],
+"pilot_cases/m30_manzanares/05_hms_ras_simulation/05_hms_ras_simulation.ipynb": [
+"fce40a0b5ee4789176ad"
+],
+"pilot_cases/m30_manzanares/06_knn_return_periods.ipynb": [
+"b5224614a62ac7df5afe",
+"db1774cba9551514d85f",
+"a0b388e6e62c6f651639",
+"4c7e992237993e6c2d7d"
+],
+"pilot_cases/m30_manzanares/06_knn_return_periods/06_knn_return_periods.ipynb": [
+"b5224614a62ac7df5afe"
+],
+"pilot_cases/manning_rugosidades/01_monte_carlo_rugosidades.ipynb": [
+"530f74111498dc551a98",
+"7e1aa5c365d0f6cae6de",
+"17e2deb3e96128b9d197",
+"57b965adf6b4087050e8",
+"8e1fc99a0d4d6fc82a17"
+],
+"pilot_cases/manning_rugosidades/01_monte_carlo_rugosidades/01_monte_carlo_rugosidades.ipynb": [
+"530f74111498dc551a98"
+],
+"pilot_cases/manning_rugosidades/02_analisis_sfincs.ipynb": [
+"cf310cb8d5a1405e4303",
+"8f2415be6763ba1ca854",
+"aacf010eeb63e9413c20",
+"8f9f5b493f80500135db"
+],
+"pilot_cases/manning_rugosidades/02_analisis_sfincs/02_analisis_sfincs.ipynb": [
+"cf310cb8d5a1405e4303"
+],
+"pilot_cases/manning_rugosidades/03_analisis_hecras.ipynb": [
+"bdfe7b2479cbdca820e3",
+"9bcbb6b71f284b20f7df",
+"15843c7c6bea6c78ebad",
+"903d466411c36b32294f"
+],
+"pilot_cases/manning_rugosidades/03_analisis_hecras/03_analisis_hecras.ipynb": [
+"bdfe7b2479cbdca820e3"
+],
+"pilot_cases/manning_rugosidades/04_comparacion_modelos.ipynb": [
+"2ff023128508c95790d4",
+"70cde13695b5392c1f8d",
+"d2502982e788f35e1e2a",
+"c4a47f7b6ce5c1a71ac0",
+"a8b3f7ceb675648ceb6d",
+"90cc436f26ff10f915f0"
+],
+"pilot_cases/manning_rugosidades/04_comparacion_modelos/04_comparacion_modelos.ipynb": [
+"2ff023128508c95790d4"
+],
+"pilot_cases/manning_rugosidades/05_analisis_regimenes.ipynb": [
+"93eb9fa180aecf6b13d1",
+"50afc703c77ab8c5e58e",
+"8f35f51b7ec2a2dcc96c",
+"adc530b846e8dbfaa695",
+"343498416f593e3c467e"
+],
+"pilot_cases/manning_rugosidades/05_analisis_regimenes/05_analisis_regimenes.ipynb": [
+"93eb9fa180aecf6b13d1"
+],
+"pilot_cases/manning_rugosidades/06_figuras_paper.ipynb": [
+"1dd9051eca1456f931e3",
+"88decdec213bdebaf809",
+"e596d9567bc8934f08ae",
+"7a3ac1e72c943d111403",
+"ee834ec9f59676eaa01e"
+],
+"pilot_cases/manning_rugosidades/06_figuras_paper/06_figuras_paper.ipynb": [
+"1dd9051eca1456f931e3"
+],
+"pilot_cases/manning_rugosidades/07_correlated_manning.ipynb": [
+"fef018bb3a39ca575a8e",
+"cceae77e439115635f56",
+"80b864ab9d0ef5ad8420",
+"1a114ea2e6cbbe62d2e9"
+],
+"pilot_cases/manning_rugosidades/07_correlated_manning/07_correlated_manning.ipynb": [
+"fef018bb3a39ca575a8e"
+],
+"pilot_cases/valencia_dana/01_data_exploration.ipynb": [
+"633626c696f0d3f20ee0",
+"684216e99a15239dacbc",
+"7bdfae9816b2e594efc1",
+"dd63c880d50261962669"
+],
+"pilot_cases/valencia_dana/01_data_exploration/01_data_exploration.ipynb": [
+"633626c696f0d3f20ee0"
+],
+"pilot_cases/valencia_dana/02_extreme_value_analysis.ipynb": [
+"8218c40f74ce06d08fb9",
+"4f66ab6fe98a45643197",
+"936239683cfec9b0d9e6",
+"beaeb3515cb3668534b0"
+],
+"pilot_cases/valencia_dana/02_extreme_value_analysis/02_extreme_value_analysis.ipynb": [
+"8218c40f74ce06d08fb9"
+],
+"pilot_cases/valencia_dana/03_real_regional_study_pyhydra.ipynb": [
+"7884beee80d3b27af042",
+"15c67ee84137c079f7e3",
+"a518793e9b9505bad189"
+],
+"pilot_cases/valencia_dana/03_real_regional_study_pyhydra/03_real_regional_study_pyhydra.ipynb": [
+"7884beee80d3b27af042"
+]
+}

@@ -12,6 +12,8 @@ import httpx
 from fastapi import APIRouter, BackgroundTasks, Cookie, HTTPException, Query
 from fastapi.responses import RedirectResponse
 
+from api.notebook_hash import notebook_hash
+
 router = APIRouter()
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -19,6 +21,8 @@ NOTEBOOK_TEMPLATES_DIR = Path(os.environ.get("HYDRA_NOTEBOOK_TEMPLATES", REPO_RO
 JUPYTER_SESSIONS_PATH = os.environ.get("HYDRA_JUPYTER_SESSIONS_PATH", "data/jupyter_sessions").strip("/")
 COOKIE_NAME = "hydra_jupyter_session"
 SESSION_RE = re.compile(r"^[a-zA-Z0-9_-]{12,80}$")
+# Content hashes of every notebook version ever released (scripts/gen_notebook_history.py).
+NOTEBOOK_HISTORY_PATH = Path(__file__).resolve().parents[1] / "notebook_history.json"
 
 # Local sidecars use localhost; Azure uses the HTTPS FQDN of the separate
 # internal Jupyter app. Only opening a notebook wakes that application.
@@ -150,6 +154,14 @@ def _notebook_source_text(nb: dict) -> str:
     return "\n".join(chunks)
 
 
+def _released_hashes(relative: str) -> set[str]:
+    try:
+        history = json.loads(NOTEBOOK_HISTORY_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return set()
+    return set(history.get(relative, []))
+
+
 async def _refresh_requested_notebook_if_stale(
     client: httpx.AsyncClient,
     session_id: str,
@@ -160,6 +172,18 @@ async def _refresh_requested_notebook_if_stale(
     current = await _jupyter_get_notebook(client, dest)
     if current is None:
         await _bootstrap_session(client, session_id, relative)
+        return
+
+    # Generic refresh: a session copy whose authored content is exactly an older
+    # released version was never edited by the user, so it can be replaced by the
+    # current template. Copies with any user edit have an unknown hash and stay.
+    template_nb = json.loads((NOTEBOOK_TEMPLATES_DIR / relative).read_bytes())
+    template_hash = notebook_hash(template_nb)
+    current_hash = notebook_hash(current)
+    if current_hash == template_hash:
+        return
+    if current_hash in _released_hashes(relative.as_posix()):
+        await _jupyter_upload_notebook(client, dest, NOTEBOOK_TEMPLATES_DIR / relative)
         return
 
     # Migration for the HMS notebook fixed after sessions already existed:

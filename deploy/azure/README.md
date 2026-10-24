@@ -752,3 +752,7 @@ era5/
 gpm/
 ogimet/
 ```
+
+## Refreshing notebooks in existing sessions
+
+Anonymous sessions live 30 days on the `hydra-sessions` share and keep the notebook copies made when they were created. When a notebook is opened, `api/routers/notebooks.py` replaces the session copy with the image's version if the copy is exactly an older released version (hashes in `api/notebook_history.json`); copies the user edited are left alone. Before each release run `python scripts/gen_notebook_history.py` (needs the full git history) and commit the result; `tests/test_notebook_refresh.py` fails if it is out of date.
