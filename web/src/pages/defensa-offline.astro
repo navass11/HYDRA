@@ -292,6 +292,12 @@ const chapterIcons = [
   .closing-metric { padding:15px 17px; border-radius:13px; background:rgba(15,23,42,.8); border:1px solid rgba(94,234,212,.2); backdrop-filter:blur(8px); }
   .closing-metric strong { display:block; color:#5eead4; font-size:clamp(24px,2.6vw,34px); line-height:1; margin-bottom:7px; }
   .closing-metric span { color:#cbd5e1; font-size:12px; line-height:1.3; }
+  .closing-qr { position:absolute; right:64px; top:50%; transform:translateY(-50%); width:clamp(220px,24vw,340px); padding:18px; background:#fff; color:#183f48; text-align:center; text-decoration:none; border-radius:12px; }
+  .slide-type-title.closing-slide .closing-qr img { display:block; width:100%; height:auto; max-height:none; }
+  .closing-qr strong { display:block; font-size:clamp(20px,2vw,26px); margin-top:8px; }
+  .closing-qr span { display:block; font-size:clamp(15px,1.5vw,20px); line-height:1.35; margin-top:6px; }
+  .closing-slide :is(.slide-main-title,.slide-main-subtitle,.closing-takeaway,.closing-links) { max-width:min(900px,calc(100% - 400px)); }
+  .closing-qr:focus-visible { outline:5px solid #5eead4; outline-offset:6px; }
   .closing-links { display:flex; gap:10px; margin-top:20px; flex-wrap:wrap; }
   .closing-link { padding:8px 12px; border-radius:8px; color:#94a3b8; background:rgba(2,6,23,.72); border:1px solid rgba(255,255,255,.08); font-size:11px; }
   .cover-identity { width:min(510px, 48%); display:flex; flex-direction:column; gap:7px; margin-top:8px; }
@@ -2064,6 +2070,11 @@ const chapterIcons = [
 
                 {slide.id === 43 && (
                   <>
+                    <a class="closing-qr" href="https://hydra-web.yellowwave-5aaa93b0.spaincentral.azurecontainerapps.io/" target="_blank" rel="noopener noreferrer" aria-label="Abrir la web de HYDRA">
+                      <img src={asset('/defensa/figures/qr_hydra.svg')} width="450" height="450" alt="Código QR que abre la web de HYDRA" />
+                      <strong>Web de HYDRA</strong>
+                      <span>Escanea para explorar<br />herramientas y casos</span>
+                    </a>
                     <div class="closing-takeaway">Una cadena reproducible que convierte incertidumbre climática e hidrológica en evidencia útil para decidir.</div>
                     <div class="closing-links">
                       <span class="closing-link">github.com/navass11/pyhydra</span>
