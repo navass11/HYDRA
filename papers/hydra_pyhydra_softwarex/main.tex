@@ -78,7 +78,8 @@ stochastic generators, bias correction and downscaling, automation of
 HEC-HMS, HEC-RAS, SFINCS and SWAT+, and uncertainty propagation, including
 a pilot-based rule that decides whether an expensive solver can be emulated
 within a fixed simulation budget. It is illustrated through four workflows
-at three Spanish sites. \pyhydra{} is
+at three Spanish sites; external-engine outputs are archived and third-party
+adoption is still to be shown. \pyhydra{} is
 GPL-3.0-licensed, installable from GitHub (not yet on PyPI) and archived on
 Zenodo; the companion platform HYDRA exposes its notebooks in a browser.
 \end{abstract}
@@ -564,7 +565,10 @@ three methods (MLE, L-moments, Bayesian/MCMC), and a pooled-regional fit
 (index-flood standardisation over all nine stations) by MLE and
 L-moments. Including the event raises the estimated $T{=}100$-year return
 level by a factor of 3.5--4.6 depending on method and scale, from
-218--271~mm to 756--1{,}241~mm (\cref{fig:valencia}).
+218--271~mm to 756--1{,}241~mm (\cref{fig:valencia,tab:valencia}). All
+values are recomputed with \pyhydra{} v0.3.1; sensitivity to the choice of
+stations is not assessed.
+
 
 \begin{figure}[h]
 \centering
@@ -572,11 +576,32 @@ level by a factor of 3.5--4.6 depending on method and scale, from
 \caption{$T{=}100$-year return-level estimates at station 8337X (Turís),
 with and without the 29 October 2024 event, for the single-station (MLE,
 L-moments, Bayesian/MCMC) and pooled-regional-RFA (MLE, L-moments) fits
-reproduced by the two archived notebooks described in the text. Claude
+reproduced by the two archived notebooks described in the text. Markers are
+independent point estimates, not intervals; labels give their ratio
+(\cref{tab:valencia}). Claude
 (Anthropic) assisted in writing the plotting script; the plotted values are
 those printed by the notebooks.}
 \label{fig:valencia}
 \end{figure}
+
+\begin{table}[!htbp]
+\small
+\centering
+\caption{$T{=}100$-year return level (mm) at Turís (8337X), without and with the
+29 October 2024 event.}
+\label{tab:valencia}
+\begin{tabular}{@{}llrrr@{}}
+\toprule
+Scale & Method & Without & With & Ratio \\
+\midrule
+Single station & Bayesian/MCMC & 258.5 & 932.6 & 3.6 \\
+Single station & L-moments & 218.0 & 755.6 & 3.5 \\
+Single station & MLE & 227.0 & 821.8 & 3.6 \\
+Pooled regional & L-moments & 252.1 & 1{,}012.3 & 4.0 \\
+Pooled regional & MLE & 271.3 & 1{,}241.3 & 4.6 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \begin{sloppypar}
 \textbf{SFINCS--HEC-RAS uncertainty comparison (Besaya River).} A fourth
@@ -708,7 +733,9 @@ urban and extreme-rainfall flood risk. Together they
 show that the same modular components support markedly different study
 designs, from continuous stochastic simulation to multivariate copula-based
 frequency analysis and Monte Carlo ensembles run through two hydraulic
-engines. Ongoing work
+engines. These workflows show what the components support, not third-party
+adoption; the M-30 design depths and HEC-HMS/HEC-RAS results are archived
+study outputs, not a validation of \pyhydra{}. Ongoing work
 focuses on widening automated test coverage as new modules are added,
 adding adapters for further hydraulic/hydrological engines, and documenting
 a stable public API to lower the barrier for external contributions beyond

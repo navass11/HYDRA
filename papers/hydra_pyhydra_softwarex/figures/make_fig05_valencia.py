@@ -38,17 +38,19 @@ colors = ["#4c72b0", "#dd8452", "#8fce8f", "#c4c4c4", "#8ecae6"]
 fig, ax = plt.subplots(figsize=(5.4, 4.2))
 
 for i, (cat, lo, hi, color) in enumerate(zip(categories, without_dana, with_dana, colors)):
-    ax.plot([i, i], [lo, hi], color=color, linewidth=3, solid_capstyle="round", zorder=2)
     ax.scatter([i], [lo], s=70, facecolor=color, edgecolor="white", linewidth=1.0,
                marker="o", zorder=3)
     ax.scatter([i], [hi], s=70, facecolor=color, edgecolor="white", linewidth=1.0,
                marker="s", zorder=3)
+    # Two independent point estimates, not an interval: print their ratio instead.
+    ax.annotate(f"\u00d7{hi / lo:.1f}", (i, hi), xytext=(0, 9), textcoords="offset points",
+                ha="center", fontsize=9)
 
 ax.set_xticks(range(len(categories)))
 ax.set_xticklabels(categories, rotation=30, ha="right", fontsize=9)
 ax.set_ylabel("Return level (mm), T = 100 years", fontsize=9.5)
 ax.grid(axis="y", linestyle="--", alpha=0.5)
-ax.set_ylim(150, 1300)
+ax.set_ylim(150, 1380)
 
 legend_elems = [
     Line2D([0], [0], marker="o", color="w", markerfacecolor="0.4", markeredgecolor="0.4",
