@@ -1,10 +1,12 @@
 // Each history entry owns its position, including independently scrolling panes.
 // Presentation windows retain their own slide/preview synchronisation.
-if (window.self === window.top && !document.querySelector('#live-shell, #pres-shell')) {
+if (!document.querySelector('#live-shell, #pres-shell')) {
   type Position = { href: string; x: number; y: number; panes: Record<string, { x: number; y: number }> };
   type Entry = { id: string; position?: Position };
   const stateKey = '__hydraScrollV2';
   const storeKey = 'hydra-scroll-v2:';
+  const routeKey = (url: URL) => 'hydra-scroll-route:' + url.pathname + url.search;
+  const returnKey = 'hydra-scroll-return';
   let entry: Entry;
   let restoring = false;
   let leaving = false;
@@ -29,7 +31,10 @@ if (window.self === window.top && !document.querySelector('#live-shell, #pres-sh
     if (restoring || leaving) return;
     entry.position = snapshot();
     writeEntry();
-    try { sessionStorage.setItem(storeKey + entry.id, JSON.stringify(entry.position)); } catch { /* The history entry also holds the position. */ }
+    try {
+      sessionStorage.setItem(storeKey + entry.id, JSON.stringify(entry.position));
+      sessionStorage.setItem(routeKey(new URL(location.href)), JSON.stringify(entry.position));
+    } catch { /* The history entry also holds the position. */ }
   };
   const savedPosition = (): Position | undefined => {
     try {
@@ -88,6 +93,16 @@ if (window.self === window.top && !document.querySelector('#live-shell, #pres-sh
   };
 
   entry = readEntry() ?? newEntry();
+  // Explicit return links use their named destination, never a guessed history
+  // step. Restore its last position only when a module page requested it.
+  try {
+    const pending = JSON.parse(sessionStorage.getItem(returnKey) ?? 'null');
+    sessionStorage.removeItem(returnKey);
+    if (pending?.href === location.href && Number.isFinite(pending.position?.y)) {
+      entry.position = { ...pending.position, href: location.href };
+      sessionStorage.setItem(storeKey + entry.id, JSON.stringify(entry.position));
+    }
+  } catch { /* The explicit anchor remains a usable fallback. */ }
   writeEntry();
   // Own restoration so the browser's smooth scroll/hash handling cannot race it.
   history.scrollRestoration = 'manual';
@@ -125,14 +140,15 @@ if (window.self === window.top && !document.querySelector('#live-shell, #pres-sh
     const link = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>('a[href]') : null;
     if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     save();
-    if (!link.hasAttribute('data-hydra-tools-back')) return;
+    if (!link.matches('[data-hydra-tools-back], [data-hydra-back]')) return;
     try {
-      const previous = new URL(document.referrer);
       const destination = new URL(link.href);
-      if (previous.origin === location.origin && previous.pathname === destination.pathname && history.length > 1) {
-        event.preventDefault();
-        history.back();
+      // Root catalogues always use the section named by their button. Module
+      // pages can recover the exact point from which their tool/reference opened.
+      if (destination.origin === location.origin && destination.pathname.includes('/modules/')) {
+        const stored = sessionStorage.getItem(routeKey(destination));
+        if (stored) sessionStorage.setItem(returnKey, JSON.stringify({ href: destination.href, position: JSON.parse(stored) }));
       }
-    } catch { /* Direct visits use the link's tools-section fallback. */ }
+    } catch { /* Direct visits use the explicit section or module destination. */ }
   }, { capture: true });
 }
