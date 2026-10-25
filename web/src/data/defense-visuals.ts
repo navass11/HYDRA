@@ -1,3 +1,5 @@
+import { researchHypotheses } from './slides';
+
 // Shared visual content for projection and study views.
 export const quoteFigures: Record<number, string> = { 7: 'esq_hipotesis_central.svg', 8: 'esq_pregunta.svg' };
 export const visualSlides: Record<number, { kind: string; metric?: string; figure?: string; figures?: { src: string; caption: string }[]; items: { label: string; detail: string }[] }> = {
@@ -48,9 +50,9 @@ export const visualSlides: Record<number, { kind: string; metric?: string; figur
     {label:'Caudal',detail:'transformación HEC-HMS'}, {label:'Hidráulica',detail:'HEC-RAS 1D'},
     {label:'Reconstrucción',detail:'calados por sección con k-NN'} ] },
   40: { kind:'evidence', figure:'esq_hipotesis_evidencia.svg', metric:'Cada hipótesis se contrasta con evidencia y con un límite', items:[
-    {label:'H1 Automatización',detail:'campañas de cálculo: capacidad operativa; ahorro por medir'},
-    {label:'H2 Modularidad',detail:'los mismos bloques resuelven problemas y escalas diferentes'},
-    {label:'H3 Incertidumbre',detail:'sensibilidad del diseño a métodos y datos; bandas en lugar de cifras únicas'} ] },
+    {label:`${researchHypotheses[0].id} ${researchHypotheses[0].label}`,detail:'campañas de cálculo: capacidad operativa; ahorro por medir'},
+    {label:`${researchHypotheses[1].id} ${researchHypotheses[1].label}`,detail:'los mismos bloques resuelven problemas y escalas diferentes'},
+    {label:`${researchHypotheses[2].id} ${researchHypotheses[2].label}`,detail:'sensibilidad del diseño a métodos y datos; bandas en lugar de cifras únicas'} ] },
   47: { kind:'method-map', figure:'esq_responsabilidades.svg', metric:'La procedencia se conserva en cada transformación', items:[
     {label:'Datos',detail:'observar, reunir y controlar fuentes'},
     {label:'Extremos y clima',detail:'caracterizar frecuencia y condiciones'},
