@@ -71,5 +71,6 @@ export const visualSlides: Record<number, { kind: string; metric?: string; figur
     {label:'Manuel del Jesus Peñil',detail:'rigor, confianza y vocación de utilidad'},
     {label:'César Álvarez Díaz',detail:'disponibilidad y generosidad constantes'},
     {label:'IHCantabria',detail:'el entorno humano, científico y técnico de la tesis'},
-    {label:'Álvaro Galán',detail:'motivación y ayuda para mejorar el trabajo'} ] },
+    {label:'Universidad de Castilla-La Mancha',detail:'a mis compañeros, por su apoyo y compañerismo'},
+    {label:'Banco Santander',detail:'por la beca concedida'} ] },
 };
