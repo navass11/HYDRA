@@ -54,7 +54,7 @@ const keywords: Record<number, readonly string[]> = {
   40: ['automatización', 'prueba de viabilidad', 'ahorro de tiempo queda pendiente', 'modularidad', 'incertidumbre', '260 a 952 milímetros', 'representarla, propagarla y auditarla'],
   41: ['conocimiento previo', 'desarrollos de la tesis', 'contribución original', 'integración extremo a extremo', 'reproducibilidad sistemática', 'transferencia a proyectos reales'],
   42: ['series cortas', 'estacionariedad', 'coste de los grandes ensembles', 'falta un contraste sistemático con observaciones', 'generación condicionada al clima', 'medida real del ahorro de tiempo'],
-  42.5: ['mi familia', 'Manuel del Jesus Peñil', 'César Álvarez Díaz', 'IHCantabria', 'Álvaro Galán', 'A todos, gracias'],
+  42.5: ['mi familia', 'Manuel del Jesus Peñil', 'César Álvarez Díaz', 'IHCantabria', 'Universidad de Castilla-La Mancha', 'Banco Santander', 'beca', 'A todos, gracias'],
   43: ['cadena completa, reproducible y transferible', 'período de retorno del impacto', 'herramienta de su comunidad', 'Muchas gracias', 'preguntas'],
   20: ['serie demo sintética', 'media', 'desviación estándar', 'autocorrelación', '30 realizaciones', 'semilla 42', 'escenarios plausibles', 'diagnósticos'],
   21: ['CSV demo', 'mil simulaciones HEC-RAS', '0,0069', '0,0014', 'no significa que la rugosidad carezca de efecto', 'salidas ya calculadas', 'distribución del impacto'],
