@@ -289,7 +289,7 @@ const stepTitleColors: Record<number, string> = {
       ) : null}
 
       <!-- ── FIGURA SVG ── -->
-      {pc.figures.map((fig) => (
+      {pc.figures.map((fig, index) => (
         <section class="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
           <h3
             class="font-bold text-white mb-1"
@@ -301,7 +301,7 @@ const stepTitleColors: Record<number, string> = {
             data-t-es={fig.caption.es}
             data-t-en={fig.caption.en}
           >{fig.caption.es}</p>
-          <div class="w-full overflow-x-auto rounded-xl" set:html={fig.svg} />
+          <div id={index === 0 ? 'case-pipeline' : undefined} class="w-full overflow-x-auto rounded-xl" set:html={fig.svg} />
         </section>
       ))}
 
