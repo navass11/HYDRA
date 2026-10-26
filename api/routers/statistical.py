@@ -125,12 +125,12 @@ def _fit_payload(maxima: pd.Series, n_samples: int, return_periods: list[float])
             arr = np.asarray(vals, dtype=float)
             arr = arr[np.isfinite(arr)]
             bands[str(int(t))] = {
-                "q05": round(float(np.quantile(arr, 0.05)), 3) if len(arr) else np.nan,
-                "q50": round(float(np.quantile(arr, 0.50)), 3) if len(arr) else np.nan,
-                "q95": round(float(np.quantile(arr, 0.95)), 3) if len(arr) else np.nan,
+                "q05": round(float(np.quantile(arr, 0.05)), 3) if len(arr) else None,
+                "q50": round(float(np.quantile(arr, 0.50)), 3) if len(arr) else None,
+                "q95": round(float(np.quantile(arr, 0.95)), 3) if len(arr) else None,
             }
     except Exception:
-        bands = {str(int(t)): {"q05": np.nan, "q50": point_levels[str(int(t))], "q95": np.nan} for t in return_periods}
+        bands = {str(int(t)): {"q05": None, "q50": point_levels[str(int(t))], "q95": None} for t in return_periods}
 
     return {
         "params_map": {

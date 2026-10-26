@@ -30,7 +30,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
               <button id="btn-upload" class="src-btn py-2 px-3 rounded-lg text-sm font-medium border-2 border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-400 hover:border-rose-300 transition-colors" data-t-es="Subir CSV" data-t-en="Upload CSV">Subir CSV</button>
             </div>
             <input type="file" id="file-input" accept=".csv" class="hidden" />
-            <p id="file-name" class="text-xs text-gray-400 dark:text-slate-500 italic">Demo: precipitación anual 1974-2023 con tendencia positiva</p>
+            <p id="file-name" class="text-xs text-gray-400 dark:text-slate-500 italic">Demo: precipitación mensual 1974–2023; agregación anual o mensual</p>
             <div id="csv-hint" class="hidden mt-2 text-xs text-gray-500 dark:text-slate-400 bg-gray-50 dark:bg-slate-700 rounded-lg p-3" data-t-es="CSV: dos columnas año, valor (o fecha parseable, valor). Datos anuales o mensuales." data-t-en="CSV: two columns year, value (or parseable date, value). Annual or monthly data.">
               CSV: dos columnas <code class="text-rose-600 dark:text-rose-300">año, valor</code> (o fecha parseable, valor). Datos anuales o mensuales.
             </div>
@@ -52,6 +52,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
               <option value="annual" data-t-es="Anual" data-t-en="Annual">Anual</option>
               <option value="monthly" data-t-es="Mensual" data-t-en="Monthly">Mensual</option>
             </select>
+            <p class="text-xs text-gray-500 dark:text-slate-400 mt-2" data-t-es="Precipitación: suma por período. Temperatura, caudal y otras variables: media. Los períodos sin datos se excluyen; no se rellenan con cero." data-t-en="Rainfall: sum per period. Temperature, discharge and other variables: mean. Empty periods are excluded, not filled with zero.">Precipitación: suma por período. Temperatura, caudal y otras variables: media. Los períodos sin datos se excluyen; no se rellenan con cero.</p>
           </div>
 
           <button id="run-btn" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2">
@@ -85,11 +86,13 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
             </svg>
           </div>
           <h3 class="text-xl font-semibold text-gray-700 dark:text-slate-300 mb-2" data-t-es="Listo para analizar" data-t-en="Ready to analyse">Listo para analizar</h3>
-          <p class="text-gray-400 dark:text-slate-500 max-w-md" data-t-es="Ejecuta la demo o sube una serie anual para detectar tendencias y cambios." data-t-en="Run the demo or upload an annual series to detect trends and changes.">Ejecuta la demo o sube una serie anual para detectar tendencias y cambios.</p>
+          <p class="text-gray-400 dark:text-slate-500 max-w-md" data-t-es="Ejecuta la demo o sube una serie con fechas para analizar su agregación anual o mensual." data-t-en="Run the demo or upload a dated series to analyse annual or monthly aggregation.">Ejecuta la demo o sube una serie con fechas para analizar su agregación anual o mensual.</p>
         </div>
 
         <div id="results" class="hidden space-y-8">
           <div id="stats-row" class="grid grid-cols-2 lg:grid-cols-4 gap-4"></div>
+          <p id="aggregation-notice" class="text-sm text-gray-600 dark:text-slate-300"></p>
+          <p id="monthly-notice" class="hidden text-sm rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 p-4" data-t-es="En series mensuales, la estacionalidad y la autocorrelación pueden afectar a los contrastes. Se aplican Mann-Kendall y Pettitt ordinarios; no sus variantes estacionales o corregidas por dependencia temporal." data-t-en="In monthly series, seasonality and autocorrelation may affect the tests. Standard Mann–Kendall and Pettitt are used, without seasonal or serial-dependence corrections.">En series mensuales, la estacionalidad y la autocorrelación pueden afectar a los contrastes. Se aplican Mann-Kendall y Pettitt ordinarios; no sus variantes estacionales o corregidas por dependencia temporal.</p>
 
           <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm p-6">
             <h3 class="font-semibold text-gray-800 dark:text-slate-200 mb-1" data-t-es="Serie temporal con tendencia de Sen" data-t-en="Time series with Sen slope">Serie temporal con tendencia de Sen</h3>
@@ -142,18 +145,24 @@ const errorBox     = document.getElementById('error-box')!;
 const placeholder  = document.getElementById('placeholder')!;
 const resultsEl    = document.getElementById('results')!;
 const testPanel    = document.getElementById('test-results-panel')!;
+const aggregationSelect = document.getElementById('aggregation-select') as HTMLSelectElement;
+const variableSelect = document.getElementById('variable-select') as HTMLSelectElement;
 
 function setSource(demo: boolean) {
   useDemo = demo;
+  if (demo) variableSelect.value = "precipitation";
+  variableSelect.disabled = demo || isRunning;
   btnDemo.className   = `src-btn py-2 px-3 rounded-lg text-sm font-medium border-2 transition-colors ${demo ? 'border-rose-500 bg-rose-50 text-rose-700' : 'border-gray-200 text-gray-600 hover:border-rose-300'}`;
   btnUpload.className = `src-btn py-2 px-3 rounded-lg text-sm font-medium border-2 transition-colors ${!demo ? 'border-rose-500 bg-rose-50 text-rose-700' : 'border-gray-200 text-gray-600 hover:border-rose-300'}`;
   csvHintEl.classList.toggle('hidden', demo);
-  if (demo) fileNameEl.textContent = t('Demo: precipitación anual 1974-2023 con tendencia positiva', 'Demo: annual precipitation 1974–2023 with positive trend');
+  if (demo) fileNameEl.textContent = t('Demo: precipitación mensual 1974–2023; agregación anual o mensual', 'Demo: monthly precipitation 1974–2023; annual or monthly aggregation');
 }
 
 function setRunning(r: boolean) {
   isRunning = r;
   (runBtn as HTMLButtonElement).disabled = r;
+  aggregationSelect.disabled = r;
+  variableSelect.disabled = r || useDemo;
   runLabel.textContent = r ? t('Analizando...', 'Analysing...') : t('Analizar tendencia', 'Analyse trend');
   runArrow.classList.toggle('hidden', r);
   runSpinner.classList.toggle('hidden', !r);
@@ -162,7 +171,11 @@ function setRunning(r: boolean) {
 function showError(msg: string) { errorBox.textContent = msg; errorBox.classList.remove('hidden'); }
 function clearError() { errorBox.classList.add('hidden'); errorBox.textContent = ''; }
 
-btnDemo.addEventListener('click', () => setSource(true));
+btnDemo.addEventListener('click', () => { setSource(true); if (lastData && !isRunning) runBtn.click(); });
+setSource(true);
+for (const control of [aggregationSelect, variableSelect]) {
+  control.addEventListener('change', () => { if (lastData && !isRunning) runBtn.click(); });
+}
 btnUpload.addEventListener('click', () => fileInput.click());
 fileInput.addEventListener('change', () => {
   if (fileInput.files?.[0]) { setSource(false); fileNameEl.textContent = fileInput.files[0].name; }
@@ -186,6 +199,9 @@ runBtn.addEventListener('click', async () => {
     renderResults(await res.json());
   } catch (err: any) {
     showError(err.message ?? t('Error desconocido', 'Unknown error'));
+    resultsEl.classList.add('hidden');
+    testPanel.classList.add('hidden');
+    placeholder.classList.remove('hidden');
   } finally {
     setRunning(false);
   }
@@ -219,12 +235,23 @@ function renderResults(data: any) {
   const pt  = data.pettitt;
   const sen = data.sens_slope;
   const lin = data.linear;
+  const monthly = s.aggregation === 'monthly';
+  const variableLabels: Record<string, string> = {
+    precipitation: t('Precipitación', 'Precipitation'), temperature: t('Temperatura', 'Temperature'),
+    discharge: t('Caudal', 'Discharge'), other: t('Valor', 'Value'),
+  };
+  const variableLabel = variableLabels[s.variable] ?? t('Valor', 'Value');
+  const trendLabel = mk.trend === 'increasing' ? t('creciente', 'increasing')
+    : mk.trend === 'decreasing' ? t('decreciente', 'decreasing') : t('sin tendencia significativa', 'no significant trend');
+  document.getElementById('aggregation-notice')!.textContent =
+    `${monthly ? t('Serie mensual', 'Monthly series') : t('Serie anual', 'Annual series')} · ${s.aggregation_method === 'sum' ? t('suma por período', 'sum per period') : t('media por período', 'mean per period')} · ${t('Pendientes expresadas por año', 'Slopes expressed per year')}.${s.n_incomplete_dropped ? ' ' + t(`Se descartaron ${s.n_incomplete_dropped} periodos con menos del 80 % de datos.`, `${s.n_incomplete_dropped} periods with under 80% of data were dropped.`) : ''}`;
+  document.getElementById('monthly-notice')!.classList.toggle('hidden', !monthly);
 
   document.getElementById('stats-row')!.innerHTML =
     statCard(t('Valores', 'Values'), `${s.n_values}`, `${s.start} – ${s.end}`) +
     statCard(t('Pendiente Sen', 'Sen slope'), `${sen.slope != null ? (sen.slope > 0 ? '+' : '') + sen.slope.toFixed(3) : '—'}`, t('unidades/año', 'units/year'), mk.significant) +
-    statCard('Mann-Kendall τ', `${mk.tau}`, mk.trend) +
-    statCard(t('p-valor MK', 'MK p-value'), `${mk.p_value}`, mk.significant ? t('significativo', 'significant') : t('no significativo', 'not significant'));
+    statCard('Mann-Kendall τ', `${mk.tau}`, trendLabel) +
+    statCard(t('p-valor MK', 'MK p-value'), mk.p_value < 0.001 ? '&lt; 0.001' : mk.p_value.toFixed(4), mk.significant ? t('significativo', 'significant') : t('no significativo', 'not significant'));
 
   // Side panel
   document.getElementById('mk-card')!.innerHTML = `
@@ -233,14 +260,14 @@ function renderResults(data: any) {
       <span class="text-sm text-gray-700 dark:text-slate-300">τ = <strong>${mk.tau}</strong></span>
       <span class="text-sm text-gray-500 dark:text-slate-400">p ${mk.p_value < 0.001 ? '< 0.001' : '= ' + mk.p_value}</span>
     </div>
-    <p class="text-sm text-gray-700 dark:text-slate-300 mb-2 capitalize">${t('Tendencia:', 'Trend:')} <strong>${mk.trend}</strong></p>
+    <p class="text-sm text-gray-700 dark:text-slate-300 mb-2 capitalize">${t('Tendencia:', 'Trend:')} <strong>${trendLabel}</strong></p>
     ${badge(mk.significant)}`;
   document.getElementById('mk-card')!.className =
     `rounded-xl border p-4 space-y-1 ${mk.significant ? 'border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/40' : 'border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-slate-700/50'}`;
 
-  const cpText = pt.change_year
-    ? `${t('Año de cambio:', 'Change year:')} <strong>${pt.change_year}</strong>`
-    : t('Sin cambio detectado', 'No change detected');
+  const cpText = pt.significant && pt.change_year
+    ? `${t('Inicio del segundo tramo:', 'Start of second segment:')} <strong>${pt.change_year}</strong>`
+    : t('Sin cambio significativo', 'No significant change');
   document.getElementById('pettitt-card')!.innerHTML = `
     <p class="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide mb-2">Pettitt</p>
     <p class="text-sm text-gray-700 dark:text-slate-300 mb-1">${cpText}</p>
@@ -258,15 +285,16 @@ function renderResults(data: any) {
 
   // Main chart
   const series = data.series as {date: string, value: number}[];
-  const dates  = series.map(d => d.date);
+  const plotDate = (date: string) => date.length === 4 ? `${date}-01-01` : `${date}-01`;
+  const dates  = series.map(d => plotDate(d.date));
   const values = series.map(d => d.value);
 
   const senLine = data.sen_line as {date: string, value: number}[];
 
   const traces: any[] = [
-    { x: dates, y: values, mode: 'lines+markers', name: s.variable,
-      line: { color: SLATE, width: 1.5 }, marker: { size: 5, color: SLATE } },
-    { x: senLine.map(d => d.date), y: senLine.map(d => d.value),
+    { x: dates, y: values, mode: 'lines+markers', name: variableLabel,
+      line: { color: isDark() ? "#cbd5e1" : SLATE, width: 1.5 }, marker: { size: 5, color: isDark() ? "#cbd5e1" : SLATE } },
+    { x: senLine.map(d => plotDate(d.date)), y: senLine.map(d => d.value),
       mode: 'lines', name: t('Pendiente Sen', 'Sen slope'),
       line: { color: ROSE, width: 2.5 } },
   ];
@@ -277,12 +305,12 @@ function renderResults(data: any) {
   if (pt.significant && pt.change_year) {
     shapes.push({
       type: 'line',
-      x0: pt.change_year, x1: pt.change_year,
+      x0: plotDate(pt.change_year), x1: plotDate(pt.change_year),
       y0: 0, y1: 1, yref: 'paper',
       line: { color: AMBER, width: 2, dash: 'dash' },
     });
     annotations.push({
-      x: pt.change_year, y: 1, yref: 'paper',
+      x: plotDate(pt.change_year), y: 1, yref: 'paper',
       text: `Pettitt ${pt.change_year}`,
       showarrow: false, yanchor: 'bottom',
       font: { color: AMBER, size: 10 },
@@ -294,8 +322,8 @@ function renderResults(data: any) {
     font: { ...layoutBase.font, color: fontColor() },
     shapes,
     annotations,
-    xaxis: { title: t('Año', 'Year'), gridcolor: grid() },
-    yaxis: { title: s.variable, gridcolor: grid() },
+    xaxis: { type: 'date', title: monthly ? t('Fecha', 'Date') : t('Año', 'Year'), tickformat: monthly ? '%b %Y' : '%Y', gridcolor: grid() },
+    yaxis: { title: useDemo ? `${variableLabel} (mm)` : variableLabel, gridcolor: grid() },
     legend: { orientation: 'h', y: -0.2 },
   }, { responsive: true, displayModeBar: false });
 }
