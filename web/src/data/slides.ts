@@ -100,7 +100,7 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Plantear la defensa como respuesta a un problema de ingeniería.",
     visualGuide: ["Título de la tesis","Autor, director y tutor"],
-    speechCues: ["miembros del tribunal","Salvador Navas Fernández","Desarrollo de un modelo automático de inundación estocástica","Mención Industrial","Manuel del Jesus Peñil","César Álvarez Díaz","problema científico","evidencia","científica","tecnológica"],
+    speechCues: ["miembros del tribunal","Salvador Navas Fernández","Desarrollo de un modelo automático de inundación estocástica","Mención Industrial","Manuel del Jesus Peñil","César Álvarez Díaz","problema científico","evidencia","científica","tecnológica","IHCantabria"],
     transition: "La estructura de la exposición sigue los pasos necesarios para responder a ese problema.",
     transitionCue: "esta estructura"
   },
@@ -143,7 +143,7 @@ export const slideLibrary: Slide[] = [
     backup: false,
     speakerGoal: "Delimitar qué significa el título y evitar que se interprete como un nuevo solver hidráulico.",
     visualGuide: ["Modelo y automatización","Inundación y escenarios estocásticos","Contratos de reproducibilidad"],
-    speechCues: ["cadena completa de cálculo","Automático","impacto hidráulico","población de escenarios plausibles","reproducibilidad operativa","variable sobre la que se toman decisiones","conectada","repetirse","variable física interpretable","frecuencia e incertidumbre"],
+    speechCues: ["Modelo","nuevo solver hidráulico","cadena completa de cálculo","Automático","Inundación","impacto hidráulico","calado y extensión inundada","estocástica","único evento de diseño","población de escenarios plausibles","reproducibilidad operativa","arquitectura reproducible","variable sobre la que se toman decisiones","conectada","repetirse","variable física interpretable","frecuencia e incertidumbre","qué escenario produjo un determinado calado"],
     transitionCue: "antecedente científico",
     sectionLabel: "Alcance de la tesis"
   },
@@ -169,7 +169,7 @@ export const slideLibrary: Slide[] = [
     backup: false,
     speakerGoal: "Explicar los cambios que motivan el trabajo, después de situar sus consecuencias.",
     visualGuide: ["Exposición","Urbanización","Condiciones climáticas cambiantes"],
-    speechCues: ["graves daños humanos, económicos y territoriales","exposición","cambio climático","impermeabilización urbana","interacciones","escenarios plausibles","incertidumbre asociada","clima","urbanización"],
+    speechCues: ["graves daños humanos, económicos y territoriales","exposición","cambio climático","impermeabilización urbana","interacciones","escenarios plausibles","incertidumbre asociada","clima","urbanización","una única lluvia de diseño"],
     transitionCue: "alcance de la investigación",
     sectionLabel: "Motivación"
   },
@@ -204,7 +204,7 @@ export const slideLibrary: Slide[] = [
     bullets: ["2017 — Cadena estocástica completa en el TFM del Besaya.","2018 — Publicación del principio T(forzamiento) ≠ T(impacto).","Comparativa — Inundación obtenida con metodologías habituales y con la metodología del Besaya.","Dificultad — Conexiones manuales y configuración específica para una cuenca.","Antecedente — Base metodológica para plantear la investigación."],
     speakerGoal: "Situar el Besaya como antecedente científico, antes de formular las hipótesis y los objetivos.",
     visualGuide: ["2017: TFM y cadena estocástica","2018: frecuencia sobre el impacto","Dificultad operativa y antecedente metodológico"],
-    speechCues: ["antecedente científico","Trabajo Fin de Máster","2017","Los Corrales de Buelna","primera cadena completa","Iber","2018","período de retorno del forzamiento","antecedente metodológico","repetir una cadena extensa","hipótesis y objetivos de la tesis"],
+    speechCues: ["antecedente científico","Trabajo Fin de Máster","2017","Los Corrales de Buelna","primera cadena completa","Iber","2018","período de retorno del forzamiento","antecedente metodológico","repetir una cadena extensa","hipótesis y objetivos de la tesis","premio principal","Revista de Obras Públicas","no coincide necesariamente","pyhydra"],
     transition: "La pregunta dejó de ser cómo resolver una cuenca y pasó a ser cómo hacer reutilizable la cadena completa.",
     transitionCue: "estima habitualmente",
     sectionLabel: "Antecedente científico"
@@ -261,7 +261,7 @@ export const slideLibrary: Slide[] = [
     notes: "El período de retorno se refiere a una variable y a hipótesis especificadas. En condiciones estacionarias, T100 corresponde a una probabilidad anual de superación de 0,01.",
     speakerGoal: "Separar la cadena física válida de los supuestos de asignación de frecuencia.",
     visualGuide: ["Fila superior, de registros a impacto","Tres supuestos en los recuadros inferiores"],
-    speechCues: ["procedimiento de referencia","evento de diseño","mapa de inundación","tres simplificaciones","estacionariedad","múltiples escenarios","frecuencia del calado","datos, caracterización estadística, evento, modelos físicos y mapa"],
+    speechCues: ["procedimiento de referencia","evento de diseño","mapa de inundación","tres simplificaciones","estacionariedad","múltiples escenarios","frecuencia del calado","datos, caracterización estadística, evento, modelos físicos y mapa","único evento","mismo período de retorno","cadena física"],
     transition: "El siguiente ejemplo muestra por qué esa frecuencia puede cambiar incluso con la misma lluvia.",
     transitionCue: "misma lluvia",
     sectionLabel: "Procedimiento de referencia"
@@ -289,7 +289,7 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Hacer comprensible la diferencia entre frecuencia del forzamiento y del impacto.",
     visualGuide: ["Comparar las dos filas del esquema","Suelo seco frente a suelo saturado y afluente en crecida","Resultado hidráulico de cada fila"],
-    speechCues: ["misma lluvia","cien años","suelo está seco","suelo está saturado","impactos distintos","cada cuánto se supera un calado","no puede asignarse directamente","período de retorno de la lluvia"],
+    speechCues: ["misma lluvia","cien años","suelo está seco","suelo está saturado","impactos distintos","cada cuánto se supera un calado","no puede asignarse directamente","período de retorno de la lluvia","El forzamiento es idéntico"],
     transition: "Esta dificultad apareció de forma concreta en el trabajo con el que comenzó la investigación: el Besaya.",
     transitionCue: "pregunta doctoral",
     sectionLabel: "Problema científico"
@@ -307,7 +307,7 @@ export const slideLibrary: Slide[] = [
     bullets: researchHypotheses.map(h => `${h.id} · ${h.label}: ${h.summary}`),
     speakerGoal: "Formular una pregunta y tres hipótesis que luego se puedan cerrar con evidencia.",
     visualGuide: ["Fila superior: métodos fragmentados","Fila inferior: arquitectura conectada","H1, H2 y H3"],
-    speechCues: ["integración","arriba","abajo","tres hipótesis","H1","H2","H3","comprobaciones pendientes","forma de conexión"],
+    speechCues: ["integración","arriba","abajo","tres hipótesis","H1","H2","H3","comprobaciones pendientes","forma de conexión","cadena modular y reproducible","no cuantifica por sí solo el ahorro"],
     transition: "Para contrastar esas hipótesis necesitamos concretar qué se va a desarrollar y qué resultado verificará cada objetivo.",
     transitionCue: "objetivos",
     subtitle: "¿Puede una cadena reproducible transferirse a problemas reales bajo incertidumbre?",
@@ -332,7 +332,7 @@ export const slideLibrary: Slide[] = [
     backup: false,
     speakerGoal: "Formular la pregunta doctoral completa, con una pausa para que se comprenda su alcance.",
     visualGuide: ["Pregunta de investigación","Datos, cadena reproducible y modelos físicos","Transferencia a una aplicación real"],
-    speechCues: ["pregunta de investigación","automatizar de forma reproducible","incertidumbre hidrológica y climática","semillas aleatorias","aplicación real","propagarse a través de la cadena","Automatizar","reproducir","integrar incertidumbre","transferir"],
+    speechCues: ["pregunta de investigación","automatizar de forma reproducible","incertidumbre hidrológica y climática","semillas aleatorias","aplicación real","propagarse a través de la cadena","Automatizar","reproducir","integrar incertidumbre","transferir","cadena completa del análisis probabilístico","transferible a proyectos reales de ingeniería","frecuencia con la que se supera un calado"],
     transitionCue: "tres hipótesis",
     sectionLabel: "Pregunta de investigación"
   },
@@ -351,7 +351,7 @@ export const slideLibrary: Slide[] = [
     bullets: ["Objetivo general: desarrollar y validar un núcleo modular y demostrar su transferencia mediante una plataforma reproducible.","OE1–OE2: integrar datos y modelos climáticos, y generar eventos de precipitación y caudal.","OE3–OE4: automatizar los modelos físicos; documentar y validar el núcleo y la plataforma mediante casos reproducibles."],
     speakerGoal: "Relacionar cada objetivo con una evidencia que aparecerá en la defensa.",
     visualGuide: ["Leer una fila completa: objetivo, desarrollo y evidencia","Recorrer los cuatro objetivos"],
-    speechCues: ["objetivo general","núcleo científico modular","plataforma reproducible","cuatro compromisos","primero","segundo","tercero","cuarto","requisitos","Datos y clima","generación","modelización","documentación y validación"],
+    speechCues: ["objetivo general","núcleo científico modular","plataforma reproducible","cuatro compromisos","primero","segundo","tercero","cuarto","requisitos","Datos y clima","generación","modelización","documentación y validación","desarrollar y validar"],
     transition: "El primer paso para cumplirlos es entender qué exige una cadena estocástica completa y qué ofrecen los métodos existentes.",
     transitionCue: "respuesta tecnológica",
     sectionLabel: "Objetivos"
@@ -443,7 +443,7 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Localizar la brecha mediante la matriz comparativa.",
     visualGuide: ["Columnas: capacidades; filas: marcos","Diferenciar capacidad completa y parcial","Combinación de capacidades de HYDRA"],
-    speechCues: ["matriz","CLIMADA","RainyDay","wflow y HydroMT","cobertura conjunta","frecuencia del impacto","ocho capacidades"],
+    speechCues: ["matriz","CLIMADA","RainyDay","wflow y HydroMT","cobertura conjunta","frecuencia del impacto","ocho capacidades","cobertura funcional"],
     transition: "Para cubrir esa combinación, separé el cálculo científico de su ejecución y de su acceso desde la web.",
     transitionCue: "arquitectura de HYDRA",
     sectionLabel: "Estado de la técnica"
@@ -466,7 +466,7 @@ export const slideLibrary: Slide[] = [
     bullets: ["pyhydra: métodos científicos reutilizables.","API y notebooks: dos accesos al mismo cálculo.","Web: documentación, herramientas y casos."],
     speakerGoal: "Un mismo núcleo científico, tres formas de acceso.",
     visualGuide: ["Base: núcleo científico","Centro: API y JupyterLab","Arriba: acceso desde la web"],
-    speechCues: ["tres responsabilidades","pyhydra","API","JupyterLab","web","mismo método","interfaz","servicio","núcleo"],
+    speechCues: ["tres responsabilidades","pyhydra","API","JupyterLab","web","mismo método","interfaz","servicio","núcleo","contenedores"],
     transition: "Dentro de ese núcleo, los métodos se ordenan según las tres responsabilidades de la cadena.",
     transitionCue: "entorno de cálculo"
   },
@@ -503,7 +503,7 @@ export const slideLibrary: Slide[] = [
     notes: "Mantener los cuatro nombres de la web. No confundir cuatro módulos funcionales con tres paquetes del código (data_sources, climate y modeling) ni con los tres niveles de arquitectura (núcleo, servicios e interfaz). El downscaling híbrido integra etapas y utiliza otros componentes; el diagrama muestra su ubicación, no cuatro etapas obligatorias.",
     speakerGoal: "Reconocer los cuatro módulos de la web y distinguirlos de la organización interna del código.",
     visualGuide: ["Fuentes de datos", "Análisis climático", "Generación estocástica", "Modelización", "Franja inferior: correspondencia con los paquetes del código"],
-    speechCues: ["funciones metodológicas","caracteriza las series","realizaciones sintéticas","cuatro columnas","fuentes de datos","análisis climático","generación estocástica","modelización","productos","climate","catorce submódulos","tres paquetes","operaciones y comprobaciones"],
+    speechCues: ["funciones metodológicas","caracteriza las series","realizaciones sintéticas","cuatro columnas","fuentes de datos","análisis climático","generación estocástica","modelización","productos","climate","tres paquetes","operaciones y comprobaciones","cuatro módulos funcionales"],
     transition: "La primera dificultad práctica es que las entradas proceden de fuentes muy distintas.",
     transitionCue: "bloque de datos"
   },
@@ -531,7 +531,7 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Mostrar qué transforma un adaptador de datos y qué conserva.",
     visualGuide: ["Cinco familias de fuentes a la izquierda","Adaptadores en el centro","Salida común y metadatos a la derecha"],
-    speechCues: ["variable, un dominio y un período","estructuras comunes","metadatos","ausencias","representatividad","ERA5","contrastarse con estaciones","no convierte","familias de fuentes","adaptadores","salida común"],
+    speechCues: ["variable, un dominio y un período","estructuras comunes","metadatos","ausencias","representatividad","ERA5","contrastarse con estaciones","no convierte","familias de fuentes","adaptadores","salida común","UTC","WGS84"],
     transition: "Con las entradas identificadas y revisadas, podemos estimar la frecuencia de sus valores extremos.",
     transitionCue: "frecuencia de sus extremos"
   },
@@ -563,7 +563,7 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Un valor de diseño debe leerse junto con su incertidumbre.",
     visualGuide: ["Izquierda: parámetros de la GEV","Derecha: puntos y curvas","Períodos mayores: extrapolación y bandas"],
-    speechCues: ["máximos anuales","localización, escala y forma","máxima verosimilitud","L-momentos","inferencia bayesiana","cuantil","incertidumbre","análisis regional","estaciones homogéneas","figura ilustrativa","puntos negros","línea azul","roja discontinua","verde","gris punteada"],
+    speechCues: ["máximos anuales","localización, escala y forma","máxima verosimilitud","L-momentos","inferencia bayesiana","incertidumbre","análisis regional","estaciones homogéneas","figura ilustrativa","puntos negros","línea azul","roja discontinua","verde","gris punteada","cola","extrapolación"],
     transition: "Pero ajustar cada variable por separado no describe cómo ocurren conjuntamente.",
     transitionCue: "dependencia entre variables"
   },
@@ -837,7 +837,7 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Cada caso aporta una evidencia y un alcance de reproducción distintos.",
     visualGuide: ["Filas: aplicaciones","Columnas: componentes y disponibilidad en HYDRA","Tres preguntas de validación"],
-    speechCues: ["diez estudios","frecuencia del impacto","sensibilidad","datos, clima o extremos, generación estocástica y modelización","Besaya","Mallorca y Calle 30","Valencia","Tanganica, Andes, SIMPCCe y Panamá","IAHR 2022","cuatro estudios con notebooks"],
+    speechCues: ["diez estudios","frecuencia del impacto","sensibilidad","datos, clima o extremos, generación estocástica y modelización","Besaya","Mallorca y Calle 30","Valencia","Tanganica, Andes, SIMPCCe y Panamá","IAHR 2022","cuatro estudios con notebooks","seis documentados mediante publicaciones o proyectos"],
     transition: "Empezamos en Besaya, donde se formuló el principio que debe conservar toda la arquitectura.",
     transitionCue: "frecuencia sobre el impacto"
   },
@@ -946,7 +946,7 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Con pocos datos, la incertidumbre de la lluvia debe llegar al mapa hidráulico.",
     visualGuide: ["Izquierda: escenarios, k=6 e impacto","Mapas: clásico a la izquierda, estocástico a la derecha","Diferencias espaciales de calado"],
-    speechCues: ["sin aforos","miles de escenarios","seis vecinos","Iber","Copernicus","mapa clásico","estocástico","variabilidad de la lluvia","mismo dominio urbano","calado en metros","k igual a seis"],
+    speechCues: ["sin aforos","miles de escenarios","seis vecinos","Iber","Copernicus","mapa clásico","estocástico","variabilidad de la lluvia","mismo dominio urbano","calado en metros","k igual a seis","Sant Llorenç"],
     transition: "La siguiente aplicación añade una exigencia operativa: hacer viable esa cadena en una infraestructura crítica.",
     transitionCue: "Calle 30"
   },
@@ -1055,7 +1055,7 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Separar lluvia observada, cuantil T100 y período asignado al episodio.",
     visualGuide: ["Izquierda: lluvia observada e indicadores","Derecha: T100 sin y con DANA","Distinguir T100 del período asignado al episodio"],
-    speechCues: ["dato observado","710,8","barras","cien años","260","952","266 por ciento","66 a 91 años","magnitudes diferentes","una observación","dos resultados estadísticos","sin DANA y con DANA"],
+    speechCues: ["dato observado","710,8","barras","cien años","260","952","266 por ciento","66 a 91 años","magnitudes diferentes","una observación","dos resultados estadísticos","sin DANA y con DANA","T100"],
     transition: "Tanganica conserva la necesidad de estimar extremos con pocos datos, pero cambia la variable de diseño: de precipitación a nivel del lago.",
     transitionCue: "materiales del análisis"
   },
@@ -1091,7 +1091,7 @@ export const slideLibrary: Slide[] = [
     offlineScript: "La captura muestra dos elementos de la ficha de Valencia. Arriba están los indicadores del episodio. Debajo aparece el acceso al notebook del estudio regional y las tareas que documenta: preparación de datos, ajuste de extremos y comparación de estimadores.\n\nLa imagen permite identificar dónde se consulta el procedimiento, aunque los enlaces no se ejecutan dentro de una captura. La versión web y el notebook permiten continuar la revisión con los datos y el entorno correspondientes.\n\nLos indicadores resumen qué resultado merece atención; el notebook documenta cómo se llegó a él. En él se puede revisar qué estaciones y períodos se utilizaron, cómo se seleccionaron los máximos y qué estimador produjo cada curva. Para interpretar una discrepancia entre métodos, esas decisiones son tan importantes como el valor final. Abrir el material permite consultar el análisis, mientras que repetirlo requiere comprobar que están disponibles las entradas y las dependencias correspondientes. Esta visita tiene una función precisa dentro del relato: mostrar el vínculo entre los resultados que vamos a analizar y el procedimiento que permite examinarlos.\n\nEste es el significado práctico de la trazabilidad: poder relacionar la cifra presentada con las entradas, el método y las decisiones del análisis. El resultado queda acompañado de los materiales necesarios para examinar su procedencia.",
     speakerGoal: "Del indicador visible al acceso concreto al procedimiento.",
     visualGuide: ["Hallazgos clave del caso Valencia", "Comparación de métodos y efecto de incorporar la DANA", "Relación entre datos, procedimiento y resultado"],
-    speechCues: ["indicadores superiores","Justo debajo","notebook del estudio regional","preparación de datos","comparación de estimadores","trazabilidad","indicadores","notebook"],
+    speechCues: ["preparación de datos","trazabilidad","notebook","hallazgos clave","incorporar el episodio de la DANA","sensibilidad del análisis","qué datos entran en el ajuste","qué método se utiliza","qué incertidumbre acompaña"],
     offlineSpeechCues: ["Arriba","Debajo","notebook","preparación de datos","captura","trazabilidad","entradas, el método y las decisiones","indicadores"],
     transitionCue: "nivel del lago",
     anchorPosition: "center"
@@ -1195,7 +1195,7 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Leer el mapa como producto intermedio de datos y separar las magnitudes de escala.",
     visualGuide: ["Mapa: precipitación en mm, límites de subcuencas y escala de colores","Izquierda: 52 cuencas, 414 combinaciones y 1.464 puntos costeros","Franja inferior: estaciones → escenarios → LEM/SFINCS → capas del atlas"],
-    speechCues: ["precipitación","52 cuencas","1.464 puntos costeros","73 estaciones","414 combinaciones climáticas","escala nacional","milímetros","magnitudes distintas","proceso metodológico","líneas negras","rojos","azules","kriging universal","LEM","SFINCS"],
+    speechCues: ["precipitación","52 cuencas","1.464 puntos costeros","73 estaciones","414 combinaciones climáticas","escala nacional","milímetros","magnitudes distintas","proceso metodológico","líneas negras","rojos","azules","kriging universal","LEM","SFINCS","NEOPRENE"],
     transition: "Con los casos revisados, podemos distinguir cómo se ha comunicado la investigación y cuál ha sido mi contribución personal.",
     transitionCue: "alcance de su transferencia"
   },
@@ -1248,7 +1248,7 @@ export const slideLibrary: Slide[] = [
     bullets: ["Ejemplo T100 (2011–2040, RCP4.5): 208,8 → 278,5 m³/s, +33,4 % respecto a IDF.","El mapa representa diferencias de calado para 2041–2070.","El porcentaje de un caudal no es un factor corrector uniforme del mapa.","La diferencia entre métodos no prueba por sí sola mayor exactitud."],
     speakerGoal: "Distinguir la comparación espacial de calados de la comparación numérica de caudales.",
     visualGuide: ["Mapa: diferencia de calado en T100, 2041–2070 y RCP4.5","Cifras de caudal como comparación adicional","Diferencia entre métodos y verdad observada"],
-    speechCues: ["IDF","diferencias de calado","2041–2070","2011–2040","208,8","278,5","33,4 por ciento","sensibilidad al procedimiento","dos comparaciones relacionadas, pero distintas"],
+    speechCues: ["IDF","diferencias de calado","2041–2070","2011–2040","208,8","278,5","33,4 por ciento","sensibilidad al procedimiento","dos comparaciones relacionadas, pero distintas","10.000 años sintéticos","200 casos"],
     transition: "La transferencia también debe funcionar cuando la decisión no es protegerse de una avenida, sino gestionar aportaciones escasas.",
     transitionCue: "gestión de embalses"
   },
@@ -1291,7 +1291,7 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Distinguir publicación, comunicación, evaluación y software citable.",
     visualGuide: ["Dos artículos publicados","Dos manuscritos enviados","Cinco comunicaciones","Dos DOI de software","Valencia: aceptado, pendiente de publicación"],
-    speechCues: ["dos artículos publicados","aceptado, pendiente de publicación","dos manuscritos enviados","Valencia","Tanganica","rugosidades","cinco comunicaciones","dos DOI","en evaluación","publicación, evaluación, comunicación y software"],
+    speechCues: ["dos artículos publicados","aceptado, pendiente de publicación","Valencia","Tanganica","rugosidades","cinco comunicaciones","dos DOI","en evaluación","dos manuscritos","artículos publicados, manuscritos en evaluación, comunicaciones y software","Zenodo"],
     transition: "La existencia de esos productos no explica por sí sola mi papel; la siguiente tabla lo delimita.",
     transitionCue: "mi contribución"
   },
@@ -1330,7 +1330,7 @@ export const slideLibrary: Slide[] = [
     bullets: researchHypotheses.map((h, i) => `${h.id} · ${h.label}: ${["viabilidad demostrada; ahorro de tiempo pendiente de medir.", "reutilización entre aplicaciones; cuatro estudios con notebooks y requisitos propios.", "sensibilidad del diseño a métodos y datos; mayor valor no implica mayor exactitud."][i]}`),
     speakerGoal: "Cada hipótesis tiene una evidencia concreta y una comprobación pendiente.",
     visualGuide: ["Arriba: campañas y capacidad operativa","Centro: reutilización de módulos","Abajo: dos comparaciones, con escalas distintas"],
-    speechCues: ["Arriba, H1","capacidad operativa","ahorro","En el centro, H2","reutilización","Abajo, H3","contraste observacional","tres hipótesis","H1, automatización","H2, integración modular","H3, flujo reproducible"],
+    speechCues: ["capacidad operativa","ahorro","reutilización","contraste observacional","tres hipótesis","H1, automatización","H2, integración modular","H3, flujo reproducible"],
     transition: "Ese cierre permite precisar la contribución doctoral sin confundir métodos previos, desarrollos propios y conocimiento aportado.",
     transitionCue: "contribución original"
   },
@@ -1457,7 +1457,7 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Situar la variable sobre la que se toma una decisión.",
     visualGuide: ["Ilustración conceptual: río, ciudad y costa","Edificios, movilidad e infraestructuras expuestas"],
-    speechCues: ["personas","profundidad y la velocidad","vulnerabilidad","estado previo de la cuenca","frecuencia","incertidumbre","respuesta física","exposición y la vulnerabilidad"],
+    speechCues: ["personas","profundidad y la velocidad","vulnerabilidad","estado previo de la cuenca","frecuencia","incertidumbre","respuesta física","exposición y la vulnerabilidad","lluvia de diseño","no constituye una estimación completa de las pérdidas"],
     transition: "Veamos cómo recorre esa distancia el procedimiento de cálculo habitual.",
     transitionCue: "condiciones",
     sectionLabel: "Contexto del problema"
@@ -1506,7 +1506,7 @@ export const slideLibrary: Slide[] = [
     ],
     speakerGoal: "Explicar la cadena estocástica antes de comparar arquitecturas.",
     visualGuide: ["Serie corta de partida","Población de escenarios","Mapa por escenario y curva final"],
-    speechCues: ["escenarios plausibles","respuestas hidráulicas","curva de frecuencia","probabilidad de superar un calado","incertidumbre","no añaden nuevas observaciones","serie observada","generador","modelos físicos","curva final"],
+    speechCues: ["escenarios plausibles","respuestas hidráulicas","curva de frecuencia","probabilidad de superar un calado","incertidumbre","no añaden nuevas observaciones","serie observada","generador","modelos físicos","curva final","mapa de calado","años sintéticos"],
     transition: "La cuestión es qué parte de esta cadena cubren conjuntamente los marcos disponibles.",
     transitionCue: "otros marcos",
     sectionLabel: "Modelación estocástica"
@@ -1841,7 +1841,8 @@ export const slideLibrary: Slide[] = [
     "correlación",
     "cópula gaussiana",
     "diagnóstico",
-    "modelos físicos"
+    "modelos físicos",
+    "FloodEventCopula"
   ],
   "offlineSpeechCues": [
     "primera captura",
