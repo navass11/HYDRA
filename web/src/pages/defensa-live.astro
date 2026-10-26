@@ -612,7 +612,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   /* ── PRESENTER WINDOW ONLY MODE OVERRIDES (opened via pop-up) ── */
   .presenter-window-layout {
     display: grid !important;
-    grid-template-columns: 1.1fr 0.9fr;
+    grid-template-columns: minmax(0, 1.75fr) minmax(360px, 1fr);
     height: 100vh;
     width: 100vw;
     background: #090d16;
@@ -635,9 +635,9 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   .presenter-preview-frame {
     flex: 1;
     position: relative;
-    border: 8px solid #1e293b;
-    border-radius: 12px;
-    margin: 16px;
+    border: 3px solid #1e293b;
+    border-radius: 8px;
+    margin: 8px 10px 12px;
     background: #000;
     box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
     overflow: hidden;
