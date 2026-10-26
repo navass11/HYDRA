@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" role="img" aria-labelledby="t" font-family="Avenir Next, Avenir, Segoe UI, Helvetica, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 20 800 450" role="img" aria-labelledby="t" font-family="Avenir Next, Avenir, Segoe UI, Helvetica, sans-serif">
   <title id="t">Un adaptador común conecta los escenarios con cada motor físico</title>
   <defs>
     <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#3F8E93"/></marker>
@@ -17,7 +17,13 @@
     <circle r="112" fill="#F8FBFA" stroke="#0E4A57" stroke-width="3"/>
     <text y="-6" font-size="19" font-weight="600" fill="#13323A" text-anchor="middle">Adaptador</text>
     <text y="18" font-size="19" font-weight="600" fill="#13323A" text-anchor="middle">común</text>
-    <g font-size="15" font-weight="600" fill="#fff" text-anchor="middle">
+    <g fill="#0E4A57">
+      <polygon points="-7,-6 7,0 -7,6" transform="translate(79.2 -79.2) rotate(45)"/>
+      <polygon points="-7,-6 7,0 -7,6" transform="translate(79.2 79.2) rotate(135)"/>
+      <polygon points="-7,-6 7,0 -7,6" transform="translate(-79.2 79.2) rotate(225)"/>
+      <polygon points="-7,-6 7,0 -7,6" transform="translate(-79.2 -79.2) rotate(315)"/>
+    </g>
+    <g font-size="16" font-weight="600" fill="#fff" text-anchor="middle">
       <rect x="-56" y="-142" width="112" height="34" fill="#8CC2BE"/><text y="-119" fill="#13323A">1 Preparar</text>
       <rect x="84" y="-17" width="112" height="34" fill="#3F8E93"/><text x="140" y="6">2 Ejecutar</text>
       <rect x="-78" y="108" width="156" height="34" fill="#23697A"/><text y="131">3 Homogeneizar</text>
@@ -27,10 +33,10 @@
 
   <!-- engines -->
   <g font-size="17" fill="#13323A">
-    <g transform="translate(560 40)"><rect width="230" height="72" fill="#F8FBFA" stroke="#C6D8D4"/><rect width="6" height="72" fill="#3F8E93"/><text x="20" y="32" font-weight="600">HEC-HMS</text><text x="20" y="56" font-size="14" fill="#4A6870">hidrología y calibración</text></g>
-    <g transform="translate(560 124)"><rect width="230" height="72" fill="#F8FBFA" stroke="#C6D8D4"/><rect width="6" height="72" fill="#3F8E93"/><text x="20" y="32" font-weight="600">SWAT+</text><text x="20" y="56" font-size="14" fill="#4A6870">simulación continua</text></g>
-    <g transform="translate(560 208)"><rect width="230" height="72" fill="#F8FBFA" stroke="#C6D8D4"/><rect width="6" height="72" fill="#0E4A57"/><text x="20" y="32" font-weight="600">SFINCS</text><text x="20" y="56" font-size="14" fill="#4A6870">hidráulica 2D rápida</text></g>
-    <g transform="translate(560 292)"><rect width="230" height="72" fill="#F8FBFA" stroke="#C6D8D4"/><rect width="6" height="72" fill="#0E4A57"/><text x="20" y="32" font-weight="600">HEC-RAS 1D/2D</text><text x="20" y="56" font-size="14" fill="#4A6870">hidráulica detallada</text></g>
+    <g transform="translate(560 40)"><rect width="230" height="72" fill="#F8FBFA" stroke="#C6D8D4"/><rect width="6" height="72" fill="#3F8E93"/><text x="20" y="32" font-weight="600">HEC-HMS</text><text x="20" y="56" font-size="15" fill="#4A6870">hidrología y calibración</text></g>
+    <g transform="translate(560 124)"><rect width="230" height="72" fill="#F8FBFA" stroke="#C6D8D4"/><rect width="6" height="72" fill="#3F8E93"/><text x="20" y="32" font-weight="600">SWAT+</text><text x="20" y="56" font-size="15" fill="#4A6870">simulación continua</text></g>
+    <g transform="translate(560 208)"><rect width="230" height="72" fill="#F8FBFA" stroke="#C6D8D4"/><rect width="6" height="72" fill="#0E4A57"/><text x="20" y="32" font-weight="600">SFINCS</text><text x="20" y="56" font-size="15" fill="#4A6870">hidráulica 2D rápida</text></g>
+    <g transform="translate(560 292)"><rect width="230" height="72" fill="#F8FBFA" stroke="#C6D8D4"/><rect width="6" height="72" fill="#0E4A57"/><text x="20" y="32" font-weight="600">HEC-RAS 1D/2D</text><text x="20" y="56" font-size="15" fill="#4A6870">hidráulica detallada</text></g>
   </g>
   <g fill="none" stroke="#3F8E93" stroke-width="2.5">
     <path d="M444 250 C500 250 500 76 556 76" marker-end="url(#a)"/>
@@ -39,10 +45,12 @@
     <path d="M444 290 C500 290 500 328 556 328" marker-end="url(#a)"/>
   </g>
 
+  <path d="M412 405 C480 405 500 423 556 423" fill="none" stroke="#3F8E93" stroke-width="2.5" marker-end="url(#a)"/>
+
   <!-- output -->
-  <g transform="translate(560 478)">
-    <rect width="230" height="66" fill="#0E4A57"/>
-    <text x="115" y="30" font-size="17" font-weight="600" fill="#fff" text-anchor="middle">Calados y caudales</text>
-    <text x="115" y="52" font-size="14" fill="#DCEBE8" text-anchor="middle">en estructuras comunes</text>
+  <g transform="translate(560 388)">
+    <rect width="230" height="70" fill="#0E4A57"/>
+    <text x="115" y="32" font-size="18" font-weight="600" fill="#fff" text-anchor="middle">Calados y caudales</text>
+    <text x="115" y="55" font-size="15" fill="#DCEBE8" text-anchor="middle">en estructuras comunes</text>
   </g>
 </svg>

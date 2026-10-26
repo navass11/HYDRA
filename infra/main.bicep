@@ -88,7 +88,15 @@ resource webApp 'Microsoft.App/containerApps@2024-03-01' = {
         image: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
         resources: { cpu: json('0.25'), memory: '0.5Gi' }
       }]
-      scale: { minReplicas: 1, maxReplicas: 1 }
+      scale: {
+        minReplicas: 0
+        maxReplicas: 1
+        rules: [
+          { name: 'http-scaler', http: { metadata: { concurrentRequests: '10' } } }
+          // Awake 07:00-22:00 Madrid time; scales to zero overnight to avoid cost.
+          { name: 'horario-cron', custom: { type: 'cron', metadata: { timezone: 'Europe/Madrid', start: '0 7 * * *', end: '0 22 * * *', desiredReplicas: '1' } } }
+        ]
+      }
     }
   }
 }
@@ -131,8 +139,15 @@ resource jupyterApp 'Microsoft.App/containerApps@2024-03-01' = {
           { name: 'JUPYTER_BASE_URL', value: '/' }
         ]
       }]
-      // Keep one replica warm so notebooks start instantly (defence day).
-      scale: { minReplicas: 1, maxReplicas: 1 }
+      scale: {
+        minReplicas: 0
+        maxReplicas: 1
+        rules: [
+          { name: 'notebook-http', http: { metadata: { concurrentRequests: '10' } } }
+          // Awake 07:00-22:00 Madrid time; scales to zero overnight to avoid cost.
+          { name: 'horario-cron', custom: { type: 'cron', metadata: { timezone: 'Europe/Madrid', start: '0 7 * * *', end: '0 22 * * *', desiredReplicas: '1' } } }
+        ]
+      }
     }
   }
 }
