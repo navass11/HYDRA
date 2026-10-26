@@ -20,7 +20,7 @@
     <g font-size="15" font-weight="600" fill="#fff" text-anchor="middle">
       <rect x="-56" y="-142" width="112" height="34" fill="#8CC2BE"/><text y="-119" fill="#13323A">1 Preparar</text>
       <rect x="84" y="-17" width="112" height="34" fill="#3F8E93"/><text x="140" y="6">2 Ejecutar</text>
-      <rect x="-56" y="108" width="112" height="34" fill="#23697A"/><text y="131">3 Leer</text>
+      <rect x="-78" y="108" width="156" height="34" fill="#23697A"/><text y="131">3 Homogeneizar</text>
       <rect x="-196" y="-17" width="112" height="34" fill="#0E4A57"/><text x="-140" y="6">4 Validar</text>
     </g>
   </g>
@@ -31,7 +31,6 @@
     <g transform="translate(560 124)"><rect width="230" height="72" fill="#F8FBFA" stroke="#C6D8D4"/><rect width="6" height="72" fill="#3F8E93"/><text x="20" y="32" font-weight="600">SWAT+</text><text x="20" y="56" font-size="14" fill="#4A6870">simulación continua</text></g>
     <g transform="translate(560 208)"><rect width="230" height="72" fill="#F8FBFA" stroke="#C6D8D4"/><rect width="6" height="72" fill="#0E4A57"/><text x="20" y="32" font-weight="600">SFINCS</text><text x="20" y="56" font-size="14" fill="#4A6870">hidráulica 2D rápida</text></g>
     <g transform="translate(560 292)"><rect width="230" height="72" fill="#F8FBFA" stroke="#C6D8D4"/><rect width="6" height="72" fill="#0E4A57"/><text x="20" y="32" font-weight="600">HEC-RAS 1D/2D</text><text x="20" y="56" font-size="14" fill="#4A6870">hidráulica detallada</text></g>
-    <g transform="translate(560 376)"><rect width="230" height="72" fill="none" stroke="#B5334B" stroke-width="2" stroke-dasharray="7 5"/><text x="20" y="32" font-weight="600" fill="#B5334B">Iber</text><text x="20" y="56" font-size="14" fill="#B5334B">sin ejecución por lotes: manual</text></g>
   </g>
   <g fill="none" stroke="#3F8E93" stroke-width="2.5">
     <path d="M444 250 C500 250 500 76 556 76" marker-end="url(#a)"/>
@@ -39,7 +38,6 @@
     <path d="M444 274 C500 274 500 244 556 244" marker-end="url(#a)"/>
     <path d="M444 290 C500 290 500 328 556 328" marker-end="url(#a)"/>
   </g>
-  <path d="M444 304 C500 304 500 412 556 412" fill="none" stroke="#B5334B" stroke-width="2" stroke-dasharray="6 5"/>
 
   <!-- output -->
   <g transform="translate(560 478)">

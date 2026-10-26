@@ -25,17 +25,17 @@ export const visualSlides: Record<number, { kind: string; metric?: string; figur
   17: { kind:'flow', figure:'esq_adaptadores.svg', metric:'Un contrato común conecta motores distintos sin rehacer el núcleo', items:[
     {label:'Preparar',detail:'adaptar entradas al formato del motor'},
     {label:'Ejecutar',detail:'registrar versión, proceso y resultado'},
-    {label:'Homogeneizar',detail:'leer salidas en estructuras comunes'},
+    {label:'Homogeneizar',detail:'normalizar unidades y estructuras de salida'},
     {label:'Validar',detail:'comprobar ejecución y plausibilidad física'} ] },
   18: { kind:'tools', figure:'esq_herramientas.svg', metric:'Las herramientas web llaman al mismo núcleo pyhydra que los notebooks', items:[
     {label:'Extremos',detail:'GEV/GPD bayesiana'}, {label:'Dependencia',detail:'cópulas multivariantes'},
     {label:'Espacio',detail:'kriging e interpolación'}, {label:'Diseño',detail:'curvas IDF'},
     {label:'Modelos',detail:'sensibilidad hidráulica'} ] },
-  19: { kind:'flow', figure:'shot_herramienta_gev.jpg', metric:'El método descrito se ejecuta desde la plataforma, con su incertidumbre', items:[
-    {label:'Datos',detail:'serie demo sintética o CSV identificado'},
-    {label:'Máximos anuales',detail:'la GEV se ajusta a máximos por año'},
-    {label:'Ajuste MAP',detail:'máximo de la posterior, sin MCMC'},
-    {label:'Resultado',detail:'cuantil y bandas aproximadas mediante Fisher'} ] },
+  19: { kind:'flow', figure:'offline_hydraulic_uniforme.jpg', metric:'Las entradas y el contorno determinan el perfil hidráulico', items:[
+    {label:'Entradas',detail:'caudal, geometría, pendiente y Manning'},
+    {label:'Flujo uniforme',detail:'referencias normal y crítica'},
+    {label:'Contorno aguas abajo',detail:'nivel impuesto y remanso'},
+    {label:'Lectura física',detail:'cota de la lámina y calado sobre el lecho'} ] },
   39.5: { kind:'layers', figure:'esq_casos_escala.svg', metric:'Diez estudios: cuatro con notebooks y seis documentados en publicaciones o proyectos', items:[
     {label:'Principio común',detail:'frecuencia estimada sobre el impacto'},
     {label:'Contextos distintos',detail:'escalas, climas y modelos diferentes'},

@@ -26,7 +26,7 @@ export function deliveryCue(slide: Slide, reserve = false): string {
     : '';
   const cues: string[] = [];
   if (slide.offlineFrames) cues.push('Demos preparadas: muestra las capturas locales en orden: ' + slide.offlineFrames.map(frame => frame.label).join(' → ') + '. Utiliza los botones de la diapositiva para cambiar de captura.');
-  if (slide.id === 19) cues.push('Respaldo: abrir /defensa-respaldo si la API no responde. La figura procede del notebook de Valencia; no presentarla como resultado de la serie demo sintética.');
+  if (slide.webMode === 'demo' && slide.offlineFrames) cues.push('Si la API no responde, utiliza las capturas preparadas de esta misma herramienta.');
   else if (slide.figure) cues.push('Pauta: señala la figura principal al explicar el resultado. Las figuras adicionales están en /defensa-anexos.');
   return cues.join('\n\n');
 }
