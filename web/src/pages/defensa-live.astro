@@ -1221,14 +1221,15 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     }
     let loadedTarget = '';
     try { loadedTarget = presPreviewIframe.contentWindow?.location.href ?? ''; } catch { /* Loading a same-origin view. */ }
-    if (presPreviewIframe.src !== target && loadedTarget !== target) {
+    if (loadedTarget !== target && presPreviewIframe.dataset.loadingUrl !== target) {
+      presPreviewIframe.dataset.loadingUrl = target;
       presenterDeckLoaded = false;
       setPreviewBusy(true);
       presPreviewIframe.src = target;
     }
     else if (!liveUrl) {
       presPreviewIframe.contentWindow?.postMessage({ type: 'defensa-preview-slide', index: current }, location.origin);
-    } else if (synced) {
+    } else if (synced && loadedTarget === new URL(synced.url, location.origin).href) {
       try { presPreviewIframe.contentWindow?.scrollTo(synced.x, synced.y); } catch { /* Wait for page load. */ }
     }
   }
@@ -1243,13 +1244,23 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   }
 
   presPreviewIframe.addEventListener('load', () => {
+    delete presPreviewIframe.dataset.loadingUrl;
     const slide = slides[current];
     if (!isPresenterWindow || !slide) return;
     if (buildUrl(slide)) {
       { presPreviewIframe.style.visibility = 'visible'; setPreviewBusy(false); }
-      const state = latestWebPreview;
-      if (state?.index === current) presPreviewIframe.contentWindow?.scrollTo(state.x, state.y);
-      else presPreviewIframe.contentWindow?.postMessage({ type: 'defensa-command', anchor: slide.anchor ?? null, anchorPosition: slide.anchorPosition ?? 'center', highlight: null }, location.origin);
+      // A link followed in the controlling preview owns its new page position.
+      // Applying the previous page's coordinates here puts tools halfway down.
+      if (!interaction.isControlling()) {
+        const state = latestWebPreview;
+        let loadedUrl = '';
+        try { loadedUrl = presPreviewIframe.contentWindow?.location.href ?? ''; } catch { /* Same-origin views only. */ }
+        if (state?.index === current && loadedUrl === state.url) {
+          presPreviewIframe.contentWindow?.scrollTo(state.x, state.y);
+        } else if (state?.index !== current && loadedUrl === new URL(buildUrl(slide)!, location.origin).href) {
+          presPreviewIframe.contentWindow?.postMessage({ type: 'defensa-command', anchor: slide.anchor ?? null, anchorPosition: slide.anchorPosition ?? 'center', highlight: null }, location.origin);
+        }
+      }
     } else {
       presenterDeckLoaded = true;
       // The load callback uses the current index, never an index from a previous navigation.
@@ -1258,6 +1269,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   });
 
   // ── Navigate Iframe ──
+  let pendingWebsiteEntry: number | null = null;
   let loadingSlowTimer: ReturnType<typeof setTimeout> | null = null;
   const loadingText = document.getElementById('iframe-loading-text');
 
@@ -1273,8 +1285,10 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
         if (loadingText) loadingText.textContent = 'Sigue cargando… la conexión va más lenta de lo normal';
       }, 4000);
       audienceWebLoading = true;
+      pendingWebsiteEntry = current;
       iframe.src = url;
     } else {
+      pendingWebsiteEntry = null;
       sendToIframe(slide);
     }
   }
@@ -1306,7 +1320,13 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       audienceWebLoading = false;
       if (loading) loading.classList.remove('visible');
       if (loadingSlowTimer) { clearTimeout(loadingSlowTimer); loadingSlowTimer = null; }
-      if (slides[current]?.webMode && isExpectedWebsite(slides[current])) sendToIframe(slides[current]);
+      // Only the explicit entry into a web slide applies its scripted anchor.
+      // A later return link must keep its own #herramientas/module destination.
+      const enteredStep = pendingWebsiteEntry;
+      pendingWebsiteEntry = null;
+      if (enteredStep === current && slides[current]?.webMode && isExpectedWebsite(slides[current])) {
+        sendToIframe(slides[current]);
+      }
       if (!isPresenterWindow) {
         publishWebPreview();
         try {
