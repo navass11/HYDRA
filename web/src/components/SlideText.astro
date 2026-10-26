@@ -1,0 +1,23 @@
+---
+import type { Slide } from '../data/slides';
+import { presenterKeywords, presenterTextParts } from '../lib/presenter-emphasis';
+interface Props { text: string; slide: Slide }
+const { text, slide } = Astro.props;
+const terms = [
+  ...presenterKeywords(slide, 'live').filter(term => term.length <= 48 && term.split(/\s+/).length <= 5),
+  'integración modular', 'flujo reproducible', 'automatización', 'reproducibilidad',
+  'incertidumbre', 'período de retorno', 'períodos de retorno', 'frecuencia del impacto',
+  'generación estocástica', 'cambio climático', 'corrección de sesgo', 'trazabilidad',
+  'calado', 'cópulas', 'MaxDiss', 'HEC-HMS', 'HEC-RAS', 'SFINCS', 'Iber',
+  'AdaBoost', 'bootstrap', 'notebooks', 'notebook', 'pyhydra',
+  'cadena estocástica', 'TFM', 'Besaya', 'T(forzamiento)', 'T(impacto)',
+  'conexiones manuales', 'base metodológica',
+];
+// Existing phrase matching respects word boundaries and keeps text escaped.
+// Keep emphasis selective so it remains useful at projection distance.
+let marked = 0;
+const parts = presenterTextParts(text, [...new Set(terms)]).map(part => ({
+  ...part, emphasized: part.emphasized && marked++ < 3,
+}));
+---
+{parts.map(part => part.emphasized ? <strong class="slide-keyword">{part.text}</strong> : part.text)}
