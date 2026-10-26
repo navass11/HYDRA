@@ -93,8 +93,8 @@ resource webApp 'Microsoft.App/containerApps@2024-03-01' = {
         maxReplicas: 1
         rules: [
           { name: 'http-scaler', http: { metadata: { concurrentRequests: '10' } } }
-          // Awake 07:00-22:00 Madrid time; scales to zero overnight to avoid cost.
-          { name: 'horario-cron', custom: { type: 'cron', metadata: { timezone: 'Europe/Madrid', start: '0 7 * * *', end: '0 22 * * *', desiredReplicas: '1' } } }
+          // Awake 08:00-22:00 Madrid time; scales to zero overnight to avoid cost.
+          { name: 'horario-cron', custom: { type: 'cron', metadata: { timezone: 'Europe/Madrid', start: '0 8 * * *', end: '0 22 * * *', desiredReplicas: '1' } } }
         ]
       }
     }
@@ -144,8 +144,8 @@ resource jupyterApp 'Microsoft.App/containerApps@2024-03-01' = {
         maxReplicas: 1
         rules: [
           { name: 'notebook-http', http: { metadata: { concurrentRequests: '10' } } }
-          // Awake 07:00-22:00 Madrid time; scales to zero overnight to avoid cost.
-          { name: 'horario-cron', custom: { type: 'cron', metadata: { timezone: 'Europe/Madrid', start: '0 7 * * *', end: '0 22 * * *', desiredReplicas: '1' } } }
+          // Awake 08:00-22:00 Madrid time; scales to zero overnight to avoid cost.
+          { name: 'horario-cron', custom: { type: 'cron', metadata: { timezone: 'Europe/Madrid', start: '0 8 * * *', end: '0 22 * * *', desiredReplicas: '1' } } }
         ]
       }
     }
