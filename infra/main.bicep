@@ -131,8 +131,8 @@ resource jupyterApp 'Microsoft.App/containerApps@2024-03-01' = {
           { name: 'JUPYTER_BASE_URL', value: '/' }
         ]
       }]
-      // Scale to zero when idle — saves cost on the heavy container.
-      scale: { minReplicas: 0, maxReplicas: 1 }
+      // Keep one replica warm so notebooks start instantly (defence day).
+      scale: { minReplicas: 1, maxReplicas: 1 }
     }
   }
 }

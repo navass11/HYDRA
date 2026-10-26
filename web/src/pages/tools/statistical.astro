@@ -3,7 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
 ---
 
-<Layout title="Eventos y GEV Bayesiana — HYDRA">
+<Layout title="Eventos extremos y GEV — HYDRA">
   <script src="https://cdn.plot.ly/plotly-2.32.0.min.js" is:inline></script>
 
   <section class="pt-24 pb-10 bg-gradient-to-br from-slate-950 via-indigo-950 to-hydra-800 text-white">
@@ -11,9 +11,9 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
       <a href="/#herramientas" data-hydra-tools-back class="inline-flex items-center gap-2 text-white/65 hover:text-white text-sm mb-6 transition-colors" data-i18n="back.tools">
         ← Volver a herramientas
       </a>
-      <h1 class="text-4xl font-extrabold mb-2">Selección de eventos y ajuste GEV bayesiano</h1>
+      <h1 class="text-4xl font-extrabold mb-2">Eventos extremos y niveles de retorno (GEV)</h1>
       <p class="text-white/76 text-lg max-w-3xl">
-        Extrae eventos extremos, calcula máximos anuales y ajusta una GEV con estimación MAP bayesiana y bandas de incertidumbre aproximadas.
+        Dos análisis independientes sobre la misma serie: (1) selección de eventos por encima de un umbral y (2) ajuste de una GEV a los máximos anuales para estimar niveles de retorno.
       </p>
     </div>
   </section>
@@ -29,7 +29,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
               <button id="btn-upload" class="src-btn py-2 px-3 rounded-lg text-sm font-medium border-2 border-gray-200 text-gray-600 hover:border-hydra-300 transition-colors">Subir CSV</button>
             </div>
             <input type="file" id="file-input" accept=".csv" class="hidden" />
-            <p id="file-name" class="text-xs text-gray-400 italic">Demo: precipitación diaria 1980-2024</p>
+            <p id="file-name" class="text-xs text-gray-400 italic">Demo: precipitación diaria sintética 1980-2024 (no son datos reales)</p>
             <div id="csv-hint" class="hidden mt-2 text-xs text-gray-500 bg-gray-50 rounded-lg p-3">
               CSV con dos columnas: <code class="text-hydra-700">fecha, valor</code>. La primera columna se interpreta como fecha.
             </div>
@@ -41,6 +41,11 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
               <option value="precipitation" selected>Precipitación</option>
               <option value="discharge">Caudal</option>
             </select>
+          </div>
+
+          <div class="border-t border-gray-100 pt-5">
+            <h3 class="font-semibold text-gray-800 text-sm uppercase tracking-wide">1 · Selección de eventos</h3>
+            <p class="text-xs text-gray-400 mt-1">Estos controles solo afectan a la tabla de eventos, no al ajuste GEV.</p>
           </div>
 
           <div>
@@ -57,14 +62,21 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
             <input type="number" id="threshold" placeholder="auto" step="0.1" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-hydra-400" />
           </div>
 
-          <div>
+          <div id="min-sep-box">
             <label class="block text-sm font-semibold text-gray-800 mb-2" for="min-sep">Separación entre eventos (días)</label>
             <input type="number" id="min-sep" value="5" min="1" max="60" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-hydra-400" />
+            <p class="text-xs text-gray-400 mt-1">Días secos mínimos para considerar dos picos como eventos distintos (solo precipitación).</p>
+          </div>
+
+          <div class="border-t border-gray-100 pt-5">
+            <h3 class="font-semibold text-gray-800 text-sm uppercase tracking-wide">2 · Ajuste GEV</h3>
+            <p class="text-xs text-gray-400 mt-1">Usa los máximos anuales de toda la serie, con independencia del umbral anterior.</p>
           </div>
 
           <div>
-            <label class="block text-sm font-semibold text-gray-800 mb-2" for="n-samples">Muestras de incertidumbre</label>
+            <label class="block text-sm font-semibold text-gray-800 mb-2" for="n-samples">Simulaciones para la banda de incertidumbre</label>
             <input type="number" id="n-samples" value="1500" min="200" max="10000" step="100" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-hydra-400" />
+            <p class="text-xs text-gray-400 mt-1">Más simulaciones dan una banda más estable; 1500 suele bastar.</p>
           </div>
 
           <button id="run-btn" class="w-full bg-hydra-600 hover:bg-hydra-700 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2">
@@ -83,7 +95,9 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
 
         <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-5 text-sm text-indigo-900 space-y-2">
           <p class="font-semibold">Método</p>
-          <p>Eventos POT con de-clustering, máximos anuales y GEV con MAP bayesiano. Las bandas se aproximan con matriz de Fisher para mantener la herramienta interactiva.</p>
+          <p><strong>Eventos:</strong> picos sobre umbral (POT) agrupados para evitar contar dos veces el mismo episodio.</p>
+          <p><strong>GEV:</strong> estimación MAP (máximo a posteriori, con prior débil) sobre los máximos anuales. La banda P5–P95 es una aproximación normal con la matriz de Fisher, no una posterior MCMC.</p>
+          <p><strong>¿Por qué Fisher y no MCMC?</strong> Fisher responde al instante, con la herramienta interactiva y sin dependencias pesadas (el MCMC completo con PyMC/NUTS tarda decenas de segundos en compilar). Limitación: la banda se centra en el MLE, no en el MAP, y con pocos máximos anuales y ξ &gt; 0 resulta demasiado ancha y asimétrica en la cola superior para periodos largos (T = 50–100 años); en la demo, un MCMC da una banda bastante más estrecha. Interprétala como orientativa; para resultados definitivos se usa el MCMC completo en el análisis offline.</p>
         </div>
       </aside>
 
@@ -103,13 +117,14 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
 
           <div class="grid lg:grid-cols-[1fr_360px] gap-8">
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-              <h3 class="font-semibold text-gray-800 mb-1">Niveles de retorno</h3>
-              <p class="text-sm text-gray-400 mb-4">Estimación puntual MAP y banda P5–P95 mediante Fisher alrededor del ajuste MLE. La banda no es una posterior MCMC.</p>
+              <h3 class="font-semibold text-gray-800 mb-1">Niveles de retorno (GEV)</h3>
+              <p class="text-sm text-gray-400 mb-4">Valor esperado de un máximo anual que se supera, de media, una vez cada T años. Línea: estimación MAP. Banda: P5–P95 aproximada (Fisher), no una posterior MCMC.</p>
+              <div id="band-warning" class="hidden mb-3 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg p-3">No se ha podido calcular la banda de incertidumbre; se muestra solo la estimación puntual.</div>
               <div id="chart-return-levels" class="h-80"></div>
             </div>
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
               <h3 class="font-semibold text-gray-800 mb-4">Parámetros GEV</h3>
-              <p class="text-sm text-gray-400 mb-4">Valor puntual MAP; percentiles de la aproximación de Fisher.</p>
+              <p class="text-sm text-gray-400 mb-4">Valor grande: estimación MAP. Debajo, percentiles de la aproximación de Fisher.</p>
               <div id="params-box" class="space-y-3"></div>
             </div>
           </div>
@@ -117,12 +132,12 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8000';
           <div class="grid lg:grid-cols-2 gap-8">
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
               <h3 class="font-semibold text-gray-800 mb-1">Máximos anuales</h3>
-              <p class="text-sm text-gray-400 mb-4">Serie usada para el ajuste GEV.</p>
+              <p class="text-sm text-gray-400 mb-4">Mayor valor de cada año: es la única serie que usa el ajuste GEV.</p>
               <div id="chart-maxima" class="h-72"></div>
             </div>
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-              <h3 class="font-semibold text-gray-800 mb-1">Eventos seleccionados</h3>
-              <p class="text-sm text-gray-400 mb-4">Eventos principales ordenados por pico.</p>
+              <h3 class="font-semibold text-gray-800 mb-1">Eventos seleccionados (umbral)</h3>
+              <p class="text-sm text-gray-400 mb-4">Los 20 mayores por pico. Pico en mm/día (precipitación) o unidad del caudal; Total/vol. en mm o volumen acumulado.</p>
               <div class="overflow-auto max-h-72">
                 <table class="w-full text-sm">
                   <thead class="text-left text-gray-500">
@@ -176,13 +191,19 @@ function setSource(demo: boolean) {
   btnDemo.className = `src-btn py-2 px-3 rounded-lg text-sm font-medium border-2 transition-colors ${demo ? 'border-hydra-500 bg-hydra-50 text-hydra-700' : 'border-gray-200 text-gray-600 hover:border-hydra-300'}`;
   btnUpload.className = `src-btn py-2 px-3 rounded-lg text-sm font-medium border-2 transition-colors ${!demo ? 'border-hydra-500 bg-hydra-50 text-hydra-700' : 'border-gray-200 text-gray-600 hover:border-hydra-300'}`;
   csvHintEl.classList.toggle('hidden', demo);
-  if (demo) fileNameEl.textContent = t('Demo: precipitación diaria 1980-2024', 'Demo: daily precipitation 1980-2024');
+  if (demo) fileNameEl.textContent = t('Demo: precipitación diaria sintética 1980-2024 (no son datos reales)', 'Demo: synthetic daily precipitation 1980-2024 (not real data)');
 }
+
+const variableSel = document.getElementById('variable') as HTMLSelectElement;
+const minSepBox = document.getElementById('min-sep-box')!;
+variableSel.addEventListener('change', () => {
+  minSepBox.classList.toggle('hidden', variableSel.value === 'discharge');
+});
 
 function setRunning(running: boolean) {
   isRunning = running;
   runBtn.disabled = running;
-  runLabel.textContent = running ? 'Ajustando...' : 'Ajustar modelo';
+  runLabel.textContent = running ? t('Ajustando...', 'Fitting...') : t('Ajustar modelo', 'Fit model');
   runArrow.classList.toggle('hidden', running);
   runSpinner.classList.toggle('hidden', !running);
 }
@@ -250,13 +271,20 @@ function statCard(label: string, value: string, unit = '') {
   </div>`;
 }
 
-function paramCard(label: string, value: number, posterior?: any) {
+function paramCard(label: string, hint: string, value: number, posterior?: any) {
   const band = posterior ? `<p class="text-xs text-gray-400 mt-1">P5 ${posterior.q05} · P50 ${posterior.q50} · P95 ${posterior.q95}</p>` : '';
   return `<div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
     <p class="text-xs text-gray-400 uppercase tracking-wide">${label}</p>
     <p class="text-2xl font-bold text-gray-900 mt-1">${value}</p>
     ${band}
+    <p class="text-xs text-gray-500 mt-2">${hint}</p>
   </div>`;
+}
+
+function shapeHint(xi: number) {
+  if (xi > 0.05) return 'Cola pesada (ξ > 0): los extremos crecen rápido con el periodo de retorno.';
+  if (xi < -0.05) return 'Cola acotada (ξ < 0): existe un máximo teórico.';
+  return 'Cercana a Gumbel (ξ ≈ 0): cola exponencial.';
 }
 
 function renderResults(data: any) {
@@ -265,26 +293,28 @@ function renderResults(data: any) {
 
   const s = data.summary;
   document.getElementById('stats-row')!.innerHTML =
-    statCard('Años', `${s.n_years}`, `${s.start} - ${s.end}`) +
-    statCard('Eventos', `${s.n_events}`, `umbral ${s.threshold}`) +
-    statCard('Máximos anuales', `${s.n_maxima}`, 'GEV block maxima') +
-    statCard('Separación', `${s.min_sep}`, 'días');
+    statCard('Años de serie', `${s.n_years}`, `${s.start} - ${s.end}`) +
+    statCard('Eventos sobre umbral', `${s.n_events}`, `umbral ${s.threshold}`) +
+    statCard('Máximos anuales', `${s.n_maxima}`, t('datos del ajuste GEV', 'GEV fit data')) +
+    statCard('Variable', s.variable === 'precipitation' ? 'Precip.' : 'Caudal', s.variable === 'precipitation' ? `separación ${s.min_sep} d` : t('sin separación mínima', 'no minimum separation'));
 
   const params = data.params_map;
   const post = data.posterior_summary ?? {};
   document.getElementById('params-box')!.innerHTML =
-    paramCard('mu', params.mu, post.mu) +
-    paramCard('sigma', params.sigma, post.sigma) +
-    paramCard('xi', params.xi, post.xi) +
+    paramCard('μ · localización', t('Valor típico del máximo anual.', 'Typical annual maximum.'), params.mu, post.mu) +
+    paramCard('σ · escala', t('Dispersión de los máximos anuales.', 'Spread of annual maxima.'), params.sigma, post.sigma) +
+    paramCard('ξ · forma', shapeHint(params.xi), params.xi, post.xi) +
     `<div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
-      <p class="text-xs text-gray-400 uppercase tracking-wide">log posterior MAP</p>
+      <p class="text-xs text-gray-400 uppercase tracking-wide">log posterior (MAP)</p>
       <p class="text-2xl font-bold text-hydra-700 mt-1">${params.map_logpost}</p>
+      <p class="text-xs text-gray-500 mt-2">${t('Solo sirve para comparar ajustes sobre los mismos datos.', 'Only useful to compare fits on the same data.')}</p>
     </div>`;
 
   const periods = Object.keys(data.return_levels).map(Number);
   const point = periods.map(t => data.return_levels[String(t)]);
-  const q05 = periods.map(t => data.return_level_bands[String(t)]?.q05);
-  const q95 = periods.map(t => data.return_level_bands[String(t)]?.q95);
+  const q05 = periods.map(t => data.return_level_bands[String(t)]?.q05 ?? null);
+  const q95 = periods.map(t => data.return_level_bands[String(t)]?.q95 ?? null);
+  document.getElementById('band-warning')!.classList.toggle('hidden', q05.every(v => v !== null) && q95.every(v => v !== null));
   const dark = document.documentElement.classList.contains('dark');
   const chartFont = { ...layoutBase.font, color: dark ? '#cbd5e1' : '#475569' };
   const chartGrid = dark ? '#334155' : '#e2e8f0';
