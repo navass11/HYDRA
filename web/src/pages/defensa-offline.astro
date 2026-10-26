@@ -1,6 +1,7 @@
 ---
 // Prepared demos; the build also packages a complete downloadable offline copy.
 import Layout from '../layouts/Layout.astro';
+import SlideText from '../components/SlideText.astro';
 import { quoteFigures, visualSlides } from '../data/defense-visuals';
 import { slides as mainSlides, backupSlides } from '../data/slides';
 import { dialogueFor, deliveryCue, narrationNotice, type NarrationMode } from '../lib/defense-narration';
@@ -1983,6 +1984,10 @@ const chapterIcons = [
   }
 </style>
 
+<style is:global>
+  @import "../styles/presentation-typography.css";
+</style>
+
 <div class="pres-shell" id="pres-shell" data-reserve={reserve ? 'true' : 'false'}>
   <button class="projection-return" id="btn-exit-projection" type="button" aria-label="Salir del modo proyección" aria-keyshortcuts="M">Salir de proyección (M)</button>
 
@@ -2060,11 +2065,11 @@ const chapterIcons = [
             {isTitle && (
               <>
                 <div class="slide-main-title">{slide.title}</div>
-                {slide.subtitle && <div class="slide-main-subtitle">{slide.subtitle}</div>}
+                {slide.subtitle && <div class="slide-main-subtitle"><SlideText text={slide.subtitle} slide={slide}/></div>}
                 
                 {slide.id !== 1 && slide.id !== 43 && slide.bullets?.length ? (
                   <ul class="slide-title-bullets">
-                    {slide.bullets.slice(0, 3).map(b => <li>{b}</li>)}
+                    {slide.bullets.slice(0, 3).map(b => <li><SlideText text={b} slide={slide}/></li>)}
                   </ul>
                 ) : null}
 
@@ -2107,7 +2112,7 @@ const chapterIcons = [
               <>
                 <div class="slide-heading-area">
                   <div class="slide-title">{slide.title}</div>
-                  {slide.subtitle && <div class="slide-subtitle">{slide.subtitle}</div>}
+                  {slide.subtitle && <div class="slide-subtitle"><SlideText text={slide.subtitle} slide={slide}/></div>}
                 </div>
                 <ol class="index-list">
                   {slide.bullets?.map((b, bi) => {
@@ -2129,7 +2134,7 @@ const chapterIcons = [
               <>
                 <div class="quote-heading">
                   <div class="slide-title">{slide.title}</div>
-                  <div class="quote-text">{slide.quote ?? slide.script}</div>
+                  <div class="quote-text"><SlideText text={slide.quote ?? slide.script} slide={slide}/></div>
                 </div>
                 {quoteFigures[slide.id] ? (
                   <figure class="quote-figure"><img src={asset(`/defensa/figures/${quoteFigures[slide.id]}`)} alt={slide.title} /></figure>
@@ -2154,7 +2159,7 @@ const chapterIcons = [
                 )}
                 {slide.bullets?.length ? (
                   <ul class="slide-bullets" style="max-width:650px; text-align:left">
-                    {slide.bullets.map(b => <li>{b}</li>)}
+                    {slide.bullets.map(b => <li><SlideText text={b} slide={slide}/></li>)}
                   </ul>
                 ) : null}
               </>
@@ -2165,7 +2170,7 @@ const chapterIcons = [
               <>
                 <div class="slide-heading-area">
                   <div class="slide-title">{slide.title}</div>
-                  {slide.subtitle && <div class="slide-subtitle">{slide.subtitle}</div>}
+                  {slide.subtitle && <div class="slide-subtitle"><SlideText text={slide.subtitle} slide={slide}/></div>}
                 </div>
                 <div class="case-thesis-bridge">Dos trabajos distintos en el Besaya. «Notebook» indica disponibilidad; la ejecución depende de datos, entorno y motores.</div>
                 <div class="pres-table-container">
@@ -2236,15 +2241,15 @@ const chapterIcons = [
               <>
                 <div class="slide-heading-area">
                   <div class="slide-title">{slide.title}</div>
-                  {slide.subtitle && <div class="slide-subtitle">{slide.subtitle}</div>}
+                  {slide.subtitle && <div class="slide-subtitle"><SlideText text={slide.subtitle} slide={slide}/></div>}
                 </div>
                 {slide.results?.length ? (
                   <div class="case-results" style={`--result-color:${slide.blockColor}`}>
-                    {slide.results.map(result => <div class="case-result"><span class="case-result-value">{result.value}</span><span class="case-result-label">{result.label}</span>{result.implication && <span class="case-result-implication">{result.implication}</span>}</div>)}
+                    {slide.results.map(result => <div class="case-result"><span class="case-result-value">{result.value}</span><span class="case-result-label"><SlideText text={result.label} slide={slide}/></span>{result.implication && <span class="case-result-implication"><SlideText text={result.implication} slide={slide}/></span>}</div>)}
                   </div>
                 ) : null}
                 {slide.pyhydraRole && (
-                  <div class="pyhydra-role"><div class="pyhydra-role-title">Papel de pyhydra en este caso</div><div class="pyhydra-role-text">{slide.pyhydraRole}</div><div class="pyhydra-modules">{slide.pyhydraModules?.map(module => <span class="pyhydra-module">{module}</span>)}</div></div>
+                  <div class="pyhydra-role"><div class="pyhydra-role-title">Papel de pyhydra en este caso</div><div class="pyhydra-role-text"><SlideText text={slide.pyhydraRole} slide={slide}/></div><div class="pyhydra-modules">{slide.pyhydraModules?.map(module => <span class="pyhydra-module">{module}</span>)}</div></div>
                 )}
                 {visual ? (
                   <div class={`visual-normal-body ${visual.figure || visual.figures ? 'has-figure' : ''}`}>
@@ -2253,7 +2258,7 @@ const chapterIcons = [
                         {visual.items.map((item, itemIndex) => (
                           <div class="semantic-card">
                             <span class="semantic-label"><span class="semantic-index">{itemIndex + 1}</span>{item.label}</span>
-                            <span class="semantic-detail">{item.detail}</span>
+                            <span class="semantic-detail"><SlideText text={item.detail} slide={slide}/></span>
                           </div>
                         ))}
                       </div>
@@ -2272,7 +2277,7 @@ const chapterIcons = [
                   <>
                     <div class="slide-script" style={`border-color:${slide.blockColor}66`}>{slide.script}</div>
                     {slide.mathBlock && <div style="margin-bottom:16px;" set:html={slide.mathBlock} />}
-                    {slide.bullets?.length ? <ul class="slide-bullets">{slide.bullets.map(b => <li>{b}</li>)}</ul> : null}
+                    {slide.bullets?.length ? <ul class="slide-bullets">{slide.bullets.map(b => <li><SlideText text={b} slide={slide}/></li>)}</ul> : null}
                   </>
                 )}
               </>
@@ -2280,13 +2285,13 @@ const chapterIcons = [
 
             {hasOfflineFrames && (
               <>
-                <div class="slide-heading-area"><div class="slide-title">{slide.title}</div>{slide.subtitle && <div class="slide-subtitle">{slide.subtitle}</div>}</div>
+                <div class="slide-heading-area"><div class="slide-title">{slide.title}</div>{slide.subtitle && <div class="slide-subtitle"><SlideText text={slide.subtitle} slide={slide}/></div>}</div>
                 <div class="offline-capture-controls" aria-label="Pasos de la demostración sin conexión">
                   {slide.offlineFrames!.map((frame, step) => <button class={`offline-step ${step === 0 ? 'selected' : ''}`} data-capture-step={step} aria-pressed={step === 0}>{step + 1}. {frame.label}</button>)}
                   <span>Capturas locales · sin conexión</span>
                 </div>
                 <div class="offline-captures">
-                  {slide.offlineFrames!.map((frame, step) => <figure class="offline-capture" hidden={step !== 0}><img src={asset(`/defensa/figures/${frame.src}`)} alt={frame.caption} /><figcaption>{frame.caption}</figcaption></figure>)}
+                  {slide.offlineFrames!.map((frame, step) => <figure class="offline-capture" hidden={step !== 0}><img src={asset(`/defensa/figures/${frame.src}`)} alt={frame.caption} /><figcaption><SlideText text={frame.caption} slide={slide}/></figcaption></figure>)}
                 </div>
               </>
             )}
@@ -2296,7 +2301,7 @@ const chapterIcons = [
               <>
                 <div class="slide-heading-area">
                   <div class="slide-title">{slide.title}</div>
-                  {slide.subtitle && <div class="slide-subtitle">{slide.subtitle}</div>}
+                  {slide.subtitle && <div class="slide-subtitle"><SlideText text={slide.subtitle} slide={slide}/></div>}
                 </div>
                 <div class="slide-split-body">
                   <div class="slide-split-left">
@@ -2307,25 +2312,25 @@ const chapterIcons = [
 
                     {slide.results?.length ? (
                       <div class="case-results" style={`--result-color:${slide.blockColor}`}>
-                        {slide.results.map(result => <div class="case-result"><span class="case-result-value">{result.value}</span><span class="case-result-label">{result.label}</span>{result.implication && <span class="case-result-implication">{result.implication}</span>}</div>)}
+                        {slide.results.map(result => <div class="case-result"><span class="case-result-value">{result.value}</span><span class="case-result-label"><SlideText text={result.label} slide={slide}/></span>{result.implication && <span class="case-result-implication"><SlideText text={result.implication} slide={slide}/></span>}</div>)}
                       </div>
                     ) : slide.bullets?.length ? (
                       <ul class="slide-bullets">
-                        {slide.bullets.map(b => <li>{b}</li>)}
+                        {slide.bullets.map(b => <li><SlideText text={b} slide={slide}/></li>)}
                       </ul>
                     ) : null}
                     {slide.pyhydraRole && (
-                      <div class="pyhydra-role"><div class="pyhydra-role-title">Papel de pyhydra</div><div class="pyhydra-role-text">{slide.pyhydraRole}</div><div class="pyhydra-modules">{slide.pyhydraModules?.map(module => <span class="pyhydra-module">{module}</span>)}</div></div>
+                      <div class="pyhydra-role"><div class="pyhydra-role-title">Papel de pyhydra</div><div class="pyhydra-role-text"><SlideText text={slide.pyhydraRole} slide={slide}/></div><div class="pyhydra-modules">{slide.pyhydraModules?.map(module => <span class="pyhydra-module">{module}</span>)}</div></div>
                     )}
                   </div>
                   <div class="slide-split-right">
                     {figSrc && (
                       <>
                         <div class={secondaryFigSrc ? 'slide-evidence-pair' : ''}>
-                          <figure><img class="slide-figure" src={figSrc} alt={slide.figureCaption ?? ''} loading="lazy" />{slide.figureCaption && <figcaption class="slide-figure-caption">{slide.figureCaption}</figcaption>}</figure>
+                          <figure><img class="slide-figure" src={figSrc} alt={slide.figureCaption ?? ''} loading="lazy" />{slide.figureCaption && <figcaption class="slide-figure-caption"><SlideText text={slide.figureCaption} slide={slide}/></figcaption>}</figure>
                           {secondaryFigSrc && <figure><img class="slide-figure" src={secondaryFigSrc} alt={slide.secondaryFigureCaption ?? ''} loading="lazy" />{slide.secondaryFigureCaption && <figcaption class="slide-figure-caption">{slide.secondaryFigureCaption}</figcaption>}</figure>}
                         </div>
-                        {slide.caseReference && <div class="case-reference">{slide.caseReference}</div>}
+                        {slide.caseReference && <div class="case-reference"><SlideText text={slide.caseReference} slide={slide}/></div>}
 
                       </>
                     )}
@@ -2339,14 +2344,14 @@ const chapterIcons = [
               <>
                 <div class="slide-heading-area">
                   <div class="slide-title">{slide.title}</div>
-                  {slide.subtitle && <div class="slide-subtitle">{slide.subtitle}</div>}
+                  {slide.subtitle && <div class="slide-subtitle"><SlideText text={slide.subtitle} slide={slide}/></div>}
                 </div>
                 <div class="slide-figure-full">
                   {figSrc && (
                     <>
                       <img src={figSrc} alt={slide.figureCaption ?? ''} loading="lazy" />
-                      {slide.figureCaption && <div class="slide-figure-caption">{slide.figureCaption}</div>}
-                      {slide.caseReference && <div class="case-reference">{slide.caseReference}</div>}
+                      {slide.figureCaption && <div class="slide-figure-caption"><SlideText text={slide.figureCaption} slide={slide}/></div>}
+                      {slide.caseReference && <div class="case-reference"><SlideText text={slide.caseReference} slide={slide}/></div>}
                     </>
                   )}
                 </div>
@@ -2366,7 +2371,7 @@ const chapterIcons = [
                     return (
                       <li class="timeline-item">
                         <div class="timeline-dot">{year.trim()}</div>
-                        <div class="timeline-text"><strong>{rest.join(' — ')}</strong></div>
+                        <div class="timeline-text"><SlideText text={rest.join(' — ')} slide={slide}/></div>
                       </li>
                     );
                   })}
@@ -2480,7 +2485,8 @@ const chapterIcons = [
     try { savedTiming = JSON.parse(sessionStorage.getItem(`${storageKey}-timing`) || '{}') ?? {}; } catch { /* Optional persistence. */ }
     if (Number.isFinite(savedTiming.startedAt) && savedTiming.startedAt! > 0) timerStartedAt = savedTiming.startedAt!;
   }
-  if (!isPreview) {
+  {
+    // Use the same virtual slide in audience, offline and presenter previews.
     const stage = document.querySelector<HTMLElement>('.pres-main')!;
     const canvas = document.getElementById('slide-viewport')!;
     const notes = document.getElementById('notes-panel')!;

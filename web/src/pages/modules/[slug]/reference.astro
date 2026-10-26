@@ -22,7 +22,7 @@ const functions = items.filter((i) => i.kind === 'function');
   <!-- Header -->
   <section class={`pt-24 pb-14 bg-gradient-to-br ${module.color} text-white`}>
     <div class="max-w-7xl mx-auto px-6">
-      <a href={`/modules/${module.slug}`} class="inline-flex items-center gap-2 text-white/65 hover:text-white text-sm mb-6 transition-colors" data-i18n="back.module">
+      <a href={`/modules/${module.slug}`} class="inline-flex items-center gap-2 text-white/65 hover:text-white text-sm mb-6 transition-colors" data-hydra-back data-i18n="back.module">
         ← Volver al módulo
       </a>
       <span class="inline-flex rounded-full bg-white/12 border border-white/20 px-3 py-1 text-sm text-white/78 mb-5">{module.tag}</span>

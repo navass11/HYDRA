@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { modules } from '../../data/modules';
+import { moduleTools } from '../../data/module-tools';
 
 export function getStaticPaths() {
   return modules.map((module) => ({
@@ -13,22 +14,14 @@ const { module } = Astro.props;
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
 
-const relatedTools: Record<string, Array<{label: string; href: string}>> = {
-  clima:      [{ label: 'Generación estocástica', href: `${BASE}/tools/stochastic` },
-               { label: 'Eventos + GEV',          href: `${BASE}/tools/statistical` },
-               { label: 'Cópulas',                href: `${BASE}/tools/copulas` }],
-  analisis:   [{ label: 'Eventos compuestos',     href: `${BASE}/tools/compound` },
-               { label: 'Interpolación espacial', href: `${BASE}/tools/interpolation` }],
-  modelizacion:[{ label: 'Sensibilidad Manning',  href: `${BASE}/tools/sensitivity` }],
-  datos:      [{ label: 'Meteostat',              href: `${BASE}/tools/meteostat` }],
-};
+
 ---
 
 <Layout title={`${module.title} — HYDRA`}>
   <!-- Header -->
   <section class={`pt-24 pb-14 bg-gradient-to-br ${module.color} text-white`}>
     <div class="max-w-7xl mx-auto px-6">
-      <a href={`${import.meta.env.BASE_URL}#modulos`} class="inline-flex items-center gap-2 text-white/65 hover:text-white text-sm mb-6 transition-colors" data-i18n="back.modules">
+      <a href={`${import.meta.env.BASE_URL}#modulos`} class="inline-flex items-center gap-2 text-white/65 hover:text-white text-sm mb-6 transition-colors" data-hydra-back data-i18n="back.modules">
         ← Volver a módulos
       </a>
       <span class="inline-flex rounded-full bg-white/12 border border-white/20 px-3 py-1 text-sm text-white/78 mb-5">{module.tag}</span>
@@ -40,11 +33,11 @@ const relatedTools: Record<string, Array<{label: string; href: string}>> = {
   <!-- Navigation tabs -->
   <div class="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 sticky top-0 z-10">
     <div class="max-w-7xl mx-auto px-6 flex gap-1">
-      <a href={`/modules/${module.slug}`}
+      <a href={`${BASE}/modules/${module.slug}`}
          class="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white border-b-2 border-hydra-600 transition-colors" data-i18n="module.tab.overview">
         Descripción general
       </a>
-      <a href={`/modules/${module.slug}/reference`}
+      <a href={`${BASE}/modules/${module.slug}/reference`}
          class="px-4 py-3 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white border-b-2 border-transparent hover:border-gray-300 dark:hover:border-gray-600 transition-colors" data-i18n="module.tab.api">
         API Reference
       </a>
@@ -58,11 +51,11 @@ const relatedTools: Record<string, Array<{label: string; href: string}>> = {
         <p class="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-6" data-t-es={module.summary.es} data-t-en={module.summary.en}>{module.summary.es}</p>
         <p class="text-gray-600 dark:text-gray-400 leading-relaxed" data-t-es={module.purpose.es} data-t-en={module.purpose.en}>{module.purpose.es}</p>
       </div>
-      <div class="rounded-2xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-6">
+      <div id="herramientas-relacionadas" class="scroll-mt-24 rounded-2xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-6">
         <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Herramientas relacionadas</h3>
         <div class="flex flex-wrap gap-3">
-          {(relatedTools[module.slug] ?? []).map((tool) => (
-            <a href={tool.href} class="rounded-xl bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 px-4 py-2 text-sm font-semibold text-hydra-700 dark:text-hydra-400 hover:border-hydra-300 dark:hover:border-hydra-500 hover:bg-hydra-50 dark:hover:bg-hydra-900/20 transition-colors">
+          {(moduleTools[module.slug] ?? []).map((tool) => (
+            <a href={`${BASE}/tools/${tool.slug}?fromModule=${module.slug}`} class="rounded-xl bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 px-4 py-2 text-sm font-semibold text-hydra-700 dark:text-hydra-400 hover:border-hydra-300 dark:hover:border-hydra-500 hover:bg-hydra-50 dark:hover:bg-hydra-900/20 transition-colors">
               {tool.label} →
             </a>
           ))}

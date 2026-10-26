@@ -612,7 +612,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   /* ── PRESENTER WINDOW ONLY MODE OVERRIDES (opened via pop-up) ── */
   .presenter-window-layout {
     display: grid !important;
-    grid-template-columns: 1.1fr 0.9fr;
+    grid-template-columns: minmax(0, 1.75fr) minmax(360px, 1fr);
     height: 100vh;
     width: 100vw;
     background: #090d16;
@@ -629,15 +629,15 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    padding: 24px;
-    gap: 20px;
+    padding: 18px 20px;
+    gap: 16px;
   }
   .presenter-preview-frame {
     flex: 1;
     position: relative;
-    border: 8px solid #1e293b;
-    border-radius: 12px;
-    margin: 16px;
+    border: 3px solid #1e293b;
+    border-radius: 8px;
+    margin: 8px 10px 12px;
     background: #000;
     box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
     overflow: hidden;
@@ -1006,18 +1006,33 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   let previewPendingSince = 0, previewRepairCount = 0, previewRepairIndex = -1;
   function setPreviewBusy(busy: boolean) {
     previewStatus.hidden = !busy;
-    if (busy && !previewPendingSince) previewPendingSince = Date.now();
-    if (!busy) previewPendingSince = 0;
+    if (busy && !previewPendingSince) {
+      previewPendingSince = Date.now();
+      previewStatus.textContent = 'Cargando vista previa…';
+    }
+    if (!busy) {
+      previewPendingSince = 0;
+      previewRepairCount = 0;
+    }
+  }
+  function samePreviewUrl(left: string, right: string, includeHash = false) {
+    if (!left || !right) return false;
+    try {
+      const a = new URL(left, location.origin), b = new URL(right, location.origin);
+      return a.origin === b.origin && a.pathname.replace(/\/+$/, '') === b.pathname.replace(/\/+$/, '') && a.search === b.search && (!includeHash || a.hash === b.hash);
+    } catch { return false; }
   }
   function repairPresenterPreview() {
     if (!isPresenterWindow || !slides[current]) return;
     presenterDeckLoaded = false;
     setPreviewBusy(true);
     const target = buildUrl(slides[current]) ? latestWebPreview?.index === current ? latestWebPreview.url : buildUrl(slides[current])! : `${base.replace(/\/$/, '')}/defensa-offline/?slide=${current}&preview=1`;
-    presPreviewIframe.src = new URL(target, location.origin).href;
+    const repairUrl = new URL(target, location.origin).href;
+    presPreviewIframe.dataset.loadingUrl = repairUrl;
+    presPreviewIframe.src = repairUrl;
     previewPendingSince = Date.now();
   }
-  document.getElementById('pres-recover-preview')!.addEventListener('click', () => { previewRepairCount = 0; repairPresenterPreview(); });
+  document.getElementById('pres-recover-preview')!.addEventListener('click', () => { previewRepairCount = 0; previewPendingSince = 0; repairPresenterPreview(); });
 
   // Render the same 1920 × 1080 canvas on both screens, scaling the whole
   // iframe rather than reflowing projection typography into a small preview.
@@ -1221,14 +1236,15 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     }
     let loadedTarget = '';
     try { loadedTarget = presPreviewIframe.contentWindow?.location.href ?? ''; } catch { /* Loading a same-origin view. */ }
-    if (presPreviewIframe.src !== target && loadedTarget !== target) {
+    if (!samePreviewUrl(loadedTarget, target, true) && !samePreviewUrl(presPreviewIframe.dataset.loadingUrl ?? '', target, true)) {
+      presPreviewIframe.dataset.loadingUrl = target;
       presenterDeckLoaded = false;
       setPreviewBusy(true);
       presPreviewIframe.src = target;
     }
     else if (!liveUrl) {
       presPreviewIframe.contentWindow?.postMessage({ type: 'defensa-preview-slide', index: current }, location.origin);
-    } else if (synced) {
+    } else if (synced && samePreviewUrl(loadedTarget, synced.url, true)) {
       try { presPreviewIframe.contentWindow?.scrollTo(synced.x, synced.y); } catch { /* Wait for page load. */ }
     }
   }
@@ -1243,13 +1259,23 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   }
 
   presPreviewIframe.addEventListener('load', () => {
+    delete presPreviewIframe.dataset.loadingUrl;
     const slide = slides[current];
     if (!isPresenterWindow || !slide) return;
     if (buildUrl(slide)) {
-      { presPreviewIframe.style.visibility = 'visible'; setPreviewBusy(false); }
-      const state = latestWebPreview;
-      if (state?.index === current) presPreviewIframe.contentWindow?.scrollTo(state.x, state.y);
-      else presPreviewIframe.contentWindow?.postMessage({ type: 'defensa-command', anchor: slide.anchor ?? null, anchorPosition: slide.anchorPosition ?? 'center', highlight: null }, location.origin);
+      checkPresenterPreview();
+      // A link followed in the controlling preview owns its new page position.
+      // Applying the previous page's coordinates here puts tools halfway down.
+      if (!interaction.isControlling()) {
+        const state = latestWebPreview;
+        let loadedUrl = '';
+        try { loadedUrl = presPreviewIframe.contentWindow?.location.href ?? ''; } catch { /* Same-origin views only. */ }
+        if (state?.index === current && samePreviewUrl(loadedUrl, state.url, true)) {
+          presPreviewIframe.contentWindow?.scrollTo(state.x, state.y);
+        } else if (state?.index !== current && samePreviewUrl(loadedUrl, buildUrl(slide)!, true)) {
+          presPreviewIframe.contentWindow?.postMessage({ type: 'defensa-command', anchor: slide.anchor ?? null, anchorPosition: slide.anchorPosition ?? 'center', highlight: null }, location.origin);
+        }
+      }
     } else {
       presenterDeckLoaded = true;
       // The load callback uses the current index, never an index from a previous navigation.
@@ -1258,6 +1284,7 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   });
 
   // ── Navigate Iframe ──
+  let pendingWebsiteEntry: number | null = null;
   let loadingSlowTimer: ReturnType<typeof setTimeout> | null = null;
   const loadingText = document.getElementById('iframe-loading-text');
 
@@ -1273,8 +1300,10 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
         if (loadingText) loadingText.textContent = 'Sigue cargando… la conexión va más lenta de lo normal';
       }, 4000);
       audienceWebLoading = true;
+      pendingWebsiteEntry = current;
       iframe.src = url;
     } else {
+      pendingWebsiteEntry = null;
       sendToIframe(slide);
     }
   }
@@ -1306,7 +1335,13 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
       audienceWebLoading = false;
       if (loading) loading.classList.remove('visible');
       if (loadingSlowTimer) { clearTimeout(loadingSlowTimer); loadingSlowTimer = null; }
-      if (slides[current]?.webMode && isExpectedWebsite(slides[current])) sendToIframe(slides[current]);
+      // Only the explicit entry into a web slide applies its scripted anchor.
+      // A later return link must keep its own #herramientas/module destination.
+      const enteredStep = pendingWebsiteEntry;
+      pendingWebsiteEntry = null;
+      if (enteredStep === current && slides[current]?.webMode && isExpectedWebsite(slides[current])) {
+        sendToIframe(slides[current]);
+      }
       if (!isPresenterWindow) {
         publishWebPreview();
         try {
@@ -2051,24 +2086,48 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     current: () => ({ index: current, id: slides[current]?.id, web: Boolean(slides[current] && buildUrl(slides[current])) }),
     send: sendSync,
   });
-  setInterval(() => {
+  function checkPresenterPreview() {
     if (!isPresenterWindow || document.visibilityState !== 'visible' || !slides[current]) return;
+    let ready = false;
     try {
       const doc = presPreviewIframe.contentDocument;
-      const active = doc?.querySelector<HTMLElement>('.slide.active');
-      const ready = buildUrl(slides[current])
-        ? doc?.readyState === 'complete' && Boolean(doc.body?.children.length) && !doc.querySelector('#pres-shell')
-        : Number(active?.dataset.idx) === current && Boolean(active);
-      if (ready) {
-        presPreviewIframe.style.visibility = 'visible'; setPreviewBusy(false); interaction.refresh(); return;
+      const loadedUrl = presPreviewIframe.contentWindow?.location.href ?? '';
+      const pendingUrl = presPreviewIframe.dataset.loadingUrl;
+      const loadingAnotherPage = Boolean(pendingUrl && !samePreviewUrl(loadedUrl, pendingUrl));
+      if (buildUrl(slides[current])) {
+        // Images, maps and other remote resources can delay window.load even
+        // after the HYDRA page is usable. Inspect the actual document instead.
+        ready = !loadingAnotherPage && Boolean(doc && doc.readyState !== 'loading' &&
+          doc.querySelector('main h1, main h2') && !doc.querySelector('#pres-shell, #live-shell'));
+      } else {
+        const active = doc?.querySelector<HTMLElement>('#pres-shell .slide.active');
+        ready = !loadingAnotherPage && Number(active?.dataset.idx) === current && Boolean(active);
+        if (ready) presenterDeckLoaded = true;
       }
-      setPreviewBusy(true);
-      if (!buildUrl(slides[current])) presPreviewIframe.contentWindow?.postMessage({ type:'defensa-preview-slide', index:current }, location.origin);
-      if (previewRepairIndex !== current) { previewRepairIndex = current; previewRepairCount = 0; }
-      if (Date.now() - previewPendingSince > 8000 && previewRepairCount < 2) { previewRepairCount++; repairPresenterPreview(); }
-      previewStatus.textContent = previewRepairCount >= 2 ? 'No se ha podido mostrar la vista previa. Pulsa «Recuperar vista» para volver a cargarla.' : 'Recuperando vista previa…';
-    } catch { setPreviewBusy(true); }
-  }, 750);
+    } catch { /* Inaccessible/failed frames use the same bounded recovery path. */ }
+    if (ready) {
+      delete presPreviewIframe.dataset.loadingUrl;
+      presPreviewIframe.style.visibility = 'visible';
+      setPreviewBusy(false);
+      interaction.refresh();
+      return;
+    }
+    setPreviewBusy(true);
+    if (!buildUrl(slides[current])) {
+      try { presPreviewIframe.contentWindow?.postMessage({ type:'defensa-preview-slide', index:current }, location.origin); } catch { /* Retry the frame below. */ }
+    }
+    if (previewRepairIndex !== current) { previewRepairIndex = current; previewRepairCount = 0; }
+    if (Date.now() - previewPendingSince <= 8000) return;
+    if (previewRepairCount < 2) {
+      previewRepairCount++;
+      previewStatus.textContent = `Recuperando vista previa… (${previewRepairCount}/2)`;
+      repairPresenterPreview();
+    } else {
+      // No second watchdog may restart this budget or leave a permanent spinner.
+      previewStatus.textContent = 'No se ha podido cargar la vista previa. Pulsa «Recuperar vista» para reintentarlo; el guion y el cronómetro siguen disponibles.';
+    }
+  }
+  setInterval(checkPresenterPreview, 750);
 
   // Keep a per-window reading position; only explicit restart clears the timer.
   function saveWindowSession() {
@@ -2091,7 +2150,11 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
     if ((mode === 'live' || mode === 'prepared') && mode !== narrationMode) setNarrationMode(mode, false);
     reconnectSync();
     sendSync({ type: 'session-request' });
-    if (isPresenterWindow) { updatePresenterPreview(); sendSync({ type: 'web-preview-request' }); }
+    if (isPresenterWindow) {
+      if (!interaction.isControlling()) updatePresenterPreview();
+      checkPresenterPreview();
+      sendSync({ type: 'web-preview-request' });
+    }
     else {
       if (!buildUrl(slides[current])) audienceSlideFrame.contentWindow?.postMessage({ type: 'defensa-preview-slide', index: current }, location.origin);
       publishWebPreview();
@@ -2113,8 +2176,9 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}${path}`;
   }, 5000);
 
   setInterval(() => {
-    if (document.visibilityState !== 'visible' || buildUrl(slides[current])) return;
-    const frame = isPresenterWindow ? presPreviewIframe : audienceSlideFrame;
+    // Presenter recovery is owned exclusively by checkPresenterPreview.
+    if (isPresenterWindow || document.visibilityState !== 'visible' || buildUrl(slides[current])) return;
+    const frame = audienceSlideFrame;
     if (frame.style.visibility !== 'hidden') { delete frame.dataset.recoveryAttempt; return; }
     if (!frame.dataset.recoveryAttempt) { frame.dataset.recoveryAttempt = String(Date.now()); return; }
     const lastAttempt = Number(frame.dataset.recoveryAttempt);

@@ -20,7 +20,7 @@
     </g>
   </g>
 
-  <text x="10" y="196" font-size="19" font-weight="600" fill="#13323A">H2 Modularidad: componentes comunes en diez estudios</text>
+  <text x="10" y="196" font-size="19" font-weight="600" fill="#13323A">H2 Integración modular: componentes comunes en diez estudios</text>
   <g font-size="13.5" fill="#13323A">
 <text x="440" y="222" text-anchor="middle">Datos</text>
 <text x="530" y="222" text-anchor="middle">Clima / extremos</text>
@@ -39,7 +39,7 @@
 </g>
 
   <!-- H3 -->
-  <text x="10" y="418" font-size="19" font-weight="600" fill="#13323A">H3 Incertidumbre: el método cambia el diseño</text>
+  <text x="10" y="418" font-size="19" font-weight="600" fill="#13323A">H3 Flujo reproducible: representación de la incertidumbre</text>
   <g transform="translate(10 434)" fill="#13323A">
     <text y="16" font-size="14" fill="#4A6870">Caudal de diseño T100, RCP4.5, 2011–2040 (m³/s)</text>
     <rect x="0" y="30" width="232" height="34" fill="#A9D2CC"/><text x="242" y="54" font-size="16">208,8 método IDF</text>

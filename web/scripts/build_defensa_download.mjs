@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { readFile, writeFile, mkdir, cp, mkdtemp, rm, stat } from 'node:fs/promises';
 import { join, dirname, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -6,7 +7,7 @@ import { build } from 'esbuild';
 const root=resolve(import.meta.dirname,'..'), dist=join(root,'dist');
 const temporary=await mkdtemp(join(tmpdir(),'hydra-defensa-')), bundle=join(temporary,'HYDRA-defensa');
 const routes=new Map([['defensa-offline','presentacion.html'],['defensa-anexos','anexos.html'],['defensa-estudio','estudio.html'],['defensa-respaldo','respaldo.html'],['defensa','INICIO.html']]);
-const assets=new Set();
+const assets=new Set(['/defensa/fonts/SourceSans3-LICENSE.md']);
 const normalize=url=>url.replace(/^\/HYDRA\//,'/');
 const local=url=>join(dist,normalize(url).replace(/^\//,''));
 function rewrite(url){
@@ -19,7 +20,7 @@ function rewrite(url){
 }
 // Keep URLs unquoted: this also processes CSS inside double-quoted HTML style
 // attributes, where inserting another double quote would break the markup.
-const css=text=>text.replace(/url\(\s*(['"]?)([^)'"\s]+)\1\s*\)/g,(_,q,url)=>`url(${rewrite(url)})`);
+const css=text=>text.replace(/url\(\s*(['"]?)([^)'"\s]+)\1\s*\)/g,(_,q,url)=>`url(${/\.woff2(?:[?#]|$)/i.test(url) && url.startsWith('/') ? 'data:font/woff2;base64,'+readFileSync(local(url)).toString('base64') : rewrite(url)})`);
 try{
  await mkdir(bundle,{recursive:true});
  for(const [route,name] of routes){

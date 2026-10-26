@@ -60,6 +60,6 @@
 <text x="1232" y="492" font-family="SFMono-Regular,Consolas,monospace" font-size="17" fill="#45636a">hydraulic.sensitivity</text>
 <g fill="#31555d" text-anchor="middle" font-size="21">
 <text x="800" y="598" font-weight="650">Organización del código: data_sources · climate · modeling</text>
-<text x="800" y="634">Análisis climático y generación estocástica comparten el paquete climate.</text>
+<text x="800" y="634">Dentro de climate: analizar caracteriza las series; generar produce realizaciones sintéticas.</text>
 <text x="800" y="670">14 submódulos descritos en la memoria · Cada estudio combina los que necesita.</text>
 </g></svg>

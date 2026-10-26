@@ -57,7 +57,7 @@ const stepTitleColors: Record<number, string> = {
   <!-- ── HERO ── -->
   <section class={`pt-24 pb-16 bg-gradient-to-br ${pc.color} text-white`}>
     <div class="max-w-7xl mx-auto px-6">
-      <a href={`${base}#casos-piloto`} class="inline-flex items-center gap-2 text-white/65 hover:text-white text-sm mb-6 transition-colors" data-i18n="back.cases">
+      <a href={`${base}#casos-piloto`} class="inline-flex items-center gap-2 text-white/65 hover:text-white text-sm mb-6 transition-colors" data-hydra-back data-i18n="back.cases">
         ← Casos piloto
       </a>
       <div class="flex flex-wrap items-center gap-3 mb-5">
@@ -289,7 +289,7 @@ const stepTitleColors: Record<number, string> = {
       ) : null}
 
       <!-- ── FIGURA SVG ── -->
-      {pc.figures.map((fig) => (
+      {pc.figures.map((fig, index) => (
         <section class="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
           <h3
             class="font-bold text-white mb-1"
@@ -301,7 +301,7 @@ const stepTitleColors: Record<number, string> = {
             data-t-es={fig.caption.es}
             data-t-en={fig.caption.en}
           >{fig.caption.es}</p>
-          <div class="w-full overflow-x-auto rounded-xl" set:html={fig.svg} />
+          <div id={index === 0 ? 'case-pipeline' : undefined} class="w-full overflow-x-auto rounded-xl" set:html={fig.svg} />
         </section>
       ))}
 
