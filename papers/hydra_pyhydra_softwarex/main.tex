@@ -178,20 +178,7 @@ SFINCS \citep{leijnse2021sfincs}, SWAT+ \citep{gassman2007swat}) or the
 public data services it connects to
 \citep{hersbach2020era5,huffman2020gpm,alfieri2013glofas,poggio2021soilgrids};
 it is the reproducible integration layer that turns their combination into
-an auditable, end-to-end workflow. A companion platform, HYDRA, distributes
-that layer with a Docker environment and browser interface for transfer to
-non-specialist users, without being itself part of the code metadata in
-\cref{tab:metadata}.
-
-Concretely, \pyhydra{} addresses five recurring needs from the studies above:
-an installable, dependency-light scientific core; a modular, reproducible
-architecture usable axis-by-axis; harmonised access to hydro-climatic and
-hydrological data; automation of hydrological/hydraulic model execution;
-and propagation of uncertainty across the whole chain, from Monte Carlo
-ensembles to Bayesian posteriors -- described in \cref{sec:description} and
-demonstrated in \cref{sec:examples,sec:impact}. The companion platform
-HYDRA separately exposes this core through a web/API/Jupyter/Docker
-environment (\cref{sec:architecture}).
+an auditable, end-to-end workflow.
 
 The contribution is therefore not a new probability distribution or
 physical solver. It is the software architecture that makes these existing
@@ -207,12 +194,10 @@ exposure and impact functions \citep{aznar2019climada}; RainyDay generates
 stochastic storms by transposing remotely sensed fields
 \citep{wright2017rainyday}; and HydroMT with wflow automates reproducible
 construction and execution of distributed hydrological models from global
-data \citep{eilander2023hydromt,vanverseveld2024wflow}. \pyhydra{} does not
-seek to replace those tools. Its distinct scope is to combine multivariate
+data \citep{eilander2023hydromt,vanverseveld2024wflow}. Its distinct scope is to combine multivariate
 extremes, stochastic generation, climate correction, professional
 hydrological/hydraulic adapters and impact-based return-period analysis in
-one inspectable workflow. Where appropriate, it consumes ecosystem tools
-such as HydroMT-SFINCS as dependencies rather than duplicating them.
+one inspectable workflow.
 
 %% ===========================================================================
 \section{Software description}
@@ -243,7 +228,7 @@ dependency on it and can be used directly from any Python environment.
 and is therefore distributed under GPL-3.0-only; HYDRA is an independent
 project under the MIT licence.
 
-\begin{figure}[!t]
+\begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{figures/fig01_architecture.pdf}
 \caption{Software architecture. \pyhydra{} provides four functional blocks of
@@ -255,34 +240,20 @@ access layers. Colours identify functional roles and do not encode values.}
 
 \begin{sloppypar}
 Each \pyhydra{} sub-module exposes its public API through its
-\texttt{\_\_init\_\_.py}, so the import pattern is always
-\texttt{from pyhydra.\allowbreak<block>.\allowbreak<module> import
-<name>}. OpenTURNS is a core dependency, installed by default with the
-core package, and provides the Gaussian-copula fitting used
-by \texttt{climate.spatial\_analysis} (\cref{tab:modules}) and illustrated
-in the M-30 example of \cref{sec:examples}; it is imported lazily inside
-the specific functions that need it, following the same lazy-import
-convention as the optional heavy dependencies below. Optional heavy
-dependencies (PyMC, GDAL, GeoPandas, pyvinecopulib) are
-imported lazily inside the functions that need them, so
-the package loads -- and the parts of the API that do not need them run --
-even when those dependencies are absent; a user who only needs
-extreme-value analysis or bias correction can install \pyhydra{} with
-\texttt{pip} alone. Everything else is grouped into four installable
-extras -- \texttt{statistics} (PyMC, pyvinecopulib, lmoments3),
-\texttt{geospatial} (GeoPandas, rasterio, pykrige, earthaccess,
-hydromt\_sfincs), \texttt{models} (hecdss, pySWATPlus, spotpy,
-NEOPRENE) and \texttt{notebooks} (seaborn, contextily, xlrd, openpyxl),
-plus a legacy \texttt{geo} extra for bare GDAL bindings and an
-\texttt{all} extra covering all five -- so installing, for example,
-\texttt{pyhydra[statistics]} from the GitHub repository installs exactly
-what a given workflow needs. One extended dependency, CoSMoS\_py (spatial random
-fields), is not yet published on PyPI and must be installed separately
-from its own repository. HYDRA's Docker Compose stack adds the extended
-scientific dependencies and orchestrates a JupyterLab container, a FastAPI
-backend and an nginx-served Astro frontend, built and deployed to Azure
-Container Apps by a GitHub Actions workflow, with project data mounted from
-a persistent file share rather than baked into the images.
+\texttt{\_\_init\_\_.py} (\texttt{from pyhydra.\allowbreak<block>.\allowbreak<module> import
+<name>}). OpenTURNS, which provides the Gaussian-copula fitting of
+\texttt{climate.spatial\_analysis} (\cref{tab:modules}) used in the M-30
+example of \cref{sec:examples}, is a core dependency. Optional heavy
+dependencies (PyMC, GDAL, GeoPandas, pyvinecopulib) are imported lazily
+inside the functions that need them, so the package loads even when they are
+absent, and a user who only needs extreme-value analysis or bias correction
+can install \pyhydra{} with \texttt{pip} alone. The rest is grouped into
+four installable extras -- \texttt{statistics}, \texttt{geospatial},
+\texttt{models} and \texttt{notebooks} -- plus a legacy \texttt{geo} extra
+and an \texttt{all} extra, so that, for example,
+\texttt{pyhydra[statistics]} installs exactly what a given workflow needs.
+CoSMoS\_py (spatial random fields) is not yet published on PyPI and must be
+installed separately from its own repository.
 \end{sloppypar}
 
 \subsection{Software functionalities}
@@ -311,24 +282,20 @@ and with external tools such as QGIS); and \emph{operational transfer}
 (documentation, example notebooks and a reproducible Docker environment are
 treated as first-class deliverables, not optional accessories). A
 \texttt{pytest} suite of 299 tests in 19 test files exercises the
-statistical, modelling and UQ utilities most exposed to regression. A GitHub
-Actions workflow (Ubuntu, core plus lightweight extended dependencies
-including PyMC) runs this suite on every push across a Python 3.9--3.12
-matrix; the one test that depends on PyMC/pytensor is still marked
-\texttt{optional\_dependency} and guarded to skip rather than fail if that
-stack is unavailable or, as happens with the older PyMC resolved on Python
-3.9, incompatible with the installed NumPy. For the code version in
-Table~\ref{tab:metadata} (commit \texttt{e96fbca}, 23 October 2026), this
-workflow reports 299/299 passed on Python 3.10--3.12 and 298 passed
-plus 1 skipped on 3.9, with 32\% line coverage (31\% on 3.9) -- concentrated in the
-statistical and modelling-adapter code exercised directly by unit tests,
-lower in the data-connector and engine-automation modules whose
-behaviour is instead exercised, not formally verified, by the pilot-case
-notebooks of \cref{sec:examples} against real services and engines. Runs
-archived at
+statistical, modelling and UQ utilities most exposed to regression, and a
+GitHub Actions workflow runs it on every push across Python 3.9--3.12 (one
+PyMC/pytensor test is marked \texttt{optional\_dependency} and skipped when
+that stack is unavailable or incompatible, as with the older PyMC resolved on
+Python 3.9). For the code version in Table~\ref{tab:metadata} (commit
+\texttt{e96fbca}, 23 October 2026), the workflow reports 299/299 passed on
+Python 3.10--3.12 and 298 passed plus 1 skipped on 3.9, with 32\% line
+coverage (31\% on 3.9), concentrated in the statistical and
+modelling-adapter code; the data-connector and engine-automation modules are
+exercised by the pilot-case notebooks of \cref{sec:examples} against real
+services and engines, not formally verified. Runs archived at
 \url{https://github.com/navass11/pyhydra/actions/runs/39978050001}.
 
-\begin{table}[!htbp]
+\begin{table}[!t]
 \small
 \centering
 \caption{\pyhydra{} modules by functional block.}
@@ -357,11 +324,8 @@ Module & Block & Main capability \\
 
 \vspace{2pt}
 {\footnotesize\emph{Abbreviations:} GEV/GPD, Generalised Extreme Value /
-Generalised Pareto Distribution; NSE/KGE/PBIAS, Nash--Sutcliffe Efficiency /
-Kling--Gupta Efficiency / Percent Bias; IDW, Inverse Distance Weighting;
-GP, Gaussian Process; DSS, Data Storage System (HEC file format); SCE-UA,
-Shuffled Complex Evolution -- University of Arizona; RBF, Radial Basis
-Function.}
+Pareto; NSE/KGE/PBIAS, Nash--Sutcliffe / Kling--Gupta efficiency and percent
+bias; DSS, HEC Data Storage System; SCE-UA, Shuffled Complex Evolution.}
 \end{table}
 
 \paragraph{Reproducibility boundary} Reproducibility is reported at the
@@ -372,9 +336,8 @@ supplies the corresponding service credentials and records the query
 metadata. HEC-HMS, HEC-RAS, SFINCS and SWAT+ workflows additionally require
 the relevant engine and a model project; large pilot cases may also contain
 third-party data that cannot be redistributed. \Cref{fig:reproducibility} summarises the contract. HYDRA preserves
-notebooks, parameters, adapters and standard outputs for these conditioned
-workflows, but does not claim that containerising the Python layer redistributes
-proprietary executables or restricted datasets.
+notebooks, parameters and outputs for these workflows but does not
+redistribute proprietary executables or restricted datasets.
 
 \begin{figure}[!t]
 \centering
@@ -453,7 +416,7 @@ notebooks run to completion on the archived data: the nine Besaya notebooks
 skip their HEC-HMS/HEC-RAS steps when the engine is not installed, and the
 other 16 need no engine.
 
-\begin{table}[!htbp]
+\begin{table}[!b]
 \small
 \centering
 \caption{Traceability of the four illustrative workflows. Notebook paths
@@ -535,9 +498,7 @@ design depths are read from the archived study outputs, not recomputed.
 return-period depths at two control cross-sections, Puente de Toledo and
 Represa n\textordmasculine 9 (step 8). The pilot notebooks re-run copula
 generation and MaxDiss selection with \pyhydra{}; simulation, emulation and
-frequency outputs are taken from the archived study results. Blue denotes observations and event
-classification, green statistical generation and selection, orange physical
-simulation and emulation, and purple frequency outputs.}
+frequency outputs are taken from the archived study results. Colours identify functional stages.}
 \label{fig:m30}
 \end{figure}
 
@@ -562,7 +523,7 @@ calibrated return levels; sensitivity to the choice of stations is not
 assessed.
 
 
-\begin{figure}[!t]
+\begin{figure}[!htbp]
 \centering
 \includegraphics[scale=1.05]{figures/fig05_valencia_return_levels.pdf}
 \caption{Turís (8337X): GEV return-level curves fitted by maximum likelihood
@@ -636,22 +597,10 @@ SFINCS runs (five numerically non-converged runs removed) against the Manning
 $n$ of the river class, from the archived per-run results
 \citep{navas2026besayadata}; line: least-squares fit. In a regression on the
 nine standardised classes the river carries $\beta{=}0.93$ and every other
-class $|\beta|\le0.08$ ($R^2{=}0.87$). This single-engine result documents the
-ensemble-aggregation workflow only; the two-engine comparison is out of scope
-here and reported separately.}
+class $|\beta|\le0.08$ ($R^2{=}0.87$).}
 \label{fig:besaya-area}
 \end{figure}
 
-\begin{sloppypar}
-The four workflows follow complementary execution paths -- continuous
-impact-frequency analysis with hydraulic ensembles (Besaya), rainfall,
-runoff and hydraulic modelling (M-30), statistical inference without an
-external solver (Valencia), and Monte Carlo roughness ensembles on two
-hydraulic engines (SFINCS--HEC-RAS) -- and are not the only published applications
-of the underlying methodology: the same building blocks also support
-published work on Andean hydropower systems \citep{deljesus2020andinos}
-and reservoir inflows under climate change \citep{navas2025simpce}.
-\end{sloppypar}
 
 %% ===========================================================================
 \section{Impact}
@@ -669,23 +618,16 @@ as a software product and shows that the underlying methods work; it is
 distinct from, and does not substitute for, evidence that the software
 itself has been adopted outside the authors' group.
 
-Beyond consolidating methods that already existed as separate scripts,
-having them share a common ensemble and impact-statistics layer
-(\cref{sec:functionalities}) also opens questions that were impractical to
-pose across four disconnected codebases: how differently two hydraulic
-engines propagate the same roughness ensemble into inundation extent, for
-which \cref{sec:examples} demonstrates the ensemble-generation and
-aggregation workflow and the comparison itself is reported separately; and
-how directly conditioning frequency analysis on spatial impacts, rather
-than on discharge or rainfall alone, shifts design estimates relative to
-the classical univariate route, as the published M-30 study quantifies
-(\cref{sec:examples}).
+Having these methods share a common ensemble and impact-statistics layer
+(\cref{sec:functionalities}) also makes it practical to ask questions that
+were awkward across disconnected codebases: how differently two hydraulic
+engines propagate the same roughness ensemble (\cref{sec:examples}; the
+comparison itself is reported separately), and how conditioning frequency
+analysis on spatial impacts rather than on rainfall alone shifts design
+estimates, as the published M-30 study quantifies.
 
 As a software product, \pyhydra{}'s impact so far is internal to the authors'
-group, reported as such rather than overstated. A new case study is now
-assembled from existing, unit-tested building blocks rather than
-rewritten -- what let the four workflows of \cref{sec:examples} share one
-code base instead of four disconnected scripts. Applying the generic copula
+group, reported as such rather than overstated. Applying the generic copula
 fitter to the real M-30 catalogue also exposed and fixed a defect that
 study-specific scripts would have hidden: with the default all-family
 search, heavy-tailed marginals were selected for zero-inflated gauge
@@ -694,11 +636,8 @@ the tested API. Archiving \pyhydra{} under the GPL-3.0 licence on Zenodo
 \citep{navas2026pyhydra} gives each downstream publication a citable,
 versioned code reference, closing a gap that affected the earlier,
 unpublished study scripts. The companion platform HYDRA
-(\cref{sec:architecture}), archived separately \citep{navas2026hydrarepo}
-and reachable, as of 24 October 2026, at the URL given in its
-README\footnote{Ephemeral Azure Container Apps deployment; useful for
-evaluation but not a citable scholarly reference. The Zenodo records
-remain the durable citation for both components.}, removes
+(\cref{sec:architecture}), archived separately \citep{navas2026hydrarepo},
+removes
 local-environment setup as a barrier to inspecting any of the four
 notebooks with the full scientific stack pre-installed.
 
@@ -719,15 +658,11 @@ a modular, reproducible architecture; harmonised access to hydro-climatic
 and hydrological data; automation of hydrological and hydraulic models; and
 propagation and analysis of uncertainty across the whole chain. The
 companion platform HYDRA separately provides an optional web, API, Jupyter
-and Docker environment. Four workflows at three
-Spanish pilot sites -- Besaya, M-30 Manzanares and Valencia -- span fluvial,
-urban and extreme-rainfall flood risk. Together they
-show that the same modular components support markedly different study
-designs, from continuous stochastic simulation to multivariate copula-based
-frequency analysis and Monte Carlo ensembles run through two hydraulic
-engines. These workflows show what the components support, not third-party
-adoption; the M-30 design depths and HEC-HMS/HEC-RAS results are archived
-study outputs, not a validation of \pyhydra{}. Ongoing work
+and Docker environment. Four workflows at three Spanish sites show that the same modular
+components support markedly different study designs; they show what the
+components support, not third-party adoption, and the M-30 design depths and
+HEC-HMS/HEC-RAS results are archived study outputs, not a validation of
+\pyhydra{}. Ongoing work
 focuses on widening automated test coverage as new modules are added,
 adding adapters for further hydraulic/hydrological engines, and documenting
 a stable public API to lower the barrier for external contributions beyond
@@ -741,8 +676,7 @@ resolve climate non-stationarity; emulators and MaxDiss selection reduce
 hydraulic-ensemble cost but cannot replace physical-model validation, and
 depend on the representativeness of the simulated subset; and
 reproducibility of externally executed models is conditioned by engine
-version, licences and project availability. HYDRA makes these dependencies
-explicit and auditable rather than removing them.
+version, licences and project availability.
 
 %% ===========================================================================
 \section*{CRediT authorship contribution statement}
